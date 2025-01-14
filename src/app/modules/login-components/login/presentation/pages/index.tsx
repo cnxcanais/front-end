@@ -4,6 +4,7 @@ import { useState } from 'react'
 import { useRouter } from 'next/navigation'
 import Link from 'next/link'
 import { Input, Field, Label, Button } from '@headlessui/react'
+import { EyeSlash, Eye } from 'phosphor-react'
 import clsx from 'clsx'
 
 export function Login () {
@@ -18,7 +19,6 @@ export function Login () {
       <div className='flex justify-center'>
         <h2 className='m-0 text-lg'>Faça o login para continuar</h2>
       </div>
-      
       <Field className="mt-5">
         <Label className="text-sm/6 font-medium text-white-100">Email</Label>
         <Input 
@@ -29,13 +29,27 @@ export function Login () {
             'focus:outline-none data-[focus]:outline-2 data-[focus]:-outline-offset-2 data-[focus]:outline-white/25 bg-black-200 min-w-[350px] mb-5')}
         />
         <Label className="text-sm/6 font-medium text-white-100">Senha</Label>
+        <div className="relative">
         <Input 
-          name='login-senha'
-          type='password'
+          name='password'
+          type={showPassword ? 'text' : 'password'}
           className={clsx(
             'mt-1 block w-full rounded-lg border border-beige-100 py-1.5 px-3 text-sm/6 text-white',
-            'focus:outline-none data-[focus]:outline-2 data-[focus]:-outline-offset-2 data-[focus]:outline-white/25 bg-black-200')}
+            'focus:outline-none data-[focus]:outline-2 data-[focus]:-outline-offset-2 data-[focus]:outline-white/25 bg-black-200 min-w-[350px] mb-2'
+          )}
         />
+        <button
+          type="button"
+          className="absolute right-3 top-1/2 -translate-y-1/2 text-beige-100 hover:text-yellow-200"
+          onClick={() => setShowPassword(!showPassword)}
+        >
+          {showPassword ? (
+            <Eye className="h-5 w-5" />
+          ) : (
+            <EyeSlash className="h-5 w-5" />
+          )}
+        </button>
+      </div>
       </Field>
       <div className="">
         <div className="">
