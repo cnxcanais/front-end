@@ -1,3 +1,27 @@
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+
+@import url('https://fonts.googleapis.com/css2?family=Open+Sans:ital,wght@0,300..800;1,300..800&display=swap');
+
+:root{
+  --blue100: #CECFD1;
+  --blue200: #9FA2A6;
+  --blue300: #72777D;
+  --blue400: #45505A;
+  --blue500: #072A3C;
+  --yellow100: #C2A360;
+  --yellow200: #8A7444;
+  --yellow300: #453A22;
+  --beige100: #E0CCBE;
+  --black100: #1A1A1A;
+  --redError: #F75A68;
+  --greenSuccess: #00B37E;
+  --white: #FFFFFF;
+}
+
+*{
+  margin: 0;
+  font-family: "Open Sans", sans-serif;
+  font-weight: 400;
+}
