@@ -1,12 +1,10 @@
 "use client"
-import { Button } from '@mui/material'
-import styles from '@/modules/login-components/style.module.css'
-import { TextField, InputAdornment, IconButton } from '@mui/material'
-import { Visibility, VisibilityOff } from '@mui/icons-material'
+
 import { useState } from 'react'
 import { useRouter } from 'next/navigation'
-import { inputStyle } from '@/core/utils/loginInputStyle'
 import Link from 'next/link'
+import { Input, Field, Label, Button } from '@headlessui/react'
+import clsx from 'clsx'
 
 export function Login () {
 
@@ -16,60 +14,41 @@ export function Login () {
   const handleClickShowPassword = () => setShowPassword(!showPassword)
 
   return(
-    <div className={styles.loginBox}>
-      <h2>Faça o login para continuar</h2>
-      <div className={styles.inputCtr}>
-          <TextField 
-          id="email-login" 
-          label="Email" 
-          variant='filled' 
+    <div className="bg-black-100 flex-col text-white-100 p-5 rounded-md">
+      <div className='flex justify-center'>
+        <h2 className='m-0 text-lg'>Faça o login para continuar</h2>
+      </div>
+      
+      <Field className="mt-5">
+        <Label className="text-sm/6 font-medium text-white-100">Email</Label>
+        <Input 
+          name='login-email'
           type='email'
-          sx={inputStyle}
-          />
-        <div>
-          <TextField 
-            id="password-login" 
-            label="Senha" 
-            variant='filled'
-            type={showPassword ? 'text' : 'password'}
-            sx={inputStyle}
-            InputProps ={{
-              endAdornment: (
-                <InputAdornment position='end'>
-                  <IconButton
-                    aria-label='toggle passaword visibility'
-                    onClick={handleClickShowPassword}
-                    edge='end'
-                  >
-                    {showPassword ? <VisibilityOff onClick={handleClickShowPassword}/> : <Visibility onClick={handleClickShowPassword}/>}
-                  </IconButton>
-                </InputAdornment>
-              )
-            }}
-          />
-        </div>
-        <div className={styles.passwordLink}>
-          <Link href='/define-password'>Esqueceu sua senha? Clique aqui.</Link>
+          className={clsx(
+            'mt-1 block w-full rounded-lg border border-beige-100 py-1.5 px-3 text-sm/6 text-white',
+            'focus:outline-none data-[focus]:outline-2 data-[focus]:-outline-offset-2 data-[focus]:outline-white/25 bg-black-200 min-w-[350px] mb-5')}
+        />
+        <Label className="text-sm/6 font-medium text-white-100">Senha</Label>
+        <Input 
+          name='login-senha'
+          type='password'
+          className={clsx(
+            'mt-1 block w-full rounded-lg border border-beige-100 py-1.5 px-3 text-sm/6 text-white',
+            'focus:outline-none data-[focus]:outline-2 data-[focus]:-outline-offset-2 data-[focus]:outline-white/25 bg-black-200')}
+        />
+      </Field>
+      <div className="">
+        <div className="">
+          <Link href='/define-password' className='text-xs text-beige-100 hover:text-yellow-200'>Esqueceu sua senha? Clique aqui.</Link>
         </div>
         
       </div>
       
-      <div>
-        <Button 
-          variant="contained" 
-          sx={{
-            backgroundColor: 'var(--yellow200)',
-            '&:hover': {
-              backgroundColor: 'var(--yellow300)'
-            }
-          }}
-          onClick={() => push('/dashboard')}
-        >
-          Login
-        </Button>
+      <div className='flex justify-center mt-5'>
+        <Button className="bg-yellow-200 hover:bg-yellow-300 text-white-100 rounded-md p-2">Entrar</Button>
       </div>
-      
-    </div>
+  
+  </div>
     
 
   )
