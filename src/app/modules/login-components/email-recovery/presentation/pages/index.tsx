@@ -1,6 +1,5 @@
 "use client"
 import { Button } from '@mui/material'
-import styles from '@/modules/login-components/style.module.css'
 import { TextField } from '@mui/material'
 import { inputStyle } from '@/core/utils/loginInputStyle'
 import Link from 'next/link'
@@ -9,7 +8,7 @@ export function PasswordRetrieval () {
 
 
   return(
-    <div className={styles.loginBox}> 
+    <div className=""> 
       <h2> Digite seu e-mail para resetar a senha.</h2>
       <TextField 
         id='retrieve-password'
@@ -17,7 +16,7 @@ export function PasswordRetrieval () {
         variant='filled'
         sx={inputStyle}
       />
-      <div className={styles.passwordLink}>
+      <div className="">
         <Link href='/'>Voltar para login</Link>
       </div>
       <Button 

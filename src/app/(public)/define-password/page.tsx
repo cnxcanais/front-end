@@ -1,4 +1,4 @@
-import { PasswordRetrieval } from "@/modules/login-components/email-recovery/presentation/pages";
+import { PasswordRetrieval } from "@/app/modules/login-components/email-recovery/presentation/pages";
 
 export default function DefinePassword() {
   return(
