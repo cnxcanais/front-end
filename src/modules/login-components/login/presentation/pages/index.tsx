@@ -10,7 +10,7 @@ export function Login() {
   const { push } = useRouter()
 
   return (
-    <div className="flex min-w-96 flex-col gap-3 rounded-lg bg-black-100 p-7 text-white-100">
+    <div className="text-white bg-black flex min-w-96 flex-col gap-3 rounded-lg p-7">
       <div className="flex justify-center">
         <h2 className="text-xl font-light">Faça o login para continuar</h2>
       </div>
@@ -31,7 +31,7 @@ export function Login() {
 
       <Link
         href="/define-password"
-        className="text-xs text-beige-100 hover:text-yellow-200">
+        className="text-xs text-yellow-100 hover:text-yellow-200">
         Esqueceu sua senha? clique aqui
       </Link>
 

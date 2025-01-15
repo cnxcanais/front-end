@@ -9,8 +9,8 @@ const input = tv({
 
   variants: {
     variant: {
-      primary: "border-white-100",
-      secondary: "border-black-100",
+      primary: "border-white",
+      secondary: "border-black",
     },
   },
 

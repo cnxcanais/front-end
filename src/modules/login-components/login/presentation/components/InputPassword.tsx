@@ -1,4 +1,4 @@
-import { Eye, EyeSlash } from "phosphor-react"
+import { Eye, EyeSlash } from "@phosphor-icons/react"
 import { useState } from "react"
 
 export function InputPassword() {
@@ -10,7 +10,7 @@ export function InputPassword() {
         name="password"
         type={showPassword ? "text" : "password"}
         className={
-          "text-white data-[focus]:outline-white/25 w-full rounded-lg border border-white-100 bg-transparent px-3 py-1.5 text-sm/6 focus:outline-none data-[focus]:outline-2 data-[focus]:-outline-offset-2"
+          "w-full rounded-lg border border-white bg-transparent px-3 py-1.5 text-sm/6 text-white focus:outline-none data-[focus]:outline-2 data-[focus]:-outline-offset-2 data-[focus]:outline-white/25"
         }
       />
       <button

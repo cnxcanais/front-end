@@ -5,10 +5,6 @@ export default {
   theme: {
     extend: {
       colors: {
-        black: {
-          100: "#1a1a1a",
-          200: "#0d0d0d",
-        },
         blue: {
           100: "#cecfd1",
           200: "#9fa2a6",
@@ -20,12 +16,6 @@ export default {
           100: "#c2a360",
           200: "#8a7444",
           300: "#453a22",
-        },
-        beige: {
-          100: "#e0ccbe",
-        },
-        white: {
-          100: "#ffffff",
         },
         error: "#F75A68",
         success: "#00B37E",
