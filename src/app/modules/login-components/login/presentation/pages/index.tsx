@@ -20,9 +20,8 @@ export function Login () {
         <InputField 
           name='email'
           type='email'
-          variant='primary'
+          variant='login'
           label='Email'
-          className='mb-2'
         />
         <InputField 
           name='password'
@@ -32,17 +31,14 @@ export function Login () {
       </Field>
       <LinkComponent
         href='/define-password'
-        variant='primary'
       >
         Esqueceu sua senha? clique aqui
       </LinkComponent>
       
-      <ButtonComponent
-        onClick={() => push('/dashboard')}
-        variant='primary'
-      >
-        Entrar
-      </ButtonComponent>
+      <div className='flex justify-center mt-5'>
+        <ButtonComponent onClick={() => push('/dashboard')}> Entrar </ButtonComponent>
+      </div>
+      
   
   </div>
     
