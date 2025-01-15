@@ -1,4 +1,4 @@
-import API from "@/core/utils/axios";
+import API from "@/app/core/utils/axios";
 
 type Props = {
   email: string;

@@ -1,18 +1,15 @@
 "use client"
 
-import { useState } from 'react'
 import { useRouter } from 'next/navigation'
-import Link from 'next/link'
-import { Input, Field, Label, Button } from '@headlessui/react'
-import { EyeSlash, Eye } from 'phosphor-react'
-import clsx from 'clsx'
+import { Field } from '@headlessui/react'
+import { InputField } from '@/app/core/components/input-field'
+import { LinkComponent } from '@/app/core/components/link'
+import { ButtonComponent } from '@/app/core/components/button'
+
 
 export function Login () {
-
-  const [showPassword, setShowPassword] = useState<boolean>(false)
+  
   const { push } = useRouter();
-
-  const handleClickShowPassword = () => setShowPassword(!showPassword)
 
   return(
     <div className="bg-black-100 flex-col text-white-100 p-5 rounded-md">
@@ -20,47 +17,32 @@ export function Login () {
         <h2 className='m-0 text-lg'>Faça o login para continuar</h2>
       </div>
       <Field className="mt-5">
-        <Label className="text-sm/6 font-medium text-white-100">Email</Label>
-        <Input 
-          name='login-email'
+        <InputField 
+          name='email'
           type='email'
-          className={clsx(
-            'mt-1 block w-full rounded-lg border border-beige-100 py-1.5 px-3 text-sm/6 text-white',
-            'focus:outline-none data-[focus]:outline-2 data-[focus]:-outline-offset-2 data-[focus]:outline-white/25 bg-black-200 min-w-[350px] mb-5')}
+          variant='primary'
+          label='Email'
+          className='mb-2'
         />
-        <Label className="text-sm/6 font-medium text-white-100">Senha</Label>
-        <div className="relative">
-        <Input 
+        <InputField 
           name='password'
-          type={showPassword ? 'text' : 'password'}
-          className={clsx(
-            'mt-1 block w-full rounded-lg border border-beige-100 py-1.5 px-3 text-sm/6 text-white',
-            'focus:outline-none data-[focus]:outline-2 data-[focus]:-outline-offset-2 data-[focus]:outline-white/25 bg-black-200 min-w-[350px] mb-2'
-          )}
+          variant='password'
+          label='Senha'
         />
-        <button
-          type="button"
-          className="absolute right-3 top-1/2 -translate-y-1/2 text-beige-100 hover:text-yellow-200"
-          onClick={() => setShowPassword(!showPassword)}
-        >
-          {showPassword ? (
-            <Eye className="h-5 w-5" />
-          ) : (
-            <EyeSlash className="h-5 w-5" />
-          )}
-        </button>
-      </div>
       </Field>
-      <div className="">
-        <div className="">
-          <Link href='/define-password' className='text-xs text-beige-100 hover:text-yellow-200'>Esqueceu sua senha? Clique aqui.</Link>
-        </div>
-        
-      </div>
+      <LinkComponent
+        href='/define-password'
+        variant='primary'
+      >
+        Esqueceu sua senha? clique aqui
+      </LinkComponent>
       
-      <div className='flex justify-center mt-5'>
-        <Button className="bg-yellow-200 hover:bg-yellow-300 text-white-100 rounded-md p-2">Entrar</Button>
-      </div>
+      <ButtonComponent
+        onClick={() => push('/dashboard')}
+        variant='primary'
+      >
+        Entrar
+      </ButtonComponent>
   
   </div>
     
