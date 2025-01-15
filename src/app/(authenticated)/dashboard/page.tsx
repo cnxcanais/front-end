@@ -1,8 +1,5 @@
-import { MainDashboard } from "@/app/modules/dashboard-components/main-dashboard/presentation/pages";
+import { MainDashboard } from '@/modules/dashboard-components/main-dashboard/presentation/pages'
 
-export default function DashBoardRender () {
-    return (
-        <MainDashboard />
-    )
-
+export default function DashBoardRender() {
+  return <MainDashboard />
 }

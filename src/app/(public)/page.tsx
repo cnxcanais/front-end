@@ -1,8 +1,5 @@
-import { Login } from "@/app/modules/login-components/login"
+import { Login } from '@/modules/login-components/login'
 
-
-export default function Home() {
-  return(
-      <Login />
-  ) ;
+export default function LoginPage() {
+  return <Login />
 }
