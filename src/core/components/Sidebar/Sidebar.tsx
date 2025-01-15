@@ -31,7 +31,7 @@ export function Sidebar() {
           height={400}
           alt="Your Company"
           src="/images/light-logo.png"
-          className={`h-20 w-auto transition-opacity ${
+          className={`h-24 w-auto transition-opacity ${
             isOpen ? "opacity-100" : "opacity-0"
           }`}
         />

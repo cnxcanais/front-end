@@ -25,7 +25,7 @@ export default function RootLayout({
           type="image/svg+xml"
         />
       </head>
-      <body className={inter.className}>
+      <body className={`${inter.className} antialiased`}>
         <ReactQueryProvider>{children}</ReactQueryProvider>
         <Toaster richColors position="top-right" />
       </body>
