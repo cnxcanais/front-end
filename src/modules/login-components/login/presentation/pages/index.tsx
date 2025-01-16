@@ -9,8 +9,13 @@ import { useRouter } from "next/navigation"
 export function Login() {
   const { push } = useRouter()
 
+  const handleLogin = () => {
+    sessionStorage.setItem("roleName", "admin")
+    push("/dashboard")
+  }
+
   return (
-    <div className="text-white bg-black flex min-w-96 flex-col gap-3 rounded-lg p-7">
+    <div className="flex min-w-96 flex-col gap-3 rounded-lg bg-black p-7 text-white">
       <div className="flex justify-center">
         <h2 className="text-xl font-light">Faça o login para continuar</h2>
       </div>
@@ -35,7 +40,7 @@ export function Login() {
         Esqueceu sua senha? clique aqui
       </Link>
 
-      <Button onClick={() => push("/dashboard")}>Entrar</Button>
+      <Button onClick={handleLogin}>Entrar</Button>
     </div>
   )
 }
