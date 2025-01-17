@@ -11,6 +11,7 @@ export function Login() {
 
   const handleLogin = () => {
     sessionStorage.setItem("roleName", "admin")
+    sessionStorage.setItem("accountId", "ec86dcb8-b6df-4a9f-890b-d9fec35ec8d1")
     push("/dashboard")
   }
 

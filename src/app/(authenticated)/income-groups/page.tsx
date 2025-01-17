@@ -2,7 +2,7 @@
 
 import { LoadingScreen } from "@/core/components/LoadingScreen"
 import { fetchPermissionsByName } from "@/modules/dashboard-components/main-dashboard/infra/permissions"
-import { MainDashboard } from "@/modules/dashboard-components/main-dashboard/presentation/pages"
+import { IncomeGroupDashboard } from "@/modules/form-components/grupo-receitas/presentation/pages"
 import { useQuery } from "@tanstack/react-query"
 import { unauthorized, usePathname } from "next/navigation"
 import { useEffect, useState } from "react"
@@ -34,7 +34,7 @@ export default function DashBoardRender() {
   }
 
   if (data.urlAccess[`${pathName}`]) {
-    return <MainDashboard />
+    return <IncomeGroupDashboard />
   } else {
     unauthorized()
   }
