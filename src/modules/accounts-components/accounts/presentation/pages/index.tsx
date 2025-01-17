@@ -1,9 +1,10 @@
 "use client"
 
 import { Button } from "@/core/components/Button"
-import { Input } from "@/core/components/Input"
+import * as Input from "@/core/components/Input"
 import { PageTitle } from "@/core/components/PageTitle"
 import { AccountsTable } from "@/modules/accounts-components/accounts/presentation/components/AccountsTable"
+import { MagnifyingGlass } from "@phosphor-icons/react"
 import { FileXls } from "@phosphor-icons/react/dist/ssr"
 import { useRouter } from "next/navigation"
 
@@ -15,7 +16,12 @@ export function AccountsPage() {
       <PageTitle content="Contas" />
       <div className="mt-8 flex items-center justify-between">
         <div className="flex gap-4">
-          <Input placeholder="Pesquisar" variant="secondary" />
+          <Input.Root>
+            <Input.Control placeholder="Procurar" />
+            <Input.Icon>
+              <MagnifyingGlass className="h-5 w-5" />
+            </Input.Icon>
+          </Input.Root>{" "}
           <Button onClick={() => push("/accounts/create")} variant="secondary">
             Cadastrar
           </Button>

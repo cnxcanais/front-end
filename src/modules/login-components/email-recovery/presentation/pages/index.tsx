@@ -1,5 +1,5 @@
 import { Button } from "@/core/components/Button"
-import { Input } from "@/core/components/Input"
+import * as Input from "@/core/components/Input"
 import Link from "next/link"
 
 export function PasswordRetrieval() {
@@ -11,7 +11,9 @@ export function PasswordRetrieval() {
 
       <div className="mb-2 flex flex-col gap-3">
         <label htmlFor="email">E-mail</label>
-        <Input type="email" />
+        <Input.Root variant="secondary">
+          <Input.Control type="email" />
+        </Input.Root>
       </div>
 
       <Link href="/" className="text-xs text-yellow-100 hover:text-yellow-200">

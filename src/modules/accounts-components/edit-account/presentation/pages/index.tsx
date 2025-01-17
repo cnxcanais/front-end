@@ -1,7 +1,7 @@
 "use client"
 
 import { Button } from "@/core/components/Button"
-import { Input } from "@/core/components/Input"
+import * as Input from "@/core/components/Input"
 import { PageTitle } from "@/core/components/PageTitle"
 import { useRouter } from "next/navigation"
 
@@ -15,7 +15,9 @@ export function EditAccountPage({ id }: { id: string }) {
         <label className="text-lg" htmlFor="name">
           Nome
         </label>
-        <Input variant="secondary" name="name" type="text" />
+        <Input.Root variant="secondary">
+          <Input.Control type="text" />
+        </Input.Root>
       </div>
       <div className="mt-6 flex gap-4">
         <Button onClick={() => {}} variant="secondary">
