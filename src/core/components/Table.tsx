@@ -6,12 +6,7 @@ interface Column {
   render?: (value: any, row: any) => ReactNode
 }
 
-interface TableProps {
-  columns: Column[]
-  data: any[]
-}
-
-export function Table({ columns, data }: TableProps) {
+export function Table<T>({ columns, data }: { columns: Column[]; data: T[] }) {
   return (
     <div className="">
       <div className="my-8 flow-root">
@@ -34,9 +29,9 @@ export function Table({ columns, data }: TableProps) {
                 <tbody className="divide-y divide-gray-200 bg-white">
                   {data.map((row, rowIndex) => (
                     <tr key={rowIndex}>
-                      {columns.map((column, columnIndex) => (
+                      {columns.map((column) => (
                         <td
-                          key={columnIndex}
+                          key={column.header}
                           className="whitespace-nowrap px-3 py-4 text-sm text-gray-500">
                           {column.render ?
                             column.render(row[column.accessor], row)

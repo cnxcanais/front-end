@@ -31,12 +31,12 @@ export function AccountsTable() {
     {
       header: "Habilitada",
       accessor: "enabled",
-      render: (value: boolean, row: any) => (value ? "Sim" : "Não"),
+      render: (value: boolean, row: unknown) => (value ? "Sim" : "Não"),
     },
     {
       header: "Ações",
       accessor: "account_id",
-      render: (value: string, row: any) => (
+      render: (value: string, row: unknown) => (
         <div className="flex space-x-4">
           <Pencil
             className="cursor-pointer duration-300 ease-in-out hover:text-blue-500"
