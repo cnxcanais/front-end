@@ -3,6 +3,7 @@
   "name": "ADMIN",
   "urlAccess": {
     "/dashboard": true,
+    "/accounts": true,
     "/accounts/create": true
   },
   "componentAccess": {

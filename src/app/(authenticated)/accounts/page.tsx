@@ -1,6 +1,6 @@
 "use client"
 
-import { CreateAccountPage } from "@/modules/accounts-components/create-account/presentation/pages"
+import { AccountsPage } from "@/modules/accounts-components/accounts/presentation/pages"
 import { fetchPermissionsByName } from "@/modules/dashboard-components/main-dashboard/infra/permissions"
 import { useQuery } from "@tanstack/react-query"
 import { usePathname } from "next/navigation"
@@ -33,6 +33,6 @@ export default function AccountsRender() {
   }
 
   if (data.urlAccess[`${pathName}`]) {
-    return <CreateAccountPage />
+    return <AccountsPage />
   }
 }
