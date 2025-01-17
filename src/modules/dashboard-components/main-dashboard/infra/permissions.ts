@@ -1,6 +1,6 @@
 import { PermissionType } from "@/core/types/permissionTypes"
 import mockPermissions from "@/core/utils/permission.json"
-import { Permissions } from "../domain/entities/permissions"
+import { Permissions } from "@/modules/login-components/login/domain/entities/permissions"
 
 export const fetchPermissionsByName = async (name: string) => {
   const getMockPermissions = async (): Promise<PermissionType> => {

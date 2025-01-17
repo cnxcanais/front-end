@@ -1,6 +1,6 @@
 "use client"
 
-import { fetchPermissionsByName } from "@/app/modules/login-components/login/infra/permissions"
+import { fetchPermissionsByName } from "@/modules/dashboard-components/main-dashboard/infra/permissions"
 import { MainDashboard } from "@/modules/dashboard-components/main-dashboard/presentation/pages"
 import { useQuery } from "@tanstack/react-query"
 import { usePathname } from "next/navigation"
