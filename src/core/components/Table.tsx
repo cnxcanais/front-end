@@ -1,7 +1,3 @@
-/* eslint-disable @typescript-eslint/no-explicit-any */
-
-import { Pencil } from "@phosphor-icons/react"
-import Link from "next/link"
 import { ReactNode } from "react"
 
 interface Column {
@@ -25,40 +21,28 @@ export function Table({ columns, data }: TableProps) {
               <table className="min-w-full divide-y divide-gray-300">
                 <thead className="bg-gray-50">
                   <tr>
-                    {columns.map((column) => (
+                    {columns.map((column, columnIndex) => (
                       <th
-                        key={column.accessor}
+                        key={columnIndex}
                         scope="col"
                         className="px-3 py-3.5 text-left text-sm font-semibold text-gray-900">
                         {column.header}
                       </th>
                     ))}
-                    <th
-                      scope="col"
-                      className="relative py-3.5 pl-3 pr-4 sm:pr-6">
-                      <span className="sr-only">Editar</span>
-                    </th>
                   </tr>
                 </thead>
                 <tbody className="divide-y divide-gray-200 bg-white">
                   {data.map((row, rowIndex) => (
                     <tr key={rowIndex}>
-                      {columns.map((column) => (
+                      {columns.map((column, columnIndex) => (
                         <td
-                          key={column.accessor}
+                          key={columnIndex}
                           className="whitespace-nowrap px-3 py-4 text-sm text-gray-500">
                           {column.render ?
                             column.render(row[column.accessor], row)
                           : row[column.accessor]}
                         </td>
                       ))}
-                      <td className="relative whitespace-nowrap py-4 pl-3 pr-4 text-right text-sm font-medium sm:pr-6">
-                        <Link
-                          href="#"
-                          className="flex justify-end text-blue-400 hover:text-blue-500">
-                          <Pencil size={22} />
-                        </Link>
-                      </td>
                     </tr>
                   ))}
                 </tbody>

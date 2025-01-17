@@ -4,7 +4,8 @@
   "urlAccess": {
     "/dashboard": true,
     "/accounts": true,
-    "/accounts/create": true
+    "/accounts/create": true,
+    "/accounts/edit": true
   },
   "componentAccess": {
     "dashboard-button": true
