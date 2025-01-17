@@ -4,15 +4,13 @@ import Link from "next/link"
 
 export function PasswordRetrieval() {
   return (
-    <div className="text-white bg-black flex min-w-96 flex-col gap-3 rounded-lg p-5">
+    <div className="flex min-w-96 flex-col gap-4 rounded-lg bg-zinc-900/80 p-7 text-white">
       <h2 className="mb-2 text-xl font-light">
-        Digite seu e-mail para resetar a senha.
+        Digite seu e-mail para resetar a senha
       </h2>
 
-      <div className="mb-2 flex flex-col gap-2">
-        <label className="text-lg" htmlFor="email">
-          E-mail
-        </label>
+      <div className="mb-2 flex flex-col gap-3">
+        <label htmlFor="email">E-mail</label>
         <Input type="email" />
       </div>
 

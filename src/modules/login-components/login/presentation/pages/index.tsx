@@ -15,22 +15,18 @@ export function Login() {
   }
 
   return (
-    <div className="flex min-w-96 flex-col gap-3 rounded-lg bg-black p-7 text-white">
+    <div className="flex min-w-96 flex-col gap-4 rounded-lg bg-zinc-900/80 p-7 text-white">
       <div className="flex justify-center">
         <h2 className="text-xl font-light">Faça o login para continuar</h2>
       </div>
 
-      <div className="flex flex-col gap-2">
-        <label className="text-lg" htmlFor="email">
-          E-mail
-        </label>
+      <div className="flex flex-col gap-3">
+        <label htmlFor="email">E-mail</label>
         <Input name="email" type="email" />
       </div>
 
-      <div className="flex flex-col gap-2">
-        <label className="text-lg" htmlFor="email">
-          Password
-        </label>
+      <div className="flex flex-col gap-3">
+        <label htmlFor="email">Password</label>
         <InputPassword />
       </div>
 
