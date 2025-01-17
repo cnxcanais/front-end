@@ -10,7 +10,7 @@ const input = tv({
   variants: {
     variant: {
       primary: "border-white",
-      secondary: "border-black",
+      secondary: "border-black text-black",
     },
   },
 
