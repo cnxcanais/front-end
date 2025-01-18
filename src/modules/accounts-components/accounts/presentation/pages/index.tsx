@@ -15,7 +15,7 @@ export function AccountsPage() {
     <main className="flex max-w-[1200px] flex-col">
       <PageTitle content="Contas" />
       <div className="mt-8 flex items-center justify-between">
-        <div className="flex gap-4">
+        <div className="flex h-full gap-4">
           <Input.Root>
             <Input.Control placeholder="Procurar" />
             <Input.Icon>

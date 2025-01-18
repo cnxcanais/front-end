@@ -1,5 +1,6 @@
 "use client"
 import { Sidebar } from "@/core/components/Sidebar"
+import Image from "next/image"
 import { useRouter } from "next/navigation"
 
 export default function Unauthorized() {
@@ -11,10 +12,12 @@ export default function Unauthorized() {
         <header className="mx-auto w-full max-w-7xl px-6 pt-6 sm:pt-10 lg:col-span-2 lg:col-start-1 lg:row-start-1 lg:px-8">
           <a href="#">
             <span className="sr-only">Piaseg</span>
-            <img
+            <Image
               alt=""
               src="/images/logo.svg"
               className="h-10 w-auto sm:h-12"
+              width={400}
+              height={400}
             />
           </a>
         </header>
@@ -54,10 +57,12 @@ export default function Unauthorized() {
           </div>
         </footer>
         <div className="hidden lg:relative lg:col-start-2 lg:row-start-1 lg:row-end-4 lg:block">
-          <img
+          <Image
             alt=""
             src="/images/401.jpg"
             className="absolute inset-0 size-full object-cover"
+            width={1000}
+            height={1000}
           />
         </div>
       </div>

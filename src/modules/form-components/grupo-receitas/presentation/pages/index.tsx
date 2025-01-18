@@ -1,24 +1,34 @@
+"use client"
+
 import { Button } from "@/core/components/Button"
-import { InputIcon } from "@/core/components/InputIcon"
+import * as Input from "@/core/components/Input"
 import { PageTitle } from "@/core/components/PageTitle"
-import { FileXls } from "@phosphor-icons/react"
+import { FileXls, MagnifyingGlass } from "@phosphor-icons/react"
+import { useRouter } from "next/navigation"
 
 export const IncomeGroupDashboard = () => {
+  const { push } = useRouter()
+
   return (
-    <>
+    <main className="flex max-w-[1000px] flex-col">
       <PageTitle content="Cadastrar Grupo de Receitas" />
-      <main className="align-center mt-8 flex gap-[50px]">
-        <div className="align-center flex gap-4">
-          <InputIcon iconType="search" placeholder="Buscar" />
-          <Button variant="secondary">Cadastrar</Button>
-        </div>
-        <div>
-          <Button variant="secondary" className="flex items-center gap-2">
-            <FileXls size={20} color="#ffffff" weight="bold" />
-            Exportar
+      <div className="mt-8 flex items-center justify-between">
+        <div className="flex h-full gap-4">
+          <Input.Root>
+            <Input.Control placeholder="Procurar" />
+            <Input.Icon>
+              <MagnifyingGlass className="h-5 w-5" />
+            </Input.Icon>
+          </Input.Root>{" "}
+          <Button onClick={() => push("/accounts/create")} variant="secondary">
+            Cadastrar
           </Button>
         </div>
-      </main>
-    </>
+        <Button className="flex items-center gap-1" variant="secondary">
+          <FileXls size={22} />
+          Exportar
+        </Button>
+      </div>
+    </main>
   )
 }

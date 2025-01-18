@@ -3,7 +3,7 @@ import { tv, VariantProps } from "tailwind-variants"
 
 const button = tv({
   base: [
-    "rounded-md text-sm font-semibold outline-none shadow-sm",
+    "rounded-md px-4 py-2.5 h-full text-sm font-semibold outline-none shadow-sm",
     "focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:ring-black",
     "active:opacity-80 duration-300 ease-in-out",
   ],

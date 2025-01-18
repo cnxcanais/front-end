@@ -1,44 +1,36 @@
+import { IncomeSource } from "@/@types/income-sources"
 import { api } from "@/lib/axios"
-import {
-  GrupoReceitas,
-  GrupoReceitasRequest,
-  GrupoReceitasUpdate,
-} from "@/modules/form-components/grupo-receitas/domain/grupoReceitasType"
 
 export const createGrupoReceitas = async (
-  grupoReceitas: GrupoReceitasRequest
+  grupoReceitas: IncomeSource.CreateRequest
 ) => {
-  const response: { data: GrupoReceitas } = await api.post(
-    "/expenses-groups",
-    grupoReceitas
+  const response = await api.post("/income-groups", grupoReceitas)
+  return response.data
+}
+
+export const getAllGrupoReceitas = async (accountId: string) => {
+  const response = await api.get<IncomeSource.GetRequest[]>(
+    `/income-groups/account/${accountId}`
   )
   return response.data
 }
 
-export const getAllGrupoReceitas = async () => {
-  const response: { data: GrupoReceitas[] } = await api.get("/expenses-groups")
-  return response.data
-}
-
 export const getGrupoReceitasById = async (id: string) => {
-  const response: { data: GrupoReceitas } = await api.get(
-    `/expenses-groups/${id}`
+  const response = await api.get<IncomeSource.GetRequest>(
+    `/income-groups/${id}`
   )
   return response.data
 }
 
 export const updateGrupoReceitas = async (
   id: string,
-  grupoReceitas: GrupoReceitasUpdate
+  grupoReceitas: IncomeSource.UpdateRequest
 ) => {
-  const response: { data: GrupoReceitas } = await api.put(
-    `/expenses-groups/${id}`,
-    grupoReceitas
-  )
+  const response = await api.put(`/income-groups/${id}`, grupoReceitas)
   return response.data
 }
 
 export const deleteGrupoReceitas = async (id: string) => {
-  const response = await api.delete(`/expenses-groups/${id}`)
+  const response = await api.delete(`/income-groups/${id}`)
   return response.data
 }
