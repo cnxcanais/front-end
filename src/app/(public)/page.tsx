@@ -1,5 +1,5 @@
-import { Login } from '@/modules/login-components/login'
+import { LoginPage } from "@/modules/login-components/login"
 
-export default function LoginPage() {
-  return <Login />
+export default function LoginRender() {
+  return <LoginPage />
 }
