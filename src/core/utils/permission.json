@@ -3,6 +3,9 @@
   "name": "ADMIN",
   "urlAccess": {
     "/dashboard": true,
+    "/accounts": true,
+    "/accounts/create": true,
+    "/accounts/edit": true,
     "/income-groups": true
   },
   "componentAccess": {

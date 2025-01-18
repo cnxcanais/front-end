@@ -1,16 +1,18 @@
 import { ComponentProps } from "react"
 import { tv, VariantProps } from "tailwind-variants"
 
-const input = tv({
+const div = tv({
   base: [
-    "rounded-lg px-4 py-3 text-sm font-semibold shadow-sm",
-    "text-white data-[focus]:outline-white/25 w-full bg-transparent border px-3 py-1.5 text-sm/6 focus:outline-none data-[focus]:outline-2 data-[focus]:-outline-offset-2",
+    "rounded-lg px-4 text-sm py-3 font-semibold shadow-sm",
+    "border flex items-center",
   ],
 
   variants: {
     variant: {
-      primary: "border-white",
-      secondary: "border-black",
+      primary:
+        "border-black focus-within:border-blue-300 focus-within:ring-2 focus-within:ring-blue-100",
+      secondary:
+        "border-white text-white focus-within:border-zinc-300 focus-within:ring-2 focus-within:ring-zinc-100",
     },
   },
 
@@ -19,8 +21,25 @@ const input = tv({
   },
 })
 
-export type InputProps = ComponentProps<"input"> & VariantProps<typeof input>
+type InputPrefixProps = ComponentProps<"div">
 
-export function Input({ className, variant, ...props }: InputProps) {
-  return <input className={input({ variant, className })} {...props} />
+export function Icon(props: InputPrefixProps) {
+  return <div className="cursor-pointer" {...props} />
+}
+
+type InputControlProps = ComponentProps<"input">
+
+export function Control(props: InputControlProps) {
+  return (
+    <input
+      className="flex-1 border-0 bg-transparent p-0 outline-none"
+      {...props}
+    />
+  )
+}
+
+export type InputRootProps = ComponentProps<"div"> & VariantProps<typeof div>
+
+export const Root = ({ variant, className, ...props }: InputRootProps) => {
+  return <div className={div({ variant, className })} {...props} />
 }
