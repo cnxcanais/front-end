@@ -25,7 +25,7 @@ export const sidebar_options: SidebarOptionProps[] = [
   { name: "Perfil", href: "#", Icon: User, group: "Gerenciamento" },
   {
     name: "Contas",
-    href: "#",
+    href: "/accounts",
     Icon: UserCircleGear,
     group: "Gerenciamento",
   },

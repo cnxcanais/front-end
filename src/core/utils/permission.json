@@ -2,7 +2,10 @@
   "id": "a3e1e4a3-9f7e-4e6b-9e1c-9f7e4e6b9e1c",
   "name": "ADMIN",
   "urlAccess": {
-    "/dashboard": false
+    "/dashboard": false,
+    "/accounts": true,
+    "/accounts/create": true,
+    "/accounts/edit": true
   },
   "componentAccess": {
     "dashboard-button": true
