@@ -1,1 +1,1 @@
-export * from '@/modules/login-components/login/infra/remote'
+export * from "@/modules/login-components/login/infra"
