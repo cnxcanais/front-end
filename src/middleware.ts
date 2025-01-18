@@ -1,12 +1,14 @@
 import { NextResponse, type NextRequest } from "next/server"
 
 export async function middleware(request: NextRequest) {
-  const cookieName = "permissions"
+  const cookieName = "auth"
   const permissionsCookie = request.cookies.get(cookieName)
 
-  // if (!permissionsCookie) {
-  //   return NextResponse.redirect(new URL("/login", request.url))
-  // }
+  console.log(permissionsCookie)
+
+  if (!permissionsCookie) {
+    return NextResponse.redirect(new URL("/login", request.url))
+  }
 
   // const permissions = JSON.parse(permissionsCookie.value)
 
