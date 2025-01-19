@@ -5,7 +5,7 @@ import { List } from "@phosphor-icons/react"
 import { X } from "@phosphor-icons/react/dist/ssr"
 import Image from "next/image"
 import { usePathname } from "next/navigation"
-import { useEffect, useState } from "react"
+import { useState } from "react"
 import { sidebarGroupedByGroups } from "./options"
 
 export function Sidebar() {
@@ -16,14 +16,10 @@ export function Sidebar() {
     setIsOpen(!isOpen)
   }
 
-  useEffect(() => {
-    document.body.style.paddingLeft = isOpen ? "18rem" : "4rem"
-  }, [isOpen])
-
   return (
     <aside
-      className={`fixed left-0 top-0 h-full transition-all duration-300 ease-in-out ${
-        isOpen ? "w-72" : "w-0"
+      className={`left-0 top-0 h-full transition-all duration-300 ease-in-out ${
+        isOpen ? "w-72" : "mr-10 w-0"
       } border-r border-gray-200 bg-blue-500`}>
       <div className="flex items-center justify-between p-4">
         <Image
