@@ -1,18 +1,14 @@
-import axios from "axios"
+// import { api } from "@/lib/axios"
+// import { setCookie } from "@/lib/cookies"
+import { LoginSchema } from "@/modules/login-components/login/infra/validation/schema"
 
-type AuthenticateProps = {
-  email: string
-  password: string
-}
-
-export async function authenticate({ email, password }: AuthenticateProps) {
+export async function authenticate(formData: LoginSchema) {
   try {
-    const response = await axios.post("http://localhost:3000/api/login", {
-      email,
-      password,
-    })
-
-    console.log(response)
+    // const response = await api.post("/user/authenticate", {
+    //   email: formData.email,
+    //   password: formData.password,
+    // })
+    // setCookie("auth", JSON.stringify(response.data))
   } catch (error) {
     console.error(error)
   }

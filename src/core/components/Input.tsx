@@ -13,6 +13,8 @@ const div = tv({
         "border-black focus-within:border-blue-300 focus-within:ring-2 focus-within:ring-blue-100",
       secondary:
         "border-white text-white focus-within:border-zinc-300 focus-within:ring-2 focus-within:ring-zinc-100",
+      error:
+        "border-red-500 focus-within:border-red-500 focus-within:ring-2 focus-within:ring-red-100",
     },
   },
 

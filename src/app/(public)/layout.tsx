@@ -1,19 +1,10 @@
-"use client"
-
 import Image from "next/image"
-import { useEffect } from "react"
 
 export default function LoginComponentsLayout({
   children,
 }: {
   children: React.ReactNode
 }) {
-  // inclui este useEffect pois quando sai das paginas authorized e volta
-  // o body fica com um paddingLeft por conta da Sidebar
-  useEffect(() => {
-    document.body.style.paddingLeft = "0rem"
-  }, [])
-
   return (
     <div className="flex h-screen flex-col bg-blue-500">
       <nav className="bg-black/60 opacity-90">
