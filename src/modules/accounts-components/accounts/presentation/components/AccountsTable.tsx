@@ -1,19 +1,8 @@
 import { Table } from "@/core/components/Table"
+import { getAccounts } from "@/modules/accounts-components/accounts/infra/remote/get-accounts"
 import { Pencil, Trash } from "@phosphor-icons/react"
+import { useQuery } from "@tanstack/react-query"
 import { useRouter } from "next/navigation"
-
-const accounts = [
-  {
-    account_id: "test-01",
-    name: "Conta Teste",
-    enabled: true,
-  },
-  {
-    account_id: "test-02",
-    name: "Conta Teste",
-    enabled: false,
-  },
-]
 
 export function AccountsTable() {
   const { push } = useRouter()
@@ -25,6 +14,11 @@ export function AccountsTable() {
   const handleDelete = (id: string) => {
     console.log(`Deleting account with id: ${id}`)
   }
+
+  const { data: accounts, isLoading } = useQuery({
+    queryKey: ["accounts"],
+    queryFn: getAccounts,
+  })
 
   const columns = [
     { header: "Nome", accessor: "name" },
@@ -52,6 +46,9 @@ export function AccountsTable() {
       ),
     },
   ]
+
+  // TODO: replace Loading with proper component
+  if (!accounts || isLoading) return <>Loading</>
 
   return <Table columns={columns} data={accounts} />
 }
