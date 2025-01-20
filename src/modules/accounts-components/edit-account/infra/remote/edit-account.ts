@@ -8,8 +8,7 @@ export async function editAccount({
   enabled,
 }: Account.UpdateRequest) {
   try {
-    const { data } = await api.put(`/account/${accountId}`, { name, enabled })
-    return data.message
+    await api.put(`/account/${accountId}`, { name, enabled })
   } catch (error) {
     // all errors will return in a message property inside data
     if (error instanceof AxiosError) throw error.response.data.message

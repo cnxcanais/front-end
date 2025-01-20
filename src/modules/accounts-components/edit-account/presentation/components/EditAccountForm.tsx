@@ -40,8 +40,8 @@ export function EditAccountForm({ id }: { id: string }) {
 
   async function onSubmit(data: Account.UpdateRequest) {
     try {
-      const response = await editAccount(data)
-      toast.success(response.message)
+      await editAccount(data)
+      toast.success("Conta editada com sucesso!")
       setTimeout(() => push("/accounts"), 2000)
     } catch (error) {
       toast.error("Erro ao editar conta: " + error)
