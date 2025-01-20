@@ -6,33 +6,40 @@ import { authenticate } from "@/modules/login-components/login/infra/remote/auth
 import {
   loginFormSchema,
   LoginSchema,
-} from "@/modules/login-components/login/infra/validation/schema"
+} from "@/modules/login-components/login/presentation/validation/schema"
 import { zodResolver } from "@hookform/resolvers/zod"
 import { Eye, EyeSlash } from "@phosphor-icons/react"
 import Link from "next/link"
 import { useRouter } from "next/navigation"
-import { useEffect, useState } from "react"
+import { useState } from "react"
 import { useForm } from "react-hook-form"
+import { toast } from "sonner"
 
 export function LoginForm() {
   const { push } = useRouter()
+  const [showPassword, setShowPassword] = useState(false)
 
   const {
     register,
     handleSubmit,
-    formState: { isSubmitting, isSubmitSuccessful, errors },
+    formState: { isSubmitting, errors },
   } = useForm<LoginSchema>({
     resolver: zodResolver(loginFormSchema),
   })
-  const [showPassword, setShowPassword] = useState(false)
 
-  useEffect(() => {
-    if (isSubmitSuccessful) push("/dashboard")
-  }, [isSubmitSuccessful, push])
+  async function onSubmit(data: LoginSchema) {
+    try {
+      await authenticate(data)
+      toast.success("Login realizado com sucesso!")
+      setTimeout(() => push("/dashboard"), 2000)
+    } catch (error) {
+      toast.error("Erro ao efetuar login: " + error)
+    }
+  }
 
   return (
     <form
-      onSubmit={handleSubmit(authenticate)}
+      onSubmit={handleSubmit(onSubmit)}
       className="flex min-w-96 flex-col gap-4 rounded-lg bg-zinc-900/80 p-7 text-white">
       <div className="flex justify-center">
         <h2 className="text-xl font-light">Faça o login para continuar</h2>

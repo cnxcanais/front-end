@@ -1,6 +1,6 @@
 // import { api } from "@/lib/axios"
 // import { setCookie } from "@/lib/cookies"
-import { LoginSchema } from "@/modules/login-components/login/infra/validation/schema"
+import { LoginSchema } from "@/modules/login-components/login/presentation/validation/schema"
 
 export async function authenticate(formData: LoginSchema) {
   try {
