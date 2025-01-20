@@ -27,7 +27,8 @@ export function CreateAccountForm() {
   async function onSubmit(data: Account.CreateRequest) {
     try {
       const response = await createAccount(data)
-      toast.success(response.message)
+      console.log(response)
+      toast.success(response)
       setTimeout(() => push("/accounts"), 2000)
     } catch (error) {
       toast.error("Erro ao criar conta: " + error)

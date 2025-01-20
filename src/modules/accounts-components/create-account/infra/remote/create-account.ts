@@ -5,6 +5,7 @@ import { AxiosError } from "axios"
 export async function createAccount({ name }: Account.CreateRequest) {
   try {
     const { data } = await api.post("/account", { name })
+    console.log(data)
     return data.message
   } catch (error) {
     // all errors will return in a message property inside data

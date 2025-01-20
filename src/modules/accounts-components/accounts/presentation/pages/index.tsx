@@ -12,7 +12,7 @@ export function AccountsPage() {
   const { push } = useRouter()
 
   return (
-    <main className="flex max-w-[1200px] flex-col">
+    <main className="flex w-full max-w-[1200px] flex-col">
       <PageTitle content="Contas" />
       <div className="mt-8 flex items-center justify-between">
         <div className="flex gap-4">
