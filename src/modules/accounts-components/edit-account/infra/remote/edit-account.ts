@@ -1,5 +1,6 @@
 import { Account } from "@/@types/accounts"
 import { api } from "@/lib/axios"
+import { AxiosError } from "axios"
 
 export async function editAccount({
   accountId,
@@ -8,8 +9,10 @@ export async function editAccount({
 }: Account.UpdateRequest) {
   try {
     const { data } = await api.put(`/account/${accountId}`, { name, enabled })
-    console.log(data)
+    return data.message
   } catch (error) {
-    console.error(error)
+    // all errors will return in a message property inside data
+    if (error instanceof AxiosError) throw error.response.data.message
+    throw error
   }
 }
