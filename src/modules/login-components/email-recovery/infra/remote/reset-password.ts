@@ -1,11 +1,13 @@
-import { Account } from "@/@types/accounts"
 import { api } from "@/lib/axios"
+import { ResetPasswordSchema } from "@/modules/login-components/email-recovery/presentation/validation/schema"
 import { AxiosError } from "axios"
 
-export async function createAccount({ name }: Account.CreateRequest) {
+export async function resetPassword(formData: ResetPasswordSchema) {
   try {
-    const { data } = await api.post("/account", { name })
-    console.log(data)
+    const { data } = await api.post("/user/reset-password", {
+      email: formData.email,
+    })
+
     return data.message
   } catch (error) {
     // all errors will return in a message property inside data

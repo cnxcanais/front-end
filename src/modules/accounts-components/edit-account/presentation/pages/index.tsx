@@ -1,32 +1,11 @@
-"use client"
-
-import { Button } from "@/core/components/Button"
-import * as Input from "@/core/components/Input"
 import { PageTitle } from "@/core/components/PageTitle"
-import { useRouter } from "next/navigation"
+import { EditAccountForm } from "@/modules/accounts-components/edit-account/presentation/components/EditAccountForm"
 
-export function EditAccountPage({ id }: { id: string }) {
-  const { push } = useRouter()
-
+export async function EditAccountPage({ id }: { id: string }) {
   return (
-    <main>
+    <>
       <PageTitle content="Editar Conta" />
-      <div className="mt-8 flex max-w-96 flex-col gap-2">
-        <label className="text-lg" htmlFor="name">
-          Nome
-        </label>
-        <Input.Root variant="secondary">
-          <Input.Control type="text" />
-        </Input.Root>
-      </div>
-      <div className="mt-6 flex gap-4">
-        <Button onClick={() => {}} variant="secondary">
-          Salvar
-        </Button>
-        <Button onClick={() => push("/accounts")} variant="tertiary">
-          Voltar
-        </Button>
-      </div>
-    </main>
+      <EditAccountForm id={id} />
+    </>
   )
 }
