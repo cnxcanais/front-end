@@ -19,7 +19,7 @@ export function CreateAccountForm() {
   const {
     register,
     handleSubmit,
-    formState: { isSubmitting },
+    formState: { isSubmitting, errors },
   } = useForm<CreateAccountSchema>({
     resolver: zodResolver(createAccountSchema),
   })
@@ -41,9 +41,12 @@ export function CreateAccountForm() {
         <label className="text-lg" htmlFor="name">
           Nome
         </label>
-        <Input.Root>
+        <Input.Root variant={errors.name ? "error" : "primary"}>
           <Input.Control {...register("name")} type="text" />
         </Input.Root>
+        {errors.name && (
+          <span className="text-xs text-red-500">{errors.name.message}</span>
+        )}
       </div>
       <div className="mt-6 flex gap-4">
         <Button type="submit" disabled={isSubmitting} variant="secondary">

@@ -2,13 +2,13 @@ import { z } from "zod"
 
 export const loginFormSchema = z.object({
   email: z
-    .string({ required_error: "E-mail é obrigatório" })
+    .string()
     .email({ message: "E-mail inválido" })
-    .nonempty(),
+    .nonempty({ message: "Campo não pode estar vazio" }),
   password: z
-    .string({ required_error: "Senha é obrigatória" })
+    .string()
     .min(8, { message: "Senha precisa ter no mínimo 8 caracteres." })
-    .nonempty(),
+    .nonempty({ message: "Campo não pode estar vazio" }),
 })
 
 export type LoginSchema = z.infer<typeof loginFormSchema>
