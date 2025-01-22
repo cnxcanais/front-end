@@ -1,25 +1,37 @@
 import { NextResponse, type NextRequest } from "next/server"
 
 export async function middleware(request: NextRequest) {
-  const cookieName = "permissions"
-  const permissionsCookie = request.cookies.get(cookieName)
+  // const permissionsCookie = JSON.stringify({
+  //   id: "a3e1e4a3-9f7e-4e6b-9e1c-9f7e4e6b9e1c",
+  //   name: "ADMIN",
+  //   urlAccess: {
+  //     "/dashboard": true,
+  //     "/accounts": true,
+  //     "/accounts/create": true,
+  //     "/accounts/edit": true,
+  //   },
+  //   componentAccess: {
+  //     "dashboard-button": true,
+  //   },
+  // })
 
   // if (!permissionsCookie) {
   //   return NextResponse.redirect(new URL("/login", request.url))
   // }
 
-  // const permissions = JSON.parse(permissionsCookie.value)
+  // const permissions = JSON.parse(permissionsCookie)
 
   // const requestedUrl = new URL(request.url).pathname
+
   // const hasAccess = permissions.urlAccess[requestedUrl]
 
   // if (!hasAccess) {
-  //   return NextResponse.redirect(new URL("/access-denied", request.url))
+  //   return NextResponse.redirect(new URL("/unauthorized", request.url))
   // }
 
   return NextResponse.next()
 }
 
-export const config = {
-  matcher: ["/accounts/:path*", "/dashboard/:path*"],
-}
+// export const config = {
+//   matcher: ["/dashboard/:path*"],
+// }

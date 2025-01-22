@@ -8,10 +8,8 @@ export async function POST(request: Request) {
     password: body.password,
   })
 
-  console.log("RESPONSE AUTHENTICATION => ", response)
-
-  return new Response("Hello, Next.js!", {
+  return new Response("Logged in successfully!", {
     status: 200,
-    headers: { "Set-Cookie": `permissions=${""}` },
+    headers: { "Set-Cookie": `authInfo=${JSON.stringify(response.data)}` },
   })
 }

@@ -1,41 +1,7 @@
 "use client"
 
-import { LoadingScreen } from "@/core/components/LoadingScreen"
-import { fetchPermissionsByName } from "@/modules/dashboard-components/main-dashboard/infra/permissions"
-import { IncomeGroupDashboard } from "@/modules/form-components/grupo-receitas/presentation/pages"
-import { useQuery } from "@tanstack/react-query"
-import { unauthorized, usePathname } from "next/navigation"
-import { useEffect, useState } from "react"
+import { IncomeGroupPage } from "@/modules/income-groups-components/dashboard/presentation/pages"
 
-export default function DashBoardRender() {
-  const [roleName, setRoleName] = useState<string>("")
-  const pathName = usePathname()
-
-  const getRoleName = () => {
-    const storedRoleName = sessionStorage.getItem("roleName")
-    if (storedRoleName) {
-      setRoleName(storedRoleName)
-    }
-  }
-
-  useEffect(() => {
-    getRoleName()
-  }, [])
-
-  const { data, isLoading, isRefetching } = useQuery({
-    queryKey: ["permissions"],
-    enabled: roleName !== null,
-    queryFn: () => fetchPermissionsByName(roleName),
-    staleTime: Infinity,
-  })
-
-  if (isLoading || isRefetching || !data) {
-    return <LoadingScreen />
-  }
-
-  if (data.urlAccess[`${pathName}`]) {
-    return <IncomeGroupDashboard />
-  } else {
-    unauthorized()
-  }
+export default function IncomeGroupRender() {
+  return <IncomeGroupPage />
 }
