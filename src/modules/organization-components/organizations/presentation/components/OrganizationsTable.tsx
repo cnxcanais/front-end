@@ -1,6 +1,7 @@
 import { Button } from "@/core/components/Button"
 import { Modal } from "@/core/components/Modals/Modal"
 import { Table } from "@/core/components/Table"
+import { getCookie } from "@/lib/cookies"
 import { queryClient } from "@/lib/react-query"
 import {
   getOrganizations,
@@ -17,8 +18,12 @@ export function OrganizationsTable() {
   const [open, setOpen] = useState(false)
   const [id, setId] = useState("")
 
-  const accountId =
-    sessionStorage.getItem("accountId") || process.env.NEXT_PUBLIC_ACCOUNT_ID
+  // TODO: fix accountId variable to be fetched from cookies or another aux function
+  const accountId = process.env.NEXT_PUBLIC_ACCOUNT_ID
+
+  const { edit, delete: deletePermission } = JSON.parse(
+    getCookie("permissions")
+  ).componentAccess.organizations
 
   const handleEdit = (id: string) => {
     push(`/organizations/edit/${id}`)
@@ -73,19 +78,23 @@ export function OrganizationsTable() {
       accessor: "organization_id",
       render: (value: string, row: unknown) => (
         <div className="flex space-x-4">
-          <Pencil
-            className="cursor-pointer duration-300 ease-in-out hover:text-blue-500"
-            size={24}
-            onClick={() => handleEdit(value)}
-          />
-          <Trash
-            className="cursor-pointer duration-300 ease-in-out hover:text-blue-500"
-            size={24}
-            onClick={() => {
-              setId(value)
-              setOpen(true)
-            }}
-          />
+          {edit && (
+            <Pencil
+              className="cursor-pointer duration-300 ease-in-out hover:text-blue-500"
+              size={24}
+              onClick={() => handleEdit(value)}
+            />
+          )}
+          {deletePermission && (
+            <Trash
+              className="cursor-pointer duration-300 ease-in-out hover:text-blue-500"
+              size={24}
+              onClick={() => {
+                setId(value)
+                setOpen(true)
+              }}
+            />
+          )}
         </div>
       ),
     },
