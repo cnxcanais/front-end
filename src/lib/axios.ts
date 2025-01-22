@@ -1,5 +1,25 @@
-import axios from 'axios'
+import axios from "axios"
+import { getCookie } from "./cookies"
 
-export const api = axios.create({
+function getUpdatedToken() {
+  return getCookie("token")
+}
+
+const api = axios.create({
   baseURL: process.env.NEXT_PUBLIC_API_URL,
+  headers: {
+    Authorization: `Bearer ${getUpdatedToken()}`,
+  },
 })
+
+// api.interceptors.request.use(
+//   (config) => {
+//     config.headers["Authorization"] = `Bearer ${getUpdatedToken()}`
+//     return config
+//   },
+//   (error) => {
+//     return Promise.reject(error)
+//   }
+// )
+
+export { api }
