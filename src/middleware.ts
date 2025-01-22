@@ -29,7 +29,17 @@ export async function middleware(request: NextRequest) {
   //   return NextResponse.redirect(new URL("/unauthorized", request.url))
   // }
 
-  return NextResponse.next()
+  const cookieMaxAge = 60 * 60 * 24
+
+  const response = NextResponse.next()
+
+  response.cookies.set("auth", "", {
+    path: "/",
+    expires: cookieMaxAge,
+    httpOnly: true,
+  })
+
+  return response
 }
 
 // export const config = {

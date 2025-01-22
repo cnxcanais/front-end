@@ -3,8 +3,10 @@
 import { Account } from "@/@types/accounts"
 import { Button } from "@/core/components/Button"
 import * as Input from "@/core/components/Input"
-import { editAccount } from "@/modules/accounts-components/edit-account/infra/remote/edit-account"
-import { getAccountById } from "@/modules/accounts-components/edit-account/infra/remote/get-account-by-id"
+import {
+  editAccount,
+  getAccountById,
+} from "@/modules/accounts-components/edit-account/infra/remote"
 import {
   editFormSchema,
   EditFormSchema,

@@ -5,9 +5,29 @@
     "/dashboard": false,
     "/accounts": true,
     "/accounts/create": true,
-    "/accounts/edit": true
+    "/accounts/edit": true,
+    "/income-groups": true,
+    "/income-groups/create": true,
+    "/income-groups/edit": true
   },
   "componentAccess": {
-    "dashboard-button": true
+    "dashboard_button": true,
+    "income_groups": {
+      "create": true,
+      "edit": true,
+      "delete": true
+    },
+    "organizations": {
+      "create": true,
+      "edit": true,
+      "delete": true,
+      "input_fields": {
+        "name": true,
+        "email": true,
+        "phone": true,
+        "address": true,
+        "cnpj": true
+      }
+    }
   }
 }
