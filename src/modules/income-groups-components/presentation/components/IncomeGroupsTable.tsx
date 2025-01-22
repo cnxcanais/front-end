@@ -22,15 +22,13 @@ export function IncomeGroupTable() {
     push(`/income-groups/edit/${id}`)
   }
 
-  const permission = getCookie("permission")
+  const { edit, delete: deletePermission } = JSON.parse(
+    getCookie("permissions")
+  ).componentAccess.income_groups
+
   const accountId = getCookie("accountId")
 
-  const getIncomeGroups = () => {
-    const response = getAllIncomeGroups(accountId)
-    console.log(response)
-    return response
-  }
-  console.log(getIncomeGroups)
+  const getIncomeGroups = async () => await getAllIncomeGroups(accountId)
 
   const { data, isLoading } = useQuery({
     queryKey: ["income-groups"],
@@ -56,30 +54,30 @@ export function IncomeGroupTable() {
   }
 
   const columns = [
-    { header: "Nome", accessor: "name" },
-    {
-      header: "Habilitada",
-      accessor: "enabled",
-      render: (value: boolean, row: unknown) => (value ? "Sim" : "Não"),
-    },
+    { header: "Nome", accessor: "group_name" },
     {
       header: "Ações",
       accessor: "income_group_id",
       render: (value: string, row: unknown) => (
         <div className="flex space-x-4">
-          <Pencil
-            className="cursor-pointer duration-300 ease-in-out hover:text-blue-500"
-            size={24}
-            onClick={() => handleEdit(value)}
-          />
-          <Trash
-            className="cursor-pointer duration-300 ease-in-out hover:text-blue-500"
-            size={24}
-            onClick={() => {
-              setId(value)
-              setOpen(true)
-            }}
-          />
+          {edit && (
+            <Pencil
+              className="cursor-pointer duration-300 ease-in-out hover:text-blue-500"
+              size={24}
+              onClick={() => handleEdit(value)}
+            />
+          )}
+
+          {deletePermission && (
+            <Trash
+              className="cursor-pointer duration-300 ease-in-out hover:text-blue-500"
+              size={24}
+              onClick={() => {
+                setId(value)
+                setOpen(true)
+              }}
+            />
+          )}
         </div>
       ),
     },

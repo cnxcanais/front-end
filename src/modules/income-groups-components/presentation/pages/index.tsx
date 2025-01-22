@@ -3,6 +3,7 @@
 import { Button } from "@/core/components/Button"
 import * as Input from "@/core/components/Input"
 import { PageTitle } from "@/core/components/PageTitle"
+import { getCookie } from "@/lib/cookies"
 import { IncomeGroupTable } from "@/modules/income-groups-components/presentation/components/IncomeGroupsTable"
 import { MagnifyingGlass } from "@phosphor-icons/react"
 import { FileXls } from "@phosphor-icons/react/dist/ssr"
@@ -10,6 +11,9 @@ import { useRouter } from "next/navigation"
 
 export function IncomeGroupPage() {
   const { push } = useRouter()
+
+  const { create } = JSON.parse(getCookie("permissions")).componentAccess
+    .income_groups
 
   return (
     <main className="flex w-full max-w-[1200px] flex-col">
@@ -22,11 +26,13 @@ export function IncomeGroupPage() {
               <MagnifyingGlass className="h-5 w-5" />
             </Input.Icon>
           </Input.Root>{" "}
-          <Button
-            onClick={() => push("/income-groups/create")}
-            variant="secondary">
-            Cadastrar
-          </Button>
+          {create && (
+            <Button
+              onClick={() => push("/income-groups/create")}
+              variant="secondary">
+              Cadastrar
+            </Button>
+          )}
         </div>
         <Button className="flex items-center gap-1" variant="secondary">
           <FileXls size={22} />

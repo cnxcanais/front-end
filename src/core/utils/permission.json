@@ -5,9 +5,17 @@
     "/dashboard": false,
     "/accounts": true,
     "/accounts/create": true,
-    "/accounts/edit": true
+    "/accounts/edit": true,
+    "/income-groups": true,
+    "/income-groups/create": true,
+    "/income-groups/edit": true
   },
   "componentAccess": {
-    "dashboard-button": true
+    "dashboard_button": true,
+    "income_groups": {
+      "create": true,
+      "edit": true,
+      "delete": true
+    }
   }
 }

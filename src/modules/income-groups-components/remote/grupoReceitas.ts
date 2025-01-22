@@ -1,14 +1,13 @@
 import { api } from "@/lib/axios"
 import {
-  GrupoReceitas,
-  GrupoReceitasRequest,
-  GrupoReceitasUpdate,
+  IncomeGroup,
+  IncomeGroupsRequest,
+  IncomeGroupsResponse,
+  IncomeGroupsUpdate,
 } from "@/modules/income-groups-components/domain/grupoReceitasType"
 
-export const createIncomeGroup = async (
-  grupoReceitas: GrupoReceitasRequest
-) => {
-  const response: { data: GrupoReceitas } = await api.post(
+export const createIncomeGroup = async (grupoReceitas: IncomeGroupsRequest) => {
+  const response: { data: IncomeGroup } = await api.post(
     "/expenses-groups",
     grupoReceitas
   )
@@ -16,24 +15,22 @@ export const createIncomeGroup = async (
 }
 
 export const getAllIncomeGroups = async (accountId: string) => {
-  const response: { incomeGroups: GrupoReceitas[] } = await api.get(
+  const response: { data: IncomeGroupsResponse } = await api.get(
     `/income-groups/account/${accountId}`
   )
-  return response.incomeGroups
+  return response.data.incomeGroups
 }
 
 export const getIncomeGroupById = async (id: string) => {
-  const response: { data: GrupoReceitas } = await api.get(
-    `/income-groups/${id}`
-  )
+  const response: { data: IncomeGroup } = await api.get(`/income-groups/${id}`)
   return response.data
 }
 
 export const updateIncomeGroup = async (
   id: string,
-  grupoReceitas: GrupoReceitasUpdate
+  grupoReceitas: IncomeGroupsUpdate
 ) => {
-  const response: { data: GrupoReceitas } = await api.put(
+  const response: { data: IncomeGroup } = await api.put(
     `/income-groups/${id}`,
     grupoReceitas
   )

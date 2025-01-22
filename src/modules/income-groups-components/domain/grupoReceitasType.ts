@@ -1,4 +1,8 @@
-export type GrupoReceitas = {
+export type IncomeGroupsResponse = {
+  incomeGroups: IncomeGroup[]
+}
+
+export type IncomeGroup = {
   expense_group_id: string
   group_name: string
   created_at: Date
@@ -6,11 +10,11 @@ export type GrupoReceitas = {
   account_id: string
 }
 
-export type GrupoReceitasRequest = {
+export type IncomeGroupsRequest = {
   group_name: string
   account_id: string
 }
 
-export type GrupoReceitasUpdate = {
+export type IncomeGroupsUpdate = {
   group_name: string
 }
