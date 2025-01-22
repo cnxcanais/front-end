@@ -37,7 +37,7 @@ export function OrganizationsTable() {
       queryClient.invalidateQueries({ queryKey: ["organizations"] })
     },
     onError: (error) => {
-      toast.error("Erro ao remover conta: " + error)
+      toast.error("Erro ao remover organização: " + error)
     },
     onSettled: () => {
       setOpen(false)
