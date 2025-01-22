@@ -1,6 +1,7 @@
 import { Button } from "@/core/components/Button"
 import { Modal } from "@/core/components/Modals/Modal"
 import { Table } from "@/core/components/Table"
+import { getPermissionByEntity } from "@/core/utils/getPermissions"
 import { getCookie } from "@/lib/cookies"
 import { queryClient } from "@/lib/react-query"
 import {
@@ -22,9 +23,8 @@ export function IncomeGroupTable() {
     push(`/income-groups/edit/${id}`)
   }
 
-  const { edit, delete: deletePermission } = JSON.parse(
-    getCookie("permissions")
-  ).componentAccess.income_groups
+  const { edit, delete: deletePermission } =
+    getPermissionByEntity("income-groups")
 
   const accountId = getCookie("accountId")
 
