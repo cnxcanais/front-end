@@ -39,11 +39,11 @@ export function IncomeSourcesTable() {
   const refetchIncomeSourcesFn = useMutation({
     mutationFn: getIncomeSources,
     onSuccess: () => {
-      toast.success("Fonte de receita removida com sucesso!")
-      queryClient.invalidateQueries({ queryKey: ["organizations"] })
+      toast.success("Franqueado removido com sucesso!")
+      queryClient.invalidateQueries({ queryKey: ["income-sources"] })
     },
     onError: (error) => {
-      toast.error("Erro ao remover fonte de receita: " + error)
+      toast.error("Erro ao remover franqueado: " + error)
     },
     onSettled: () => {
       setOpen(false)
@@ -130,8 +130,8 @@ export function IncomeSourcesTable() {
   return (
     <>
       <Modal
-        title="Remover Fonte de Receita"
-        content="Você tem certeza de que deseja remover esta fonte de receita?"
+        title="Remover Franqueado"
+        content="Você tem certeza de que deseja remover este franqueado?"
         onClose={() => setOpen(false)}
         open={open}>
         <div className="flex items-center justify-center gap-4">

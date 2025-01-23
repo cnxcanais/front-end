@@ -3,7 +3,7 @@ import { IncomeSourcesTable } from "@/modules/income-source-components/income-so
 
 export function IncomeSourcesPage() {
   return (
-    <main className="flex w-full max-w-[1200px] flex-col">
+    <main className="flex w-full max-w-[1400px] flex-col">
       <PageTitle content="Franqueados" />
       <IncomeSourcesTable />
     </main>
