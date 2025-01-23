@@ -15,5 +15,17 @@
     "income_groups_create": true,
     "income_groups_edit": true,
     "income_groups_delete": true
+    "organizations": {
+      "create": true,
+      "edit": true,
+      "delete": true,
+      "input_fields": {
+        "name": true,
+        "email": true,
+        "phone": true,
+        "address": true,
+        "cnpj": true
+      }
+    }
   }
 }

@@ -31,7 +31,7 @@ export const sidebar_options: SidebarOptionProps[] = [
   },
   {
     name: "Organizações",
-    href: "#",
+    href: "/organizations",
     Icon: Umbrella,
     group: "Gerenciamento",
   },

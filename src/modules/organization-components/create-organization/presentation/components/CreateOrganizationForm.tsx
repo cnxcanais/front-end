@@ -1,0 +1,144 @@
+"use client"
+
+import { Organization } from "@/@types/organizations"
+import { Button } from "@/core/components/Button"
+import * as Input from "@/core/components/Input"
+import { getCookie } from "@/lib/cookies"
+import { createOrganization } from "@/modules/organization-components/create-organization/infra/remote/create-organization"
+import {
+  CreateOrganizationSchema,
+  createOrganizationFormSchema,
+} from "@/modules/organization-components/create-organization/presentation/validation/schema"
+import { zodResolver } from "@hookform/resolvers/zod"
+import { useRouter } from "next/navigation"
+import { useForm } from "react-hook-form"
+import { toast } from "sonner"
+
+export function CreateOrganizationForm() {
+  const { push } = useRouter()
+
+  const accountId =
+    sessionStorage.getItem("accountId") || process.env.NEXT_PUBLIC_ACCOUNT_ID
+
+  const { name, email, cnpj, address, phone } = JSON.parse(
+    getCookie("permissions")
+  ).componentAccess.organizations.input_fields
+
+  const {
+    register,
+    handleSubmit,
+    formState: { isSubmitting, errors },
+  } = useForm<CreateOrganizationSchema>({
+    resolver: zodResolver(createOrganizationFormSchema),
+    values: {
+      accountId,
+    },
+  })
+
+  async function onSubmit(data: Organization.CreateRequest) {
+    try {
+      const response = await createOrganization(data)
+      toast.success(response)
+      setTimeout(() => push("/organizations"), 2000)
+    } catch (error) {
+      toast.error("Erro ao criar organização: " + error)
+    }
+  }
+
+  return (
+    <form
+      className="mt-6 grid w-full max-w-[1000px] grid-flow-row grid-cols-2 gap-4"
+      onSubmit={handleSubmit(onSubmit)}>
+      <div className="flex flex-col gap-4">
+        <div className="flex flex-col gap-2">
+          <label className="text-lg" htmlFor="name">
+            Nome
+          </label>
+          <Input.Root variant={errors.name ? "error" : "primary"}>
+            <Input.Control disabled={name} {...register("name")} type="text" />
+          </Input.Root>
+          {errors.name && (
+            <span className="text-xs text-red-500">{errors.name.message}</span>
+          )}
+        </div>
+
+        <div className="flex flex-col gap-2">
+          <label className="text-lg" htmlFor="cnpj">
+            CNPJ
+          </label>
+          <Input.Root variant={errors.cnpj ? "error" : "primary"}>
+            <Input.Control disabled={!cnpj} {...register("cnpj")} type="text" />
+          </Input.Root>
+          {errors.cnpj && (
+            <span className="text-xs text-red-500">{errors.cnpj.message}</span>
+          )}
+        </div>
+
+        <div className="flex flex-col gap-2">
+          <label className="text-lg" htmlFor="address">
+            Endereço
+          </label>
+          <Input.Root variant={errors.address ? "error" : "primary"}>
+            <Input.Control
+              disabled={!address}
+              {...register("address")}
+              type="text"
+            />
+          </Input.Root>
+          {errors.address && (
+            <span className="text-xs text-red-500">
+              {errors.address.message}
+            </span>
+          )}
+        </div>
+      </div>
+
+      <div className="flex flex-col gap-4">
+        <div className="flex flex-col gap-2">
+          <label className="text-lg" htmlFor="phone">
+            Telefone
+          </label>
+          <Input.Root variant={errors.phone ? "error" : "primary"}>
+            <Input.Control
+              disabled={!phone}
+              {...register("phone")}
+              type="text"
+            />
+          </Input.Root>
+          {errors.phone && (
+            <span className="text-xs text-red-500">{errors.phone.message}</span>
+          )}
+        </div>
+
+        <div className="flex flex-col gap-2">
+          <label className="text-lg" htmlFor="email">
+            Email
+          </label>
+          <Input.Root variant={errors.email ? "error" : "primary"}>
+            <Input.Control
+              disabled={!email}
+              {...register("email")}
+              type="email"
+            />
+          </Input.Root>
+          {errors.email && (
+            <span className="text-xs text-red-500">{errors.email.message}</span>
+          )}
+        </div>
+      </div>
+
+      <div className="mt-6 flex gap-4">
+        <Button type="submit" disabled={isSubmitting} variant="primary">
+          Salvar
+        </Button>
+        <Button
+          type="button"
+          disabled={isSubmitting}
+          onClick={() => push("/organizations")}
+          variant="tertiary">
+          Voltar
+        </Button>
+      </div>
+    </form>
+  )
+}
