@@ -1,13 +1,13 @@
 import { Button } from "@/core/components/Button"
 import { Modal } from "@/core/components/Modals/Modal"
 import { Table } from "@/core/components/Table"
-import { getPermissionByEntity } from "@/core/utils/getPermissions"
+import { getPermissionByEntity } from "@/core/utils/getPermissionByEntity"
 import { getCookie } from "@/lib/cookies"
 import { queryClient } from "@/lib/react-query"
 import {
   deleteIncomeGroup,
   getAllIncomeGroups,
-} from "@/modules/income-groups-components/remote/grupoReceitas"
+} from "@/modules/income-groups-components/remote/incomeGroup"
 import { Pencil, Trash } from "@phosphor-icons/react"
 import { useMutation, useQuery } from "@tanstack/react-query"
 import { useRouter } from "next/navigation"
@@ -23,8 +23,8 @@ export function IncomeGroupTable() {
     push(`/income-groups/edit/${id}`)
   }
 
-  const { edit, delete: deletePermission } =
-    getPermissionByEntity("income-groups")
+  const edit = getPermissionByEntity("income_groups_edit")
+  const deletePermission = getPermissionByEntity("income_groups_delete")
 
   const accountId = getCookie("accountId")
 

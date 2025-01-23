@@ -3,7 +3,7 @@
 import { Button } from "@/core/components/Button"
 import * as Input from "@/core/components/Input"
 import { PageTitle } from "@/core/components/PageTitle"
-import { getPermissionByEntity } from "@/core/utils/getPermissions"
+import { getPermissionByEntity } from "@/core/utils/getPermissionByEntity"
 import { IncomeGroupTable } from "@/modules/income-groups-components/dashboard/presentation/components/IncomeGroupsTable"
 import { MagnifyingGlass } from "@phosphor-icons/react"
 import { FileXls } from "@phosphor-icons/react/dist/ssr"
@@ -12,7 +12,7 @@ import { useRouter } from "next/navigation"
 export function IncomeGroupPage() {
   const { push } = useRouter()
 
-  const { create } = getPermissionByEntity("income-groups")
+  const create = getPermissionByEntity("income_groups_create")
 
   return (
     <main className="flex w-full max-w-[1200px] flex-col">
