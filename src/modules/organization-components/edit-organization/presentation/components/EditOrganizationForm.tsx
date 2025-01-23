@@ -3,6 +3,7 @@
 import { Organization } from "@/@types/organizations"
 import { Button } from "@/core/components/Button"
 import * as Input from "@/core/components/Input"
+import { getCookie } from "@/lib/cookies"
 import {
   editOrganization,
   getOrganizationById,
@@ -26,6 +27,14 @@ export function EditOrganizationForm({ id }: { id: string }) {
     enabled: id !== "",
     refetchOnWindowFocus: false,
   })
+
+  const {
+    organizations_input_fields_name,
+    organizations_input_fields_email,
+    organizations_input_fields_cnpj,
+    organizations_input_fields_address,
+    organizations_input_fields_phone,
+  } = JSON.parse(getCookie("permissions")).componentAccess
 
   const {
     register,
@@ -66,7 +75,11 @@ export function EditOrganizationForm({ id }: { id: string }) {
             Nome
           </label>
           <Input.Root variant={errors.name ? "error" : "primary"}>
-            <Input.Control {...register("name")} type="text" />
+            <Input.Control
+              disabled={!organizations_input_fields_name}
+              {...register("name")}
+              type="text"
+            />
           </Input.Root>
           {errors.name && (
             <span className="text-xs text-red-500">{errors.name.message}</span>
@@ -78,7 +91,11 @@ export function EditOrganizationForm({ id }: { id: string }) {
             CNPJ
           </label>
           <Input.Root variant={errors.cnpj ? "error" : "primary"}>
-            <Input.Control {...register("cnpj")} type="text" />
+            <Input.Control
+              disabled={!organizations_input_fields_cnpj}
+              {...register("cnpj")}
+              type="text"
+            />
           </Input.Root>
           {errors.cnpj && (
             <span className="text-xs text-red-500">{errors.cnpj.message}</span>
@@ -90,7 +107,11 @@ export function EditOrganizationForm({ id }: { id: string }) {
             Endereço
           </label>
           <Input.Root variant={errors.address ? "error" : "primary"}>
-            <Input.Control {...register("address")} type="text" />
+            <Input.Control
+              disabled={!organizations_input_fields_address}
+              {...register("address")}
+              type="text"
+            />
           </Input.Root>
           {errors.address && (
             <span className="text-xs text-red-500">
@@ -106,7 +127,11 @@ export function EditOrganizationForm({ id }: { id: string }) {
             Telefone
           </label>
           <Input.Root variant={errors.phone ? "error" : "primary"}>
-            <Input.Control {...register("phone")} type="text" />
+            <Input.Control
+              disabled={!organizations_input_fields_phone}
+              {...register("phone")}
+              type="text"
+            />
           </Input.Root>
           {errors.phone && (
             <span className="text-xs text-red-500">{errors.phone.message}</span>
@@ -118,7 +143,11 @@ export function EditOrganizationForm({ id }: { id: string }) {
             Email
           </label>
           <Input.Root variant={errors.email ? "error" : "primary"}>
-            <Input.Control {...register("email")} type="email" />
+            <Input.Control
+              disabled={!organizations_input_fields_email}
+              {...register("email")}
+              type="email"
+            />
           </Input.Root>
           {errors.email && (
             <span className="text-xs text-red-500">{errors.email.message}</span>

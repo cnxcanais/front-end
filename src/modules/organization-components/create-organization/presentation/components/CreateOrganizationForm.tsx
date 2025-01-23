@@ -20,9 +20,13 @@ export function CreateOrganizationForm() {
   const accountId =
     sessionStorage.getItem("accountId") || process.env.NEXT_PUBLIC_ACCOUNT_ID
 
-  const { name, email, cnpj, address, phone } = JSON.parse(
-    getCookie("permissions")
-  ).componentAccess.organizations.input_fields
+  const {
+    organizations_input_fields_name,
+    organizations_input_fields_email,
+    organizations_input_fields_cnpj,
+    organizations_input_fields_address,
+    organizations_input_fields_phone,
+  } = JSON.parse(getCookie("permissions")).componentAccess
 
   const {
     register,
@@ -55,7 +59,11 @@ export function CreateOrganizationForm() {
             Nome
           </label>
           <Input.Root variant={errors.name ? "error" : "primary"}>
-            <Input.Control disabled={name} {...register("name")} type="text" />
+            <Input.Control
+              disabled={!organizations_input_fields_name}
+              {...register("name")}
+              type="text"
+            />
           </Input.Root>
           {errors.name && (
             <span className="text-xs text-red-500">{errors.name.message}</span>
@@ -67,7 +75,11 @@ export function CreateOrganizationForm() {
             CNPJ
           </label>
           <Input.Root variant={errors.cnpj ? "error" : "primary"}>
-            <Input.Control disabled={!cnpj} {...register("cnpj")} type="text" />
+            <Input.Control
+              disabled={!organizations_input_fields_cnpj}
+              {...register("cnpj")}
+              type="text"
+            />
           </Input.Root>
           {errors.cnpj && (
             <span className="text-xs text-red-500">{errors.cnpj.message}</span>
@@ -80,7 +92,7 @@ export function CreateOrganizationForm() {
           </label>
           <Input.Root variant={errors.address ? "error" : "primary"}>
             <Input.Control
-              disabled={!address}
+              disabled={!organizations_input_fields_address}
               {...register("address")}
               type="text"
             />
@@ -100,7 +112,7 @@ export function CreateOrganizationForm() {
           </label>
           <Input.Root variant={errors.phone ? "error" : "primary"}>
             <Input.Control
-              disabled={!phone}
+              disabled={!organizations_input_fields_phone}
               {...register("phone")}
               type="text"
             />
@@ -116,7 +128,7 @@ export function CreateOrganizationForm() {
           </label>
           <Input.Root variant={errors.email ? "error" : "primary"}>
             <Input.Control
-              disabled={!email}
+              disabled={!organizations_input_fields_email}
               {...register("email")}
               type="email"
             />

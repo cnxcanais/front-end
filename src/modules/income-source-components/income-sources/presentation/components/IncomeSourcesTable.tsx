@@ -4,45 +4,45 @@ import { Table } from "@/core/components/Table"
 import { getCookie } from "@/lib/cookies"
 import { queryClient } from "@/lib/react-query"
 import {
-  getOrganizations,
-  removeOrganization,
-} from "@/modules/organization-components/organizations/infra/remote"
+  getIncomeSources,
+  removeIncomeSource,
+} from "@/modules/income-source-components/income-sources/infra/remote"
 import { Pencil, Trash } from "@phosphor-icons/react"
 import { useMutation, useQuery } from "@tanstack/react-query"
 import { useRouter } from "next/navigation"
 import { useState } from "react"
 import { toast } from "sonner"
 
-export function OrganizationsTable() {
+export function IncomeSourcesTable() {
   const { push } = useRouter()
   const [open, setOpen] = useState(false)
   const [id, setId] = useState("")
 
   // TODO: fix accountId variable to be fetched from cookies or another aux function
-  const accountId = process.env.NEXT_PUBLIC_ACCOUNT_ID
+  const account_id = process.env.NEXT_PUBLIC_ACCOUNT_ID
 
-  const { organizations_edit, organizations_delete } = JSON.parse(
+  const { edit, delete: deletePermission } = JSON.parse(
     getCookie("permissions")
-  ).componentAccess
+  ).componentAccess.income_sources
 
   const handleEdit = (id: string) => {
-    push(`/organizations/edit/${id}`)
+    push(`/income-sources/edit/${id}`)
   }
 
-  const { data: organizations, isLoading } = useQuery({
-    queryKey: ["organizations"],
-    queryFn: () => getOrganizations({ accountId }),
-    enabled: !!accountId,
+  const { data: incomeSources, isLoading } = useQuery({
+    queryKey: ["income-sources"],
+    queryFn: () => getIncomeSources({ account_id }),
+    enabled: !!account_id,
   })
 
-  const refetchOrganizationsFn = useMutation({
-    mutationFn: getOrganizations,
+  const refetchIncomeSourcesFn = useMutation({
+    mutationFn: getIncomeSources,
     onSuccess: () => {
-      toast.success("Organização removida com sucesso!")
+      toast.success("Fonte de receita removida com sucesso!")
       queryClient.invalidateQueries({ queryKey: ["organizations"] })
     },
     onError: (error) => {
-      toast.error("Erro ao remover organização: " + error)
+      toast.error("Erro ao remover fonte de receita: " + error)
     },
     onSettled: () => {
       setOpen(false)
@@ -50,16 +50,32 @@ export function OrganizationsTable() {
   })
 
   const handleConfirmDelete = async () => {
-    await removeOrganization({ organizationId: id }).then(() =>
-      refetchOrganizationsFn.mutate({ accountId })
+    await removeIncomeSource({ income_source_id: id }).then(() =>
+      refetchIncomeSourcesFn.mutate({ account_id })
     )
   }
 
   const columns = [
     { header: "Nome", accessor: "name" },
     {
+      header: "Documento",
+      accessor: "cpf_cnpj",
+    },
+    {
       header: "Email",
       accessor: "email",
+    },
+    {
+      header: "Cidade",
+      accessor: "city",
+    },
+    {
+      header: "UF",
+      accessor: "state",
+    },
+    {
+      header: "Contato",
+      accessor: "contact_name",
     },
     {
       header: "Telefone",
@@ -67,25 +83,21 @@ export function OrganizationsTable() {
     },
     {
       header: "Endereço",
-      accessor: "address",
-    },
-    {
-      header: "CNPJ",
-      accessor: "cnpj",
+      accessor: "address_1",
     },
     {
       header: "Ações",
-      accessor: "organization_id",
+      accessor: "income_source_id",
       render: (value: string, row: unknown) => (
         <div className="flex space-x-4">
-          {organizations_edit && (
+          {edit && (
             <Pencil
               className="cursor-pointer duration-300 ease-in-out hover:text-blue-500"
               size={24}
               onClick={() => handleEdit(value)}
             />
           )}
-          {organizations_delete && (
+          {deletePermission && (
             <Trash
               className="cursor-pointer duration-300 ease-in-out hover:text-blue-500"
               size={24}
@@ -101,20 +113,20 @@ export function OrganizationsTable() {
   ]
 
   // TODO: replace Loading with proper component
-  if (!organizations || isLoading) return <>Loading</>
+  if (!incomeSources || isLoading) return <>Loading</>
 
-  if (organizations.length === 0)
+  if (incomeSources.length === 0)
     return (
       <h2 className="mt-6 text-xl font-semibold">
-        Nenhuma organização cadastrada.
+        Nenhuma fonte de receita cadastrada.
       </h2>
     )
 
   return (
     <>
       <Modal
-        title="Remover Organização"
-        content="Você tem certeza de que deseja remover esta organização?"
+        title="Remover Fonte de Receita"
+        content="Você tem certeza de que deseja remover esta fonte de receita?"
         onClose={() => setOpen(false)}
         open={open}>
         <div className="flex items-center justify-center gap-4">
@@ -126,7 +138,7 @@ export function OrganizationsTable() {
           </Button>
         </div>
       </Modal>
-      <Table columns={columns} data={organizations} />
+      <Table columns={columns} data={incomeSources} />
     </>
   )
 }
