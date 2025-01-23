@@ -4,7 +4,7 @@ import { AxiosError } from "axios"
 
 export async function createOrganization({
   name,
-  accountId,
+  account_id,
   address,
   cnpj,
   email,
@@ -13,7 +13,7 @@ export async function createOrganization({
   try {
     const { data } = await api.post("/organization", {
       name,
-      accountId,
+      account_id,
       address,
       cnpj,
       email,

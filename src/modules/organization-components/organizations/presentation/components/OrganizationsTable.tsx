@@ -1,5 +1,8 @@
+"use client"
+
 import { Button } from "@/core/components/Button"
 import { Modal } from "@/core/components/Modals/Modal"
+import { SearchInput } from "@/core/components/SearchInput"
 import { Table } from "@/core/components/Table"
 import { getCookie } from "@/lib/cookies"
 import { queryClient } from "@/lib/react-query"
@@ -7,33 +10,27 @@ import {
   getOrganizations,
   removeOrganization,
 } from "@/modules/organization-components/organizations/infra/remote"
-import { Pencil, Trash } from "@phosphor-icons/react"
+import { FileXls, Pencil, Trash } from "@phosphor-icons/react"
 import { useMutation, useQuery } from "@tanstack/react-query"
 import { useRouter } from "next/navigation"
-import { useState } from "react"
+import { useEffect, useState } from "react"
 import { toast } from "sonner"
 
 export function OrganizationsTable() {
-  const { push } = useRouter()
-  const [open, setOpen] = useState(false)
-  const [id, setId] = useState("")
-
   // TODO: fix accountId variable to be fetched from cookies or another aux function
   const accountId = process.env.NEXT_PUBLIC_ACCOUNT_ID
-
-  const { organizations_edit, organizations_delete } = JSON.parse(
-    getCookie("permissions")
-  ).componentAccess
-
-  const handleEdit = (id: string) => {
-    push(`/organizations/edit/${id}`)
-  }
 
   const { data: organizations, isLoading } = useQuery({
     queryKey: ["organizations"],
     queryFn: () => getOrganizations({ accountId }),
     enabled: !!accountId,
   })
+
+  const { push } = useRouter()
+
+  const [open, setOpen] = useState(false)
+  const [id, setId] = useState("")
+  const [filteredResults, setFilteredResults] = useState([])
 
   const refetchOrganizationsFn = useMutation({
     mutationFn: getOrganizations,
@@ -49,8 +46,15 @@ export function OrganizationsTable() {
     },
   })
 
+  const { organizations_create, organizations_edit, organizations_delete } =
+    JSON.parse(getCookie("permissions")).componentAccess
+
+  const handleEdit = (id: string) => {
+    push(`/organizations/edit/${id}`)
+  }
+
   const handleConfirmDelete = async () => {
-    await removeOrganization({ organizationId: id }).then(() =>
+    await removeOrganization({ organization_id: id }).then(() =>
       refetchOrganizationsFn.mutate({ accountId })
     )
   }
@@ -100,15 +104,12 @@ export function OrganizationsTable() {
     },
   ]
 
+  useEffect(() => {
+    if (organizations) setFilteredResults(organizations)
+  }, [organizations, isLoading])
+
   // TODO: replace Loading with proper component
   if (!organizations || isLoading) return <>Loading</>
-
-  if (organizations.length === 0)
-    return (
-      <h2 className="mt-6 text-xl font-semibold">
-        Nenhuma organização cadastrada.
-      </h2>
-    )
 
   return (
     <>
@@ -126,7 +127,31 @@ export function OrganizationsTable() {
           </Button>
         </div>
       </Modal>
-      <Table columns={columns} data={organizations} />
+      <div className="mt-8 flex items-center justify-between">
+        <div className="flex gap-4">
+          <SearchInput
+            data={organizations}
+            searchParam="name"
+            onSearchResult={(results) => setFilteredResults(results)}
+          />
+          {organizations_create && (
+            <Button
+              onClick={() => push("/organizations/create")}
+              variant="secondary">
+              Cadastrar
+            </Button>
+          )}
+        </div>
+        <Button className="flex items-center gap-1" variant="secondary">
+          <FileXls size={22} />
+          Exportar
+        </Button>
+      </div>
+      {filteredResults.length === 0 ?
+        <h2 className="mt-6 text-xl font-semibold">
+          Nenhuma organização cadastrada.
+        </h2>
+      : <Table columns={columns} data={filteredResults} />}
     </>
   )
 }

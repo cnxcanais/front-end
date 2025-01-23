@@ -17,8 +17,8 @@ import { toast } from "sonner"
 export function CreateOrganizationForm() {
   const { push } = useRouter()
 
-  const accountId =
-    sessionStorage.getItem("accountId") || process.env.NEXT_PUBLIC_ACCOUNT_ID
+  // TODO: fix accountId variable to be fetched from cookies or another aux function
+  const accountId = process.env.NEXT_PUBLIC_ACCOUNT_ID
 
   const {
     organizations_input_fields_name,
@@ -35,7 +35,7 @@ export function CreateOrganizationForm() {
   } = useForm<CreateOrganizationSchema>({
     resolver: zodResolver(createOrganizationFormSchema),
     values: {
-      accountId,
+      account_id: accountId,
     },
   })
 

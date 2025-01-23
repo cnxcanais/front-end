@@ -1,3 +1,5 @@
+"use client"
+
 import { Button } from "@/core/components/Button"
 import { Modal } from "@/core/components/Modals/Modal"
 import { SearchInput } from "@/core/components/SearchInput"
@@ -11,29 +13,28 @@ import {
 import { FileXls, Pencil, Trash } from "@phosphor-icons/react"
 import { useMutation, useQuery } from "@tanstack/react-query"
 import { useRouter } from "next/navigation"
-import { useState } from "react"
+import { useEffect, useState } from "react"
 import { toast } from "sonner"
 
 export function IncomeSourcesTable() {
-  const { push } = useRouter()
-  const [open, setOpen] = useState(false)
-  const [id, setId] = useState("")
-
   // TODO: fix accountId variable to be fetched from cookies or another aux function
   const account_id = process.env.NEXT_PUBLIC_ACCOUNT_ID
-
-  const { income_sources_create, income_sources_edit, income_sources_delete } =
-    JSON.parse(getCookie("permissions")).componentAccess
-
-  const handleEdit = (id: string) => {
-    push(`/income-sources/edit/${id}`)
-  }
 
   const { data: incomeSources, isLoading } = useQuery({
     queryKey: ["income-sources"],
     queryFn: () => getIncomeSources({ account_id }),
     enabled: !!account_id,
   })
+
+  const { push } = useRouter()
+
+  const [open, setOpen] = useState(false)
+  const [id, setId] = useState("")
+
+  const { income_sources_create, income_sources_edit, income_sources_delete } =
+    JSON.parse(getCookie("permissions")).componentAccess
+
+  const [filteredResults, setFilteredResults] = useState([])
 
   const refetchIncomeSourcesFn = useMutation({
     mutationFn: getIncomeSources,
@@ -49,12 +50,18 @@ export function IncomeSourcesTable() {
     },
   })
 
+  // handlers for Delete and Edit
+  const handleEdit = (id: string) => {
+    push(`/income-sources/edit/${id}`)
+  }
+
   const handleConfirmDelete = async () => {
     await removeIncomeSource({ income_source_id: id }).then(() =>
       refetchIncomeSourcesFn.mutate({ account_id })
     )
   }
 
+  // column structure for table
   const columns = [
     { header: "Nome", accessor: "name" },
     {
@@ -112,11 +119,13 @@ export function IncomeSourcesTable() {
     },
   ]
 
+  // updates filteredResults when incomeSources changes
+  useEffect(() => {
+    if (incomeSources) setFilteredResults(incomeSources)
+  }, [incomeSources, isLoading])
+
   // TODO: replace Loading with proper component
   if (!incomeSources || isLoading) return <>Loading</>
-
-  const searchParams =
-    incomeSources.length > 0 ? Object.keys(incomeSources[0]) : []
 
   return (
     <>
@@ -136,7 +145,11 @@ export function IncomeSourcesTable() {
       </Modal>
       <div className="mt-8 flex items-center justify-between">
         <div className="flex gap-4">
-          <SearchInput data={incomeSources} searchParams={searchParams} />
+          <SearchInput
+            data={incomeSources}
+            searchParam="name"
+            onSearchResult={setFilteredResults}
+          />
           {income_sources_create && (
             <Button
               onClick={() => push("/income-sources/create")}
@@ -151,11 +164,11 @@ export function IncomeSourcesTable() {
         </Button>
       </div>
 
-      {incomeSources.length === 0 ?
+      {filteredResults.length === 0 ?
         <h2 className="mt-6 text-xl font-semibold">
           Nenhuma fonte de receita cadastrada.
         </h2>
-      : <Table columns={columns} data={incomeSources} />}
+      : <Table columns={columns} data={filteredResults} />}
     </>
   )
 }

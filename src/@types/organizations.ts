@@ -1,6 +1,6 @@
 export namespace Organization {
   export type GetRequest = {
-    accountId: string
+    account_id: string
   }
 
   export type GetRequestParams = {
@@ -49,7 +49,7 @@ export namespace Organization {
     address: string
     phone: string
     email: string
-    accountId: string
+    account_id: string
   }
 
   export type DeleteRequest = {

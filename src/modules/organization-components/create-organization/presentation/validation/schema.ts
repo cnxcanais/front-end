@@ -13,7 +13,7 @@ export const createOrganizationFormSchema = z.object({
     .string()
     .email({ message: "E-mail inválido" })
     .nonempty({ message: "Obrigatório" }),
-  accountId: z.string(),
+  account_id: z.string(),
 })
 
 export type CreateOrganizationSchema = z.infer<
