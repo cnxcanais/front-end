@@ -3,19 +3,18 @@ import { api } from "@/lib/axios"
 import { AxiosError } from "axios"
 
 export async function editOrganization({
-  organizationId,
-  name,
+  organization_id,
   address,
   cnpj,
   email,
+  name,
   phone,
 }: Organization.UpdateRequest) {
   try {
-    await api.put(`/organization/${organizationId}`, {
-      organizationId,
+    await api.put(`/organization/${organization_id}`, {
       name,
-      address,
       cnpj,
+      address,
       email,
       phone,
     })

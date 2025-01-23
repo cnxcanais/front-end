@@ -4,7 +4,7 @@ export namespace Organization {
   }
 
   export type GetRequestParams = {
-    organizationId: string
+    organization_id: string
     name: string
     cnpj: string
     email: string
@@ -26,7 +26,7 @@ export namespace Organization {
   }
 
   export type GetByIdRequest = {
-    organizationId: string
+    organization_id: string
   }
 
   export type GetByIdResponse = {
@@ -53,15 +53,15 @@ export namespace Organization {
   }
 
   export type DeleteRequest = {
-    organizationId: string
+    organization_id: string
   }
 
   export type UpdateRequest = {
-    name: string
-    cnpj: string
-    address: string
-    phone: string
-    email: string
-    organizationId: string
+    organization_id: string
+    name?: string
+    cnpj?: string
+    address?: string
+    phone?: string
+    email?: string
   }
 }

@@ -1,6 +1,5 @@
 "use client"
 
-import { Organization } from "@/@types/organizations"
 import { Button } from "@/core/components/Button"
 import * as Input from "@/core/components/Input"
 import { getCookie } from "@/lib/cookies"
@@ -23,7 +22,7 @@ export function EditOrganizationForm({ id }: { id: string }) {
 
   const { data: organization, isLoading } = useQuery({
     queryKey: ["organization", id],
-    queryFn: () => getOrganizationById({ organizationId: id }),
+    queryFn: () => getOrganizationById({ organization_id: id }),
     enabled: id !== "",
     refetchOnWindowFocus: false,
   })
@@ -44,7 +43,7 @@ export function EditOrganizationForm({ id }: { id: string }) {
     resolver: zodResolver(editOrganizationFormSchema),
     values: {
       name: organization?.name || "",
-      accountId: organization?.account_id || "",
+      account_id: organization?.account_id || "",
       address: organization?.address || "",
       cnpj: organization?.cnpj || "",
       phone: organization?.phone || "",
@@ -52,13 +51,13 @@ export function EditOrganizationForm({ id }: { id: string }) {
     },
   })
 
-  async function onSubmit(data: Organization.UpdateRequest) {
+  async function onSubmit(data: EditOrganizationSchema) {
     try {
-      await editOrganization(data)
+      await editOrganization({ organization_id: id, ...data })
       toast.success("Conta editada com sucesso!")
-      setTimeout(() => push("/accounts"), 2000)
+      setTimeout(() => push("/organizations"), 2000)
     } catch (error) {
-      toast.error("Erro ao editar conta: " + error)
+      toast.error("Erro ao editar organização: " + error)
     }
   }
 

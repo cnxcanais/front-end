@@ -66,9 +66,9 @@ export function EditIncomeSourceForm({ id }: { id: string }) {
 
   async function onSubmit(data: IncomeSource.UpdateRequest) {
     try {
-      await editIncomeSource(data)
+      await editIncomeSource({ income_source_id: id, ...data })
       toast.success("Fonte de receita editada com sucesso!")
-      setTimeout(() => push("/accounts"), 2000)
+      setTimeout(() => push("/income-sources"), 2000)
     } catch (error) {
       toast.error("Erro ao editar fonte de receita: " + error)
     }
@@ -221,7 +221,7 @@ export function EditIncomeSourceForm({ id }: { id: string }) {
             </label>
             <Input.Root variant={errors.cep ? "error" : "primary"}>
               <Input.Control
-                disabled={!income_source_input_fields_city}
+                disabled={!income_source_input_fields_cep}
                 {...register("cep")}
                 type="cep"
               />
