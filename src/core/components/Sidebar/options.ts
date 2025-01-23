@@ -61,7 +61,7 @@ export const sidebar_options: SidebarOptionProps[] = [
   },
   {
     name: "Grupo de Receitas",
-    href: "#",
+    href: "/income-groups",
     Icon: Coins,
     group: "Cadastro",
   },
