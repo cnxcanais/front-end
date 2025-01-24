@@ -1,5 +1,8 @@
+"use client"
+
 import { Button } from "@/core/components/Button"
 import { Modal } from "@/core/components/Modals/Modal"
+import { SearchInput } from "@/core/components/SearchInput"
 import { Table } from "@/core/components/Table"
 import { getPermissionByEntity } from "@/core/utils/getPermissionByEntity"
 import { getCookie } from "@/lib/cookies"
@@ -8,49 +11,50 @@ import {
   deleteIncomeGroup,
   getAllIncomeGroups,
 } from "@/modules/income-groups-components/remote/incomeGroup"
-import { Pencil, Trash } from "@phosphor-icons/react"
+import { FileXls, Pencil, Trash } from "@phosphor-icons/react"
 import { useMutation, useQuery } from "@tanstack/react-query"
 import { useRouter } from "next/navigation"
-import { useState } from "react"
+import { useEffect, useState } from "react"
 import { toast } from "sonner"
 
 export function IncomeGroupTable() {
   const { push } = useRouter()
-  const [open, setOpen] = useState(false)
-  const [id, setId] = useState("")
 
-  const handleEdit = (id: string) => {
-    push(`/income-groups/edit/${id}`)
-  }
-
+  const create = getPermissionByEntity("income_groups_create")
   const edit = getPermissionByEntity("income_groups_edit")
   const deletePermission = getPermissionByEntity("income_groups_delete")
 
   const accountId = getCookie("accountId")
 
-  const getIncomeGroups = async () => await getAllIncomeGroups(accountId)
+  const [open, setOpen] = useState(false)
+  const [id, setId] = useState("")
+  const [filteredResults, setFilteredResults] = useState([])
 
-  const { data, isLoading } = useQuery({
+  const { data: incomeGroups, isLoading } = useQuery({
     queryKey: ["income-groups"],
-    queryFn: getIncomeGroups,
+    queryFn: () => getAllIncomeGroups(accountId),
   })
 
   const fetchIncomeGroups = useMutation({
-    mutationFn: getIncomeGroups,
+    mutationFn: getAllIncomeGroups,
     onSuccess: () => {
-      toast.success("Grupo removida com sucesso!")
+      toast.success("Grupo removido com sucesso!")
       queryClient.invalidateQueries({ queryKey: ["income-groups"] })
     },
     onError: (error) => {
-      toast.error("Erro ao remover conta: " + error)
+      toast.error("Erro ao remover grupo: " + error)
     },
     onSettled: () => {
       setOpen(false)
     },
   })
 
+  const handleEdit = (id: string) => {
+    push(`/income-groups/edit/${id}`)
+  }
+
   const handleConfirmDelete = async () => {
-    await deleteIncomeGroup(id).then(() => fetchIncomeGroups.mutate())
+    await deleteIncomeGroup(id).then(() => fetchIncomeGroups.mutate(accountId))
   }
 
   const columns = [
@@ -83,8 +87,12 @@ export function IncomeGroupTable() {
     },
   ]
 
+  useEffect(() => {
+    if (incomeGroups) setFilteredResults(incomeGroups)
+  }, [incomeGroups, isLoading])
+
   // TODO: replace Loading with proper component
-  if (!data || isLoading) return <>Loading</>
+  if (!incomeGroups || isLoading) return <>Loading</>
 
   return (
     <>
@@ -102,7 +110,32 @@ export function IncomeGroupTable() {
           </Button>
         </div>
       </Modal>
-      <Table columns={columns} data={data} />
+
+      <div className="mt-8 flex items-center justify-between">
+        <div className="flex h-full gap-4">
+          <SearchInput
+            data={incomeGroups}
+            searchParam="group_name"
+            onSearchResult={setFilteredResults}
+          />
+          {create && (
+            <Button
+              onClick={() => push("/income-groups/create")}
+              variant="secondary">
+              Cadastrar
+            </Button>
+          )}
+        </div>
+        <Button className="flex items-center gap-1" variant="secondary">
+          <FileXls size={22} />
+          Exportar
+        </Button>
+      </div>
+      {incomeGroups.length == 0 ?
+        <h2 className="mt-6 text-xl font-semibold">
+          Nenhum grupo de receitas cadastrado.
+        </h2>
+      : <Table columns={columns} data={filteredResults} />}
     </>
   )
 }
