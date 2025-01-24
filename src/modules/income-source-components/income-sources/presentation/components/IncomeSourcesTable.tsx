@@ -18,7 +18,7 @@ import { toast } from "sonner"
 
 export function IncomeSourcesTable() {
   // TODO: fix accountId variable to be fetched from cookies or another aux function
-  const account_id = process.env.NEXT_PUBLIC_ACCOUNT_ID
+  const account_id = getCookie("accountId")
 
   const { data: incomeSources, isLoading } = useQuery({
     queryKey: ["income-sources"],

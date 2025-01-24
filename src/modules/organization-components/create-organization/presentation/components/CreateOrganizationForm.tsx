@@ -17,8 +17,7 @@ import { toast } from "sonner"
 export function CreateOrganizationForm() {
   const { push } = useRouter()
 
-  // TODO: fix accountId variable to be fetched from cookies or another aux function
-  const accountId = process.env.NEXT_PUBLIC_ACCOUNT_ID
+  const accountId = getCookie("accountId")
 
   const {
     organizations_input_fields_name,

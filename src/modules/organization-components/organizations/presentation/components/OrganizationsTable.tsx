@@ -17,8 +17,7 @@ import { useEffect, useState } from "react"
 import { toast } from "sonner"
 
 export function OrganizationsTable() {
-  // TODO: fix accountId variable to be fetched from cookies or another aux function
-  const accountId = process.env.NEXT_PUBLIC_ACCOUNT_ID
+  const accountId = getCookie("accountId")
 
   const { data: organizations, isLoading } = useQuery({
     queryKey: ["organizations"],

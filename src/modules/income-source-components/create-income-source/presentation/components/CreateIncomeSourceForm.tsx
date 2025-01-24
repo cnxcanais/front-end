@@ -17,7 +17,7 @@ import { toast } from "sonner"
 export function CreateIncomeSourceForm() {
   const { push } = useRouter()
 
-  const account_id = process.env.NEXT_PUBLIC_ACCOUNT_ID
+  const account_id = getCookie("accountId")
 
   const {
     income_source_input_fields_name,
