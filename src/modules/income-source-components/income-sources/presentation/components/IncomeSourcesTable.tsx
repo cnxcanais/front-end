@@ -164,7 +164,7 @@ export function IncomeSourcesTable() {
         </Button>
       </div>
 
-      {filteredResults.length === 0 ?
+      {incomeSources.length == 0 ?
         <h2 className="mt-6 text-xl font-semibold">
           Nenhuma fonte de receita cadastrada.
         </h2>

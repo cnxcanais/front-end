@@ -22,7 +22,7 @@ export function OrganizationsTable() {
 
   const { data: organizations, isLoading } = useQuery({
     queryKey: ["organizations"],
-    queryFn: () => getOrganizations({ accountId }),
+    queryFn: () => getOrganizations({ account_id: accountId }),
     enabled: !!accountId,
   })
 
@@ -55,7 +55,7 @@ export function OrganizationsTable() {
 
   const handleConfirmDelete = async () => {
     await removeOrganization({ organization_id: id }).then(() =>
-      refetchOrganizationsFn.mutate({ accountId })
+      refetchOrganizationsFn.mutate({ account_id: accountId })
     )
   }
 
@@ -147,7 +147,7 @@ export function OrganizationsTable() {
           Exportar
         </Button>
       </div>
-      {filteredResults.length === 0 ?
+      {organizations.length === 0 ?
         <h2 className="mt-6 text-xl font-semibold">
           Nenhuma organização cadastrada.
         </h2>
