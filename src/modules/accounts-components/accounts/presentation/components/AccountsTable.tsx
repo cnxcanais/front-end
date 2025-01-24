@@ -1,6 +1,7 @@
 "use client"
 
 import { Button } from "@/core/components/Button"
+import { LoadingScreen } from "@/core/components/LoadingScreen"
 import { Modal } from "@/core/components/Modals/Modal"
 import { SearchInput } from "@/core/components/SearchInput"
 import { Table } from "@/core/components/Table"
@@ -93,8 +94,7 @@ export function AccountsTable() {
     if (accounts) setFilteredResults(accounts)
   }, [accounts, isLoading])
 
-  // TODO: replace Loading with proper component
-  if (!accounts || isLoading) return <>Loading</>
+  if (!accounts || isLoading) return <LoadingScreen />
 
   return (
     <>

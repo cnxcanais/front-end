@@ -3,6 +3,7 @@
 import { IncomeGroup } from "@/@types/income-group"
 import { Button } from "@/core/components/Button"
 import * as Input from "@/core/components/Input"
+import { LoadingScreen } from "@/core/components/LoadingScreen"
 import {
   editIncomeGroupFormSchema,
   EditIncomeGroupFormSchema,
@@ -48,8 +49,7 @@ export function EditIncomeGroupForm({ id }: { id: string }) {
     }
   }
 
-  // TODO: replace Loading with proper component
-  if (!incomeGroup || isLoading) return <>Loading...</>
+  if (!incomeGroup || isLoading) return <LoadingScreen />
 
   return (
     <form onSubmit={handleSubmit(onSubmit)}>

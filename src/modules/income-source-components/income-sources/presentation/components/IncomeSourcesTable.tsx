@@ -1,6 +1,7 @@
 "use client"
 
 import { Button } from "@/core/components/Button"
+import { LoadingScreen } from "@/core/components/LoadingScreen"
 import { Modal } from "@/core/components/Modals/Modal"
 import { SearchInput } from "@/core/components/SearchInput"
 import { Table } from "@/core/components/Table"
@@ -17,7 +18,6 @@ import { useEffect, useState } from "react"
 import { toast } from "sonner"
 
 export function IncomeSourcesTable() {
-  // TODO: fix accountId variable to be fetched from cookies or another aux function
   const account_id = getCookie("accountId")
 
   const { data: incomeSources, isLoading } = useQuery({
@@ -124,8 +124,7 @@ export function IncomeSourcesTable() {
     if (incomeSources) setFilteredResults(incomeSources)
   }, [incomeSources, isLoading])
 
-  // TODO: replace Loading with proper component
-  if (!incomeSources || isLoading) return <>Loading</>
+  if (!incomeSources || isLoading) return <LoadingScreen />
 
   return (
     <>

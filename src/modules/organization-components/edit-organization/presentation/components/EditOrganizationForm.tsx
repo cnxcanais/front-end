@@ -2,6 +2,7 @@
 
 import { Button } from "@/core/components/Button"
 import * as Input from "@/core/components/Input"
+import { LoadingScreen } from "@/core/components/LoadingScreen"
 import { getCookie } from "@/lib/cookies"
 import {
   editOrganization,
@@ -61,8 +62,7 @@ export function EditOrganizationForm({ id }: { id: string }) {
     }
   }
 
-  // TODO: replace Loading with proper component
-  if (!organization || isLoading) return <>Loading...</>
+  if (!organization || isLoading) return <LoadingScreen />
 
   return (
     <form

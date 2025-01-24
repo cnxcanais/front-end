@@ -1,6 +1,7 @@
 "use client"
 
 import { Button } from "@/core/components/Button"
+import { LoadingScreen } from "@/core/components/LoadingScreen"
 import { Modal } from "@/core/components/Modals/Modal"
 import { SearchInput } from "@/core/components/SearchInput"
 import { Table } from "@/core/components/Table"
@@ -91,8 +92,7 @@ export function IncomeGroupTable() {
     if (incomeGroups) setFilteredResults(incomeGroups)
   }, [incomeGroups, isLoading])
 
-  // TODO: replace Loading with proper component
-  if (!incomeGroups || isLoading) return <>Loading</>
+  if (!incomeGroups || isLoading) return <LoadingScreen />
 
   return (
     <>

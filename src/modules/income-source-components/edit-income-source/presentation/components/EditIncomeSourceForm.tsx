@@ -3,6 +3,7 @@
 import { IncomeSource } from "@/@types/income-sources"
 import { Button } from "@/core/components/Button"
 import * as Input from "@/core/components/Input"
+import { LoadingScreen } from "@/core/components/LoadingScreen"
 import { getCookie } from "@/lib/cookies"
 import {
   editIncomeSource,
@@ -74,8 +75,7 @@ export function EditIncomeSourceForm({ id }: { id: string }) {
     }
   }
 
-  // TODO: replace Loading with proper component
-  if (!incomeSource || isLoading) return <>Loading...</>
+  if (!incomeSource || isLoading) return <LoadingScreen />
 
   return (
     <form
