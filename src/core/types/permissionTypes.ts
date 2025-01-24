@@ -6,5 +6,9 @@ export type PermissionType = {
 }
 
 export type AccessType = {
-  [key: string]: boolean
+  [key: string]:
+    | boolean
+    | {
+        [key: string]: boolean
+      }
 }

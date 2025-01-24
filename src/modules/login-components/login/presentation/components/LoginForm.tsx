@@ -13,11 +13,13 @@ import Link from "next/link"
 import { useRouter } from "next/navigation"
 import { useState } from "react"
 import { useForm } from "react-hook-form"
+import { ClipLoader } from "react-spinners"
 import { toast } from "sonner"
 
 export function LoginForm() {
   const { push } = useRouter()
   const [showPassword, setShowPassword] = useState(false)
+  const [isLoading, setIsLoading] = useState(false)
 
   const {
     register,
@@ -30,10 +32,13 @@ export function LoginForm() {
   async function onSubmit(data: LoginSchema) {
     try {
       await authenticate(data)
+      setIsLoading(true)
       toast.success("Login realizado com sucesso!")
+      setIsLoading(false)
       setTimeout(() => push("/dashboard"), 2000)
     } catch (error) {
       toast.error("Erro ao efetuar login: " + error)
+      setIsLoading(false)
     }
   }
 
@@ -83,7 +88,9 @@ export function LoginForm() {
       </Link>
 
       <Button disabled={isSubmitting} type="submit">
-        Entrar
+        {isLoading ?
+          <ClipLoader />
+        : "Entrar"}
       </Button>
     </form>
   )
