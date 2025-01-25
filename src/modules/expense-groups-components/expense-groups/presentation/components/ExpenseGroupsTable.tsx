@@ -139,7 +139,7 @@ export function ExpenseGroupTable() {
       </div>
       {expenseGroups.length == 0 ?
         <h2 className="mt-6 text-xl font-semibold">
-          Nenhum grupo de receitas cadastrado.
+          Nenhum grupo de despesas cadastrado.
         </h2>
       : <Table columns={columns} data={filteredResults} />}
     </>

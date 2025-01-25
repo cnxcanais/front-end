@@ -67,7 +67,7 @@ export const sidebar_options: SidebarOptionProps[] = [
   },
   {
     name: "Grupo de Despesas",
-    href: "#",
+    href: "/expense-groups",
     Icon: Wallet,
     group: "Cadastro",
   },

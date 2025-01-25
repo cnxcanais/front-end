@@ -6,6 +6,7 @@ import { Modal } from "@/core/components/Modals/Modal"
 import { SearchInput } from "@/core/components/SearchInput"
 import { Table } from "@/core/components/Table"
 import { exportToExcel } from "@/core/utils/exportToExcel"
+import { getPermissionByEntity } from "@/core/utils/getPermissionByEntity"
 import { getCookie } from "@/lib/cookies"
 import { queryClient } from "@/lib/react-query"
 import {
@@ -47,8 +48,9 @@ export function OrganizationsTable() {
     },
   })
 
-  const { organizations_create, organizations_edit, organizations_delete } =
-    JSON.parse(getCookie("permissions")).componentAccess
+  const organizations_create = getPermissionByEntity("organizations_create")
+  const organizations_edit = getPermissionByEntity("organizations_edit")
+  const organizations_delete = getPermissionByEntity("organizations_delete")
 
   const handleEdit = (id: string) => {
     push(`/organizations/edit/${id}`)
@@ -128,7 +130,7 @@ export function OrganizationsTable() {
         </div>
       </Modal>
       <div className="mt-8 flex items-center justify-between">
-        <div className="flex gap-4">
+        <div className="flex h-full gap-4">
           <SearchInput
             data={organizations}
             searchParam="name"
