@@ -1,19 +1,19 @@
 import { z } from "zod"
 
 export const createOrganizationFormSchema = z.object({
-  name: z.string().nonempty({ message: "Campo não pode estar vazio" }),
+  name: z.string().nonempty({ message: "Obrigatório" }),
   cnpj: z
     .string()
     .min(14, { message: "CNPJ precisa ter 14 caracteres" })
     .max(14, { message: "CNPJ precisa ter no máximo 14 caracteres" })
-    .nonempty({ message: "Campo não pode estar vazio" }),
-  address: z.string().nonempty({ message: "Campo não pode estar vazio" }),
-  phone: z.string().nonempty({ message: "Campo não pode estar vazio" }),
+    .nonempty({ message: "Obrigatório" }),
+  address: z.string().nonempty({ message: "Obrigatório" }),
+  phone: z.string().nonempty({ message: "Obrigatório" }),
   email: z
     .string()
     .email({ message: "E-mail inválido" })
-    .nonempty({ message: "Campo não pode estar vazio" }),
-  accountId: z.string(),
+    .nonempty({ message: "Obrigatório" }),
+  account_id: z.string(),
 })
 
 export type CreateOrganizationSchema = z.infer<

@@ -1,30 +1,38 @@
+"use client"
+
 import { Button } from "@/core/components/Button"
+import { LoadingScreen } from "@/core/components/LoadingScreen"
 import { Modal } from "@/core/components/Modals/Modal"
+import { SearchInput } from "@/core/components/SearchInput"
 import { Table } from "@/core/components/Table"
+import { getCookie } from "@/lib/cookies"
 import { queryClient } from "@/lib/react-query"
 import {
   getAccounts,
   removeAccount,
 } from "@/modules/accounts-components/accounts/infra/remote"
 import { Pencil, Trash } from "@phosphor-icons/react"
+import { FileXls } from "@phosphor-icons/react/dist/ssr"
 import { useMutation, useQuery } from "@tanstack/react-query"
 import { useRouter } from "next/navigation"
-import { useState } from "react"
+import { useEffect, useState } from "react"
 import { toast } from "sonner"
 
 export function AccountsTable() {
-  const { push } = useRouter()
-  const [open, setOpen] = useState(false)
-  const [id, setId] = useState("")
-
-  const handleEdit = (id: string) => {
-    push(`/accounts/edit/${id}`)
-  }
-
   const { data: accounts, isLoading } = useQuery({
     queryKey: ["accounts"],
     queryFn: getAccounts,
   })
+
+  const { accounts_create, accounts_delete, accounts_edit } = JSON.parse(
+    getCookie("permissions")
+  ).componentAccess
+
+  const { push } = useRouter()
+
+  const [open, setOpen] = useState(false)
+  const [id, setId] = useState("")
+  const [filteredResults, setFilteredResults] = useState([])
 
   const fetchAccounts = useMutation({
     mutationFn: getAccounts,
@@ -39,6 +47,10 @@ export function AccountsTable() {
       setOpen(false)
     },
   })
+
+  const handleEdit = (id: string) => {
+    push(`/accounts/edit/${id}`)
+  }
 
   const handleConfirmDelete = async () => {
     await removeAccount({ accountId: id }).then(() => fetchAccounts.mutate())
@@ -56,26 +68,33 @@ export function AccountsTable() {
       accessor: "account_id",
       render: (value: string, row: unknown) => (
         <div className="flex space-x-4">
-          <Pencil
-            className="cursor-pointer duration-300 ease-in-out hover:text-blue-500"
-            size={24}
-            onClick={() => handleEdit(value)}
-          />
-          <Trash
-            className="cursor-pointer duration-300 ease-in-out hover:text-blue-500"
-            size={24}
-            onClick={() => {
-              setId(value)
-              setOpen(true)
-            }}
-          />
+          {accounts_edit && (
+            <Pencil
+              className="cursor-pointer duration-300 ease-in-out hover:text-blue-500"
+              size={24}
+              onClick={() => handleEdit(value)}
+            />
+          )}
+          {accounts_delete && (
+            <Trash
+              className="cursor-pointer duration-300 ease-in-out hover:text-blue-500"
+              size={24}
+              onClick={() => {
+                setId(value)
+                setOpen(true)
+              }}
+            />
+          )}
         </div>
       ),
     },
   ]
 
-  // TODO: replace Loading with proper component
-  if (!accounts || isLoading) return <>Loading</>
+  useEffect(() => {
+    if (accounts) setFilteredResults(accounts)
+  }, [accounts, isLoading])
+
+  if (!accounts || isLoading) return <LoadingScreen />
 
   return (
     <>
@@ -93,7 +112,31 @@ export function AccountsTable() {
           </Button>
         </div>
       </Modal>
-      <Table columns={columns} data={accounts} />
+      <div className="mt-8 flex items-center justify-between">
+        <div className="flex gap-4">
+          <SearchInput
+            data={accounts}
+            searchParam="name"
+            onSearchResult={(results) => setFilteredResults(results)}
+          />
+          {accounts_create && (
+            <Button
+              onClick={() => push("/accounts/create")}
+              variant="secondary">
+              Cadastrar
+            </Button>
+          )}
+        </div>
+        <Button className="flex items-center gap-1" variant="secondary">
+          <FileXls size={22} />
+          Exportar
+        </Button>
+      </div>
+      {accounts.length === 0 ?
+        <h2 className="mt-6 text-xl font-semibold">
+          Nenhuma conta cadastrada.
+        </h2>
+      : <Table columns={columns} data={filteredResults} />}
     </>
   )
 }

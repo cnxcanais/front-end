@@ -2,11 +2,11 @@ import { Organization } from "@/@types/organizations"
 import { api } from "@/lib/axios"
 
 export async function getOrganizationById({
-  organizationId,
+  organization_id,
 }: Organization.GetByIdRequest) {
   try {
     const { data } = await api.get<Organization.GetByIdResponse>(
-      `/organization/${organizationId}`
+      `/organization/${organization_id}`
     )
 
     return data.organization

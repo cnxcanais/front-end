@@ -13,7 +13,7 @@ export const editOrganizationFormSchema = z.object({
     .string()
     .email({ message: "E-mail inválido" })
     .nonempty({ message: "Campo não pode estar vazio" }),
-  accountId: z.string().optional(),
+  account_id: z.string().optional(),
 })
 
 export type EditOrganizationSchema = z.infer<typeof editOrganizationFormSchema>

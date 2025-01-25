@@ -5,7 +5,7 @@ import { List } from "@phosphor-icons/react"
 import { X } from "@phosphor-icons/react/dist/ssr"
 import Image from "next/image"
 import { usePathname } from "next/navigation"
-import { useState } from "react"
+import { Fragment, useState } from "react"
 import { sidebarGroupedByGroups } from "./options"
 
 export function Sidebar() {
@@ -42,20 +42,22 @@ export function Sidebar() {
           <ul role="list" className="flex flex-1 flex-col gap-y-7">
             <ul role="list" className="-mx-2 space-y-1">
               {Object.keys(sidebarGroupedByGroups).map((group) => (
-                <div key={group}>
+                <Fragment key={group}>
                   <h3 className="my-2 text-lg font-semibold text-white">
                     {group}
                   </h3>
-                  {sidebarGroupedByGroups[group].map((item) => (
-                    <SidebarItem
-                      key={item.name}
-                      href={item.href}
-                      Icon={item.Icon}
-                      name={item.name}
-                      current={pathname === item.href}
-                    />
-                  ))}
-                </div>
+                  <div className="space-y-2">
+                    {sidebarGroupedByGroups[group].map((item) => (
+                      <SidebarItem
+                        key={item.name}
+                        href={item.href}
+                        Icon={item.Icon}
+                        name={item.name}
+                        current={pathname === item.href}
+                      />
+                    ))}
+                  </div>
+                </Fragment>
               ))}
             </ul>
           </ul>

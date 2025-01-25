@@ -13,7 +13,7 @@ export async function authenticate(formData: LoginSchema) {
     // setCookie("auth", JSON.stringify(response.data))
     const response = await fetchPermissionsByName("")
     setCookie("permissions", JSON.stringify(response))
-    setCookie("accountId", "ec86dcb8-b6df-4a9f-890b-d9fec35ec8d1")
+    setCookie("accountId", process.env.NEXT_PUBLIC_ACCOUNT_ID)
   } catch (error) {
     console.error(error)
   }

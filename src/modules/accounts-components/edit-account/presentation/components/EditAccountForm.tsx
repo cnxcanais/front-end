@@ -3,6 +3,7 @@
 import { Account } from "@/@types/accounts"
 import { Button } from "@/core/components/Button"
 import * as Input from "@/core/components/Input"
+import { LoadingScreen } from "@/core/components/LoadingScreen"
 import {
   editAccount,
   getAccountById,
@@ -50,8 +51,7 @@ export function EditAccountForm({ id }: { id: string }) {
     }
   }
 
-  // TODO: replace Loading with proper component
-  if (!account || isLoading) return <>Loading...</>
+  if (!account || isLoading) return <LoadingScreen />
 
   return (
     <form onSubmit={handleSubmit(onSubmit)}>
