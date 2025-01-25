@@ -4,7 +4,7 @@ import { EditIncomeGroupForm } from "../components/EditIncomeGroupForm"
 export async function EditIncomeGroupPage({ id }: { id: string }) {
   return (
     <>
-      <PageTitle content="Editar Conta" />
+      <PageTitle content="Editar Grupo de Receita" />
       <EditIncomeGroupForm id={id} />
     </>
   )

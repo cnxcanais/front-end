@@ -1,29 +1,29 @@
 "use client"
 
-import { IncomeGroup } from "@/@types/income-group"
+import { ExpenseGroup } from "@/@types/expense-group"
 import { Button } from "@/core/components/Button"
 import * as Input from "@/core/components/Input"
 import { LoadingScreen } from "@/core/components/LoadingScreen"
 import {
-  editIncomeGroupFormSchema,
-  EditIncomeGroupFormSchema,
-} from "@/modules/income-groups-components/edit-income-group/presentation/validation/schema"
+  editExpenseGroupFormSchema,
+  EditExpenseGroupFormSchema,
+} from "@/modules/expense-groups-components/edit-expense-group/presentation/validation/schema"
 import {
-  getIncomeGroupById,
-  updateIncomeGroup,
-} from "@/modules/income-groups-components/remote/incomeGroup"
+  getExpenseGroupById,
+  updateExpenseGroup,
+} from "@/modules/expense-groups-components/remote/expense-groups-methods"
 import { zodResolver } from "@hookform/resolvers/zod"
 import { useQuery } from "@tanstack/react-query"
 import { useRouter } from "next/navigation"
 import { useForm } from "react-hook-form"
 import { toast } from "sonner"
 
-export function EditIncomeGroupForm({ id }: { id: string }) {
+export function EditExpenseGroupForm({ id }: { id: string }) {
   const { push } = useRouter()
 
-  const { data: incomeGroup, isLoading } = useQuery({
-    queryKey: ["income-group", id],
-    queryFn: () => getIncomeGroupById(id),
+  const { data: expenseGroup, isLoading } = useQuery({
+    queryKey: ["expense-group", id],
+    queryFn: () => getExpenseGroupById(id),
     enabled: id !== "",
     refetchOnWindowFocus: false,
   })
@@ -32,24 +32,24 @@ export function EditIncomeGroupForm({ id }: { id: string }) {
     register,
     handleSubmit,
     formState: { isSubmitting, errors },
-  } = useForm<EditIncomeGroupFormSchema>({
-    resolver: zodResolver(editIncomeGroupFormSchema),
+  } = useForm<EditExpenseGroupFormSchema>({
+    resolver: zodResolver(editExpenseGroupFormSchema),
     values: {
-      group_name: incomeGroup?.incomeGroup.group_name,
+      group_name: expenseGroup?.expenseGroup.group_name,
     },
   })
 
-  async function onSubmit(data: IncomeGroup.Update) {
+  async function onSubmit(data: ExpenseGroup.UpdateRequest) {
     try {
-      await updateIncomeGroup(id, data)
+      await updateExpenseGroup(id, data)
       toast.success("Grupo editado com sucesso!")
-      setTimeout(() => push("/income-groups"), 2000)
+      setTimeout(() => push("/expense-groups"), 2000)
     } catch (error) {
       toast.error("Erro ao editar grupo: " + error)
     }
   }
 
-  if (!incomeGroup || isLoading) return <LoadingScreen />
+  if (!expenseGroup || isLoading) return <LoadingScreen />
 
   return (
     <form onSubmit={handleSubmit(onSubmit)}>
@@ -73,7 +73,7 @@ export function EditIncomeGroupForm({ id }: { id: string }) {
         </Button>
         <Button
           disabled={isSubmitting}
-          onClick={() => push("/income-groups")}
+          onClick={() => push("/accounts")}
           variant="tertiary">
           Voltar
         </Button>

@@ -4,7 +4,7 @@ import { IncomeGroupTable } from "@/modules/income-groups-components/dashboard/p
 export function IncomeGroupPage() {
   return (
     <main className="flex w-full max-w-[1200px] flex-col">
-      <PageTitle content="Grupos de Receita" />
+      <PageTitle content="Grupos de Receitas" />
       <IncomeGroupTable />
     </main>
   )
