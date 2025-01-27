@@ -9,9 +9,9 @@ import { exportToExcel } from "@/core/utils/exportToExcel"
 import { getCookie } from "@/lib/cookies"
 import { queryClient } from "@/lib/react-query"
 import {
-  getAccounts,
-  removeAccount,
-} from "@/modules/accounts-components/accounts/infra/remote"
+  getBanks,
+  removeBank,
+} from "@/modules/banks-components/banks/infra/remote"
 import { Pencil, Trash } from "@phosphor-icons/react"
 import { FileXls } from "@phosphor-icons/react/dist/ssr"
 import { useMutation, useQuery } from "@tanstack/react-query"
@@ -19,10 +19,12 @@ import { useRouter } from "next/navigation"
 import { useEffect, useState } from "react"
 import { toast } from "sonner"
 
-export function AccountsTable() {
-  const { data: accounts, isLoading } = useQuery({
-    queryKey: ["accounts"],
-    queryFn: getAccounts,
+export function BanksTable() {
+  const account_id = getCookie("accountId")
+
+  const { data: banks, isLoading } = useQuery({
+    queryKey: ["banks"],
+    queryFn: () => getBanks(account_id),
   })
 
   const { accounts_create, accounts_delete, accounts_edit } = JSON.parse(
@@ -35,14 +37,14 @@ export function AccountsTable() {
   const [id, setId] = useState("")
   const [filteredResults, setFilteredResults] = useState([])
 
-  const fetchAccounts = useMutation({
-    mutationFn: getAccounts,
+  const refetchBanks = useMutation({
+    mutationFn: getBanks,
     onSuccess: () => {
-      toast.success("Conta removida com sucesso!")
-      queryClient.invalidateQueries({ queryKey: ["accounts"] })
+      toast.success("Banco removido com sucesso!")
+      queryClient.invalidateQueries({ queryKey: ["banks"] })
     },
     onError: (error) => {
-      toast.error("Erro ao remover conta: " + error)
+      toast.error("Erro ao remover Banco: " + error)
     },
     onSettled: () => {
       setOpen(false)
@@ -50,23 +52,24 @@ export function AccountsTable() {
   })
 
   const handleEdit = (id: string) => {
-    push(`/accounts/edit/${id}`)
+    push(`/banks/edit/${id}`)
   }
 
   const handleConfirmDelete = async () => {
-    await removeAccount({ accountId: id }).then(() => fetchAccounts.mutate())
+    await removeBank({ bank_id: id }).then(() =>
+      refetchBanks.mutate(account_id)
+    )
   }
 
   const columns = [
     { header: "Nome", accessor: "name" },
     {
-      header: "Habilitada",
-      accessor: "enabled",
-      render: (value: boolean, row: unknown) => (value ? "Sim" : "Não"),
+      header: "Número",
+      accessor: "bank_number",
     },
     {
       header: "Ações",
-      accessor: "account_id",
+      accessor: "bank_id",
       render: (value: string, row: unknown) => (
         <div className="flex space-x-4">
           {accounts_edit && (
@@ -92,16 +95,16 @@ export function AccountsTable() {
   ]
 
   useEffect(() => {
-    if (accounts) setFilteredResults(accounts)
-  }, [accounts, isLoading])
+    if (banks) setFilteredResults(banks)
+  }, [banks, isLoading])
 
-  if (!accounts || isLoading) return <LoadingScreen />
+  if (!banks || isLoading) return <LoadingScreen />
 
   return (
     <>
       <Modal
-        title="Remover Conta"
-        content="Você tem certeza de que deseja remover esta conta?"
+        title="Remover Banco"
+        content="Você tem certeza de que deseja remover este banco?"
         onClose={() => setOpen(false)}
         open={open}>
         <div className="flex items-center justify-center gap-4">
@@ -116,14 +119,12 @@ export function AccountsTable() {
       <div className="mt-8 flex items-center justify-between">
         <div className="flex h-full gap-4">
           <SearchInput
-            data={accounts}
+            data={banks}
             searchParam="name"
             onSearchResult={(results) => setFilteredResults(results)}
           />
           {accounts_create && (
-            <Button
-              onClick={() => push("/accounts/create")}
-              variant="secondary">
+            <Button onClick={() => push("/banks/create")} variant="secondary">
               Cadastrar
             </Button>
           )}
@@ -136,10 +137,8 @@ export function AccountsTable() {
           Exportar
         </Button>
       </div>
-      {accounts.length === 0 ?
-        <h2 className="mt-6 text-xl font-semibold">
-          Nenhuma conta cadastrada.
-        </h2>
+      {banks.length === 0 ?
+        <h2 className="mt-6 text-xl font-semibold">Nenhum banco cadastrado.</h2>
       : <Table columns={columns} data={filteredResults} />}
     </>
   )

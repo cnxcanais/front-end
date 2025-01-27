@@ -1,5 +1,6 @@
 import { Icon } from "@phosphor-icons/react"
 import {
+  Bank,
   Coin,
   Coins,
   CreditCard,
@@ -37,7 +38,7 @@ export const sidebar_options: SidebarOptionProps[] = [
   },
   {
     name: "Usuários",
-    href: "#",
+    href: "/users",
     Icon: Users,
     group: "Gerenciamento",
   },
@@ -87,6 +88,12 @@ export const sidebar_options: SidebarOptionProps[] = [
     name: "Despesas",
     href: "#",
     Icon: CreditCard,
+    group: "Cadastro",
+  },
+  {
+    name: "Banco",
+    href: "/banks",
+    Icon: Bank,
     group: "Cadastro",
   },
 ]

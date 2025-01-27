@@ -1,8 +1,7 @@
 "use client"
 
 import { SidebarItem } from "@/core/components/Sidebar"
-import { List } from "@phosphor-icons/react"
-import { X } from "@phosphor-icons/react/dist/ssr"
+import { List, X } from "@phosphor-icons/react"
 import Image from "next/image"
 import { usePathname } from "next/navigation"
 import { Fragment, useState } from "react"
