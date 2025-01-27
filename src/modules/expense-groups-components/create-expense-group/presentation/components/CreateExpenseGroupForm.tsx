@@ -34,7 +34,7 @@ export function CreateExpenseGroupForm() {
       toast.success(response)
       setTimeout(() => push("/expense-groups"), 2000)
     } catch (error) {
-      toast.error("Erro ao criar conta: " + error)
+      toast.error("Erro ao criar grupo de despesas: " + error)
     }
   }
 
