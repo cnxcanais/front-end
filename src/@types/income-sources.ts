@@ -3,22 +3,6 @@ export namespace IncomeSource {
     account_id: string
   }
 
-  export type GetRequestParams = {
-    income_source_id: string
-    name: string
-    cpf_cnpj: string
-    city: string
-    state: string
-    cep: string
-    address_1: string
-    address_2?: string
-    address_3?: string
-    phone: string
-    contact_name: string
-    email: string
-    account_id: string
-  }
-
   export type GetResponse = {
     incomeSources: {
       income_source_id: string

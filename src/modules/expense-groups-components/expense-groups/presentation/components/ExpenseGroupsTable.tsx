@@ -10,89 +10,73 @@ import { getPermissionByEntity } from "@/core/utils/getPermissionByEntity"
 import { getCookie } from "@/lib/cookies"
 import { queryClient } from "@/lib/react-query"
 import {
-  getOrganizations,
-  removeOrganization,
-} from "@/modules/organization-components/organizations/infra/remote"
+  deleteExpenseGroup,
+  getAllExpenseGroups,
+} from "@/modules/expense-groups-components/remote/expense-groups-methods"
 import { FileXls, Pencil, Trash } from "@phosphor-icons/react"
 import { useMutation, useQuery } from "@tanstack/react-query"
 import { useRouter } from "next/navigation"
 import { useEffect, useState } from "react"
 import { toast } from "sonner"
 
-export function OrganizationsTable() {
-  const accountId = getCookie("accountId")
-
-  const { data: organizations, isLoading } = useQuery({
-    queryKey: ["organizations"],
-    queryFn: () => getOrganizations({ account_id: accountId }),
-    enabled: !!accountId,
-  })
-
+export function ExpenseGroupTable() {
   const { push } = useRouter()
+
+  const create = getPermissionByEntity("expense_groups_create")
+  const edit = getPermissionByEntity("expense_groups_edit")
+  const deletePermission = getPermissionByEntity("expense_groups_delete")
+
+  const accountId = getCookie("accountId")
 
   const [open, setOpen] = useState(false)
   const [id, setId] = useState("")
   const [filteredResults, setFilteredResults] = useState([])
 
-  const refetchOrganizationsFn = useMutation({
-    mutationFn: getOrganizations,
+  const { data: expenseGroups, isLoading } = useQuery({
+    queryKey: ["expense-groups"],
+    queryFn: () => getAllExpenseGroups(accountId),
+  })
+
+  const fetchExpenseGroups = useMutation({
+    mutationFn: getAllExpenseGroups,
     onSuccess: () => {
-      toast.success("Organização removida com sucesso!")
-      queryClient.invalidateQueries({ queryKey: ["organizations"] })
+      toast.success("Grupo removido com sucesso!")
+      queryClient.invalidateQueries({ queryKey: ["expense-groups"] })
     },
     onError: (error) => {
-      toast.error("Erro ao remover organização: " + error)
+      toast.error("Erro ao remover grupo: " + error)
     },
     onSettled: () => {
       setOpen(false)
     },
   })
 
-  const organizations_create = getPermissionByEntity("organizations_create")
-  const organizations_edit = getPermissionByEntity("organizations_edit")
-  const organizations_delete = getPermissionByEntity("organizations_delete")
-
   const handleEdit = (id: string) => {
-    push(`/organizations/edit/${id}`)
+    push(`/expense-groups/edit/${id}`)
   }
 
   const handleConfirmDelete = async () => {
-    await removeOrganization({ organization_id: id }).then(() =>
-      refetchOrganizationsFn.mutate({ account_id: accountId })
+    await deleteExpenseGroup(id).then(() =>
+      fetchExpenseGroups.mutate(accountId)
     )
   }
 
   const columns = [
-    { header: "Nome", accessor: "name" },
-    {
-      header: "Email",
-      accessor: "email",
-    },
-    {
-      header: "Telefone",
-      accessor: "phone",
-    },
-    {
-      header: "Endereço",
-      accessor: "address",
-    },
-    {
-      header: "CNPJ",
-      accessor: "cnpj",
-    },
+    { header: "Nome", accessor: "group_name" },
     {
       header: "Ações",
-      accessor: "organization_id",
+      accessor: "expense_group_id",
       render: (value: string, row: unknown) => (
         <div className="flex space-x-4">
-          {organizations_edit && (
+          {edit && (
             <Pencil
               className="cursor-pointer duration-300 ease-in-out hover:text-blue-500"
               size={24}
               onClick={() => handleEdit(value)}
             />
           )}
-          {organizations_delete && (
+
+          {deletePermission && (
             <Trash
               className="cursor-pointer duration-300 ease-in-out hover:text-blue-500"
               size={24}
@@ -108,16 +92,16 @@ export function OrganizationsTable() {
   ]
 
   useEffect(() => {
-    if (organizations) setFilteredResults(organizations)
-  }, [organizations, isLoading])
+    if (expenseGroups) setFilteredResults(expenseGroups)
+  }, [expenseGroups, isLoading])
 
-  if (!organizations || isLoading) return <LoadingScreen />
+  if (!expenseGroups || isLoading) return <LoadingScreen />
 
   return (
     <>
       <Modal
-        title="Remover Organização"
-        content="Você tem certeza de que deseja remover esta organização?"
+        title="Remover Grupo"
+        content="Você tem certeza de que deseja remover este grupo?"
         onClose={() => setOpen(false)}
         open={open}>
         <div className="flex items-center justify-center gap-4">
@@ -129,16 +113,17 @@ export function OrganizationsTable() {
           </Button>
         </div>
       </Modal>
+
       <div className="mt-8 flex items-center justify-between">
         <div className="flex h-full gap-4">
           <SearchInput
-            data={organizations}
-            searchParam="name"
-            onSearchResult={(results) => setFilteredResults(results)}
+            data={expenseGroups}
+            searchParam="group_name"
+            onSearchResult={setFilteredResults}
           />
-          {organizations_create && (
+          {create && (
             <Button
-              onClick={() => push("/organizations/create")}
+              onClick={() => push("/expense-groups/create")}
               variant="secondary">
               Cadastrar
             </Button>
@@ -152,9 +137,9 @@ export function OrganizationsTable() {
           Exportar
         </Button>
       </div>
-      {organizations.length === 0 ?
+      {expenseGroups.length == 0 ?
         <h2 className="mt-6 text-xl font-semibold">
-          Nenhuma organização cadastrada.
+          Nenhum grupo de despesas cadastrado.
         </h2>
       : <Table columns={columns} data={filteredResults} />}
     </>
