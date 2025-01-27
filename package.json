@@ -12,10 +12,7 @@
     "clean": "rm -rf node_modules .next"
   },
   "dependencies": {
-    "@emotion/react": "^11.14.0",
-    "@emotion/styled": "^11.14.0",
     "@headlessui/react": "^2.2.0",
-    "@heroicons/react": "^2.2.0",
     "@hookform/resolvers": "^3.9.1",
     "@phosphor-icons/react": "^2.1.7",
     "@rocketseat/eslint-config": "^2.2.2",
@@ -32,11 +29,12 @@
     "react-spinners": "^0.15.0",
     "sonner": "^1.7.1",
     "tailwind-variants": "^0.3.0",
+    "xlsx": "^0.18.5",
     "zod": "^3.24.1"
   },
   "devDependencies": {
     "@eslint/eslintrc": "^3",
-    "@tailwindcss/forms": "^0.5.9",
+    "@tailwindcss/forms": "^0.5.10",
     "@types/js-cookie": "^3.0.6",
     "@types/node": "^20",
     "@types/react": "^19",

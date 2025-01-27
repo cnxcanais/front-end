@@ -1,8 +1,8 @@
 import { getCookie } from "@/lib/cookies"
 
-export const getPermissionByEntity = (entity: string) => {
+export function getPermissionByEntity(entity: string) {
   if (getCookie("permissions")) {
     const permissions = JSON.parse(getCookie("permissions"))
-    return permissions.componentAccess[entity]
+    return permissions.componentAccess[entity] as boolean
   }
 }
