@@ -1,11 +1,15 @@
 import { Icon } from "@phosphor-icons/react"
 import {
   Bank,
+  CashRegister,
+  ChartBarHorizontal,
   Coin,
   Coins,
   CreditCard,
   Globe,
   Key,
+  MoneyWavy,
+  NotePencil,
   PiggyBank,
   Suitcase,
   Umbrella,
@@ -95,6 +99,30 @@ export const sidebar_options: SidebarOptionProps[] = [
     href: "/banks",
     Icon: Bank,
     group: "Cadastro",
+  },
+  {
+    name: "Contas de Banco",
+    href: "/banks/accounts",
+    Icon: MoneyWavy,
+    group: "Cadastro",
+  },
+  {
+    name: "DRE",
+    href: "#",
+    Icon: NotePencil,
+    group: "Relatórios",
+  },
+  {
+    name: "Fluxo de Caixa",
+    href: "#",
+    Icon: CashRegister,
+    group: "Relatórios",
+  },
+  {
+    name: "Dashboard",
+    href: "#",
+    Icon: ChartBarHorizontal,
+    group: "Relatórios",
   },
 ]
 

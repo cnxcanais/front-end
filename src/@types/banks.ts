@@ -1,3 +1,5 @@
+import { BankAccount } from "./bank-accounts"
+
 export namespace Bank {
   export type GetResponse = {
     banks: {
@@ -6,7 +8,7 @@ export namespace Bank {
       created_at: Date
       updated_at: Date
       account_id: string
-      bank_account: any // TODO: update this type later
+      bank_account: BankAccount.Type
       bank_number: number
     }[]
   }
@@ -18,7 +20,7 @@ export namespace Bank {
       created_at: Date
       updated_at: Date
       account_id: string
-      bank_account: any // TODO: update this type later
+      bank_account: BankAccount.Type
       bank_number: number
     }
   }
