@@ -99,9 +99,11 @@ export function CreateBankAccountForm() {
             <label className="text-lg" htmlFor="observation">
               Observação
             </label>
-            <Input.Root variant={errors.observation ? "error" : "primary"}>
+            <Input.Root
+              className="flex-1"
+              variant={errors.observation ? "error" : "primary"}>
               <textarea
-                className="min-h-48 w-full resize-none border-none text-sm"
+                className="h-full w-full resize-none border-none text-sm"
                 {...register("observation")}
               />
             </Input.Root>

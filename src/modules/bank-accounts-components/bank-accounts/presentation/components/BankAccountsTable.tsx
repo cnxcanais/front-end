@@ -3,6 +3,7 @@
 import { Button } from "@/core/components/Button"
 import { LoadingScreen } from "@/core/components/LoadingScreen"
 import { Modal } from "@/core/components/Modals/Modal"
+import { ModalObservationTrigger } from "@/core/components/Modals/ModalObservation"
 import { SearchInput } from "@/core/components/SearchInput"
 import { Table } from "@/core/components/Table"
 import { exportToExcel } from "@/core/utils/exportToExcel"
@@ -69,6 +70,11 @@ export function BankAccountsTable() {
       header: "Banco",
       accessor: "bank",
       render: (value: any, row: unknown) => value.name,
+    },
+    {
+      header: "Obs.",
+      accessor: "observation",
+      render: (value) => <ModalObservationTrigger content={value} />,
     },
     {
       header: "Ações",

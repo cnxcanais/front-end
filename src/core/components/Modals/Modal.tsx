@@ -8,7 +8,7 @@ import {
 export type ModalProps = {
   children: React.ReactNode
   title: string
-  content: string
+  content?: string
   open: boolean
   onClose: (open: boolean) => void
 }
@@ -33,9 +33,11 @@ export function Modal({ children, content, title, onClose, open }: ModalProps) {
                   className="text-base font-semibold text-gray-900">
                   {title}
                 </DialogTitle>
-                <div className="mt-2">
-                  <p className="text-sm text-gray-500">{content}</p>
-                </div>
+                {content && (
+                  <div className="mt-2">
+                    <p className="text-sm text-gray-500">{content}</p>
+                  </div>
+                )}
               </div>
             </div>
             <div className="mt-5 sm:grid sm:grid-flow-row-dense">
