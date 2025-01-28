@@ -17,7 +17,7 @@ export function Sidebar() {
 
   return (
     <aside
-      className={`left-0 top-0 h-full transition-all duration-300 ease-in-out ${
+      className={`left-0 top-0 h-full overflow-y-auto transition-all duration-300 ease-in-out ${
         isOpen ? "w-72" : "mr-10 w-0"
       } border-r border-gray-200 bg-blue-500`}>
       <div className="flex items-center justify-between p-4">
@@ -42,10 +42,10 @@ export function Sidebar() {
             <ul role="list" className="-mx-2 space-y-1">
               {Object.keys(sidebarGroupedByGroups).map((group) => (
                 <Fragment key={group}>
-                  <h3 className="my-2 text-lg font-semibold text-white">
+                  <h3 className="!my-3 border-b-2 pb-0.5 text-lg font-semibold text-white">
                     {group}
                   </h3>
-                  <div className="space-y-2">
+                  <div className="space-y-1">
                     {sidebarGroupedByGroups[group].map((item) => (
                       <SidebarItem
                         key={item.name}

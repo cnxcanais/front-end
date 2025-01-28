@@ -30,7 +30,7 @@ export function SearchInput<T>({
   }
 
   return (
-    <Input.Root className="min-w-96">
+    <Input.Root className="min-w-96 text-sm">
       <Input.Control
         type="text"
         placeholder={placeholder}

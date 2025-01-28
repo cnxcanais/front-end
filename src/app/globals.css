@@ -7,3 +7,24 @@ input:focus, textarea:focus {
   box-shadow: none;
   border: 0;
 }
+
+/* Works on Firefox */
+* {
+  scrollbar-width: thin;
+  scrollbar-color: #c2a360 #cecfd1;
+}
+
+/* Works on Chrome, Edge, and Safari */
+*::-webkit-scrollbar {
+  width: 12px;
+}
+
+*::-webkit-scrollbar-track {
+  background: #c2a360;
+}
+
+*::-webkit-scrollbar-thumb {
+  background-color: #c2a360;
+  border-radius: 20px;
+  border: 3px solid #cecfd1;
+}
