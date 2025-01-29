@@ -9,7 +9,7 @@ export default function Unauthorized() {
     <main className="grid min-h-full items-center">
       <div className="mx-auto w-full max-w-7xl px-6">
         <div className="max-w-lg">
-          <p className="text-base/8 font-semibold text-white">401</p>
+          <p className="text-xl font-semibold text-white">401</p>
           <h1 className="mt-4 text-pretty text-5xl font-semibold tracking-tight text-white sm:text-6xl">
             Acesso não autorizado
           </h1>
