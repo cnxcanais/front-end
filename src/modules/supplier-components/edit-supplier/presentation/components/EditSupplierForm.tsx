@@ -1,58 +1,81 @@
 "use client"
 
-import { IncomeSource } from "@/@types/income-sources"
+import { Supplier } from "@/@types/suppliers"
 import { Button } from "@/core/components/Button"
 import * as Input from "@/core/components/Input"
+import { LoadingScreen } from "@/core/components/LoadingScreen"
 import { getCookie } from "@/lib/cookies"
-import { createIncomeSource } from "@/modules/income-source-components/create-income-source/infra/remote/create-income-source"
 import {
-  CreateIncomeSourceSchema,
-  createIncomeSourceFormSchema,
-} from "@/modules/income-source-components/create-income-source/presentation/validation/schema"
+  editSupplier,
+  getSupplierById,
+} from "@/modules/supplier-components/edit-supplier/infra/remote"
+import {
+  EditSupplierSchema,
+  editSupplierFormSchema,
+} from "@/modules/supplier-components/edit-supplier/presentation/validation/schema"
 import { zodResolver } from "@hookform/resolvers/zod"
+import { useQuery } from "@tanstack/react-query"
 import { useRouter } from "next/navigation"
 import { useForm } from "react-hook-form"
 import { toast } from "sonner"
 
-export function CreateIncomeSourceForm() {
+export function EditSupplierForm({ id }: { id: string }) {
   const { push } = useRouter()
 
-  const account_id = getCookie("accountId")
+  const { data: supplier, isLoading } = useQuery({
+    queryKey: ["supplier", id],
+    queryFn: () => getSupplierById(id),
+    enabled: id !== "",
+    refetchOnWindowFocus: false,
+  })
 
   const {
-    income_source_input_fields_name,
-    income_source_input_fields_email,
-    income_source_input_fields_cpf_cnpj,
-    income_source_input_fields_phone,
-    income_source_input_fields_contact_name,
-    income_source_input_fields_address_1,
-    income_source_input_fields_address_2,
-    income_source_input_fields_address_3,
-    income_source_input_fields_state,
-    income_source_input_fields_cep,
-    income_source_input_fields_city,
+    supplier_input_fields_name,
+    supplier_input_fields_email,
+    supplier_input_fields_cpf_cnpj,
+    supplier_input_fields_phone,
+    supplier_input_fields_contact_name,
+    supplier_input_fields_address_1,
+    supplier_input_fields_address_2,
+    supplier_input_fields_address_3,
+    supplier_input_fields_state,
+    supplier_input_fields_cep,
+    supplier_input_fields_city,
   } = JSON.parse(getCookie("permissions")).componentAccess
 
   const {
     register,
     handleSubmit,
     formState: { isSubmitting, errors },
-  } = useForm<CreateIncomeSourceSchema>({
-    resolver: zodResolver(createIncomeSourceFormSchema),
+  } = useForm<EditSupplierSchema>({
+    resolver: zodResolver(editSupplierFormSchema),
     values: {
-      account_id,
+      account_id: supplier?.account_id || "",
+      name: supplier?.name || "",
+      address_1: supplier?.address_1 || "",
+      address_2: supplier?.address_2 || "",
+      address_3: supplier?.address_3 || "",
+      cpf_cnpj: supplier?.cpf_cnpj || "",
+      cep: supplier?.cep || "",
+      city: supplier?.city || "",
+      contact_name: supplier?.contact_name || "",
+      state: supplier?.state || "",
+      phone: supplier?.phone || "",
+      email: supplier?.email || "",
     },
   })
 
-  async function onSubmit(data: IncomeSource.CreateRequest) {
+  async function onSubmit(data: Supplier.UpdateRequest) {
     try {
-      const response = await createIncomeSource(data)
-      toast.success(response)
-      setTimeout(() => push("/income-sources"), 2000)
+      await editSupplier({ supplier_id: id, ...data })
+      toast.success("Fornecedor editado com sucesso!")
+      setTimeout(() => push("/suppliers"), 2000)
     } catch (error) {
-      toast.error("Erro ao criar fonte de receita: " + error)
+      toast.error("Erro ao editar fornecedor: " + error)
     }
   }
+
+  if (!supplier || isLoading) return <LoadingScreen />
 
   return (
     <form
@@ -66,7 +89,7 @@ export function CreateIncomeSourceForm() {
             </label>
             <Input.Root variant={errors.name ? "error" : "primary"}>
               <Input.Control
-                disabled={!income_source_input_fields_name}
+                disabled={!supplier_input_fields_name}
                 {...register("name")}
                 type="text"
               />
@@ -84,7 +107,7 @@ export function CreateIncomeSourceForm() {
             </label>
             <Input.Root variant={errors.cpf_cnpj ? "error" : "primary"}>
               <Input.Control
-                disabled={!income_source_input_fields_cpf_cnpj}
+                disabled={!supplier_input_fields_cpf_cnpj}
                 {...register("cpf_cnpj")}
                 type="text"
               />
@@ -104,7 +127,7 @@ export function CreateIncomeSourceForm() {
             </label>
             <Input.Root variant={errors.contact_name ? "error" : "primary"}>
               <Input.Control
-                disabled={!income_source_input_fields_contact_name}
+                disabled={!supplier_input_fields_contact_name}
                 {...register("contact_name")}
                 type="text"
               />
@@ -122,7 +145,7 @@ export function CreateIncomeSourceForm() {
             </label>
             <Input.Root variant={errors.phone ? "error" : "primary"}>
               <Input.Control
-                disabled={!income_source_input_fields_phone}
+                disabled={!supplier_input_fields_phone}
                 {...register("phone")}
                 type="text"
               />
@@ -140,7 +163,7 @@ export function CreateIncomeSourceForm() {
             </label>
             <Input.Root variant={errors.email ? "error" : "primary"}>
               <Input.Control
-                disabled={!income_source_input_fields_email}
+                disabled={!supplier_input_fields_email}
                 {...register("email")}
                 type="email"
               />
@@ -162,7 +185,7 @@ export function CreateIncomeSourceForm() {
             </label>
             <Input.Root variant={errors.city ? "error" : "primary"}>
               <Input.Control
-                disabled={!income_source_input_fields_city}
+                disabled={!supplier_input_fields_city}
                 {...register("city")}
                 type="text"
               />
@@ -180,7 +203,7 @@ export function CreateIncomeSourceForm() {
             </label>
             <Input.Root variant={errors.state ? "error" : "primary"}>
               <Input.Control
-                disabled={!income_source_input_fields_state}
+                disabled={!supplier_input_fields_state}
                 {...register("state")}
                 type="state"
               />
@@ -198,7 +221,7 @@ export function CreateIncomeSourceForm() {
             </label>
             <Input.Root variant={errors.cep ? "error" : "primary"}>
               <Input.Control
-                disabled={!income_source_input_fields_cep}
+                disabled={!supplier_input_fields_cep}
                 {...register("cep")}
                 type="cep"
               />
@@ -216,7 +239,7 @@ export function CreateIncomeSourceForm() {
             </label>
             <Input.Root variant={errors.address_1 ? "error" : "primary"}>
               <Input.Control
-                disabled={!income_source_input_fields_address_1}
+                disabled={!supplier_input_fields_address_1}
                 {...register("address_1")}
                 type="text"
               />
@@ -234,7 +257,7 @@ export function CreateIncomeSourceForm() {
             </label>
             <Input.Root variant="primary">
               <Input.Control
-                disabled={!income_source_input_fields_address_2}
+                disabled={!supplier_input_fields_address_2}
                 {...register("address_2")}
                 type="address_2"
               />
@@ -247,7 +270,7 @@ export function CreateIncomeSourceForm() {
             </label>
             <Input.Root variant="primary">
               <Input.Control
-                disabled={!income_source_input_fields_address_3}
+                disabled={!supplier_input_fields_address_3}
                 {...register("address_3")}
                 type="address_3"
               />
@@ -263,7 +286,7 @@ export function CreateIncomeSourceForm() {
         <Button
           type="button"
           disabled={isSubmitting}
-          onClick={() => push("/income-sources")}
+          onClick={() => push("/suppliers")}
           variant="tertiary">
           Voltar
         </Button>
