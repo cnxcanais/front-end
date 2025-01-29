@@ -11,7 +11,16 @@
     "/income-groups/edit": true,
     "/income-sources": true,
     "/income-sources/create": true,
-    "/income-sources/edit": true
+    "/income-sources/edit": true,
+    "/suppliers": true,
+    "/suppliers/create": true,
+    "/suppliers/edit": true,
+    "/banks": true,
+    "/banks/create": true,
+    "/banks/edit": true,
+    "/banks/accounts": true,
+    "/banks/accounts/create": true,
+    "/banks/accounts/edit": true
   },
   "componentAccess": {
     "dashboard_button": true,
@@ -45,6 +54,20 @@
     "income_source_input_fields_city": true,
     "income_source_input_fields_contact_name": true,
     "income_source_input_fields_email": true,
-    "income_source_input_fields_phone": true
+    "income_source_input_fields_phone": true,
+    "suppliers_create": true,
+    "suppliers_edit": true,
+    "suppliers_delete": true,
+    "supplier_input_fields_name": true,
+    "supplier_input_fields_cpf_cnpj": true,
+    "supplier_input_fields_address_1": true,
+    "supplier_input_fields_address_2": true,
+    "supplier_input_fields_address_3": true,
+    "supplier_input_fields_cep": true,
+    "supplier_input_fields_state": true,
+    "supplier_input_fields_city": true,
+    "supplier_input_fields_contact_name": true,
+    "supplier_input_fields_email": true,
+    "supplier_input_fields_phone": true
   }
 }

@@ -59,7 +59,7 @@ export const sidebar_options: SidebarOptionProps[] = [
     group: "Cadastro",
   },
   {
-    name: "Franqueado",
+    name: "Fonte de Receita",
     href: "/income-sources",
     Icon: Globe,
     group: "Cadastro",

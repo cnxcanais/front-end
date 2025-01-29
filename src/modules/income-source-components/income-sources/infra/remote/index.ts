@@ -1,2 +1,2 @@
-export * from "./get-organizations"
-export * from "./remove-organization"
+export * from "./get-income-sources"
+export * from "./remove-income-source"

@@ -4,7 +4,7 @@ import { EditIncomeSourceForm } from "@/modules/income-source-components/edit-in
 export async function EditIncomeSourcePage({ id }: { id: string }) {
   return (
     <>
-      <PageTitle content="Editar Organização" />
+      <PageTitle content="Editar Fonte de Receita" />
       <EditIncomeSourceForm id={id} />
     </>
   )
