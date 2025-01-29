@@ -54,7 +54,7 @@ export function AccountsTable() {
   }
 
   const handleConfirmDelete = async () => {
-    await removeAccount({ accountId: id }).then(() => fetchAccounts.mutate())
+    await removeAccount({ account_id: id }).then(() => fetchAccounts.mutate())
   }
 
   const columns = [
@@ -63,6 +63,18 @@ export function AccountsTable() {
       header: "Habilitada",
       accessor: "enabled",
       render: (value: boolean, row: unknown) => (value ? "Sim" : "Não"),
+    },
+    {
+      header: "Última Atualização",
+      accessor: "updated_at",
+      render: (value: string, row: unknown) =>
+        new Date(value).toLocaleDateString("pt-BR", {
+          month: "2-digit",
+          year: "2-digit",
+          day: "2-digit",
+          hour: "2-digit",
+          minute: "2-digit",
+        }),
     },
     {
       header: "Ações",
@@ -114,7 +126,7 @@ export function AccountsTable() {
         </div>
       </Modal>
       <div className="mt-8 flex items-center justify-between">
-        <div className="flex gap-4">
+        <div className="flex h-full gap-4">
           <SearchInput
             data={accounts}
             searchParam="name"

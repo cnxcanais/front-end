@@ -1,17 +1,23 @@
 export namespace Account {
   export type GetRequest = {
     accounts: {
-      accountId: string
+      account_id: string
       name: string
       enabled: boolean
+      master_mode: boolean
+      created_at: Date
+      updated_at: Date
     }[]
   }
 
   export type GetByIdRequest = {
     account: {
-      accountId: string
+      account_id: string
       name: string
       enabled: boolean
+      master_mode: boolean
+      created_at: Date
+      updated_at: Date
     }
   }
 
@@ -20,12 +26,13 @@ export namespace Account {
   }
 
   export type DeleteRequest = {
-    accountId: string
+    account_id: string
   }
 
   export type UpdateRequest = {
-    accountId: string
+    account_id: string
     name: string
     enabled: boolean
+    master_mode?: boolean
   }
 }
