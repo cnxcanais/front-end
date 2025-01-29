@@ -1,7 +1,7 @@
+import { Button } from "@/core/components/Button"
+import { Modal } from "@/core/components/Modals/Modal"
 import { ChatCenteredText } from "@phosphor-icons/react"
 import { ReactNode, useState } from "react"
-import { Button } from "../Button"
-import { Modal } from "./Modal"
 
 export type ModalProps = {
   children: ReactNode
@@ -14,7 +14,7 @@ function ModalObservation({ children, onClose, open }: ModalProps) {
     <Modal open={open} title="Observação" onClose={onClose}>
       {children}
       <Button onClick={onClose} variant="tertiary">
-        Cancelar
+        Fechar
       </Button>
     </Modal>
   )

@@ -1,3 +1,5 @@
+"use client"
+
 import { Button } from "@/core/components/Button"
 import * as Input from "@/core/components/Input"
 import { resetPassword } from "@/modules/login-components/email-recovery/infra/remote/reset-password"
@@ -33,7 +35,9 @@ export function PasswordResetForm() {
       </h2>
 
       <div className="mb-2 flex flex-col gap-3">
-        <label htmlFor="email">E-mail</label>
+        <label className="text-lg" htmlFor="email">
+          E-mail
+        </label>
         <Input.Root variant="secondary">
           <Input.Control {...register("email")} type="email" />
         </Input.Root>

@@ -38,11 +38,11 @@ export function BankAccountsTable() {
   const [id, setId] = useState("")
   const [filteredResults, setFilteredResults] = useState([])
 
-  const refetchBanks = useMutation({
+  const refetchBankAccounts = useMutation({
     mutationFn: getBankAccounts,
     onSuccess: () => {
       toast.success("Conta de banco removida com sucesso!")
-      queryClient.invalidateQueries({ queryKey: ["banks"] })
+      queryClient.invalidateQueries({ queryKey: ["bank-accounts"] })
     },
     onError: (error) => {
       toast.error("Erro ao remover conta de banco: " + error)
@@ -57,7 +57,9 @@ export function BankAccountsTable() {
   }
 
   const handleConfirmDelete = async () => {
-    await removeBankAccount(id).then(() => refetchBanks.mutate(account_id))
+    await removeBankAccount(id).then(() =>
+      refetchBankAccounts.mutate(account_id)
+    )
   }
 
   const columns = [
