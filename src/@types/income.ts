@@ -1,4 +1,6 @@
 import { IncomeDetails } from "@/@types/income-details"
+import { IncomeGroup } from "@/@types/income-group"
+import { IncomeSource } from "@/@types/income-sources"
 
 export namespace Income {
   export type GetRequest = {
@@ -11,22 +13,24 @@ export namespace Income {
     income_group_id?: string
   }
 
+  export type IncomeType = {
+    income_id: string
+    description: string
+    document: string
+    date: Date
+    income_percentage: string
+    observation: string
+    income_group: IncomeGroup.IncomeGroupType
+    income_source: IncomeSource.IncomeSourceType
+    created_at: Date
+    updated_at: Date
+    account_id: string
+    organization_id: string
+    income_details: IncomeDetails.GetResponse
+  }
+
   export type GetResponse = {
-    incomes: {
-      income_id: string
-      description: string
-      document: string
-      date: Date
-      income_percentage: string
-      observation: string
-      income_group_id: string
-      income_source_id: string
-      created_at: Date
-      updated_at: Date
-      account_id: string
-      organization_id: string
-      income_details: IncomeDetails.GetResponse
-    }[]
+    incomes: IncomeType[]
   }
 
   export type GetByIdRequest = {
@@ -34,21 +38,7 @@ export namespace Income {
   }
 
   export type GetByIdResponse = {
-    income: {
-      income_id: string
-      description: string
-      document: string
-      date: Date
-      income_percentage: string
-      observation: string
-      income_group_id: string
-      income_source_id: string
-      created_at: Date
-      updated_at: Date
-      account_id: string
-      organization_id: string
-      income_details: IncomeDetails.GetResponse
-    }
+    income: IncomeType
   }
 
   export type CreateResquest = {

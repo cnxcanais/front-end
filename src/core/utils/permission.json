@@ -45,6 +45,9 @@
     "income_source_input_fields_city": true,
     "income_source_input_fields_contact_name": true,
     "income_source_input_fields_email": true,
-    "income_source_input_fields_phone": true
+    "income_source_input_fields_phone": true,
+    "income_create": true,
+    "income_edit": true,
+    "income_delete": true
   }
 }

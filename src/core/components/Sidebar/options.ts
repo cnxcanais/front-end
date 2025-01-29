@@ -79,7 +79,7 @@ export const sidebar_options: SidebarOptionProps[] = [
   },
   {
     name: "Receitas",
-    href: "#",
+    href: "/incomes",
     Icon: Coin,
     group: "Cadastro",
   },

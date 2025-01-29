@@ -10,21 +10,21 @@ import { getPermissionByEntity } from "@/core/utils/getPermissionByEntity"
 import { getCookie } from "@/lib/cookies"
 import { queryClient } from "@/lib/react-query"
 import {
-  getOrganizations,
-  removeOrganization,
-} from "@/modules/organization-components/organizations/infra/remote"
+  getIncomes,
+  removeIncome,
+} from "@/modules/income-components/income-components/income/remote"
 import { FileXls, Pencil, Trash } from "@phosphor-icons/react"
 import { useMutation, useQuery } from "@tanstack/react-query"
 import { useRouter } from "next/navigation"
 import { useEffect, useState } from "react"
 import { toast } from "sonner"
 
-export function OrganizationsTable() {
+export function IncomeTable() {
   const accountId = getCookie("accountId")
 
-  const { data: organizations, isLoading } = useQuery({
-    queryKey: ["organizations"],
-    queryFn: () => getOrganizations({ account_id: accountId }),
+  const { data: incomes, isLoading } = useQuery({
+    queryKey: ["incomes"],
+    queryFn: () => getIncomes({ account_id: accountId }),
     enabled: !!accountId,
   })
 
@@ -34,65 +34,70 @@ export function OrganizationsTable() {
   const [id, setId] = useState("")
   const [filteredResults, setFilteredResults] = useState([])
 
-  const refetchOrganizationsFn = useMutation({
-    mutationFn: getOrganizations,
+  const refetchIncomesFn = useMutation({
+    mutationFn: getIncomes,
     onSuccess: () => {
-      toast.success("Organização removida com sucesso!")
-      queryClient.invalidateQueries({ queryKey: ["organizations"] })
+      toast.success("Receita removida com sucesso!")
+      queryClient.invalidateQueries({ queryKey: ["incomes"] })
     },
     onError: (error) => {
-      toast.error("Erro ao remover organização: " + error)
+      toast.error("Erro ao remover receita: " + error)
     },
     onSettled: () => {
       setOpen(false)
     },
   })
 
-  const organizations_create = getPermissionByEntity("organizations_create")
-  const organizations_edit = getPermissionByEntity("organizations_edit")
-  const organizations_delete = getPermissionByEntity("organizations_delete")
+  const income_create = getPermissionByEntity("income_create")
+  const income_edit = getPermissionByEntity("income_edit")
+  const income_delete = getPermissionByEntity("income_delete")
 
   const handleEdit = (id: string) => {
-    push(`/organizations/edit/${id}`)
+    push(`/incomes/edit/${id}`)
   }
 
   const handleConfirmDelete = async () => {
-    await removeOrganization({ organization_id: id }).then(() =>
-      refetchOrganizationsFn.mutate({ account_id: accountId })
+    await removeIncome({ income_id: id }).then(() =>
+      refetchIncomesFn.mutate({ account_id: accountId })
     )
   }
 
   const columns = [
-    { header: "Nome", accessor: "name" },
+    { header: "Documento", accessor: "document" },
+    { header: "Descrição", accessor: "description" },
     {
-      header: "Email",
-      accessor: "email",
+      header: "Valor",
+      accessor: "",
     },
     {
-      header: "Telefone",
-      accessor: "phone",
+      header: "Cliente",
+      accessor: "income_source.name",
     },
     {
-      header: "Endereço",
-      accessor: "address",
+      header: "Data",
+      accessor: "date",
     },
     {
-      header: "CNPJ",
-      accessor: "cnpj",
+      header: "Grupo",
+      accessor: "income_group.group_name",
+    },
+    {
+      header: "Observações",
+      accessor: "observation",
     },
     {
       header: "Ações",
-      accessor: "organization_id",
+      accessor: "income_id",
       render: (value: string, row: unknown) => (
         <div className="flex space-x-4">
-          {organizations_edit && (
+          {income_edit && (
             <Pencil
               className="cursor-pointer duration-300 ease-in-out hover:text-blue-500"
               size={24}
               onClick={() => handleEdit(value)}
             />
           )}
-          {organizations_delete && (
+          {income_delete && (
             <Trash
               className="cursor-pointer duration-300 ease-in-out hover:text-blue-500"
               size={24}
@@ -108,16 +113,16 @@ export function OrganizationsTable() {
   ]
 
   useEffect(() => {
-    if (organizations) setFilteredResults(organizations)
-  }, [organizations, isLoading])
+    if (incomes) setFilteredResults(incomes)
+  }, [incomes, isLoading])
 
-  if (!organizations || isLoading) return <LoadingScreen />
+  if (!incomes || isLoading) return <LoadingScreen />
 
   return (
     <>
       <Modal
-        title="Remover Organização"
-        content="Você tem certeza de que deseja remover esta organização?"
+        title="Remover Receita"
+        content="Você tem certeza de que deseja remover esta receita?"
         onClose={() => setOpen(false)}
         open={open}>
         <div className="flex items-center justify-center gap-4">
@@ -132,14 +137,12 @@ export function OrganizationsTable() {
       <div className="mt-8 flex items-center justify-between">
         <div className="flex h-full gap-4">
           <SearchInput
-            data={organizations}
+            data={incomes}
             searchParam="name"
             onSearchResult={(results) => setFilteredResults(results)}
           />
-          {organizations_create && (
-            <Button
-              onClick={() => push("/organizations/create")}
-              variant="secondary">
+          {income_create && (
+            <Button onClick={() => push("/incomes/create")} variant="secondary">
               Cadastrar
             </Button>
           )}
@@ -152,9 +155,9 @@ export function OrganizationsTable() {
           Exportar
         </Button>
       </div>
-      {organizations.length === 0 ?
+      {incomes.length === 0 ?
         <h2 className="mt-6 text-xl font-semibold">
-          Nenhuma organização cadastrada.
+          Nenhuma receita cadastrada.
         </h2>
       : <Table columns={columns} data={filteredResults} />}
     </>

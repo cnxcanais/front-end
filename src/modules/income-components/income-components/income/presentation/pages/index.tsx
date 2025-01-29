@@ -1,11 +1,11 @@
 import { PageTitle } from "@/core/components/PageTitle"
-import { OrganizationsTable } from "@/modules/organization-components/organizations/presentation/components/OrganizationsTable"
+import { IncomeTable } from "@/modules/income-components/income-components/income/presentation/components/IncomeTable"
 
-export function OrganizationsPage() {
+export function IncomePage() {
   return (
     <main className="flex w-full max-w-[1200px] flex-col">
-      <PageTitle content="Organizações" />
-      <OrganizationsTable />
+      <PageTitle content="Receitas" />
+      <IncomeTable />
     </main>
   )
 }
