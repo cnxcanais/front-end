@@ -23,7 +23,7 @@ export function SuppliersTable() {
 
   const { data: suppliers, isLoading } = useQuery({
     queryKey: ["suppliers"],
-    queryFn: () => getSuppliers({ account_id }),
+    queryFn: () => getSuppliers(account_id),
     enabled: !!account_id,
   })
 
@@ -58,9 +58,7 @@ export function SuppliersTable() {
   }
 
   const handleConfirmDelete = async () => {
-    await removeSupplier({ suplier_id: id }).then(() =>
-      refetchSuppliersFn.mutate({ account_id })
-    )
+    await removeSupplier(id).then(() => refetchSuppliersFn.mutate(account_id))
   }
 
   // column structure for table
@@ -96,7 +94,7 @@ export function SuppliersTable() {
     },
     {
       header: "Ações",
-      accessor: "income_source_id",
+      accessor: "supplier_id",
       render: (value: string, row: unknown) => (
         <div className="flex space-x-4">
           {suppliers_edit && (
@@ -145,7 +143,7 @@ export function SuppliersTable() {
         </div>
       </Modal>
       <div className="mt-8 flex items-center justify-between">
-        <div className="flex gap-4">
+        <div className="flex h-full gap-4">
           <SearchInput
             data={suppliers}
             searchParam="name"

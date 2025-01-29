@@ -174,7 +174,7 @@ export function CreateSupplierForm() {
             )}
           </div>
 
-          <div className="flex max-w-24 flex-col gap-2">
+          <div className="flex flex-col gap-2">
             <label className="text-lg" htmlFor="state">
               Estado
             </label>
@@ -228,7 +228,7 @@ export function CreateSupplierForm() {
             )}
           </div>
 
-          <div className="flex max-w-24 flex-col gap-2">
+          <div className="flex flex-col gap-2">
             <label className="text-lg" htmlFor="address_2">
               Número
             </label>

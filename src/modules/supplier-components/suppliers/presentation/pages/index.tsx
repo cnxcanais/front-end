@@ -4,7 +4,7 @@ import { SuppliersTable } from "@/modules/supplier-components/suppliers/presenta
 export function SuppliersPage() {
   return (
     <main className="flex w-full max-w-[1400px] flex-col">
-      <PageTitle content="Franqueados" />
+      <PageTitle content="Fornecedores" />
       <SuppliersTable />
     </main>
   )

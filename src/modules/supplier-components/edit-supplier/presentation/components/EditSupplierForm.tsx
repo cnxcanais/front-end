@@ -197,7 +197,7 @@ export function EditSupplierForm({ id }: { id: string }) {
             )}
           </div>
 
-          <div className="flex max-w-24 flex-col gap-2">
+          <div className="flex flex-col gap-2">
             <label className="text-lg" htmlFor="state">
               Estado
             </label>
@@ -251,7 +251,7 @@ export function EditSupplierForm({ id }: { id: string }) {
             )}
           </div>
 
-          <div className="flex max-w-24 flex-col gap-2">
+          <div className="flex flex-col gap-2">
             <label className="text-lg" htmlFor="address_2">
               Número
             </label>
@@ -286,7 +286,7 @@ export function EditSupplierForm({ id }: { id: string }) {
         <Button
           type="button"
           disabled={isSubmitting}
-          onClick={() => push("/income-sources")}
+          onClick={() => push("/suppliers")}
           variant="tertiary">
           Voltar
         </Button>

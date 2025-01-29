@@ -144,7 +144,7 @@ export function IncomeSourcesTable() {
         </div>
       </Modal>
       <div className="mt-8 flex items-center justify-between">
-        <div className="flex gap-4">
+        <div className="flex h-full gap-4">
           <SearchInput
             data={incomeSources}
             searchParam="name"
