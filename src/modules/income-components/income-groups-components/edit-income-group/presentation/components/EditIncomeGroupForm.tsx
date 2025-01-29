@@ -11,7 +11,7 @@ import {
 import {
   getIncomeGroupById,
   updateIncomeGroup,
-} from "@/modules/income-components/income-groups-components/remote/incomeGroup"
+} from "@/modules/income-components/income-groups-components/remote/income-group"
 import { zodResolver } from "@hookform/resolvers/zod"
 import { useQuery } from "@tanstack/react-query"
 import { useRouter } from "next/navigation"

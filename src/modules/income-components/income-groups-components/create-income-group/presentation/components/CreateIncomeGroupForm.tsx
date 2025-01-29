@@ -8,7 +8,7 @@ import {
   CreateIncomeGroupSchema,
   createIncomeGroupSchema,
 } from "@/modules/income-components/income-groups-components/create-income-group/presentation/validation/schema"
-import { createIncomeGroup } from "@/modules/income-components/income-groups-components/remote/incomeGroup"
+import { createIncomeGroup } from "@/modules/income-components/income-groups-components/remote/income-group"
 import { zodResolver } from "@hookform/resolvers/zod"
 import { useRouter } from "next/navigation"
 import { useForm } from "react-hook-form"

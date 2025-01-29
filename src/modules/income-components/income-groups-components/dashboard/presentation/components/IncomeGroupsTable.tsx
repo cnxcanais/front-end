@@ -12,7 +12,7 @@ import { queryClient } from "@/lib/react-query"
 import {
   deleteIncomeGroup,
   getAllIncomeGroups,
-} from "@/modules/income-components/income-groups-components/remote/incomeGroup"
+} from "@/modules/income-components/income-groups-components/remote/income-group"
 import { FileXls, Pencil, Trash } from "@phosphor-icons/react"
 import { useMutation, useQuery } from "@tanstack/react-query"
 import { useRouter } from "next/navigation"
