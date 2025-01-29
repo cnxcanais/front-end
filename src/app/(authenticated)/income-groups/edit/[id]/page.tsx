@@ -1,4 +1,4 @@
-import { EditIncomeGroupPage } from "@/modules/income-groups-components/edit-income-group/presentation/pages"
+import { EditIncomeGroupPage } from "@/modules/income-components/income-groups-components/edit-income-group/presentation/pages"
 export default async function EditIncomeGroupRender({
   params,
 }: {
