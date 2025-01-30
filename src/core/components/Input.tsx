@@ -11,7 +11,7 @@ const div = tv({
   variants: {
     variant: {
       primary: "border-black",
-      secondary: "border-white text-white",
+      secondary: "border-white !text-white",
       error:
         "border-red-500 focus-within:border-red-500 focus-within:ring-2 focus-within:ring-red-100",
     },
