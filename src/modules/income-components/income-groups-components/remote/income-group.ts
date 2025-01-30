@@ -8,9 +8,9 @@ export const createIncomeGroup = async (
   return response.data.message
 }
 
-export const getAllIncomeGroups = async (accountId: IncomeGroup.GetRequest) => {
+export const getAllIncomeGroups = async (params: IncomeGroup.GetRequest) => {
   const response: { data: IncomeGroup.GetResponse } = await api.get(
-    `/income-groups/account/${accountId}`
+    `/income-groups/account/${params.account_id}`
   )
   return response.data.incomeGroups
 }

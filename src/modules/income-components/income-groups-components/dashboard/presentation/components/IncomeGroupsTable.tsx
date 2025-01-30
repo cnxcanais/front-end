@@ -26,7 +26,7 @@ export function IncomeGroupTable() {
   const edit = getPermissionByEntity("income_groups_edit")
   const deletePermission = getPermissionByEntity("income_groups_delete")
 
-  const accountId = getCookie("accountId")
+  const account_id = getCookie("accountId")
 
   const [open, setOpen] = useState(false)
   const [id, setId] = useState("")
@@ -34,7 +34,7 @@ export function IncomeGroupTable() {
 
   const { data: incomeGroups, isLoading } = useQuery({
     queryKey: ["income-groups"],
-    queryFn: () => getAllIncomeGroups(accountId),
+    queryFn: () => getAllIncomeGroups({ account_id }),
   })
 
   const fetchIncomeGroups = useMutation({
@@ -56,7 +56,9 @@ export function IncomeGroupTable() {
   }
 
   const handleConfirmDelete = async () => {
-    await deleteIncomeGroup(id).then(() => fetchIncomeGroups.mutate(accountId))
+    await deleteIncomeGroup({ income_group_id: id }).then(() =>
+      fetchIncomeGroups.mutate({ account_id })
+    )
   }
 
   const columns = [
