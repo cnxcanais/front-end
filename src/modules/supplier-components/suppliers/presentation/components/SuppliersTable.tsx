@@ -9,21 +9,21 @@ import { exportToExcel } from "@/core/utils/exportToExcel"
 import { getCookie } from "@/lib/cookies"
 import { queryClient } from "@/lib/react-query"
 import {
-  getIncomeSources,
-  removeIncomeSource,
-} from "@/modules/income-components/income-source-components/income-sources/infra/remote"
+  getSuppliers,
+  removeSupplier,
+} from "@/modules/supplier-components/suppliers/infra/remote"
 import { FileXls, Pencil, Trash } from "@phosphor-icons/react"
 import { useMutation, useQuery } from "@tanstack/react-query"
 import { useRouter } from "next/navigation"
 import { useEffect, useState } from "react"
 import { toast } from "sonner"
 
-export function IncomeSourcesTable() {
+export function SuppliersTable() {
   const account_id = getCookie("accountId")
 
-  const { data: incomeSources, isLoading } = useQuery({
-    queryKey: ["income-sources"],
-    queryFn: () => getIncomeSources({ account_id }),
+  const { data: suppliers, isLoading } = useQuery({
+    queryKey: ["suppliers"],
+    queryFn: () => getSuppliers(account_id),
     enabled: !!account_id,
   })
 
@@ -32,19 +32,20 @@ export function IncomeSourcesTable() {
   const [open, setOpen] = useState(false)
   const [id, setId] = useState("")
 
-  const { income_sources_create, income_sources_edit, income_sources_delete } =
-    JSON.parse(getCookie("permissions")).componentAccess
+  const { suppliers_create, suppliers_edit, suppliers_delete } = JSON.parse(
+    getCookie("permissions")
+  ).componentAccess
 
   const [filteredResults, setFilteredResults] = useState([])
 
-  const refetchIncomeSourcesFn = useMutation({
-    mutationFn: getIncomeSources,
+  const refetchSuppliersFn = useMutation({
+    mutationFn: getSuppliers,
     onSuccess: () => {
-      toast.success("Fonte de Receita removido com sucesso!")
-      queryClient.invalidateQueries({ queryKey: ["income-sources"] })
+      toast.success("Fornecedor removido com sucesso!")
+      queryClient.invalidateQueries({ queryKey: ["suppliers"] })
     },
     onError: (error) => {
-      toast.error("Erro ao remover Fonte de Receita: " + error)
+      toast.error("Erro ao remover fornecedor: " + error)
     },
     onSettled: () => {
       setOpen(false)
@@ -53,13 +54,11 @@ export function IncomeSourcesTable() {
 
   // handlers for Delete and Edit
   const handleEdit = (id: string) => {
-    push(`/income-sources/edit/${id}`)
+    push(`/suppliers/edit/${id}`)
   }
 
   const handleConfirmDelete = async () => {
-    await removeIncomeSource({ income_source_id: id }).then(() =>
-      refetchIncomeSourcesFn.mutate({ account_id })
-    )
+    await removeSupplier(id).then(() => refetchSuppliersFn.mutate(account_id))
   }
 
   // column structure for table
@@ -95,17 +94,17 @@ export function IncomeSourcesTable() {
     },
     {
       header: "Ações",
-      accessor: "income_source_id",
+      accessor: "supplier_id",
       render: (value: string, row: unknown) => (
         <div className="flex space-x-4">
-          {income_sources_edit && (
+          {suppliers_edit && (
             <Pencil
               className="cursor-pointer duration-300 ease-in-out hover:text-blue-500"
               size={24}
               onClick={() => handleEdit(value)}
             />
           )}
-          {income_sources_delete && (
+          {suppliers_delete && (
             <Trash
               className="cursor-pointer duration-300 ease-in-out hover:text-blue-500"
               size={24}
@@ -120,18 +119,18 @@ export function IncomeSourcesTable() {
     },
   ]
 
-  // updates filteredResults when incomeSources changes
+  // updates filteredResults when suppliers changes
   useEffect(() => {
-    if (incomeSources) setFilteredResults(incomeSources)
-  }, [incomeSources, isLoading])
+    if (suppliers) setFilteredResults(suppliers)
+  }, [suppliers, isLoading])
 
-  if (!incomeSources || isLoading) return <LoadingScreen />
+  if (!suppliers || isLoading) return <LoadingScreen />
 
   return (
     <>
       <Modal
-        title="Remover Fonte de Receita"
-        content="Você tem certeza de que deseja remover este Fonte de Receita?"
+        title="Remover Fornecedor"
+        content="Você tem certeza de que deseja remover este fornecedor?"
         onClose={() => setOpen(false)}
         open={open}>
         <div className="flex items-center justify-center gap-4">
@@ -146,13 +145,13 @@ export function IncomeSourcesTable() {
       <div className="mt-8 flex items-center justify-between">
         <div className="flex h-full gap-4">
           <SearchInput
-            data={incomeSources}
+            data={suppliers}
             searchParam="name"
             onSearchResult={setFilteredResults}
           />
-          {income_sources_create && (
+          {suppliers_create && (
             <Button
-              onClick={() => push("/income-sources/create")}
+              onClick={() => push("/suppliers/create")}
               variant="secondary">
               Cadastrar
             </Button>
@@ -167,9 +166,9 @@ export function IncomeSourcesTable() {
         </Button>
       </div>
 
-      {incomeSources.length == 0 ?
+      {suppliers.length == 0 ?
         <h2 className="mt-6 text-xl font-semibold">
-          Nenhuma fonte de receita cadastrada.
+          Nenhum fornecedor cadastrado.
         </h2>
       : <Table columns={columns} data={filteredResults} />}
     </>

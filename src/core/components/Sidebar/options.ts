@@ -48,18 +48,18 @@ export const sidebar_options: SidebarOptionProps[] = [
   },
   {
     name: "Permissões",
-    href: "#",
+    href: "/permissions",
     Icon: Key,
     group: "Gerenciamento",
   },
   {
     name: "Fornecedor",
-    href: "#",
+    href: "/suppliers",
     Icon: Suitcase,
     group: "Cadastro",
   },
   {
-    name: "Franqueado",
+    name: "Fonte de Receita",
     href: "/income-sources",
     Icon: Globe,
     group: "Cadastro",
@@ -78,7 +78,7 @@ export const sidebar_options: SidebarOptionProps[] = [
   },
   {
     name: "Orçamento",
-    href: "#",
+    href: "/budget",
     Icon: PiggyBank,
     group: "Cadastro",
   },
@@ -90,7 +90,7 @@ export const sidebar_options: SidebarOptionProps[] = [
   },
   {
     name: "Despesas",
-    href: "#",
+    href: "/expenses",
     Icon: CreditCard,
     group: "Cadastro",
   },
