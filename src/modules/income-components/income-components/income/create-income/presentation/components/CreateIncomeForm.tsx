@@ -23,7 +23,7 @@ export function CreateIncomeForm() {
 
   const account_id = getCookie("accountId")
 
-  const [paymentQty, setPaymentQty] = useState<number>(1)
+  const [paymentQty, setPaymentQty] = useState<number | undefined>(1)
   const [paymentAmount, setPaymentAmount] = useState<number>(0)
   const [organizations, setOrganizations] = useState<SearchArray>([])
   const [incomeGroups, setIncomeGroups] = useState<SearchArray>([])
@@ -285,7 +285,7 @@ export function CreateIncomeForm() {
                   value={paymentQty}
                   onChange={(e: React.ChangeEvent<HTMLInputElement>) => {
                     const value = e.target.value
-                    setPaymentQty(value === "" ? 1 : Number(value))
+                    setPaymentQty(value && Number(value))
                   }}
                 />
               </Input.Root>

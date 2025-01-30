@@ -58,6 +58,7 @@
     "income_input_fields_description": true,
     "income_input_fields_income_source_id": true,
     "income_input_fields_organization_id": true,
-    "income_input_fields_income_group_id": true
+    "income_input_fields_income_group_id": true,
+    "income_input_fields_income_qty": true
   }
 }
