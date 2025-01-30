@@ -3,6 +3,7 @@
 import { Button } from "@/core/components/Button"
 import { LoadingScreen } from "@/core/components/LoadingScreen"
 import { Modal } from "@/core/components/Modals/Modal"
+import { ModalObservationTrigger } from "@/core/components/Modals/ModalObservation"
 import { SearchInput } from "@/core/components/SearchInput"
 import { Table } from "@/core/components/Table"
 import { exportToExcel } from "@/core/utils/exportToExcel"
@@ -67,23 +68,32 @@ export function IncomeTable() {
     { header: "Descrição", accessor: "description" },
     {
       header: "Valor",
-      accessor: "",
+      accessor: "total_amount",
+      render: (value: number) => {
+        return value.toLocaleString("pt-BR", {
+          style: "currency",
+          currency: "BRL",
+        })
+      },
     },
     {
       header: "Cliente",
-      accessor: "income_source.name",
+      accessor: "income_source",
+      accessor2: "name",
     },
     {
       header: "Data",
-      accessor: "date",
+      accessor: "formatted_date",
     },
     {
       header: "Grupo",
-      accessor: "income_group.group_name",
+      accessor: "income_group",
+      accessor2: "group_name",
     },
     {
-      header: "Observações",
+      header: "Obs.",
       accessor: "observation",
+      render: (value: string) => <ModalObservationTrigger content={value} />,
     },
     {
       header: "Ações",

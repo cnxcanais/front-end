@@ -27,6 +27,9 @@ export namespace Income {
     account_id: string
     organization_id: string
     income_details: IncomeDetails.GetResponse
+    total_amount: number
+    total_parts: number
+    formatted_date: string
   }
 
   export type GetResponse = {
@@ -51,7 +54,6 @@ export namespace Income {
     income_percentage: number
     income_source_id: string
     organization_id: string
-    parts_qty: number
   }
 
   export type DeleteRequest = {
@@ -68,6 +70,5 @@ export namespace Income {
     income_percentage?: number
     income_source_id?: string
     organization_id?: string
-    parts_qty?: number
   }
 }

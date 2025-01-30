@@ -11,7 +11,9 @@
     "/income-groups/edit": true,
     "/income-sources": true,
     "/income-sources/create": true,
-    "/income-sources/edit": true
+    "/income-sources/edit": true,
+    "/incomes": true,
+    "/incomes/create": true
   },
   "componentAccess": {
     "dashboard_button": true,
@@ -48,6 +50,14 @@
     "income_source_input_fields_phone": true,
     "income_create": true,
     "income_edit": true,
-    "income_delete": true
+    "income_delete": true,
+    "income_input_fields_amount": true,
+    "income_input_fields_income_percentage":  true,
+    "income_input_fields_date": true,
+    "income_input_fields_document": true,
+    "income_input_fields_description": true,
+    "income_input_fields_income_source_id": true,
+    "income_input_fields_organization_id": true,
+    "income_input_fields_income_group_id": true
   }
 }

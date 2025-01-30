@@ -3,6 +3,7 @@ import { ReactNode } from "react"
 interface Column {
   header: string
   accessor: string
+  accessor2?: string
   render?: (value: any, row: any) => ReactNode
 }
 
@@ -34,7 +35,14 @@ export function Table<T>({ columns, data }: { columns: Column[]; data: T[] }) {
                           key={column.header}
                           className="whitespace-nowrap px-3 py-4 text-sm text-gray-500">
                           {column.render ?
-                            column.render(row[column.accessor], row)
+                            column.render(
+                              column.accessor2 ?
+                                row[column.accessor][column.accessor2]
+                              : row[column.accessor],
+                              row
+                            )
+                          : column.accessor2 ?
+                            row[column.accessor][column.accessor2]
                           : row[column.accessor]}
                         </td>
                       ))}
