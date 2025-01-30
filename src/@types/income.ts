@@ -46,7 +46,6 @@ export namespace Income {
 
   export type CreateResquest = {
     account_id: string
-    amount: number
     date: Date
     description: string
     document: string

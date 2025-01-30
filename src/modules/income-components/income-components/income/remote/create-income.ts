@@ -4,7 +4,6 @@ import { AxiosError } from "axios"
 
 export async function createIncome({
   account_id,
-  amount,
   date,
   description,
   document,
@@ -12,12 +11,10 @@ export async function createIncome({
   income_percentage,
   income_source_id,
   organization_id,
-  parts_qty,
 }: Income.CreateResquest) {
   try {
     const { data } = await api.post(`/income`, {
       account_id,
-      amount,
       date,
       description,
       document,
@@ -25,7 +22,6 @@ export async function createIncome({
       income_percentage,
       income_source_id,
       organization_id,
-      parts_qty,
     })
 
     return data.message

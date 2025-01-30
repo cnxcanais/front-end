@@ -23,7 +23,8 @@ export function CreateIncomeForm() {
 
   const account_id = getCookie("accountId")
 
-  const [paymentQty, setPaymentQty] = useState<number | "">(1)
+  const [paymentQty, setPaymentQty] = useState<number>(1)
+  const [paymentAmount, setPaymentAmount] = useState<number>(0)
   const [organizations, setOrganizations] = useState<SearchArray>([])
   const [incomeGroups, setIncomeGroups] = useState<SearchArray>([])
   const [arrayPlaceHolder, setArrayPlaceHolder] = useState("Carregando...")
@@ -70,6 +71,7 @@ export function CreateIncomeForm() {
 
   const {
     income_input_fields_amount,
+    income_input_fields_income_qty,
     income_input_fields_income_percentage,
     income_input_fields_date,
     income_input_fields_document,
@@ -88,7 +90,6 @@ export function CreateIncomeForm() {
     resolver: zodResolver(createIncomeFormSchema),
     values: {
       account_id,
-      amount: null,
       date: null,
       description: "",
       document: "",
@@ -222,18 +223,16 @@ export function CreateIncomeForm() {
               <label className="text-lg" htmlFor="name">
                 Valor
               </label>
-              <Input.Root variant={errors.amount ? "error" : "primary"}>
+              <Input.Root>
                 <Input.Currency
                   name="amount"
-                  control={control}
                   disabled={!income_input_fields_amount}
+                  value={paymentAmount}
+                  onChange={(value: number) => {
+                    setPaymentAmount(value)
+                  }}
                 />
               </Input.Root>
-              {errors.amount && (
-                <span className="text-xs text-red-500">
-                  {errors.amount.message}
-                </span>
-              )}
             </div>
 
             <div className="flex max-w-[100px] flex-1 flex-col gap-2">
@@ -281,12 +280,12 @@ export function CreateIncomeForm() {
               </label>
               <Input.Root variant="primary" className="max-w-100px">
                 <Input.Control
-                  disabled={!income_input_fields_income_percentage}
+                  disabled={!income_input_fields_income_qty}
                   type="number"
                   value={paymentQty}
-                  onChange={(e) => {
+                  onChange={(e: React.ChangeEvent<HTMLInputElement>) => {
                     const value = e.target.value
-                    setPaymentQty(value === "" ? "" : Number(value))
+                    setPaymentQty(value === "" ? 1 : Number(value))
                   }}
                 />
               </Input.Root>
@@ -301,7 +300,7 @@ export function CreateIncomeForm() {
           <Button
             type="button"
             disabled={isSubmitting}
-            onClick={() => push("/income-sources")}
+            onClick={() => push("/incomes")}
             variant="tertiary">
             Voltar
           </Button>

@@ -4,10 +4,13 @@ import { NumericFormat, NumericFormatProps } from "react-number-format"
 import Select from "react-select"
 import { tv, VariantProps } from "tailwind-variants"
 
-interface CurrencyInputProps extends Omit<NumericFormatProps, "value"> {
-  name: string
-  control: HookControl<any>
+interface CurrencyInputProps
+  extends Omit<NumericFormatProps, "value" | "onChange"> {
+  name?: string
+  control?: HookControl<any>
   disabled?: boolean
+  value?: number
+  onChange?: (value: number | undefined) => void
 }
 
 interface Option {
@@ -64,29 +67,52 @@ export function Control(props: InputControlProps) {
 export function Currency({
   name,
   control,
+  value: externalValue,
+  onChange: externalOnChange,
   disabled,
   ...props
 }: CurrencyInputProps) {
+  // For React Hook Form
+  if (control && name) {
+    return (
+      <Controller
+        name={name}
+        control={control}
+        render={({ field: { onChange, value } }) => (
+          <NumericFormat
+            value={value || ""}
+            onValueChange={({ floatValue }) => {
+              onChange(floatValue || 0)
+            }}
+            disabled={disabled}
+            decimalSeparator=","
+            thousandSeparator="."
+            prefix="R$ "
+            decimalScale={2}
+            fixedDecimalScale
+            className="flex-1 !border-none bg-transparent p-0 text-sm !outline-none !ring-0 disabled:cursor-not-allowed"
+            {...props}
+          />
+        )}
+      />
+    )
+  }
+
+  // For standalone use
   return (
-    <Controller
-      name={name}
-      control={control}
-      render={({ field: { onChange, value } }) => (
-        <NumericFormat
-          value={value}
-          onValueChange={(values) => {
-            onChange(values.floatValue)
-          }}
-          disabled={disabled}
-          decimalSeparator=","
-          thousandSeparator="."
-          prefix="R$ "
-          decimalScale={2}
-          fixedDecimalScale
-          className="flex-1 !border-none bg-transparent p-0 text-sm !outline-none !ring-0 disabled:cursor-not-allowed"
-          {...props}
-        />
-      )}
+    <NumericFormat
+      value={externalValue || ""}
+      onValueChange={({ floatValue }) => {
+        externalOnChange?.(floatValue || 0)
+      }}
+      disabled={disabled}
+      decimalSeparator=","
+      thousandSeparator="."
+      prefix="R$ "
+      decimalScale={2}
+      fixedDecimalScale
+      className="flex-1 !border-none bg-transparent p-0 text-sm !outline-none !ring-0 disabled:cursor-not-allowed"
+      {...props}
     />
   )
 }
