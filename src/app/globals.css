@@ -2,12 +2,6 @@
 @tailwind components;
 @tailwind utilities;
 
-input:focus, textarea:focus {
-  border-color: transparent;
-  box-shadow: none;
-  border: 0;
-}
-
 /* Works on Firefox */
 * {
   scrollbar-width: thin;
@@ -27,4 +21,10 @@ input:focus, textarea:focus {
   background-color: #c2a360;
   border-radius: 20px;
   border: 3px solid #cecfd1;
+}
+
+input:focus, textarea:focus {
+  border-color: transparent;
+  box-shadow: none;
+  border: 0;
 }

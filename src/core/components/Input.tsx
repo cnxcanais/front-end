@@ -33,7 +33,7 @@ type InputControlProps = ComponentProps<"input">
 export function Control(props: InputControlProps) {
   return (
     <input
-      className="flex-1 !border-none bg-transparent p-0 text-sm !outline-none !ring-0 autofill:!bg-transparent disabled:cursor-not-allowed"
+      className="flex-1 !border-none bg-transparent p-0 text-sm !outline-none !ring-0 autofill:bg-transparent autofill:text-white disabled:cursor-not-allowed"
       {...props}
     />
   )
