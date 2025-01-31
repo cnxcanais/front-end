@@ -1,6 +1,7 @@
 "use client"
 
 import { Income } from "@/@types/income"
+import { IncomeDetails } from "@/@types/income-details"
 import { SearchArray } from "@/@types/search-array"
 import { Button } from "@/core/components/Button"
 import * as Input from "@/core/components/Input"
@@ -86,9 +87,10 @@ export function CreateIncomeForm() {
     handleSubmit,
     formState: { isSubmitting, errors },
     control,
-  } = useForm<Income.CreateResquest>({
+  } = useForm<Income.CreateResquest & IncomeDetails.CreateRequest>({
     resolver: zodResolver(createIncomeFormSchema),
     values: {
+      //Income
       account_id,
       date: null,
       description: "",
@@ -97,6 +99,13 @@ export function CreateIncomeForm() {
       income_percentage: 100,
       income_source_id: "",
       organization_id: "",
+      //IncomeDetails
+      amount: null,
+      bank_account_id: null,
+      part: null,
+      due_date: null,
+      income_id: null,
+      observation: null,
     },
   })
 

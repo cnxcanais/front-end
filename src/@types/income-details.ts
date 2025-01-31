@@ -1,17 +1,27 @@
 export namespace IncomeDetails {
+  export type IncomeDetailsType = {
+    income_details_id: string
+    observation: string
+    amount: string
+    part: number
+    due_date: Date
+    is_paid: boolean
+    bank_account_id: string
+    income_id: string
+    account_id: string
+  }
+
   export type GetResponse = {
-    incomeDetails:
-      | {
-          income_details_id: string
-          observation: string
-          amount: string
-          part: number
-          due_date: Date
-          is_paid: boolean
-          bank_account_id: string
-          income_id: string
-          account_id: string
-        }[]
-      | []
+    incomeDetails: IncomeDetailsType[] | []
+  }
+
+  export type CreateRequest = {
+    amount: number
+    bank_account_id: string
+    part: number
+    due_date: Date
+    income_id: string
+    account_id: string
+    observation: string
   }
 }
