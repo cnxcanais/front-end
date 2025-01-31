@@ -2,7 +2,7 @@ import { BankAccount } from "@/@types/bank-accounts"
 import { api } from "@/lib/axios"
 import { AxiosError } from "axios"
 
-export async function getBankAccounts(account_id: string) {
+export async function getBankAccounts({ account_id }) {
   try {
     const { data } = await api.get<BankAccount.GetResponse>(
       `/bank-account/account/${account_id}`

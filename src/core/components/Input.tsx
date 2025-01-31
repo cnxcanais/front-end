@@ -19,11 +19,13 @@ interface Option {
 }
 
 interface SelectInputProps {
-  name: string
-  control: HookControl<any>
+  name?: string
+  control?: HookControl<any>
   options: Option[]
   placeholder?: string
   disabled?: boolean
+  value?: string
+  onChange?: (value: string | null) => void
 }
 
 const div = tv({
@@ -123,73 +125,140 @@ export function SelectInput({
   options,
   placeholder,
   disabled,
+  value: externalValue,
+  onChange: externalOnChange,
   ...props
 }: SelectInputProps) {
-  return (
-    <Controller
-      name={name}
-      control={control}
-      render={({ field: { onChange, value } }) => (
-        <Select
-          value={options.find((option) => option.value === value) || null}
-          onChange={(option) => onChange(option ? option.value : null)}
-          options={options}
-          placeholder={placeholder}
-          isDisabled={disabled}
-          classNames={{
-            control: () =>
-              "!border-0 !bg-transparent !shadow-none !ring-0 flex-1",
-            valueContainer: () => "!p-0",
-            input: () => "!text-sm",
-            menu: () => "!text-sm",
-            indicatorSeparator: () => "!hidden",
-            container: () => "flex-1",
-            dropdownIndicator: () => "!p-0",
-            placeholder: () => "!m-0",
-            singleValue: () => "!m-0",
-          }}
-          styles={{
-            control: (base) => ({
-              ...base,
-              boxShadow: "none",
-              minHeight: "unset",
-              padding: 0,
-              "&:hover": {
-                border: "none",
+  // For React Hook Form
+  if (control && name) {
+    return (
+      <Controller
+        name={name}
+        control={control}
+        render={({ field: { onChange, value } }) => (
+          <Select
+            value={options.find((option) => option.value === value) || null}
+            onChange={(option) => onChange(option ? option.value : null)}
+            options={options}
+            placeholder={placeholder}
+            isDisabled={disabled}
+            classNames={{
+              control: () =>
+                "!border-0 !bg-transparent !shadow-none !ring-0 flex-1",
+              valueContainer: () => "!p-0",
+              input: () => "!text-sm",
+              menu: () => "!text-sm",
+              indicatorSeparator: () => "!hidden",
+              container: () => "flex-1",
+              dropdownIndicator: () => "!p-0",
+              placeholder: () => "!m-0",
+              singleValue: () => "!m-0",
+            }}
+            styles={{
+              control: (base) => ({
+                ...base,
+                boxShadow: "none",
+                minHeight: "unset",
+                padding: 0,
+                "&:hover": {
+                  border: "none",
+                },
+              }),
+              container: (base) => ({
+                ...base,
+                flex: "1",
+                width: "100%",
+              }),
+              valueContainer: (base) => ({
+                ...base,
+                padding: 0,
+              }),
+              input: (base) => ({
+                ...base,
+                margin: 0,
+                padding: 0,
+              }),
+              dropdownIndicator: (base) => ({
+                ...base,
+                padding: 0,
+              }),
+            }}
+            theme={(theme) => ({
+              ...theme,
+              colors: {
+                ...theme.colors,
+                primary: "#000",
+                primary25: "#f3f4f6",
+                neutral20: "transparent",
+                neutral30: "transparent",
               },
-            }),
-            container: (base) => ({
-              ...base,
-              flex: "1",
-              width: "100%",
-            }),
-            valueContainer: (base) => ({
-              ...base,
-              padding: 0,
-            }),
-            input: (base) => ({
-              ...base,
-              margin: 0,
-              padding: 0,
-            }),
-            dropdownIndicator: (base) => ({
-              ...base,
-              padding: 0,
-            }),
-          }}
-          theme={(theme) => ({
-            ...theme,
-            colors: {
-              ...theme.colors,
-              primary: "#000",
-              primary25: "#f3f4f6",
-              neutral20: "transparent",
-              neutral30: "transparent",
-            },
-          })}
-          {...props}
-        />
-      )}
+            })}
+            {...props}
+          />
+        )}
+      />
+    )
+  }
+
+  // For standalone use
+  return (
+    <Select
+      value={options.find((option) => option.value === externalValue)}
+      onChange={(option) => externalOnChange?.(option?.value || null)}
+      options={options}
+      placeholder={placeholder}
+      isDisabled={disabled}
+      classNames={{
+        control: () => "!border-0 !bg-transparent !shadow-none !ring-0 flex-1",
+        valueContainer: () => "!p-0",
+        input: () => "!text-sm",
+        menu: () => "!text-sm",
+        indicatorSeparator: () => "!hidden",
+        container: () => "flex-1",
+        dropdownIndicator: () => "!p-0",
+        placeholder: () => "!m-0",
+        singleValue: () => "!m-0",
+      }}
+      styles={{
+        control: (base) => ({
+          ...base,
+          boxShadow: "none",
+          minHeight: "unset",
+          padding: 0,
+          "&:hover": {
+            border: "none",
+          },
+        }),
+        container: (base) => ({
+          ...base,
+          flex: "1",
+          width: "100%",
+        }),
+        valueContainer: (base) => ({
+          ...base,
+          padding: 0,
+        }),
+        input: (base) => ({
+          ...base,
+          margin: 0,
+          padding: 0,
+        }),
+        dropdownIndicator: (base) => ({
+          ...base,
+          padding: 0,
+        }),
+      }}
+      theme={(theme) => ({
+        ...theme,
+        colors: {
+          ...theme.colors,
+          primary: "#000",
+          primary25: "#f3f4f6",
+          neutral20: "transparent",
+          neutral30: "transparent",
+        },
+      })}
+      {...props}
     />
   )
 }

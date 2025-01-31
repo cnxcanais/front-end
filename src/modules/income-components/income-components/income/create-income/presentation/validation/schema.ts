@@ -2,7 +2,6 @@ import { z } from "zod"
 
 export const createIncomeFormSchema = z.object({
   account_id: z.string().nonempty("Account ID é obrigatório"),
-  amount: z.number().min(1, "Valor é obrigatório"),
   date: z
     .string()
     .transform((str) => new Date(str))
