@@ -11,7 +11,7 @@ const div = tv({
   variants: {
     variant: {
       primary: "border-black",
-      secondary: "border-white text-white",
+      secondary: "border-white !text-white",
       error:
         "border-red-500 focus-within:border-red-500 focus-within:ring-2 focus-within:ring-red-100",
     },
@@ -33,7 +33,7 @@ type InputControlProps = ComponentProps<"input">
 export function Control(props: InputControlProps) {
   return (
     <input
-      className="flex-1 !border-none bg-transparent p-0 text-sm !outline-none !ring-0 autofill:!bg-transparent disabled:cursor-not-allowed"
+      className="flex-1 !border-none bg-transparent p-0 text-sm !outline-none !ring-0 autofill:bg-transparent autofill:text-white disabled:cursor-not-allowed"
       {...props}
     />
   )
