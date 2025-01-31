@@ -41,7 +41,7 @@ export function EditSupplierForm({ id }: { id: string }) {
     supplier_input_fields_state,
     supplier_input_fields_cep,
     supplier_input_fields_city,
-  } = JSON.parse(getCookie("permissions")).componentAccess
+  } = JSON.parse(getCookie("permissions") ?? "").componentAccess
 
   const {
     register,

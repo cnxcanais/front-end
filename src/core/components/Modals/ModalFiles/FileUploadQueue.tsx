@@ -1,7 +1,7 @@
 import { Button } from "@/core/components/Button"
 import { saveFile } from "@/core/components/Modals/ModalFiles/remote"
 import { formatFileSize } from "@/core/utils/format-file-size"
-import { getCookie } from "@/lib/cookies"
+import { getAccountId } from "@/core/utils/get-account-id"
 import { File, FileX, UploadSimple } from "@phosphor-icons/react"
 import { useQuery } from "@tanstack/react-query"
 import { useState } from "react"
@@ -18,7 +18,7 @@ export function FileUploadQueue({
   entityId,
   entityType,
 }: FileUploadQueueProps) {
-  const account_id = getCookie("accountId")
+  const account_id = getAccountId()
 
   const [filesInQueue, setFilesInQueue] = useState<File[]>([])
 

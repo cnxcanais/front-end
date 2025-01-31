@@ -123,7 +123,7 @@ export function EditBankAccountForm({ id }: { id: string }) {
               className="flex-1"
               variant={errors.observation ? "error" : "primary"}>
               <textarea
-                className="h-full w-full resize-none border-none text-sm"
+                className="h-full w-full resize-none border-none p-0 text-sm"
                 {...register("observation")}
               />
             </Input.Root>

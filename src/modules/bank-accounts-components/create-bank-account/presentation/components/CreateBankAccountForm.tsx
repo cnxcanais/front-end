@@ -4,7 +4,7 @@ import { BankAccount } from "@/@types/bank-accounts"
 import { Button } from "@/core/components/Button"
 import * as Input from "@/core/components/Input"
 import SelectInput from "@/core/components/SelectInput"
-import { getCookie } from "@/lib/cookies"
+import { getAccountId } from "@/core/utils/get-account-id"
 import { createBankAccount } from "@/modules/bank-accounts-components/create-bank-account/infra/remote/create-bank-account"
 import {
   CreateBankAccountFormSchema,
@@ -20,7 +20,7 @@ import { toast } from "sonner"
 export function CreateBankAccountForm() {
   const { push } = useRouter()
 
-  const account_id = getCookie("accountId")
+  const account_id = getAccountId()
 
   const {
     register,
@@ -103,7 +103,7 @@ export function CreateBankAccountForm() {
               className="flex-1"
               variant={errors.observation ? "error" : "primary"}>
               <textarea
-                className="h-full w-full resize-none border-none text-sm"
+                className="h-full w-full resize-none border-none p-0 text-sm"
                 {...register("observation")}
               />
             </Input.Root>

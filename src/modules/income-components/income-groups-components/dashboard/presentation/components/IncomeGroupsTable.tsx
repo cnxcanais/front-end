@@ -6,8 +6,8 @@ import { Modal } from "@/core/components/Modals/Modal"
 import { SearchInput } from "@/core/components/SearchInput"
 import { Table } from "@/core/components/Table"
 import { exportToExcel } from "@/core/utils/exportToExcel"
+import { getAccountId } from "@/core/utils/get-account-id"
 import { getPermissionByEntity } from "@/core/utils/getPermissionByEntity"
-import { getCookie } from "@/lib/cookies"
 import { queryClient } from "@/lib/react-query"
 import {
   deleteIncomeGroup,
@@ -26,7 +26,7 @@ export function IncomeGroupTable() {
   const edit = getPermissionByEntity("income_groups_edit")
   const deletePermission = getPermissionByEntity("income_groups_delete")
 
-  const account_id = getCookie("accountId")
+  const account_id = getAccountId()
 
   const [open, setOpen] = useState(false)
   const [id, setId] = useState("")

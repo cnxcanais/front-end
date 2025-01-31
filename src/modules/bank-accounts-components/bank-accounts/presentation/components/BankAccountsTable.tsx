@@ -7,7 +7,8 @@ import { ModalObservationTrigger } from "@/core/components/Modals/ModalObservati
 import { SearchInput } from "@/core/components/SearchInput"
 import { Table } from "@/core/components/Table"
 import { exportToExcel } from "@/core/utils/exportToExcel"
-import { getCookie } from "@/lib/cookies"
+import { getAccountId } from "@/core/utils/get-account-id"
+import { getPermissionByEntity } from "@/core/utils/getPermissionByEntity"
 import { queryClient } from "@/lib/react-query"
 import {
   getBankAccounts,
@@ -21,16 +22,16 @@ import { useEffect, useState } from "react"
 import { toast } from "sonner"
 
 export function BankAccountsTable() {
-  const account_id = getCookie("accountId")
+  const account_id = getAccountId()
 
   const { data: bankAccounts, isLoading } = useQuery({
     queryKey: ["bank-accounts"],
     queryFn: () => getBankAccounts(account_id),
   })
 
-  const { accounts_create, accounts_delete, accounts_edit } = JSON.parse(
-    getCookie("permissions")
-  ).componentAccess
+  const bank_accounts_create = getPermissionByEntity("bank_accounts_create")
+  const bank_accounts_edit = getPermissionByEntity("bank_accounts_edit")
+  const bank_accounts_delete = getPermissionByEntity("bank_accounts_delete")
 
   const { push } = useRouter()
 
@@ -83,14 +84,14 @@ export function BankAccountsTable() {
       accessor: "bank_account_id",
       render: (value: string, row: unknown) => (
         <div className="flex space-x-4">
-          {accounts_edit && (
+          {bank_accounts_edit && (
             <Pencil
               className="cursor-pointer duration-300 ease-in-out hover:text-blue-500"
               size={24}
               onClick={() => handleEdit(value)}
             />
           )}
-          {accounts_delete && (
+          {bank_accounts_delete && (
             <Trash
               className="cursor-pointer duration-300 ease-in-out hover:text-blue-500"
               size={24}
@@ -134,7 +135,7 @@ export function BankAccountsTable() {
             searchParam="name"
             onSearchResult={(results) => setFilteredResults(results)}
           />
-          {accounts_create && (
+          {bank_accounts_create && (
             <Button
               onClick={() => push("/banks/accounts/create")}
               variant="secondary">

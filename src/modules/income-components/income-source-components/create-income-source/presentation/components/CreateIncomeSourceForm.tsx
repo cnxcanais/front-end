@@ -3,6 +3,7 @@
 import { IncomeSource } from "@/@types/income-sources"
 import { Button } from "@/core/components/Button"
 import * as Input from "@/core/components/Input"
+import { getAccountId } from "@/core/utils/get-account-id"
 import { getCookie } from "@/lib/cookies"
 import { createIncomeSource } from "@/modules/income-components/income-source-components/create-income-source/infra/remote/create-income-source"
 import {
@@ -17,7 +18,7 @@ import { toast } from "sonner"
 export function CreateIncomeSourceForm() {
   const { push } = useRouter()
 
-  const account_id = getCookie("accountId")
+  const account_id = getAccountId()
 
   const {
     income_source_input_fields_name,

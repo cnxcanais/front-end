@@ -6,7 +6,8 @@ import { Modal } from "@/core/components/Modals/Modal"
 import { SearchInput } from "@/core/components/SearchInput"
 import { Table } from "@/core/components/Table"
 import { exportToExcel } from "@/core/utils/exportToExcel"
-import { getCookie } from "@/lib/cookies"
+import { getAccountId } from "@/core/utils/get-account-id"
+import { getPermissionByEntity } from "@/core/utils/getPermissionByEntity"
 import { queryClient } from "@/lib/react-query"
 import {
   getBanks,
@@ -20,16 +21,16 @@ import { useEffect, useState } from "react"
 import { toast } from "sonner"
 
 export function BanksTable() {
-  const account_id = getCookie("accountId")
+  const account_id = getAccountId()
 
   const { data: banks, isLoading } = useQuery({
     queryKey: ["banks"],
     queryFn: () => getBanks(account_id),
   })
 
-  const { accounts_create, accounts_delete, accounts_edit } = JSON.parse(
-    getCookie("permissions")
-  ).componentAccess
+  const banks_create = getPermissionByEntity("banks_create")
+  const banks_edit = getPermissionByEntity("banks_edit")
+  const banks_delete = getPermissionByEntity("banks_delete")
 
   const { push } = useRouter()
 
@@ -72,14 +73,14 @@ export function BanksTable() {
       accessor: "bank_id",
       render: (value: string, row: unknown) => (
         <div className="flex space-x-4">
-          {accounts_edit && (
+          {banks_edit && (
             <Pencil
               className="cursor-pointer duration-300 ease-in-out hover:text-blue-500"
               size={24}
               onClick={() => handleEdit(value)}
             />
           )}
-          {accounts_delete && (
+          {banks_delete && (
             <Trash
               className="cursor-pointer duration-300 ease-in-out hover:text-blue-500"
               size={24}
@@ -123,7 +124,7 @@ export function BanksTable() {
             searchParam="name"
             onSearchResult={(results) => setFilteredResults(results)}
           />
-          {accounts_create && (
+          {banks_create && (
             <Button onClick={() => push("/banks/create")} variant="secondary">
               Cadastrar
             </Button>

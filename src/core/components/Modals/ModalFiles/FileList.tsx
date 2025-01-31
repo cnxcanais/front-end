@@ -4,7 +4,7 @@ import {
   removeFile,
 } from "@/core/components/Modals/ModalFiles/remote"
 import { SearchInput } from "@/core/components/SearchInput"
-import { getCookie } from "@/lib/cookies"
+import { getAccountId } from "@/core/utils/get-account-id"
 import { File, X } from "@phosphor-icons/react"
 import { useQuery } from "@tanstack/react-query"
 import Link from "next/link"
@@ -19,7 +19,7 @@ type FileListProps = {
 export function FileList({ entityId, entityType }: FileListProps) {
   const [filteredFiles, setFilteredFiles] = useState([])
 
-  const account_id = getCookie("accountId")
+  const account_id = getAccountId()
 
   const {
     data: fileList,
