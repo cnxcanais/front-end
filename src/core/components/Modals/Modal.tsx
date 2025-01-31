@@ -30,7 +30,7 @@ export function Modal({ children, content, title, onClose, open }: ModalProps) {
               <div className="mt-3 text-center sm:mt-5">
                 <DialogTitle
                   as="h3"
-                  className="text-base font-semibold text-gray-900">
+                  className="text-lg font-semibold text-gray-900">
                   {title}
                 </DialogTitle>
                 {content && (

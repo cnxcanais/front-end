@@ -3,6 +3,7 @@
 import { Button } from "@/core/components/Button"
 import { LoadingScreen } from "@/core/components/LoadingScreen"
 import { Modal } from "@/core/components/Modals/Modal"
+import { ModalFilesTrigger } from "@/core/components/Modals/ModalFiles/ModalFilesTrigger"
 import { SearchInput } from "@/core/components/SearchInput"
 import { Table } from "@/core/components/Table"
 import { exportToExcel } from "@/core/utils/exportToExcel"
@@ -91,6 +92,13 @@ export function SuppliersTable() {
     {
       header: "Endereço",
       accessor: "address_1",
+    },
+    {
+      header: "Arquivos",
+      accessor: "supplier_id",
+      render: (value: string) => (
+        <ModalFilesTrigger entityId={value} entityType={"supplier_id"} />
+      ),
     },
     {
       header: "Ações",
