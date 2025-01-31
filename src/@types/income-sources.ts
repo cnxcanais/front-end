@@ -3,24 +3,26 @@ export namespace IncomeSource {
     account_id: string
   }
 
+  export type IncomeSourceType = {
+    income_source_id: string
+    name: string
+    cpf_cnpj: string
+    email: string
+    address_1: string
+    address_2: string
+    address_3: string
+    city: string
+    state: string
+    cep: string
+    contact_name: string
+    phone: string
+    created_at: Date
+    updated_at: Date
+    account_id: string
+  }
+
   export type GetResponse = {
-    incomeSources: {
-      income_source_id: string
-      name: string
-      cpf_cnpj: string
-      email: string
-      address_1: string
-      address_2: string
-      address_3: string
-      city: string
-      state: string
-      cep: string
-      contact_name: string
-      phone: string
-      created_at: Date
-      updated_at: Date
-      account_id: string
-    }[]
+    incomeSources: IncomeSourceType[]
   }
 
   export type GetByIdRequest = {
@@ -28,23 +30,7 @@ export namespace IncomeSource {
   }
 
   export type GetByIdResponse = {
-    incomeSource: {
-      income_source_id: string
-      name: string
-      cpf_cnpj: string
-      email: string
-      address_1: string
-      address_2: string
-      address_3: string
-      city: string
-      state: string
-      cep: string
-      contact_name: string
-      phone: string
-      created_at: Date
-      updated_at: Date
-      account_id: string
-    }
+    incomeSource: IncomeSourceType
   }
 
   export type CreateRequest = {

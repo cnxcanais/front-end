@@ -1,5 +1,30 @@
 import { ComponentProps } from "react"
+import { Controller, Control as HookControl } from "react-hook-form"
+import { NumericFormat, NumericFormatProps } from "react-number-format"
+import Select from "react-select"
 import { tv, VariantProps } from "tailwind-variants"
+
+interface CurrencyInputProps
+  extends Omit<NumericFormatProps, "value" | "onChange"> {
+  name?: string
+  control?: HookControl<any>
+  disabled?: boolean
+  value?: number
+  onChange?: (value: number | undefined) => void
+}
+
+interface Option {
+  label: string
+  value: string
+}
+
+interface SelectInputProps {
+  name: string
+  control: HookControl<any>
+  options: Option[]
+  placeholder?: string
+  disabled?: boolean
+}
 
 const div = tv({
   base: [
@@ -35,6 +60,136 @@ export function Control(props: InputControlProps) {
     <input
       className="flex-1 !border-none bg-transparent p-0 text-sm !outline-none !ring-0 autofill:bg-transparent autofill:text-white disabled:cursor-not-allowed"
       {...props}
+    />
+  )
+}
+
+export function Currency({
+  name,
+  control,
+  value: externalValue,
+  onChange: externalOnChange,
+  disabled,
+  ...props
+}: CurrencyInputProps) {
+  // For React Hook Form
+  if (control && name) {
+    return (
+      <Controller
+        name={name}
+        control={control}
+        render={({ field: { onChange, value } }) => (
+          <NumericFormat
+            value={value || ""}
+            onValueChange={({ floatValue }) => {
+              onChange(floatValue || 0)
+            }}
+            disabled={disabled}
+            decimalSeparator=","
+            thousandSeparator="."
+            prefix="R$ "
+            decimalScale={2}
+            fixedDecimalScale
+            className="flex-1 !border-none bg-transparent p-0 text-sm !outline-none !ring-0 disabled:cursor-not-allowed"
+            {...props}
+          />
+        )}
+      />
+    )
+  }
+
+  // For standalone use
+  return (
+    <NumericFormat
+      value={externalValue || ""}
+      onValueChange={({ floatValue }) => {
+        externalOnChange?.(floatValue || 0)
+      }}
+      disabled={disabled}
+      decimalSeparator=","
+      thousandSeparator="."
+      prefix="R$ "
+      decimalScale={2}
+      fixedDecimalScale
+      className="flex-1 !border-none bg-transparent p-0 text-sm !outline-none !ring-0 disabled:cursor-not-allowed"
+      {...props}
+    />
+  )
+}
+
+export function SelectInput({
+  name,
+  control,
+  options,
+  placeholder,
+  disabled,
+  ...props
+}: SelectInputProps) {
+  return (
+    <Controller
+      name={name}
+      control={control}
+      render={({ field: { onChange, value } }) => (
+        <Select
+          value={options.find((option) => option.value === value) || null}
+          onChange={(option) => onChange(option ? option.value : null)}
+          options={options}
+          placeholder={placeholder}
+          isDisabled={disabled}
+          classNames={{
+            control: () =>
+              "!border-0 !bg-transparent !shadow-none !ring-0 flex-1",
+            valueContainer: () => "!p-0",
+            input: () => "!text-sm",
+            menu: () => "!text-sm",
+            indicatorSeparator: () => "!hidden",
+            container: () => "flex-1",
+            dropdownIndicator: () => "!p-0",
+            placeholder: () => "!m-0",
+            singleValue: () => "!m-0",
+          }}
+          styles={{
+            control: (base) => ({
+              ...base,
+              boxShadow: "none",
+              minHeight: "unset",
+              padding: 0,
+              "&:hover": {
+                border: "none",
+              },
+            }),
+            container: (base) => ({
+              ...base,
+              flex: "1",
+              width: "100%",
+            }),
+            valueContainer: (base) => ({
+              ...base,
+              padding: 0,
+            }),
+            input: (base) => ({
+              ...base,
+              margin: 0,
+              padding: 0,
+            }),
+            dropdownIndicator: (base) => ({
+              ...base,
+              padding: 0,
+            }),
+          }}
+          theme={(theme) => ({
+            ...theme,
+            colors: {
+              ...theme.colors,
+              primary: "#000",
+              primary25: "#f3f4f6",
+              neutral20: "transparent",
+              neutral30: "transparent",
+            },
+          })}
+          {...props}
+        />
+      )}
     />
   )
 }

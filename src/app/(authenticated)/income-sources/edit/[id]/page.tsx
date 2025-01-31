@@ -1,4 +1,4 @@
-import { EditIncomeSourcePage } from "@/modules/income-source-components/edit-income-source/presentation/pages"
+import { EditIncomeSourcePage } from "@/modules/income-components/income-source-components/edit-income-source/presentation/pages"
 
 export default async function EditIncomeSourceRender({
   params,
