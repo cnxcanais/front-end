@@ -4,7 +4,7 @@ import { BankAccount } from "@/@types/bank-accounts"
 import { Button } from "@/core/components/Button"
 import * as Input from "@/core/components/Input"
 import { LoadingScreen } from "@/core/components/LoadingScreen"
-import SelectInput from "@/core/components/SelectInput"
+import { SelectInput } from "@/core/components/SelectInput"
 import { getCookie } from "@/lib/cookies"
 import {
   editBankAccount,
@@ -110,7 +110,7 @@ export function EditBankAccountForm({ id }: { id: string }) {
             }
             field_name="bank_id"
             label="Banco"
-            register={register}
+            {...register("bank_id")}
           />
         </div>
 

@@ -90,7 +90,7 @@ export function CreateBankAccountForm() {
             }
             field_name="bank_id"
             label="Banco"
-            register={register}
+            {...register("bank_id")}
           />
         </div>
 

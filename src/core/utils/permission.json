@@ -79,6 +79,20 @@
     "banks_delete": true,
     "bank_accounts_create": true,
     "bank_accounts_edit": true,
-    "bank_accounts_delete": true
+    "bank_accounts_delete": true,
+    "budget_incomes_create": true,
+    "budget_incomes_edit": true,
+    "budget_incomes_delete": true,
+    "budget_income_input_fields_description": true,
+    "budget_income_input_fields_date": true,
+    "budget_income_input_fields_amount": true,
+    "budget_income_input_fields_income_group_id": true,
+    "budget_expenses_create": true,
+    "budget_expenses_edit": true,
+    "budget_expenses_delete": true,
+    "budget_expense_input_fields_description": true,
+    "budget_expense_input_fields_date": true,
+    "budget_expense_input_fields_amount": true,
+    "budget_expense_input_fields_expense_group_id": true
   }
 }

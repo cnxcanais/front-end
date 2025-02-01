@@ -13,8 +13,9 @@ import {
   deleteIncomeGroup,
   getAllIncomeGroups,
 } from "@/modules/income-components/income-groups-components/remote/income-group"
+import { useIncomeGroupQuery } from "@/modules/income-components/income-groups-components/remote/use-income-group-query"
 import { FileXls, Pencil, Trash } from "@phosphor-icons/react"
-import { useMutation, useQuery } from "@tanstack/react-query"
+import { useMutation } from "@tanstack/react-query"
 import { useRouter } from "next/navigation"
 import { useEffect, useState } from "react"
 import { toast } from "sonner"
@@ -32,10 +33,7 @@ export function IncomeGroupTable() {
   const [id, setId] = useState("")
   const [filteredResults, setFilteredResults] = useState([])
 
-  const { data: incomeGroups, isLoading } = useQuery({
-    queryKey: ["income-groups"],
-    queryFn: () => getAllIncomeGroups({ account_id }),
-  })
+  const { data: incomeGroups, isLoading } = useIncomeGroupQuery(account_id)
 
   const fetchIncomeGroups = useMutation({
     mutationFn: getAllIncomeGroups,
