@@ -109,7 +109,7 @@ type SelectInputProps = {
   control: HookControl<any>
   options: Option[]
   placeholder?: string
-  isDisabled?: boolean
+  disabled?: boolean
 }
 
 export function SelectInput({

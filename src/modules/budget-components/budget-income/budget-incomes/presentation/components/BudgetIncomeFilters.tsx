@@ -3,20 +3,16 @@ import { Button } from "@/core/components/Button"
 import * as Input from "@/core/components/Input"
 import { LoadingScreen } from "@/core/components/LoadingScreen"
 import { SelectInput } from "@/core/components/SelectInput"
+import { useBudgetIncomesQuery } from "@/modules/budget-components/budget-income/budget-incomes/infra/hooks/use-budget-incomes-query"
 import { useIncomeGroupQuery } from "@/modules/income-components/income-groups-components/remote/use-income-group-query"
 import { useEffect, useState } from "react"
 import { useForm } from "react-hook-form"
-import { useBudgetIncomesQuery } from "../../infra/hooks/use-budget-incomes-query"
 
 interface FilterProps {
-  onFiltersApply: (filters: any) => void
   account_id: string
 }
 
-export function IncomeBudgetFilters({
-  onFiltersApply,
-  account_id,
-}: FilterProps) {
+export function IncomeBudgetFilters({ account_id }: FilterProps) {
   const { register, handleSubmit, control, getValues, watch, reset } =
     useForm<Budget.QueryParamsIncome>({})
 
@@ -26,8 +22,17 @@ export function IncomeBudgetFilters({
 
   const { refetch } = useBudgetIncomesQuery(account_id, getValues())
 
-  function onSubmit(data: any) {
-    setFilters(data)
+  function onSubmit(data: Budget.QueryParamsIncome) {
+    const cleanedData = {
+      ...data,
+      ...(data.min_amount === 0 || !data.min_amount ?
+        { min_amount: undefined }
+      : {}),
+      ...(data.max_amount === 0 || !data.max_amount ?
+        { max_amount: undefined }
+      : {}),
+    }
+    setFilters(cleanedData)
   }
 
   function resetFilters() {

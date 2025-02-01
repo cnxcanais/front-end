@@ -10,6 +10,7 @@ import { exportToExcel } from "@/core/utils/exportToExcel"
 import { getAccountId } from "@/core/utils/get-account-id"
 import { getPermissionByEntity } from "@/core/utils/getPermissionByEntity"
 import { useBudgetIncomesQuery } from "@/modules/budget-components/budget-income/budget-incomes/infra/hooks/use-budget-incomes-query"
+import { IncomeBudgetFilters } from "@/modules/budget-components/budget-income/budget-incomes/presentation/components/BudgetIncomeFilters"
 import {
   getIncomeSources,
   removeIncomeSource,
@@ -19,7 +20,6 @@ import { useMutation } from "@tanstack/react-query"
 import { useRouter } from "next/navigation"
 import { useEffect, useState } from "react"
 import { toast } from "sonner"
-import { IncomeBudgetFilters } from "./BudgetIncomeFilters"
 
 export function IncomeBudgetTable() {
   const account_id = getAccountId()
@@ -81,6 +81,7 @@ export function IncomeBudgetTable() {
         new Date(value).toLocaleDateString("pt-BR", {
           month: "2-digit",
           year: "numeric",
+          timeZone: "Europe/Paris", // por algum motivo isso funcionou melhor
         }),
     },
     {
@@ -147,7 +148,9 @@ export function IncomeBudgetTable() {
           </Button>
         </div>
       </Modal>
-      <IncomeBudgetFilters account_id={account_id} onFiltersApply={() => {}} />
+
+      <IncomeBudgetFilters account_id={account_id} />
+
       <div className="mt-8 flex items-center justify-between">
         <div className="flex h-full gap-4">
           <SearchInput
