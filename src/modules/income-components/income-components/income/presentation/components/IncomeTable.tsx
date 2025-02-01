@@ -13,7 +13,7 @@ import { queryClient } from "@/lib/react-query"
 import {
   getIncomes,
   removeIncome,
-} from "@/modules/income-components/income-components/income/remote"
+} from "@/modules/income-components/income-components/income/remote/income"
 import { FileXls, Pencil, Trash } from "@phosphor-icons/react"
 import { useMutation, useQuery } from "@tanstack/react-query"
 import { useRouter } from "next/navigation"

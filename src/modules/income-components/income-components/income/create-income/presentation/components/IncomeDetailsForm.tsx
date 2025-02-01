@@ -3,7 +3,8 @@
 import { SearchArray } from "@/@types/search-array"
 import { Button } from "@/core/components/Button"
 import * as Input from "@/core/components/Input"
-import { ArrayConfig, populateArrays } from "@/core/utils/populateArrays"
+import { addMonthsToDate } from "@/core/utils/dateFunctions"
+import { ArrayConfig } from "@/core/utils/populateArrays"
 import { getCookie } from "@/lib/cookies"
 import { getBankAccounts } from "@/modules/bank-accounts-components/bank-accounts/infra/remote"
 import { FormType } from "@/modules/income-components/income-components/income/create-income/presentation/components/CreateIncomeForm"
@@ -18,7 +19,6 @@ import {
   UseFormTrigger,
   UseFormWatch,
 } from "react-hook-form"
-import { toast } from "sonner"
 import { IncomeDetailsInfo } from "./IncomeDetailsInfo"
 
 type Props = {
@@ -54,7 +54,6 @@ export function IncomeDetailForm({
   const [initialIndividualValue, setInitialIndividualValue] = useState<
     number | null
   >(null)
-  const [arrayPlaceHolder, setArrayPlaceHolder] = useState("Carregando...")
   const [detailsInfo, setDetailsInfo] = useState<{
     totalAmount: number
     partsQty: number
@@ -74,8 +73,8 @@ export function IncomeDetailForm({
           errors={errors}
           control={control}
           index={index}
-          initialIndividualValue={initialIndividualValue}
           register={register}
+          getValues={getValues}
         />
       ))
   }
@@ -83,14 +82,42 @@ export function IncomeDetailForm({
   const detailsArray = watch("incomeDetailsArray")
   const { bankAccountId } = detailsInfo
 
+  const totalAmount = detailsArray.reduce((acc, curr) => {
+    return acc + (curr.amount || 0)
+  }, 0)
+
+  useEffect(() => {
+    if (totalAmount < detailsInfo.totalAmount) {
+      const firstAmount = getValues("incomeDetailsArray.0.amount")
+      setValue(
+        "incomeDetailsArray.0.amount",
+        firstAmount + (detailsInfo.totalAmount - totalAmount)
+      )
+    }
+  }, [detailsInfo.totalAmount, totalAmount])
+
   useEffect(() => {
     if (detailsArray?.length) {
       detailsArray.forEach((item, index) => {
         setValue(`incomeDetailsArray.${index}.part`, index + 1)
         setValue(`incomeDetailsArray.${index}.account_id`, account_id)
+        setValue(
+          `incomeDetailsArray.${index}.due_date`,
+          addMonthsToDate(getValues("date"), index + 1)
+        )
       })
     }
   }, [detailsArray.length])
+
+  useEffect(() => {
+    const currentArray = getValues("incomeDetailsArray")
+
+    if (currentArray.length > detailsInfo.partsQty) {
+      const newArray = currentArray.slice(0, detailsInfo.partsQty)
+
+      setValue("incomeDetailsArray", newArray)
+    }
+  }, [detailsInfo.partsQty])
 
   useEffect(() => {
     if (detailsInfo.partsQty > 0 && detailsInfo.totalAmount > 0) {
@@ -114,7 +141,6 @@ export function IncomeDetailForm({
     }
   }, [detailsArray.length, bankAccountId, setValue])
 
-  console.log(detailsArray)
   const arrayConfigs: ArrayConfig<any>[] = [
     {
       fetchFn: getBankAccounts,
@@ -126,18 +152,6 @@ export function IncomeDetailForm({
     },
   ]
 
-  useEffect(() => {
-    populateArrays(
-      arrayConfigs,
-      { account_id },
-      () => setArrayPlaceHolder("Digite..."),
-      (error) => {
-        toast.error("Erro ao buscar dados: " + error.message)
-        setArrayPlaceHolder("Erro ao carregar...")
-      }
-    )
-  }, [])
-
   return (
     <>
       <div className="flex gap-4">
@@ -145,7 +159,7 @@ export function IncomeDetailForm({
           <label className="text-md" htmlFor="income_total_amount">
             Valor Total
           </label>
-          <Input.Root>
+          <Input.Root variant={errors.incomeDetailsArray ? "error" : "primary"}>
             <Input.Currency
               name="total_amount"
               onChange={(value: number) =>
@@ -153,13 +167,18 @@ export function IncomeDetailForm({
               }
             />
           </Input.Root>
+          {errors.incomeDetailsArray && (
+            <span className="text-xs text-red-500">
+              {errors.incomeDetailsArray.message}
+            </span>
+          )}
         </div>
 
         <div className="flex flex-col gap-4">
           <label className="text-md" htmlFor="income_total_amount">
             Qtd de Parcelas
           </label>
-          <Input.Root>
+          <Input.Root variant={errors.incomeDetailsArray ? "error" : "primary"}>
             <Input.Control
               name="parts_qty"
               onChange={(event: React.ChangeEvent<HTMLInputElement>) => {
@@ -168,6 +187,11 @@ export function IncomeDetailForm({
               }}
             />
           </Input.Root>
+          {errors.incomeDetailsArray && (
+            <span className="text-xs text-red-500">
+              {errors.incomeDetailsArray.message}
+            </span>
+          )}
         </div>
 
         <div className="flex min-w-[500px] flex-col gap-2">
@@ -191,11 +215,6 @@ export function IncomeDetailForm({
             </span>
           )}
         </div>
-        {/* <div className="mt-auto flex justify-end gap-4">
-          <Button type="button" variant="primary">
-            Gerar Parcelas
-          </Button>
-        </div> */}
       </div>
       {detailsInfo.partsQty > 0 && renderDetailsInfo()}
 
@@ -206,25 +225,7 @@ export function IncomeDetailForm({
           variant="tertiary">
           Voltar
         </Button>
-        <Button
-          variant="primary"
-          onClick={async () => {
-            const isFormValid = await trigger([
-              "income_source_id",
-              "income_group_id",
-              "date",
-              "description",
-              "document",
-              "income_percentage",
-              "organization_id",
-            ])
-
-            if (isFormValid) {
-              setSecondPage(true)
-            } else {
-              toast.error("Preencha todos os campos obrigatórios")
-            }
-          }}>
+        <Button variant="primary" type="submit">
           Salvar
         </Button>
       </div>

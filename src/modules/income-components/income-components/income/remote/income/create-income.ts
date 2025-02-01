@@ -24,7 +24,7 @@ export async function createIncome({
       organization_id,
     })
 
-    return data.message
+    return data
   } catch (error) {
     if (error instanceof AxiosError) throw error.response.data.message
     throw error
