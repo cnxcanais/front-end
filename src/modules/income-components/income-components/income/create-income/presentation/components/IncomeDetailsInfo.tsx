@@ -26,7 +26,7 @@ export function IncomeDetailsInfo({
   return (
     <>
       <div className="align-center flex gap-4">
-        <div className="flex flex-col gap-2">
+        <div className="flex max-w-[70px] flex-col gap-2">
           <label
             htmlFor={`incomeDetailsArray.${index}.part`}
             className="text-sm">

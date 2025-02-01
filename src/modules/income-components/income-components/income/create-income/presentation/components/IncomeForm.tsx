@@ -194,7 +194,7 @@ export function IncomeForm({
         </div>
       </div>
 
-      <div className="flex gap-4">
+      <div className="mt-4 flex gap-4">
         <div className="flex max-w-[100px] flex-1 flex-col gap-2">
           <label className="text-lg" htmlFor="income_percentage">
             Percentual
@@ -237,6 +237,7 @@ export function IncomeForm({
       <div className="mt-6 flex gap-4">
         <Button
           variant="primary"
+          type="button"
           onClick={async () => {
             const isFormValid = await trigger([
               "income_source_id",

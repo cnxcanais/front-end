@@ -9,7 +9,7 @@ import { getCookie } from "@/lib/cookies"
 import { getBankAccounts } from "@/modules/bank-accounts-components/bank-accounts/infra/remote"
 import { FormType } from "@/modules/income-components/income-components/income/create-income/presentation/components/CreateIncomeForm"
 import { useRouter } from "next/navigation"
-import { Dispatch, SetStateAction, useEffect, useState } from "react"
+import { Dispatch, SetStateAction, useEffect, useRef, useState } from "react"
 import {
   Control,
   FieldErrors,
@@ -54,6 +54,7 @@ export function IncomeDetailForm({
   const [initialIndividualValue, setInitialIndividualValue] = useState<
     number | null
   >(null)
+
   const [detailsInfo, setDetailsInfo] = useState<{
     totalAmount: number
     partsQty: number
@@ -75,8 +76,23 @@ export function IncomeDetailForm({
     },
   ]
 
+  const detailsArray = watch("incomeDetailsArray")
+  const { bankAccountId } = detailsInfo
+
+  const totalAmount = detailsArray.reduce((acc, curr) => {
+    return acc + (curr.amount || 0)
+  }, 0)
+
+  //On mount effects
   useEffect(() => {
     populateArrays(arrayConfigs, { account_id })
+    if (detailsArray.length > 0) {
+      setDetailsInfo({
+        totalAmount: totalAmount,
+        partsQty: detailsArray.length,
+        bankAccountId: detailsArray[0].bank_account_id,
+      })
+    }
   }, [])
 
   const renderDetailsInfo = () => {
@@ -94,22 +110,22 @@ export function IncomeDetailForm({
       ))
   }
 
-  const detailsArray = watch("incomeDetailsArray")
-  const { bankAccountId } = detailsInfo
-
-  const totalAmount = detailsArray.reduce((acc, curr) => {
-    return acc + (curr.amount || 0)
-  }, 0)
+  const adjustmentMadeRef = useRef(false)
 
   useEffect(() => {
-    if (totalAmount < detailsInfo.totalAmount) {
+    if (
+      totalAmount < detailsInfo.totalAmount &&
+      !adjustmentMadeRef.current &&
+      totalAmount > 0
+    ) {
       const firstAmount = getValues("incomeDetailsArray.0.amount")
-      setValue(
-        "incomeDetailsArray.0.amount",
-        firstAmount + (detailsInfo.totalAmount - totalAmount)
-      )
+      const adjustment = detailsInfo.totalAmount - totalAmount
+
+      setValue("incomeDetailsArray.0.amount", firstAmount + adjustment)
+
+      adjustmentMadeRef.current = true
     }
-  }, [detailsInfo.totalAmount, totalAmount])
+  }, [detailsInfo.totalAmount, totalAmount, getValues, setValue])
 
   useEffect(() => {
     if (detailsArray?.length) {
@@ -127,7 +143,7 @@ export function IncomeDetailForm({
   useEffect(() => {
     const currentArray = getValues("incomeDetailsArray")
 
-    if (currentArray.length > detailsInfo.partsQty) {
+    if (currentArray?.length > detailsInfo?.partsQty) {
       const newArray = currentArray.slice(0, detailsInfo.partsQty)
 
       setValue("incomeDetailsArray", newArray)
@@ -163,46 +179,38 @@ export function IncomeDetailForm({
           <label className="text-md" htmlFor="income_total_amount">
             Valor Total
           </label>
-          <Input.Root variant={errors.incomeDetailsArray ? "error" : "primary"}>
+          <Input.Root>
             <Input.Currency
               name="total_amount"
-              onChange={(value: number) =>
+              onChange={(value: number) => {
                 setDetailsInfo({ ...detailsInfo, totalAmount: value })
-              }
+                adjustmentMadeRef.current = false
+              }}
+              value={detailsInfo.totalAmount}
             />
           </Input.Root>
-          {errors.incomeDetailsArray && (
-            <span className="text-xs text-red-500">
-              {errors.incomeDetailsArray.message}
-            </span>
-          )}
         </div>
 
         <div className="flex flex-col gap-4">
           <label className="text-md" htmlFor="income_total_amount">
             Qtd de Parcelas
           </label>
-          <Input.Root variant={errors.incomeDetailsArray ? "error" : "primary"}>
+          <Input.Root>
             <Input.Control
               name="parts_qty"
               onChange={(event: React.ChangeEvent<HTMLInputElement>) => {
                 const value = Number(event.target.value)
                 setDetailsInfo({ ...detailsInfo, partsQty: value })
+                adjustmentMadeRef.current = false
               }}
+              value={detailsInfo.partsQty}
             />
           </Input.Root>
-          {errors.incomeDetailsArray && (
-            <span className="text-xs text-red-500">
-              {errors.incomeDetailsArray.message}
-            </span>
-          )}
         </div>
 
-        <div className="flex min-w-[500px] flex-col gap-2">
-          <label className="text-lg" htmlFor="income_source_id">
-            Conta Bancária
-          </label>
-          <Input.Root variant={errors.incomeDetailsArray ? "error" : "primary"}>
+        <div className="flex min-w-[500px] flex-col gap-4">
+          <label htmlFor="income_bank_account_id">Conta Bancária</label>
+          <Input.Root>
             <Input.SelectInput
               name={`incomeDetailsArray`}
               options={bankAccounts}
@@ -213,15 +221,13 @@ export function IncomeDetailForm({
               }
             />
           </Input.Root>
-          {errors.incomeDetailsArray && (
-            <span className="text-xs text-red-500">
-              {errors.incomeDetailsArray.message}
-            </span>
-          )}
         </div>
       </div>
-      {detailsInfo.partsQty > 0 && renderDetailsInfo()}
-
+      {errors.incomeDetailsArray && (
+        <span className="text-xs text-red-500">
+          {errors.incomeDetailsArray.message}
+        </span>
+      )}
       <div className="mt-6 flex gap-4">
         <Button
           type="button"
@@ -232,6 +238,9 @@ export function IncomeDetailForm({
         <Button variant="primary" type="submit">
           Salvar
         </Button>
+      </div>
+      <div className="mt-4">
+        {detailsInfo.partsQty > 0 && renderDetailsInfo()}
       </div>
     </>
   )

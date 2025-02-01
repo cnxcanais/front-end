@@ -59,10 +59,7 @@ export const createIncomeFormSchema = z.object({
   income_percentage: z.number().min(1, "Porcentagem é obrigatória"),
   income_source_id: z.string().nonempty("Fonte de receita é obrigatória"),
   organization_id: z.string().nonempty("Organização é obrigatória"),
-  incomeDetailsArray: z
-    .array(incomeDetailsSchema)
-    .nonempty("É necessário adicionar pelo menos uma parcela da receita")
-    .min(1, "É necessário adicionar pelo menos uma parcela receita"),
+  incomeDetailsArray: z.array(incomeDetailsSchema),
 })
 
 export type CreateIncomeSchema = z.infer<typeof createIncomeFormSchema>

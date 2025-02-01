@@ -4,11 +4,7 @@ import { Income } from "@/@types/income"
 import { IncomeDetails } from "@/@types/income-details"
 import { getCookie } from "@/lib/cookies"
 import { createIncomeFormSchema } from "@/modules/income-components/income-components/income/create-income/presentation/validation/schema"
-import { createIncome } from "@/modules/income-components/income-components/income/remote/income"
-import { createIncomeDetails } from "@/modules/income-components/income-components/income/remote/income-details"
-import { DevTool } from "@hookform/devtools"
 import { zodResolver } from "@hookform/resolvers/zod"
-import { useRouter } from "next/navigation"
 import { useState } from "react"
 import { useForm } from "react-hook-form"
 import { toast } from "sonner"
@@ -22,8 +18,6 @@ type IncomeDetailsArray = {
 export type FormType = Income.CreateResquest & IncomeDetailsArray
 
 export function CreateIncomeForm() {
-  const { push } = useRouter()
-
   const account_id = getCookie("accountId")
 
   const [secondPage, setSecondPage] = useState<boolean>(false)
@@ -39,6 +33,7 @@ export function CreateIncomeForm() {
     watch,
   } = useForm<FormType>({
     resolver: zodResolver(createIncomeFormSchema),
+    mode: "onChange",
     values: {
       //Income
       account_id,
@@ -55,31 +50,36 @@ export function CreateIncomeForm() {
   })
 
   async function onSubmit(data: FormType) {
-    console.log(data)
-    try {
-      const { incomeDetailsArray, ...incomeData } = data
-
-      const response = await createIncome(incomeData)
-      const income_id = response.income.income_id
-
-      setValue(
-        "incomeDetailsArray",
-        incomeDetailsArray.map((detail) => ({ ...detail, income_id }))
-      )
-      await createIncomeDetails(getValues("incomeDetailsArray"))
-      toast.success("Receita criada com sucesso!")
-      setTimeout(() => push("/incomes"), 2000)
-    } catch (error) {
-      toast.error("Erro ao criar fonte de receita: " + error)
+    if (data.incomeDetailsArray.length === 0) {
+      toast.error("É necessário adicionar pelo menos uma parcela da receita")
     }
+
+    // try {
+    //   const { incomeDetailsArray, ...incomeData } = data
+
+    //   const response = await createIncome(incomeData)
+    //   const income_id = response.income.income_id
+
+    //   setValue(
+    //     "incomeDetailsArray",
+    //     incomeDetailsArray.map((detail) => ({ ...detail, income_id }))
+    //   )
+    //   await createIncomeDetails(getValues("incomeDetailsArray"))
+    //   toast.success("Receita criada com sucesso!")
+    //   setTimeout(() => push("/incomes"), 2000)
+    // } catch (error) {
+    //   toast.error("Erro ao criar fonte de receita: " + error)
+    // }
   }
+
+  console.log(errors)
 
   return (
     <>
       <form
         className="mt-6 flex max-w-[1000px] flex-col gap-4"
         onSubmit={handleSubmit(onSubmit)}>
-        {!secondPage && (
+        <div className={secondPage ? "hidden" : "block"}>
           <IncomeForm
             account_id={account_id}
             errors={errors}
@@ -88,8 +88,9 @@ export function CreateIncomeForm() {
             setSecondPage={setSecondPage}
             trigger={trigger}
           />
-        )}
-        {secondPage && (
+        </div>
+
+        <div className={secondPage ? "block" : "hidden"}>
           <IncomeDetailForm
             account_id={account_id}
             errors={errors}
@@ -101,9 +102,8 @@ export function CreateIncomeForm() {
             setValue={setValue}
             watch={watch}
           />
-        )}
+        </div>
       </form>
-      {process.env.NODE_ENV === "development" && <DevTool control={control} />}
     </>
   )
 }
