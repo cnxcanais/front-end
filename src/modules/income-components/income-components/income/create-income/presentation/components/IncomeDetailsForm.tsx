@@ -4,7 +4,7 @@ import { SearchArray } from "@/@types/search-array"
 import { Button } from "@/core/components/Button"
 import * as Input from "@/core/components/Input"
 import { addMonthsToDate } from "@/core/utils/dateFunctions"
-import { ArrayConfig } from "@/core/utils/populateArrays"
+import { ArrayConfig, populateArrays } from "@/core/utils/populateArrays"
 import { getCookie } from "@/lib/cookies"
 import { getBankAccounts } from "@/modules/bank-accounts-components/bank-accounts/infra/remote"
 import { FormType } from "@/modules/income-components/income-components/income/create-income/presentation/components/CreateIncomeForm"
@@ -63,6 +63,21 @@ export function IncomeDetailForm({
     partsQty: null,
     bankAccountId: null,
   })
+
+  const arrayConfigs: ArrayConfig<any>[] = [
+    {
+      fetchFn: getBankAccounts,
+      mapFn: (acc) => ({
+        label: `${acc.bank.name} - ${acc.account_number}`,
+        value: acc.bank_account_id,
+      }),
+      setState: setBankAccounts,
+    },
+  ]
+
+  useEffect(() => {
+    populateArrays(arrayConfigs, { account_id })
+  }, [])
 
   const renderDetailsInfo = () => {
     return Array(detailsInfo.partsQty)
@@ -140,17 +155,6 @@ export function IncomeDetailForm({
       })
     }
   }, [detailsArray.length, bankAccountId, setValue])
-
-  const arrayConfigs: ArrayConfig<any>[] = [
-    {
-      fetchFn: getBankAccounts,
-      mapFn: (acc) => ({
-        label: `${acc.bank.name} - ${acc.account_number}`,
-        value: acc.bank_account_id,
-      }),
-      setState: setBankAccounts,
-    },
-  ]
 
   return (
     <>
