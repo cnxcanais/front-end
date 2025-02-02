@@ -37,6 +37,50 @@ const { income_input_fields_bank_account_id } = JSON.parse(
   getCookie("permissions")
 ).componentAccess
 
+/**
+ * @component IncomeDetailForm
+ * @description A form component for handling income details including total amount, installment parts, and bank account selection.
+ *
+ * @param {Object} props
+ * @param {string} props.account_id - The ID of the current account
+ * @param {FieldErrors<FormType>} props.errors - Form validation errors from react-hook-form
+ * @param {Control<FormType>} props.control - Form control object from react-hook-form
+ * @param {UseFormRegister<FormType>} props.register - Register function from react-hook-form
+ * @param {Dispatch<SetStateAction<boolean>>} props.setSecondPage - State setter for managing form page navigation
+ * @param {UseFormTrigger<FormType>} props.trigger - Form trigger function from react-hook-form
+ * @param {UseFormSetValue<FormType>} props.setValue - Function to set form values
+ * @param {UseFormGetValues<FormType>} props.getValues - Function to get form values
+ * @param {UseFormWatch<FormType>} props.watch - Function to watch form value changes
+ *
+ * @state {SearchArray} bankAccounts - Array of available bank accounts
+ * @state {number | null} initialIndividualValue - Initial value for each installment
+ * @state {Object} detailsInfo - Object containing form state
+ * @state {number} detailsInfo.totalAmount - Total amount of the income
+ * @state {number} detailsInfo.partsQty - Number of installments
+ * @state {string} detailsInfo.bankAccountId - Selected bank account ID
+ *
+ * @features
+ * - Manages income details with multiple installments
+ * - Automatically calculates individual installment amounts
+ * - Handles bank account selection
+ * - Validates form inputs
+ * - Maintains form state across navigation
+ * - Automatically adjusts dates for installments
+ * - Handles permission-based input restrictions
+ *
+ * @example
+ * <IncomeDetailForm
+ *   account_id="123"
+ *   errors={errors}
+ *   control={control}
+ *   register={register}
+ *   setSecondPage={setSecondPage}
+ *   trigger={trigger}
+ *   setValue={setValue}
+ *   getValues={getValues}
+ *   watch={watch}
+ * />
+ */
 export function IncomeDetailForm({
   account_id,
   errors,
@@ -83,18 +127,6 @@ export function IncomeDetailForm({
     return acc + (curr.amount || 0)
   }, 0)
 
-  //On mount effects
-  useEffect(() => {
-    populateArrays(arrayConfigs, { account_id })
-    if (detailsArray.length > 0) {
-      setDetailsInfo({
-        totalAmount: totalAmount,
-        partsQty: detailsArray.length,
-        bankAccountId: detailsArray[0].bank_account_id,
-      })
-    }
-  }, [])
-
   const renderDetailsInfo = () => {
     return Array(detailsInfo.partsQty)
       .fill(null)
@@ -110,23 +142,32 @@ export function IncomeDetailForm({
       ))
   }
 
+  // Used to simulate a dirty state on first installment amount, after first value is adjusted to match total amount the
+  // effect is shut off so the user can modify the first installment amount manually.
   const adjustmentMadeRef = useRef(false)
 
+  // Initial setup effect: Populates bank accounts and sets initial details if available
   useEffect(() => {
-    if (
-      totalAmount < detailsInfo.totalAmount &&
-      !adjustmentMadeRef.current &&
-      totalAmount > 0
-    ) {
-      const firstAmount = getValues("incomeDetailsArray.0.amount")
-      const adjustment = detailsInfo.totalAmount - totalAmount
-
-      setValue("incomeDetailsArray.0.amount", firstAmount + adjustment)
-
-      adjustmentMadeRef.current = true
+    populateArrays(arrayConfigs, { account_id })
+    if (detailsArray.length > 0) {
+      setDetailsInfo({
+        totalAmount: totalAmount,
+        partsQty: detailsArray.length,
+        bankAccountId: detailsArray[0].bank_account_id,
+      })
     }
-  }, [detailsInfo.totalAmount, totalAmount, getValues, setValue])
+  }, [])
 
+  // Sets the bank_account_id for each installment when select from input
+  useEffect(() => {
+    if (detailsArray?.length && bankAccountId) {
+      detailsArray.forEach((item, index) => {
+        setValue(`incomeDetailsArray.${index}.bank_account_id`, bankAccountId)
+      })
+    }
+  }, [detailsArray.length, bankAccountId, setValue])
+
+  // Sets up part numbers, account IDs, and due dates for each installment
   useEffect(() => {
     if (detailsArray?.length) {
       detailsArray.forEach((item, index) => {
@@ -140,16 +181,7 @@ export function IncomeDetailForm({
     }
   }, [detailsArray.length])
 
-  useEffect(() => {
-    const currentArray = getValues("incomeDetailsArray")
-
-    if (currentArray?.length > detailsInfo?.partsQty) {
-      const newArray = currentArray.slice(0, detailsInfo.partsQty)
-
-      setValue("incomeDetailsArray", newArray)
-    }
-  }, [detailsInfo.partsQty])
-
+  // Calculates individual installment value when total amount or parts quantity changes
   useEffect(() => {
     if (detailsInfo.partsQty > 0 && detailsInfo.totalAmount > 0) {
       setInitialIndividualValue(detailsInfo.totalAmount / detailsInfo.partsQty)
@@ -164,13 +196,60 @@ export function IncomeDetailForm({
     }
   }, [initialIndividualValue, detailsArray.length])
 
+  // Adjusts the first installment amount to match total when there's a difference
   useEffect(() => {
-    if (detailsArray?.length && bankAccountId) {
-      detailsArray.forEach((item, index) => {
-        setValue(`incomeDetailsArray.${index}.bank_account_id`, bankAccountId)
-      })
+    //Adjusts for when sum of parts amount is higher than total amount input
+    if (
+      totalAmount < detailsInfo.totalAmount &&
+      !adjustmentMadeRef.current &&
+      totalAmount > 0
+    ) {
+      const firstAmount = getValues("incomeDetailsArray.0.amount")
+      const adjustment = detailsInfo.totalAmount - totalAmount
+
+      setValue("incomeDetailsArray.0.amount", firstAmount + adjustment)
+
+      adjustmentMadeRef.current = true // shuts off effect until manually reset
     }
-  }, [detailsArray.length, bankAccountId, setValue])
+
+    //Adjusts for when sum of parts amount is lower than total amount input
+    if (
+      totalAmount > detailsInfo.totalAmount &&
+      !adjustmentMadeRef.current &&
+      totalAmount > 0
+    ) {
+      const firstAmount = getValues("incomeDetailsArray.0.amount")
+      const adjustment = totalAmount - detailsInfo.totalAmount
+
+      setValue("incomeDetailsArray.0.amount", firstAmount - adjustment)
+
+      adjustmentMadeRef.current = true // shuts off effect until manually reset
+    }
+
+    //Adjusts for when parts quantity are reduced from greater than one to one
+    if (detailsArray.length === 1) {
+      setValue("incomeDetailsArray.0.amount", detailsInfo.totalAmount)
+
+      adjustmentMadeRef.current = true // shuts off effect until manually reset
+    }
+  }, [
+    detailsInfo.totalAmount,
+    totalAmount,
+    getValues,
+    setValue,
+    detailsArray.length,
+  ])
+
+  // Trims the details array when number of parts is reduced
+  useEffect(() => {
+    const currentArray = getValues("incomeDetailsArray")
+
+    if (currentArray?.length > detailsInfo?.partsQty) {
+      const newArray = currentArray.slice(0, detailsInfo.partsQty)
+
+      setValue("incomeDetailsArray", newArray)
+    }
+  }, [detailsInfo.partsQty])
 
   return (
     <>
@@ -210,7 +289,57 @@ export function IncomeDetailForm({
 
         <div className="flex min-w-[500px] flex-col gap-4">
           <label htmlFor="income_bank_account_id">Conta Bancária</label>
-          <Input.Root>
+          <Input.Root
+            variant={
+              (
+                errors?.incomeDetailsArray /**
+                 * @component IncomeDetailForm
+                 * @description A form component for handling income details including total amount, installment parts, and bank account selection.
+                 *
+                 * @param {Object} props
+                 * @param {string} props.account_id - The ID of the current account
+                 * @param {FieldErrors<FormType>} props.errors - Form validation errors from react-hook-form
+                 * @param {Control<FormType>} props.control - Form control object from react-hook-form
+                 * @param {UseFormRegister<FormType>} props.register - Register function from react-hook-form
+                 * @param {Dispatch<SetStateAction<boolean>>} props.setSecondPage - State setter for managing form page navigation
+                 * @param {UseFormTrigger<FormType>} props.trigger - Form trigger function from react-hook-form
+                 * @param {UseFormSetValue<FormType>} props.setValue - Function to set form values
+                 * @param {UseFormGetValues<FormType>} props.getValues - Function to get form values
+                 * @param {UseFormWatch<FormType>} props.watch - Function to watch form value changes
+                 *
+                 * @state {SearchArray} bankAccounts - Array of available bank accounts
+                 * @state {number | null} initialIndividualValue - Initial value for each installment
+                 * @state {Object} detailsInfo - Object containing form state
+                 * @state {number} detailsInfo.totalAmount - Total amount of the income
+                 * @state {number} detailsInfo.partsQty - Number of installments
+                 * @state {string} detailsInfo.bankAccountId - Selected bank account ID
+                 *
+                 * @features
+                 * - Manages income details with multiple installments
+                 * - Automatically calculates individual installment amounts
+                 * - Handles bank account selection
+                 * - Validates form inputs
+                 * - Maintains form state across navigation
+                 * - Automatically adjusts dates for installments
+                 * - Handles permission-based input restrictions
+                 *
+                 * @example
+                 * <IncomeDetailForm
+                 *   account_id="123"
+                 *   errors={errors}
+                 *   control={control}
+                 *   register={register}
+                 *   setSecondPage={setSecondPage}
+                 *   trigger={trigger}
+                 *   setValue={setValue}
+                 *   getValues={getValues}
+                 *   watch={watch}
+                 * />
+                 */?.[0]?.bank_account_id
+              ) ?
+                "error"
+              : "primary"
+            }>
             <Input.SelectInput
               name={`incomeDetailsArray`}
               options={bankAccounts}
@@ -221,13 +350,14 @@ export function IncomeDetailForm({
               }
             />
           </Input.Root>
+          {errors.incomeDetailsArray && (
+            <span className="mt-1 text-xs text-red-500">
+              {errors.incomeDetailsArray[0]?.bank_account_id.message}
+            </span>
+          )}
         </div>
       </div>
-      {errors.incomeDetailsArray && (
-        <span className="text-xs text-red-500">
-          {errors.incomeDetailsArray.message}
-        </span>
-      )}
+
       <div className="mt-6 flex gap-4">
         <Button
           type="button"

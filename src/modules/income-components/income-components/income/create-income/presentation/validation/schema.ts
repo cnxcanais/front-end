@@ -2,7 +2,9 @@ import { z } from "zod"
 
 const incomeDetailsSchema = z.object({
   amount: z.number().gt(0, "Valor deve ser maior que zero"),
-  bank_account_id: z.string().nonempty("Conta bancária é obrigatória"),
+  bank_account_id: z
+    .string({ message: "Conta bancária é obrigatória" })
+    .nonempty(),
   part: z.number().gt(0, "Parcela deve ser maior que zero"),
   due_date: z.union(
     [

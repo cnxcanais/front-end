@@ -5,6 +5,7 @@ import { IncomeDetails } from "@/@types/income-details"
 import { getCookie } from "@/lib/cookies"
 import { createIncomeFormSchema } from "@/modules/income-components/income-components/income/create-income/presentation/validation/schema"
 import { zodResolver } from "@hookform/resolvers/zod"
+import { useRouter } from "next/navigation"
 import { useState } from "react"
 import { useForm } from "react-hook-form"
 import { toast } from "sonner"
@@ -49,10 +50,23 @@ export function CreateIncomeForm() {
     },
   })
 
+  console.log(errors)
+
+  const { push } = useRouter()
+
   async function onSubmit(data: FormType) {
     if (data.incomeDetailsArray.length === 0) {
       toast.error("É necessário adicionar pelo menos uma parcela da receita")
+      return
     }
+
+    if (!data.incomeDetailsArray[0].bank_account_id) {
+      toast.error("Insira uma conta bancária")
+      return
+    }
+
+    console.log(data)
+    toast.success("Submit enviado")
 
     // try {
     //   const { incomeDetailsArray, ...incomeData } = data
