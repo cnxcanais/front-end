@@ -1,5 +1,6 @@
 "use client"
 
+import { IncomeDetails } from "@/@types/income-details"
 import { Button } from "@/core/components/Button"
 import { LoadingScreen } from "@/core/components/LoadingScreen"
 import { Modal } from "@/core/components/Modals/Modal"
@@ -13,7 +14,7 @@ import { queryClient } from "@/lib/react-query"
 import {
   getIncomes,
   removeIncome,
-} from "@/modules/income-components/income-components/income/remote/income"
+} from "@/modules/income-components/income-components/remote/income"
 import { FileXls, Pencil, Trash } from "@phosphor-icons/react"
 import { useMutation, useQuery } from "@tanstack/react-query"
 import { useRouter } from "next/navigation"
@@ -34,6 +35,9 @@ export function IncomeTable() {
   const [open, setOpen] = useState(false)
   const [id, setId] = useState("")
   const [filteredResults, setFilteredResults] = useState([])
+  const [subArrayControl, setSubArrayControl] = useState<{
+    [key: number]: boolean
+  }>({})
 
   const refetchIncomesFn = useMutation({
     mutationFn: getIncomes,
@@ -91,6 +95,26 @@ export function IncomeTable() {
       accessor2: "group_name",
     },
     {
+      header: "Parcelas",
+      accessor: "income_details",
+      render: (
+        incomeDetails: Array<IncomeDetails.IncomeDetailsType>,
+        income: IncomeDetails.IncomeDetailsType
+      ) => (
+        <p
+          onClick={() => {
+            const index = Number(filteredResults.indexOf(income))
+            setSubArrayControl({
+              ...subArrayControl,
+              [index]: !subArrayControl[index],
+            })
+          }}
+          className="cursor-pointer text-blue-500 underline">
+          {incomeDetails.length}
+        </p>
+      ),
+    },
+    {
       header: "Obs.",
       accessor: "observation",
       render: (value: string) => <ModalObservationTrigger content={value} />,
@@ -123,7 +147,14 @@ export function IncomeTable() {
   ]
 
   useEffect(() => {
-    if (incomes) setFilteredResults(incomes)
+    if (incomes) {
+      setFilteredResults(incomes)
+      incomes.forEach((item, index) => {
+        if (item.income_details) {
+          setSubArrayControl((prev) => ({ ...prev, [index]: false }))
+        }
+      })
+    }
   }, [incomes, isLoading])
 
   if (!incomes || isLoading) return <LoadingScreen />

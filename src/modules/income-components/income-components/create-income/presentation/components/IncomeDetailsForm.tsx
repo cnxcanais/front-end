@@ -7,7 +7,7 @@ import { addMonthsToDate } from "@/core/utils/dateFunctions"
 import { ArrayConfig, populateArrays } from "@/core/utils/populateArrays"
 import { getCookie } from "@/lib/cookies"
 import { getBankAccounts } from "@/modules/bank-accounts-components/bank-accounts/infra/remote"
-import { FormType } from "@/modules/income-components/income-components/income/create-income/presentation/components/CreateIncomeForm"
+import { FormType } from "@/modules/income-components/income-components/create-income/presentation/components/CreateIncomeForm"
 import { useRouter } from "next/navigation"
 import { Dispatch, SetStateAction, useEffect, useRef, useState } from "react"
 import {
