@@ -6,47 +6,29 @@ import { Modal } from "@/core/components/Modals/Modal"
 import { SearchInput } from "@/core/components/SearchInput"
 import { Table } from "@/core/components/Table"
 import { exportToExcel } from "@/core/utils/exportToExcel"
+import { getAccountId } from "@/core/utils/get-account-id"
 import { getPermissionByEntity } from "@/core/utils/getPermissionByEntity"
-import { getCookie } from "@/lib/cookies"
-import { queryClient } from "@/lib/react-query"
-import {
-  getOrganizations,
-  removeOrganization,
-} from "@/modules/organization-components/organizations/infra/remote"
+import { useGetOrganizationsQuery } from "@/modules/organization-components/organizations/infra/hooks/use-get-organizations-query"
+import { removeOrganization } from "@/modules/organization-components/organizations/infra/remote"
 import { FileXls, Pencil, Trash } from "@phosphor-icons/react"
-import { useMutation, useQuery } from "@tanstack/react-query"
 import { useRouter } from "next/navigation"
 import { useEffect, useState } from "react"
 import { toast } from "sonner"
 
 export function OrganizationsTable() {
-  const accountId = getCookie("accountId")
+  const account_id = getAccountId()
 
-  const { data: organizations, isLoading } = useQuery({
-    queryKey: ["organizations"],
-    queryFn: () => getOrganizations({ account_id: accountId }),
-    enabled: !!accountId,
-  })
+  const {
+    data: organizations,
+    isLoading,
+    refetch,
+  } = useGetOrganizationsQuery(account_id)
 
   const { push } = useRouter()
 
   const [open, setOpen] = useState(false)
   const [id, setId] = useState("")
   const [filteredResults, setFilteredResults] = useState([])
-
-  const refetchOrganizationsFn = useMutation({
-    mutationFn: getOrganizations,
-    onSuccess: () => {
-      toast.success("Organização removida com sucesso!")
-      queryClient.invalidateQueries({ queryKey: ["organizations"] })
-    },
-    onError: (error) => {
-      toast.error("Erro ao remover organização: " + error)
-    },
-    onSettled: () => {
-      setOpen(false)
-    },
-  })
 
   const organizations_create = getPermissionByEntity("organizations_create")
   const organizations_edit = getPermissionByEntity("organizations_edit")
@@ -57,9 +39,15 @@ export function OrganizationsTable() {
   }
 
   const handleConfirmDelete = async () => {
-    await removeOrganization({ organization_id: id }).then(() =>
-      refetchOrganizationsFn.mutate({ account_id: accountId })
-    )
+    try {
+      await removeOrganization(id)
+      toast.success("Organização removida com sucesso!")
+      refetch()
+    } catch (error) {
+      toast.error("Erro ao remover organização: " + error)
+    } finally {
+      setOpen(false)
+    }
   }
 
   const columns = [

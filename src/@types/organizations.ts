@@ -1,9 +1,17 @@
 export namespace Organization {
-  export type GetRequest = {
+  export type Type = {
+    organization_id: string
+    name: string
+    cnpj: string
+    email: string
+    address: string
+    phone: string
+    created_at: Date
+    updated_at: Date
     account_id: string
   }
 
-  export type GetRequestParams = {
+  export type GetRequestQueryParams = {
     organization_id: string
     name: string
     cnpj: string
@@ -12,35 +20,11 @@ export namespace Organization {
   }
 
   export type GetResponse = {
-    organizations: {
-      organization_id: string
-      name: string
-      cnpj: string
-      email: string
-      address: string
-      phone: string
-      created_at: Date
-      updated_at: Date
-      account_id: string
-    }[]
-  }
-
-  export type GetByIdRequest = {
-    organization_id: string
+    organizations: Type[]
   }
 
   export type GetByIdResponse = {
-    organization: {
-      organization_id: string
-      name: string
-      cnpj: string
-      email: string
-      address: string
-      phone: string
-      created_at: Date
-      updated_at: Date
-      account_id: string
-    }
+    organization: Type
   }
 
   export type CreateRequest = {
@@ -50,10 +34,6 @@ export namespace Organization {
     phone: string
     email: string
     account_id: string
-  }
-
-  export type DeleteRequest = {
-    organization_id: string
   }
 
   export type UpdateRequest = {

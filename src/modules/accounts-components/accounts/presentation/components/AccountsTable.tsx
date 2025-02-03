@@ -14,16 +14,14 @@ import {
 } from "@/modules/accounts-components/accounts/infra/remote"
 import { Pencil, Trash } from "@phosphor-icons/react"
 import { FileXls } from "@phosphor-icons/react/dist/ssr"
-import { useMutation, useQuery } from "@tanstack/react-query"
+import { useMutation } from "@tanstack/react-query"
 import { useRouter } from "next/navigation"
 import { useEffect, useState } from "react"
 import { toast } from "sonner"
+import { useGetAccountsQuery } from "../../infra/hooks/use-get-accounts-query"
 
 export function AccountsTable() {
-  const { data: accounts, isLoading } = useQuery({
-    queryKey: ["accounts"],
-    queryFn: getAccounts,
-  })
+  const { data: accounts, isLoading } = useGetAccountsQuery()
 
   const accounts_create = getPermissionByEntity("accounts_create")
   const accounts_edit = getPermissionByEntity("accounts_edit")

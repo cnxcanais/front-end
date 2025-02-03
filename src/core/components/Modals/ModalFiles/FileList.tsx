@@ -1,15 +1,12 @@
 import { LoadingScreen } from "@/core/components/LoadingScreen"
-import {
-  fetchFiles,
-  removeFile,
-} from "@/core/components/Modals/ModalFiles/remote"
+import { removeFile } from "@/core/components/Modals/ModalFiles/remote"
 import { SearchInput } from "@/core/components/SearchInput"
 import { getAccountId } from "@/core/utils/get-account-id"
 import { File, X } from "@phosphor-icons/react"
-import { useQuery } from "@tanstack/react-query"
 import Link from "next/link"
 import { useEffect, useState } from "react"
 import { toast } from "sonner"
+import { useFetchFilesQuery } from "./remote/use-fetch-files-query"
 
 type FileListProps = {
   entityType: "income_source_id" | "income_id" | "expense_id" | "supplier_id"
@@ -25,12 +22,7 @@ export function FileList({ entityId, entityType }: FileListProps) {
     data: fileList,
     isLoading,
     refetch,
-  } = useQuery({
-    queryKey: ["files", entityId, entityType],
-    queryFn: () =>
-      fetchFiles(account_id, [{ key: entityType, value: entityId }]),
-    enabled: !!account_id,
-  })
+  } = useFetchFilesQuery({ account_id, entityId, entityType })
 
   async function handleRemoveUploaded(fileId: string) {
     try {

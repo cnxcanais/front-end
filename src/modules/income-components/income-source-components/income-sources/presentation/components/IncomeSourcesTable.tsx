@@ -8,13 +8,9 @@ import { Table } from "@/core/components/Table"
 import { exportToExcel } from "@/core/utils/exportToExcel"
 import { getAccountId } from "@/core/utils/get-account-id"
 import { getCookie } from "@/lib/cookies"
-import { queryClient } from "@/lib/react-query"
-import {
-  getIncomeSources,
-  removeIncomeSource,
-} from "@/modules/income-components/income-source-components/income-sources/infra/remote"
+import { useGetIncomeSourcesQuery } from "@/modules/income-components/income-source-components/income-sources/infra/hooks/use-get-income-sources-query"
+import { removeIncomeSource } from "@/modules/income-components/income-source-components/income-sources/infra/remote"
 import { FileXls, Pencil, Trash } from "@phosphor-icons/react"
-import { useMutation, useQuery } from "@tanstack/react-query"
 import { useRouter } from "next/navigation"
 import { useEffect, useState } from "react"
 import { toast } from "sonner"
@@ -22,11 +18,8 @@ import { toast } from "sonner"
 export function IncomeSourcesTable() {
   const account_id = getAccountId()
 
-  const { data: incomeSources, isLoading } = useQuery({
-    queryKey: ["income-sources"],
-    queryFn: () => getIncomeSources({ account_id }),
-    enabled: !!account_id,
-  })
+  const { data: incomeSources, isLoading } =
+    useGetIncomeSourcesQuery(account_id)
 
   const { push } = useRouter()
 
@@ -38,29 +31,20 @@ export function IncomeSourcesTable() {
 
   const [filteredResults, setFilteredResults] = useState([])
 
-  const refetchIncomeSourcesFn = useMutation({
-    mutationFn: getIncomeSources,
-    onSuccess: () => {
-      toast.success("Fonte de Receita removido com sucesso!")
-      queryClient.invalidateQueries({ queryKey: ["income-sources"] })
-    },
-    onError: (error) => {
-      toast.error("Erro ao remover Fonte de Receita: " + error)
-    },
-    onSettled: () => {
-      setOpen(false)
-    },
-  })
-
   // handlers for Delete and Edit
   const handleEdit = (id: string) => {
     push(`/income-sources/edit/${id}`)
   }
 
   const handleConfirmDelete = async () => {
-    await removeIncomeSource({ income_source_id: id }).then(() =>
-      refetchIncomeSourcesFn.mutate({ account_id })
-    )
+    try {
+      await removeIncomeSource(id)
+      toast.success("Fonte de Receita removido com sucesso!")
+    } catch (error) {
+      toast.error("Erro ao remover Fonte de Receita: " + error)
+    } finally {
+      setOpen(false)
+    }
   }
 
   // column structure for table

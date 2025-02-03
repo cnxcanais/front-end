@@ -8,14 +8,14 @@ import { Table } from "@/core/components/Table"
 import { exportToExcel } from "@/core/utils/exportToExcel"
 import { getAccountId } from "@/core/utils/get-account-id"
 import { getPermissionByEntity } from "@/core/utils/getPermissionByEntity"
-import { queryClient } from "@/lib/react-query"
+import { useGetBanksQuery } from "@/modules/banks-components/banks/infra/hooks/use-get-banks-query"
 import {
   getBanks,
   removeBank,
 } from "@/modules/banks-components/banks/infra/remote"
 import { Pencil, Trash } from "@phosphor-icons/react"
 import { FileXls } from "@phosphor-icons/react/dist/ssr"
-import { useMutation, useQuery } from "@tanstack/react-query"
+import { useMutation } from "@tanstack/react-query"
 import { useRouter } from "next/navigation"
 import { useEffect, useState } from "react"
 import { toast } from "sonner"
@@ -23,10 +23,7 @@ import { toast } from "sonner"
 export function BanksTable() {
   const account_id = getAccountId()
 
-  const { data: banks, isLoading } = useQuery({
-    queryKey: ["banks"],
-    queryFn: () => getBanks(account_id),
-  })
+  const { data: banks, isLoading, refetch } = useGetBanksQuery(account_id)
 
   const banks_create = getPermissionByEntity("banks_create")
   const banks_edit = getPermissionByEntity("banks_edit")
@@ -42,7 +39,7 @@ export function BanksTable() {
     mutationFn: getBanks,
     onSuccess: () => {
       toast.success("Banco removido com sucesso!")
-      queryClient.invalidateQueries({ queryKey: ["banks"] })
+      refetch()
     },
     onError: (error) => {
       toast.error("Erro ao remover Banco: " + error)

@@ -6,15 +6,11 @@ import { Modal } from "@/core/components/Modals/Modal"
 import { SearchInput } from "@/core/components/SearchInput"
 import { Table } from "@/core/components/Table"
 import { exportToExcel } from "@/core/utils/exportToExcel"
+import { getAccountId } from "@/core/utils/get-account-id"
 import { getPermissionByEntity } from "@/core/utils/getPermissionByEntity"
-import { getCookie } from "@/lib/cookies"
-import { queryClient } from "@/lib/react-query"
-import {
-  deleteExpenseGroup,
-  getAllExpenseGroups,
-} from "@/modules/expense-groups-components/remote/expense-groups-methods"
+import { deleteExpenseGroup } from "@/modules/expense-groups-components/remote/expense-groups-methods"
+import { useExpenseGroupQuery } from "@/modules/expense-groups-components/remote/use-expense-groups-query"
 import { FileXls, Pencil, Trash } from "@phosphor-icons/react"
-import { useMutation, useQuery } from "@tanstack/react-query"
 import { useRouter } from "next/navigation"
 import { useEffect, useState } from "react"
 import { toast } from "sonner"
@@ -26,39 +22,32 @@ export function ExpenseGroupTable() {
   const edit = getPermissionByEntity("expense_groups_edit")
   const deletePermission = getPermissionByEntity("expense_groups_delete")
 
-  const accountId = getCookie("accountId")
+  const account_id = getAccountId()
 
   const [open, setOpen] = useState(false)
   const [id, setId] = useState("")
   const [filteredResults, setFilteredResults] = useState([])
 
-  const { data: expenseGroups, isLoading } = useQuery({
-    queryKey: ["expense-groups"],
-    queryFn: () => getAllExpenseGroups(accountId),
-  })
-
-  const fetchExpenseGroups = useMutation({
-    mutationFn: getAllExpenseGroups,
-    onSuccess: () => {
-      toast.success("Grupo removido com sucesso!")
-      queryClient.invalidateQueries({ queryKey: ["expense-groups"] })
-    },
-    onError: (error) => {
-      toast.error("Erro ao remover grupo: " + error)
-    },
-    onSettled: () => {
-      setOpen(false)
-    },
-  })
+  const {
+    data: expenseGroups,
+    isLoading,
+    refetch,
+  } = useExpenseGroupQuery(account_id)
 
   const handleEdit = (id: string) => {
     push(`/expense-groups/edit/${id}`)
   }
 
   const handleConfirmDelete = async () => {
-    await deleteExpenseGroup(id).then(() =>
-      fetchExpenseGroups.mutate(accountId)
-    )
+    try {
+      await deleteExpenseGroup(id)
+      toast.success("Grupo removido com sucesso!")
+      refetch()
+    } catch (error) {
+      toast.error("Erro ao remover grupo: " + error)
+    } finally {
+      setOpen(false)
+    }
   }
 
   const columns = [
