@@ -1,5 +1,5 @@
-import { BudgetsPage } from "@/modules/budget-components/budget-income/budget-incomes/presentation/pages"
+import { BudgetPage } from "@/modules/budget-components/presentation/pages"
 
 export default function BudgetRenderer() {
-  return <BudgetsPage />
+  return <BudgetPage />
 }

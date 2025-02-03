@@ -67,9 +67,9 @@ export function CreateBudgetIncomeForm() {
     try {
       const response = await createBudgetIncome(data)
       toast.success(response)
-      setTimeout(() => push("/suppliers"), 2000)
+      setTimeout(() => push("/budget"), 2000)
     } catch (error) {
-      toast.error("Erro ao criar fonte de receita: " + error)
+      toast.error("Erro ao criar orçamento de receita: " + error)
     }
   }
 
@@ -183,14 +183,14 @@ export function CreateBudgetIncomeForm() {
         />
       </div>
 
-      <div className="mt-6 flex gap-4">
+      <div className="my-2 flex gap-4">
         <Button type="submit" variant="primary">
           Salvar
         </Button>
         <Button
           type="button"
           disabled={isSubmitting}
-          onClick={() => push("/suppliers")}
+          onClick={() => push("/budget")}
           variant="tertiary">
           Voltar
         </Button>

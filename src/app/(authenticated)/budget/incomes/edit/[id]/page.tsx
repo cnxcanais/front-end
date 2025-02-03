@@ -1,4 +1,4 @@
-import { EditAccountPage } from "@/modules/accounts-components/edit-account/presentation/pages"
+import { EditBudgetIncomePage } from "@/modules/budget-components/budget-income/edit-budget-income/presentation/pages"
 
 export default async function EditBudgetIncomeRender({
   params,
@@ -7,5 +7,5 @@ export default async function EditBudgetIncomeRender({
 }) {
   const id = (await params).id
 
-  return <EditAccountPage id={id} />
+  return <EditBudgetIncomePage id={id} />
 }

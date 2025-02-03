@@ -5,6 +5,7 @@ import { LoadingScreen } from "@/core/components/LoadingScreen"
 import { SelectInput } from "@/core/components/SelectInput"
 import { useBudgetIncomesQuery } from "@/modules/budget-components/budget-income/budget-incomes/infra/hooks/use-budget-incomes-query"
 import { useIncomeGroupQuery } from "@/modules/income-components/income-groups-components/remote/use-income-group-query"
+import { CaretDown, CaretRight } from "@phosphor-icons/react"
 import { useEffect, useState } from "react"
 import { useForm } from "react-hook-form"
 
@@ -13,18 +14,31 @@ interface FilterProps {
 }
 
 export function IncomeBudgetFilters({ account_id }: FilterProps) {
-  const { register, handleSubmit, control, getValues, watch, reset } =
-    useForm<Budget.QueryParamsIncome>({})
-
+  const [collapsed, setCollapsed] = useState(false)
   const [filters, setFilters] = useState<Budget.QueryParamsIncome>({})
+
+  const { register, handleSubmit, control, reset } =
+    useForm<Budget.QueryParamsIncome>()
 
   const { data: incomeGroups, isLoading } = useIncomeGroupQuery(account_id)
 
-  const { refetch } = useBudgetIncomesQuery(account_id, getValues())
+  const { refetch } = useBudgetIncomesQuery(account_id, filters)
 
   function onSubmit(data: Budget.QueryParamsIncome) {
+    const adjustMonth = (month: string | undefined, isStart: boolean) => {
+      if (!month) return undefined
+      const [year, monthIndex] = month.split("-").map(Number)
+      return isStart ?
+          new Date(year, monthIndex - 1, 1)
+        : new Date(year, monthIndex, 0)
+    }
+
     const cleanedData = {
       ...data,
+      start_date: adjustMonth(data.start_date, true)
+        ?.toISOString()
+        .split("T")[0],
+      end_date: adjustMonth(data.end_date, false)?.toISOString().split("T")[0],
       ...(data.min_amount === 0 || !data.min_amount ?
         { min_amount: undefined }
       : {}),
@@ -32,6 +46,7 @@ export function IncomeBudgetFilters({ account_id }: FilterProps) {
         { max_amount: undefined }
       : {}),
     }
+
     setFilters(cleanedData)
   }
 
@@ -48,11 +63,16 @@ export function IncomeBudgetFilters({ account_id }: FilterProps) {
 
   return (
     <div className="">
+      <div className="my-2 flex gap-4" onClick={() => setCollapsed(!collapsed)}>
+        <h1 className="mb-2 text-xl font-semibold">Filtros</h1>
+        {collapsed ?
+          <CaretRight className="h-7 w-7 cursor-pointer" />
+        : <CaretDown className="h-7 w-7 cursor-pointer" />}
+      </div>
+
       <form
         onSubmit={handleSubmit(onSubmit)}
-        className="rounded-lg border border-black bg-gray-100 p-3">
-        <h1 className="mb-2 text-xl font-semibold">Filtros</h1>
-
+        className={`flex-1 rounded-lg border border-black bg-gray-100 p-3 ${collapsed ? "invisible hidden" : ""}`}>
         <div className="flex gap-4">
           <div className="flex flex-1 flex-col gap-2">
             <div className="flex items-center gap-4">
@@ -61,7 +81,7 @@ export function IncomeBudgetFilters({ account_id }: FilterProps) {
                   Data Inicial
                 </label>
                 <Input.Root>
-                  <Input.Control {...register("start_date")} type="date" />
+                  <Input.Control {...register("start_date")} type="month" />
                 </Input.Root>
               </div>
 
@@ -70,7 +90,7 @@ export function IncomeBudgetFilters({ account_id }: FilterProps) {
                   Data Final
                 </label>
                 <Input.Root>
-                  <Input.Control {...register("end_date")} type="date" />
+                  <Input.Control {...register("end_date")} type="month" />
                 </Input.Root>
               </div>
             </div>
@@ -85,7 +105,7 @@ export function IncomeBudgetFilters({ account_id }: FilterProps) {
                 </Input.Root>
               </div>
 
-              <div className="flex flex-col gap-2">
+              <div className="flex flex-1 flex-col gap-2">
                 <label className="text-lg" htmlFor="max_amount">
                   Valor Final
                 </label>

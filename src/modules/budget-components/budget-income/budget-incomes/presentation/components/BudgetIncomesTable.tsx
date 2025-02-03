@@ -10,11 +10,11 @@ import { exportToExcel } from "@/core/utils/exportToExcel"
 import { getAccountId } from "@/core/utils/get-account-id"
 import { getPermissionByEntity } from "@/core/utils/getPermissionByEntity"
 import { useBudgetIncomesQuery } from "@/modules/budget-components/budget-income/budget-incomes/infra/hooks/use-budget-incomes-query"
-import { IncomeBudgetFilters } from "@/modules/budget-components/budget-income/budget-incomes/presentation/components/BudgetIncomeFilters"
 import {
-  getIncomeSources,
-  removeIncomeSource,
-} from "@/modules/income-components/income-source-components/income-sources/infra/remote"
+  getBudgetIncomes,
+  removeBudgetIncome,
+} from "@/modules/budget-components/budget-income/budget-incomes/infra/remote"
+import { IncomeBudgetFilters } from "@/modules/budget-components/budget-income/budget-incomes/presentation/components/BudgetIncomeFilters"
 import { FileXls, Pencil, Trash } from "@phosphor-icons/react"
 import { useMutation } from "@tanstack/react-query"
 import { useRouter } from "next/navigation"
@@ -42,7 +42,7 @@ export function IncomeBudgetTable() {
   const [filteredResults, setFilteredResults] = useState([])
 
   const refetchBudgetIncomesFn = useMutation({
-    mutationFn: getIncomeSources,
+    mutationFn: getBudgetIncomes,
     onSuccess: () => {
       toast.success("Orçamento de receita removido com sucesso!")
       refetch()
@@ -61,8 +61,8 @@ export function IncomeBudgetTable() {
   }
 
   const handleConfirmDelete = async () => {
-    await removeIncomeSource({ income_source_id: id }).then(() =>
-      refetchBudgetIncomesFn.mutate({ account_id })
+    await removeBudgetIncome(id).then(() =>
+      refetchBudgetIncomesFn.mutate(account_id)
     )
   }
 
@@ -151,7 +151,7 @@ export function IncomeBudgetTable() {
 
       <IncomeBudgetFilters account_id={account_id} />
 
-      <div className="mt-8 flex items-center justify-between">
+      <div className="mt-4 flex items-center justify-between">
         <div className="flex h-full gap-4">
           <SearchInput
             data={budgetIncomes}
