@@ -279,7 +279,7 @@ export function EditIncomeSourceForm({ id }: { id: string }) {
         </div>
       </div>
 
-      <div className="mt-6 flex gap-4">
+      <div className="my-2 flex gap-4">
         <Button type="submit" disabled={isSubmitting} variant="primary">
           Salvar
         </Button>

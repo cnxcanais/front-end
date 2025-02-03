@@ -1,12 +1,14 @@
 export namespace ExpenseGroup {
+  export type Type = {
+    expense_group_id: string
+    group_name: string
+    created_at: Date
+    updated_at: Date
+    account_id: string
+  }
+
   export type GetResponse = {
-    expenseGroups: {
-      expense_group_id: string
-      group_name: string
-      created_at: Date
-      updated_at: Date
-      account_id: string
-    }[]
+    expenseGroups: Type[]
   }
 
   export type GetByIdRequest = {
@@ -14,13 +16,7 @@ export namespace ExpenseGroup {
   }
 
   export type GetByIdResponse = {
-    expenseGroup: {
-      expense_group_id: string
-      group_name: string
-      created_at: Date
-      updated_at: Date
-      account_id: string
-    }
+    expenseGroup: Type
   }
 
   export type CreateRequest = {

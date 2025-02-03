@@ -4,28 +4,6 @@ import { NumericFormat, NumericFormatProps } from "react-number-format"
 import Select from "react-select"
 import { tv, VariantProps } from "tailwind-variants"
 
-interface CurrencyInputProps
-  extends Omit<NumericFormatProps, "value" | "onChange"> {
-  name?: string
-  control?: HookControl<any>
-  disabled?: boolean
-  value?: number
-  onChange?: (value: number | undefined) => void
-}
-
-interface Option {
-  label: string
-  value: string
-}
-
-interface SelectInputProps {
-  name: string
-  control: HookControl<any>
-  options: Option[]
-  placeholder?: string
-  disabled?: boolean
-}
-
 const div = tv({
   base: [
     "rounded-lg px-4 text-sm py-3 font-semibold shadow-sm",
@@ -35,8 +13,8 @@ const div = tv({
 
   variants: {
     variant: {
-      primary: "border-black",
-      secondary: "border-white !text-white",
+      primary: "border-black bg-white",
+      secondary: "border-white bg-transparent !text-white",
       error:
         "border-red-500 focus-within:border-red-500 focus-within:ring-2 focus-within:ring-red-100",
     },
@@ -58,18 +36,24 @@ type InputControlProps = ComponentProps<"input">
 export function Control(props: InputControlProps) {
   return (
     <input
-      className="flex-1 !border-none bg-transparent p-0 text-sm !outline-none !ring-0 autofill:bg-transparent autofill:text-white disabled:cursor-not-allowed"
+      className="w-full !border-none bg-transparent p-0 text-sm !outline-none !ring-0 autofill:bg-transparent autofill:text-white disabled:cursor-not-allowed"
       {...props}
     />
   )
 }
+
+type CurrencyInputProps = {
+  name?: string
+  control?: HookControl<any>
+  value?: number
+  onChange?: (value: number | undefined) => void
+} & Omit<NumericFormatProps, "value" | "onChange">
 
 export function Currency({
   name,
   control,
   value: externalValue,
   onChange: externalOnChange,
-  disabled,
   ...props
 }: CurrencyInputProps) {
   // For React Hook Form
@@ -84,13 +68,12 @@ export function Currency({
             onValueChange={({ floatValue }) => {
               onChange(floatValue || 0)
             }}
-            disabled={disabled}
             decimalSeparator=","
             thousandSeparator="."
             prefix="R$ "
             decimalScale={2}
             fixedDecimalScale
-            className="flex-1 !border-none bg-transparent p-0 text-sm !outline-none !ring-0 disabled:cursor-not-allowed"
+            className="w-full !border-none bg-transparent p-0 text-sm !outline-none !ring-0 disabled:cursor-not-allowed"
             {...props}
           />
         )}
@@ -105,16 +88,28 @@ export function Currency({
       onValueChange={({ floatValue }) => {
         externalOnChange?.(floatValue || 0)
       }}
-      disabled={disabled}
       decimalSeparator=","
       thousandSeparator="."
       prefix="R$ "
       decimalScale={2}
       fixedDecimalScale
-      className="flex-1 !border-none bg-transparent p-0 text-sm !outline-none !ring-0 disabled:cursor-not-allowed"
+      className="w-full !border-none bg-transparent p-0 text-sm !outline-none !ring-0 disabled:cursor-not-allowed"
       {...props}
     />
   )
+}
+
+type Option = {
+  label: string
+  value: string
+}
+
+type SelectInputProps = {
+  name: string
+  control: HookControl<any>
+  options: Option[]
+  placeholder?: string
+  disabled?: boolean
 }
 
 export function SelectInput({

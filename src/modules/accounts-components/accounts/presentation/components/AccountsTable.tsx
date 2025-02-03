@@ -6,7 +6,7 @@ import { Modal } from "@/core/components/Modals/Modal"
 import { SearchInput } from "@/core/components/SearchInput"
 import { Table } from "@/core/components/Table"
 import { exportToExcel } from "@/core/utils/exportToExcel"
-import { getCookie } from "@/lib/cookies"
+import { getPermissionByEntity } from "@/core/utils/getPermissionByEntity"
 import { queryClient } from "@/lib/react-query"
 import {
   getAccounts,
@@ -25,9 +25,9 @@ export function AccountsTable() {
     queryFn: getAccounts,
   })
 
-  const { accounts_create, accounts_delete, accounts_edit } = JSON.parse(
-    getCookie("permissions")
-  ).componentAccess
+  const accounts_create = getPermissionByEntity("accounts_create")
+  const accounts_edit = getPermissionByEntity("accounts_edit")
+  const accounts_delete = getPermissionByEntity("accounts_delete")
 
   const { push } = useRouter()
 

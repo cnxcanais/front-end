@@ -20,8 +20,8 @@ export namespace Income {
     date: Date
     income_percentage: string
     observation: string
-    income_group: IncomeGroup.IncomeGroupType
-    income_source: IncomeSource.IncomeSourceType
+    income_group: IncomeGroup.Type
+    income_source: IncomeSource.Type
     created_at: Date
     updated_at: Date
     account_id: string

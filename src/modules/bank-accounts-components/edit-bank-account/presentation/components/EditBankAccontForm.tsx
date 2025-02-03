@@ -4,7 +4,7 @@ import { BankAccount } from "@/@types/bank-accounts"
 import { Button } from "@/core/components/Button"
 import * as Input from "@/core/components/Input"
 import { LoadingScreen } from "@/core/components/LoadingScreen"
-import SelectInput from "@/core/components/SelectInput"
+import { SelectInput } from "@/core/components/SelectInput"
 import { getCookie } from "@/lib/cookies"
 import {
   editBankAccount,
@@ -110,7 +110,7 @@ export function EditBankAccountForm({ id }: { id: string }) {
             }
             field_name="bank_id"
             label="Banco"
-            register={register}
+            {...register("bank_id")}
           />
         </div>
 
@@ -123,7 +123,7 @@ export function EditBankAccountForm({ id }: { id: string }) {
               className="flex-1"
               variant={errors.observation ? "error" : "primary"}>
               <textarea
-                className="h-full w-full resize-none border-none text-sm"
+                className="h-full w-full resize-none border-none p-0 text-sm"
                 {...register("observation")}
               />
             </Input.Root>
@@ -131,7 +131,7 @@ export function EditBankAccountForm({ id }: { id: string }) {
         </div>
       </div>
 
-      <div className="mt-6 flex gap-4">
+      <div className="my-2 flex gap-4">
         <Button type="submit" disabled={isSubmitting} variant="secondary">
           Salvar
         </Button>

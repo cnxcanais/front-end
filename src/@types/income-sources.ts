@@ -3,7 +3,7 @@ export namespace IncomeSource {
     account_id: string
   }
 
-  export type IncomeSourceType = {
+  export type Type = {
     income_source_id: string
     name: string
     cpf_cnpj: string
@@ -22,7 +22,7 @@ export namespace IncomeSource {
   }
 
   export type GetResponse = {
-    incomeSources: IncomeSourceType[]
+    incomeSources: Type[]
   }
 
   export type GetByIdRequest = {
@@ -30,7 +30,7 @@ export namespace IncomeSource {
   }
 
   export type GetByIdResponse = {
-    incomeSource: IncomeSourceType
+    incomeSource: Type
   }
 
   export type CreateRequest = {
