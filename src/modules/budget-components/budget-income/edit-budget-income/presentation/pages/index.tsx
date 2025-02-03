@@ -1,5 +1,5 @@
 import { PageTitle } from "@/core/components/PageTitle"
-import { EditBudgetIncomeForm } from "../components/EditBudgetIncomeForm"
+import { EditBudgetIncomeForm } from "@/modules/budget-components/budget-income/edit-budget-income/presentation/components/EditBudgetIncomeForm"
 
 export function EditBudgetIncomePage({ id }: { id: string }) {
   return (

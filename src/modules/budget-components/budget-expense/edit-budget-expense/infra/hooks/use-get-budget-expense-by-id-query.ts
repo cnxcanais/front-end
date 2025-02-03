@@ -1,5 +1,5 @@
+import { getBudgetExpenseById } from "@/modules/budget-components/budget-expense/edit-budget-expense/infra/remote/get-budget-expense-by-id"
 import { useQuery } from "@tanstack/react-query"
-import { getBudgetExpenseById } from "../remote/get-budget-expense-by-id"
 
 export function useGetBudgetExpenseByIdQuery(budget_expense_id: string) {
   return useQuery({

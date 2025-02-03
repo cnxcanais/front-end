@@ -1,6 +1,6 @@
 import { Budget } from "@/@types/budgets"
+import { getBudgetExpenses } from "@/modules/budget-components/budget-expense/budget-expenses/infra/remote"
 import { useQuery } from "@tanstack/react-query"
-import { getBudgetExpenses } from "../remote"
 
 export function useBudgetExpensesQuery(
   account_id: string,

@@ -1,5 +1,5 @@
 import { PageTitle } from "@/core/components/PageTitle"
-import { CreateBudgetExpenseForm } from "../components/CreateBudgetExpenseForm"
+import { CreateBudgetExpenseForm } from "@/modules/budget-components/budget-expense/create-budget-expense/presentation/components/CreateBudgetExpenseForm"
 
 export function CreateBudgetExpensePage() {
   return (

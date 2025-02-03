@@ -1,9 +1,12 @@
 "use client"
 
+import { ExpenseBudgetPage } from "@/modules/budget-components/budget-expense/budget-expenses/presentation/pages"
+import { IncomeBudgetPage } from "@/modules/budget-components/budget-income/budget-incomes/presentation/pages"
+import {
+  NavigationBar,
+  TabName,
+} from "@/modules/budget-components/presentation/components/NavigationBar"
 import { useState } from "react"
-import { ExpenseBudgetPage } from "../../budget-expense/budget-expenses/presentation/pages"
-import { IncomeBudgetPage } from "../../budget-income/budget-incomes/presentation/pages"
-import { NavigationBar, TabName } from "../components/NavigationBar"
 
 export function BudgetPage() {
   const [tab, setTab] = useState<TabName>(TabName.RECEITAS)

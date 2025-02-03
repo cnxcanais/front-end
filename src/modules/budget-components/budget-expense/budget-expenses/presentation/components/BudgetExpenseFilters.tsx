@@ -3,11 +3,11 @@ import { Button } from "@/core/components/Button"
 import * as Input from "@/core/components/Input"
 import { LoadingScreen } from "@/core/components/LoadingScreen"
 import { SelectInput } from "@/core/components/SelectInput"
+import { useBudgetExpensesQuery } from "@/modules/budget-components/budget-expense/budget-expenses/infra/hooks/use-budget-expenses-query"
 import { useExpenseGroupQuery } from "@/modules/expense-groups-components/remote/use-expense-groups-query"
 import { CaretDown, CaretRight } from "@phosphor-icons/react"
 import { useEffect, useState } from "react"
 import { useForm } from "react-hook-form"
-import { useBudgetExpensesQuery } from "../../infra/hooks/use-budget-expenses-query"
 
 interface FilterProps {
   account_id: string
