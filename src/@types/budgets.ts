@@ -83,6 +83,7 @@ export namespace Budget {
     expense_group_id?: string
     max_amount?: number
     min_amount?: number
+    page: number
   }
 
   export type QueryParamsIncome = {
@@ -92,5 +93,6 @@ export namespace Budget {
     income_group_id?: string
     max_amount?: number
     min_amount?: number
+    page: number
   }
 }

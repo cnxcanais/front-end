@@ -5,7 +5,7 @@ import { Button } from "@/core/components/Button"
 import * as Input from "@/core/components/Input"
 import { LoadingScreen } from "@/core/components/LoadingScreen"
 import { SelectInput } from "@/core/components/SelectInput"
-import { getCookie } from "@/lib/cookies"
+import { getAccountId } from "@/core/utils/get-account-id"
 import {
   editBankAccount,
   getBankAccountById,
@@ -14,8 +14,7 @@ import {
   EditBankAccountFormSchema,
   editBankAccountSchema,
 } from "@/modules/bank-accounts-components/edit-bank-account/presentation/validation/schema"
-import { getBanks } from "@/modules/banks-components/banks/infra/remote"
-import {} from "@/modules/banks-components/edit-bank/presentation/validation/schema"
+import { useGetBanksQuery } from "@/modules/banks-components/banks/infra/hooks/use-get-banks-query"
 import { zodResolver } from "@hookform/resolvers/zod"
 import { useQuery } from "@tanstack/react-query"
 import { useRouter } from "next/navigation"
@@ -24,20 +23,18 @@ import { toast } from "sonner"
 
 export function EditBankAccountForm({ id }: { id: string }) {
   const { push } = useRouter()
+  const account_id = getAccountId()
 
   const { data: bankAccount, isLoading } = useQuery({
     queryKey: ["bank-account", id],
     queryFn: () => getBankAccountById(id),
     enabled: !!id && id !== "",
     refetchOnWindowFocus: false,
+    refetchOnReconnect: false,
   })
 
-  const { data: banks } = useQuery({
-    queryKey: ["bank"],
-    queryFn: () => getBanks(getCookie("accountId")),
-    enabled: !!bankAccount,
-    refetchOnWindowFocus: false,
-  })
+  const { data: banks, isLoading: isBanksLoading } =
+    useGetBanksQuery(account_id)
 
   const {
     register,
@@ -63,7 +60,8 @@ export function EditBankAccountForm({ id }: { id: string }) {
     }
   }
 
-  if (!bankAccount || !banks || isLoading) return <LoadingScreen />
+  if (!bankAccount || !banks || isLoading || isBanksLoading)
+    return <LoadingScreen />
 
   return (
     <form className="max-w-[800px]" onSubmit={handleSubmit(onSubmit)}>

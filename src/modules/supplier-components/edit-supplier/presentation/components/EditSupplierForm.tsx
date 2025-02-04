@@ -27,6 +27,7 @@ export function EditSupplierForm({ id }: { id: string }) {
     queryFn: () => getSupplierById(id),
     enabled: id !== "",
     refetchOnWindowFocus: false,
+    refetchOnReconnect: false,
   })
 
   const {

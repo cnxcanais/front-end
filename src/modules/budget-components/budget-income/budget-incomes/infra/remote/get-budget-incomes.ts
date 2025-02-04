@@ -3,7 +3,7 @@ import { api } from "@/lib/axios"
 
 export async function getBudgetIncomes(
   account_id: string,
-  queryParams?: Budget.QueryParamsIncome
+  queryParams: Budget.QueryParamsIncome
 ) {
   try {
     const { data } = await api.get<Budget.GetIncomes>(

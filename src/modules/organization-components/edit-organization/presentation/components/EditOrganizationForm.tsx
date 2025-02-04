@@ -23,9 +23,10 @@ export function EditOrganizationForm({ id }: { id: string }) {
 
   const { data: organization, isLoading } = useQuery({
     queryKey: ["organization", id],
-    queryFn: () => getOrganizationById({ organization_id: id }),
+    queryFn: () => getOrganizationById(id),
     enabled: id !== "",
     refetchOnWindowFocus: false,
+    refetchOnReconnect: false,
   })
 
   const {

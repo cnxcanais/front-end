@@ -93,6 +93,14 @@
     "budget_expense_input_fields_description": true,
     "budget_expense_input_fields_date": true,
     "budget_expense_input_fields_amount": true,
-    "budget_expense_input_fields_expense_group_id": true
+    "budget_expense_input_fields_expense_group_id": true,
+    "users_create": true,
+    "users_edit": true,
+    "users_delete": true,
+    "user_input_fields_name": true,
+    "user_input_fields_email": true,
+    "user_input_fields_password": true,
+    "user_input_fields_profile_id": true,
+    "user_input_fields_account_id": true
   }
 }

@@ -10,13 +10,14 @@ import { exportToExcel } from "@/core/utils/exportToExcel"
 import { getAccountId } from "@/core/utils/get-account-id"
 import { getPermissionByEntity } from "@/core/utils/getPermissionByEntity"
 import { queryClient } from "@/lib/react-query"
+import { useFetchBankAccountsQuery } from "@/modules/bank-accounts-components/bank-accounts/infra/hooks/use-fetch-bank-accounts-query"
 import {
   getBankAccounts,
   removeBankAccount,
 } from "@/modules/bank-accounts-components/bank-accounts/infra/remote"
 import { Pencil, Trash } from "@phosphor-icons/react"
 import { FileXls } from "@phosphor-icons/react/dist/ssr"
-import { useMutation, useQuery } from "@tanstack/react-query"
+import { useMutation } from "@tanstack/react-query"
 import { useRouter } from "next/navigation"
 import { useEffect, useState } from "react"
 import { toast } from "sonner"
@@ -24,10 +25,8 @@ import { toast } from "sonner"
 export function BankAccountsTable() {
   const account_id = getAccountId()
 
-  const { data: bankAccounts, isLoading } = useQuery({
-    queryKey: ["bank-accounts"],
-    queryFn: () => getBankAccounts(account_id),
-  })
+  const { data: bankAccounts, isLoading } =
+    useFetchBankAccountsQuery(account_id)
 
   const bank_accounts_create = getPermissionByEntity("bank_accounts_create")
   const bank_accounts_edit = getPermissionByEntity("bank_accounts_edit")
