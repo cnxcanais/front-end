@@ -14,7 +14,7 @@ import { queryClient } from "@/lib/react-query"
 import {
   getIncomes,
   removeIncome,
-} from "@/modules/income-components/income-components/remote/income"
+} from "@/modules/income-components/income-components/remote"
 import { FileXls, Pencil, Trash } from "@phosphor-icons/react"
 import { useMutation, useQuery } from "@tanstack/react-query"
 import { useRouter } from "next/navigation"
@@ -187,6 +187,9 @@ export function IncomeTable() {
               Cadastrar
             </Button>
           )}
+          <Button onClick={() => push("/income-details")} variant="secondary">
+            Consultar Parcelas
+          </Button>
         </div>
         <Button
           className="flex items-center gap-1"
