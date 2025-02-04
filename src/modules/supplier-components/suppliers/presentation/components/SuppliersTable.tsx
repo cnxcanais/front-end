@@ -3,10 +3,12 @@
 import { Button } from "@/core/components/Button"
 import { LoadingScreen } from "@/core/components/LoadingScreen"
 import { Modal } from "@/core/components/Modals/Modal"
+import { ModalFilesTrigger } from "@/core/components/Modals/ModalFiles/ModalFilesTrigger"
 import { SearchInput } from "@/core/components/SearchInput"
 import { Table } from "@/core/components/Table"
 import { exportToExcel } from "@/core/utils/exportToExcel"
-import { getCookie } from "@/lib/cookies"
+import { getAccountId } from "@/core/utils/get-account-id"
+import { getPermissionByEntity } from "@/core/utils/getPermissionByEntity"
 import { queryClient } from "@/lib/react-query"
 import {
   getSuppliers,
@@ -19,7 +21,7 @@ import { useEffect, useState } from "react"
 import { toast } from "sonner"
 
 export function SuppliersTable() {
-  const account_id = getCookie("accountId")
+  const account_id = getAccountId()
 
   const { data: suppliers, isLoading } = useQuery({
     queryKey: ["suppliers"],
@@ -32,9 +34,9 @@ export function SuppliersTable() {
   const [open, setOpen] = useState(false)
   const [id, setId] = useState("")
 
-  const { suppliers_create, suppliers_edit, suppliers_delete } = JSON.parse(
-    getCookie("permissions")
-  ).componentAccess
+  const suppliers_create = getPermissionByEntity("suppliers_create")
+  const suppliers_edit = getPermissionByEntity("suppliers_edit")
+  const suppliers_delete = getPermissionByEntity("suppliers_delete")
 
   const [filteredResults, setFilteredResults] = useState([])
 
@@ -91,6 +93,13 @@ export function SuppliersTable() {
     {
       header: "Endereço",
       accessor: "address_1",
+    },
+    {
+      header: "Arquivos",
+      accessor: "supplier_id",
+      render: (value: string) => (
+        <ModalFilesTrigger entityId={value} entityType={"supplier_id"} />
+      ),
     },
     {
       header: "Ações",

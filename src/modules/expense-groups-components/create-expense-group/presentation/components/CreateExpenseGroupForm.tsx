@@ -48,7 +48,7 @@ export function CreateExpenseGroupForm() {
           <Input.Control {...register("group_name")} type="text" />
         </Input.Root>
       </div>
-      <div className="mt-6 flex gap-4">
+      <div className="my-2 flex gap-4">
         <Button type="submit" disabled={isSubmitting} variant="secondary">
           Salvar
         </Button>

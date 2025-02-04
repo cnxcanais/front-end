@@ -37,8 +37,8 @@ const div = tv({
 
   variants: {
     variant: {
-      primary: "border-black",
-      secondary: "border-white text-white",
+      primary: "border-black bg-white",
+      secondary: "border-white bg-transparent !text-white",
       error:
         "border-red-500 focus-within:border-red-500 focus-within:ring-2 focus-within:ring-red-100",
     },
@@ -60,7 +60,7 @@ type InputControlProps = ComponentProps<"input">
 export function Control(props: InputControlProps) {
   return (
     <input
-      className="flex-1 !border-none bg-transparent p-0 text-sm !outline-none !ring-0 disabled:cursor-not-allowed [&::-webkit-inner-spin-button]:appearance-none [&::-webkit-outer-spin-button]:appearance-none"
+      className="w-full !border-none bg-transparent p-0 text-sm !outline-none !ring-0 autofill:bg-transparent autofill:text-white disabled:cursor-not-allowed"
       {...props}
     />
   )
@@ -71,7 +71,6 @@ export function Currency({
   control,
   value: externalValue,
   onChange: externalOnChange,
-  disabled,
   ...props
 }: CurrencyInputProps) {
   // For React Hook Form
@@ -86,13 +85,12 @@ export function Currency({
             onValueChange={({ floatValue }) => {
               onChange(floatValue || 0)
             }}
-            disabled={disabled}
             decimalSeparator=","
             thousandSeparator="."
             prefix="R$ "
             decimalScale={2}
             fixedDecimalScale
-            className="flex-1 !border-none bg-transparent p-0 text-sm !outline-none !ring-0 disabled:cursor-not-allowed"
+            className="w-full !border-none bg-transparent p-0 text-sm !outline-none !ring-0 disabled:cursor-not-allowed"
             {...props}
           />
         )}
@@ -107,13 +105,12 @@ export function Currency({
       onValueChange={({ floatValue }) => {
         externalOnChange?.(floatValue || 0)
       }}
-      disabled={disabled}
       decimalSeparator=","
       thousandSeparator="."
       prefix="R$ "
       decimalScale={2}
       fixedDecimalScale
-      className="flex-1 !border-none bg-transparent p-0 text-sm !outline-none !ring-0 disabled:cursor-not-allowed"
+      className="w-full !border-none bg-transparent p-0 text-sm !outline-none !ring-0 disabled:cursor-not-allowed"
       {...props}
     />
   )

@@ -1,10 +1,5 @@
 export namespace IncomeGroup {
-  export type GetRequest = {
-    account_id: string
-    group_name?: string
-  }
-
-  export type IncomeGroupType = {
+  export type Type = {
     income_group_id: string
     group_name: string
     created_at: Date
@@ -12,8 +7,13 @@ export namespace IncomeGroup {
     account_id: string
   }
 
+  export type GetRequest = {
+    account_id: string
+    group_name?: string
+  }
+
   export type GetResponse = {
-    incomeGroups: IncomeGroupType[]
+    incomeGroups: Type[]
   }
 
   export type GetByIdRequest = {
@@ -21,7 +21,7 @@ export namespace IncomeGroup {
   }
 
   export type GetByIdResponse = {
-    incomeGroup: IncomeGroupType
+    incomeGroup: Type
   }
 
   export type CreateRequest = {

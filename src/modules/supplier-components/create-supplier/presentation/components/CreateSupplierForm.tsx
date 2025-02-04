@@ -3,6 +3,7 @@
 import { Supplier } from "@/@types/suppliers"
 import { Button } from "@/core/components/Button"
 import * as Input from "@/core/components/Input"
+import { getAccountId } from "@/core/utils/get-account-id"
 import { getCookie } from "@/lib/cookies"
 import { createSupplier } from "@/modules/supplier-components/create-supplier/infra/remote/create-supplier"
 import {
@@ -17,7 +18,7 @@ import { toast } from "sonner"
 export function CreateSupplierForm() {
   const { push } = useRouter()
 
-  const account_id = getCookie("accountId")
+  const account_id = getAccountId()
 
   const {
     supplier_input_fields_name,
@@ -256,7 +257,7 @@ export function CreateSupplierForm() {
         </div>
       </div>
 
-      <div className="mt-6 flex gap-4">
+      <div className="my-2 flex gap-4">
         <Button type="submit" disabled={isSubmitting} variant="primary">
           Salvar
         </Button>

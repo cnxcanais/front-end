@@ -6,15 +6,16 @@ import { Modal } from "@/core/components/Modals/Modal"
 import { SearchInput } from "@/core/components/SearchInput"
 import { Table } from "@/core/components/Table"
 import { exportToExcel } from "@/core/utils/exportToExcel"
+import { getAccountId } from "@/core/utils/get-account-id"
 import { getPermissionByEntity } from "@/core/utils/getPermissionByEntity"
-import { getCookie } from "@/lib/cookies"
 import { queryClient } from "@/lib/react-query"
 import {
   deleteIncomeGroup,
   getAllIncomeGroups,
 } from "@/modules/income-components/income-groups-components/remote/income-group"
+import { useIncomeGroupQuery } from "@/modules/income-components/income-groups-components/remote/use-income-group-query"
 import { FileXls, Pencil, Trash } from "@phosphor-icons/react"
-import { useMutation, useQuery } from "@tanstack/react-query"
+import { useMutation } from "@tanstack/react-query"
 import { useRouter } from "next/navigation"
 import { useEffect, useState } from "react"
 import { toast } from "sonner"
@@ -26,16 +27,13 @@ export function IncomeGroupTable() {
   const edit = getPermissionByEntity("income_groups_edit")
   const deletePermission = getPermissionByEntity("income_groups_delete")
 
-  const account_id = getCookie("accountId")
+  const account_id = getAccountId()
 
   const [open, setOpen] = useState(false)
   const [id, setId] = useState("")
   const [filteredResults, setFilteredResults] = useState([])
 
-  const { data: incomeGroups, isLoading } = useQuery({
-    queryKey: ["income-groups"],
-    queryFn: () => getAllIncomeGroups({ account_id }),
-  })
+  const { data: incomeGroups, isLoading } = useIncomeGroupQuery(account_id)
 
   const fetchIncomeGroups = useMutation({
     mutationFn: getAllIncomeGroups,

@@ -1,9 +1,16 @@
 import { PuffLoader } from "react-spinners"
 
-export const LoadingScreen = () => {
+type LoadingScreenProps = {
+  fullScreen?: boolean
+}
+
+export function LoadingScreen({ fullScreen = true }: LoadingScreenProps) {
+  const sizeLoader = fullScreen ? 150 : 75
+
   return (
-    <div className="flex h-screen items-center justify-center">
-      <PuffLoader color="#9fa2a6" size={150} />
+    <div
+      className={`flex ${fullScreen ? "h-screen" : ""} items-center justify-center`}>
+      <PuffLoader color="#9fa2a6" size={sizeLoader} />
     </div>
   )
 }

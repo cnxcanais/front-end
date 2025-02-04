@@ -36,12 +36,12 @@ export function Table<T>({ columns, data }: { columns: Column[]; data: T[] }) {
                           className="whitespace-nowrap px-3 py-4 text-sm text-gray-500">
                           {column.render ?
                             column.render(
-                              column.accessor2 ?
+                              column.accessor2 && row[column.accessor] ?
                                 row[column.accessor][column.accessor2]
                               : row[column.accessor],
                               row
                             )
-                          : column.accessor2 ?
+                          : column.accessor2 && row[column.accessor] ?
                             row[column.accessor][column.accessor2]
                           : row[column.accessor]}
                         </td>

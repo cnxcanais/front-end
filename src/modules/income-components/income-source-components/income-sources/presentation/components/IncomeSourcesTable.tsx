@@ -6,6 +6,7 @@ import { Modal } from "@/core/components/Modals/Modal"
 import { SearchInput } from "@/core/components/SearchInput"
 import { Table } from "@/core/components/Table"
 import { exportToExcel } from "@/core/utils/exportToExcel"
+import { getAccountId } from "@/core/utils/get-account-id"
 import { getCookie } from "@/lib/cookies"
 import { queryClient } from "@/lib/react-query"
 import {
@@ -19,7 +20,7 @@ import { useEffect, useState } from "react"
 import { toast } from "sonner"
 
 export function IncomeSourcesTable() {
-  const account_id = getCookie("accountId")
+  const account_id = getAccountId()
 
   const { data: incomeSources, isLoading } = useQuery({
     queryKey: ["income-sources"],

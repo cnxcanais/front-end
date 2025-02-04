@@ -41,7 +41,7 @@ export function EditSupplierForm({ id }: { id: string }) {
     supplier_input_fields_state,
     supplier_input_fields_cep,
     supplier_input_fields_city,
-  } = JSON.parse(getCookie("permissions")).componentAccess
+  } = JSON.parse(getCookie("permissions") ?? "").componentAccess
 
   const {
     register,
@@ -279,7 +279,7 @@ export function EditSupplierForm({ id }: { id: string }) {
         </div>
       </div>
 
-      <div className="mt-6 flex gap-4">
+      <div className="my-2 flex gap-4">
         <Button type="submit" disabled={isSubmitting} variant="primary">
           Salvar
         </Button>
