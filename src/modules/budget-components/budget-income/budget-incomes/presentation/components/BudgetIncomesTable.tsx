@@ -10,25 +10,22 @@ import { exportToExcel } from "@/core/utils/exportToExcel"
 import { getAccountId } from "@/core/utils/get-account-id"
 import { getPermissionByEntity } from "@/core/utils/getPermissionByEntity"
 import { useBudgetIncomesQuery } from "@/modules/budget-components/budget-income/budget-incomes/infra/hooks/use-budget-incomes-query"
-import {
-  getBudgetIncomes,
-  removeBudgetIncome,
-} from "@/modules/budget-components/budget-income/budget-incomes/infra/remote"
+import { removeBudgetIncome } from "@/modules/budget-components/budget-income/budget-incomes/infra/remote"
 import { IncomeBudgetFilters } from "@/modules/budget-components/budget-income/budget-incomes/presentation/components/BudgetIncomeFilters"
 import { FileXls, Pencil, Trash } from "@phosphor-icons/react"
-import { useMutation } from "@tanstack/react-query"
 import { useRouter } from "next/navigation"
 import { useEffect, useState } from "react"
 import { toast } from "sonner"
 
 export function IncomeBudgetTable() {
   const account_id = getAccountId()
+  const [page, setPage] = useState(1)
 
   const {
     data: budgetIncomes,
     isLoading,
     refetch,
-  } = useBudgetIncomesQuery(account_id)
+  } = useBudgetIncomesQuery(account_id, { page })
 
   const { push } = useRouter()
 
@@ -41,29 +38,21 @@ export function IncomeBudgetTable() {
 
   const [filteredResults, setFilteredResults] = useState([])
 
-  const refetchBudgetIncomesFn = useMutation({
-    mutationFn: getBudgetIncomes,
-    onSuccess: () => {
-      toast.success("Orçamento de receita removido com sucesso!")
-      refetch()
-    },
-    onError: (error) => {
-      toast.error("Erro ao remover orçamento de receita: " + error)
-    },
-    onSettled: () => {
-      setOpen(false)
-    },
-  })
-
   // handlers for Delete and Edit
   const handleEdit = (id: string) => {
     push(`/budget/incomes/edit/${id}`)
   }
 
   const handleConfirmDelete = async () => {
-    await removeBudgetIncome(id).then(() =>
-      refetchBudgetIncomesFn.mutate(account_id)
-    )
+    try {
+      await removeBudgetIncome(id)
+      toast.success("Orçamento de receita removido com sucesso!")
+      refetch()
+    } catch (error) {
+      toast.error("Erro ao remover orçamento de receita: " + error)
+    } finally {
+      setOpen(false)
+    }
   }
 
   // column structure for table
