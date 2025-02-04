@@ -7,21 +7,16 @@ import { SearchInput } from "@/core/components/SearchInput"
 import { Table } from "@/core/components/Table"
 import { exportToExcel } from "@/core/utils/exportToExcel"
 import { getPermissionByEntity } from "@/core/utils/getPermissionByEntity"
-import { queryClient } from "@/lib/react-query"
-import {
-  getAccounts,
-  removeAccount,
-} from "@/modules/accounts-components/accounts/infra/remote"
+import { useGetAccountsQuery } from "@/modules/accounts-components/accounts/infra/hooks/use-get-accounts-query"
+import { removeAccount } from "@/modules/accounts-components/accounts/infra/remote"
 import { Pencil, Trash } from "@phosphor-icons/react"
 import { FileXls } from "@phosphor-icons/react/dist/ssr"
-import { useMutation } from "@tanstack/react-query"
 import { useRouter } from "next/navigation"
 import { useEffect, useState } from "react"
 import { toast } from "sonner"
-import { useGetAccountsQuery } from "../../infra/hooks/use-get-accounts-query"
 
 export function AccountsTable() {
-  const { data: accounts, isLoading } = useGetAccountsQuery()
+  const { data: accounts, isLoading, refetch } = useGetAccountsQuery()
 
   const accounts_create = getPermissionByEntity("accounts_create")
   const accounts_edit = getPermissionByEntity("accounts_edit")
@@ -33,26 +28,20 @@ export function AccountsTable() {
   const [id, setId] = useState("")
   const [filteredResults, setFilteredResults] = useState([])
 
-  const fetchAccounts = useMutation({
-    mutationFn: getAccounts,
-    onSuccess: () => {
-      toast.success("Conta removida com sucesso!")
-      queryClient.invalidateQueries({ queryKey: ["accounts"] })
-    },
-    onError: (error) => {
-      toast.error("Erro ao remover conta: " + error)
-    },
-    onSettled: () => {
-      setOpen(false)
-    },
-  })
-
   const handleEdit = (id: string) => {
     push(`/accounts/edit/${id}`)
   }
 
   const handleConfirmDelete = async () => {
-    await removeAccount({ account_id: id }).then(() => fetchAccounts.mutate())
+    try {
+      await removeAccount(id)
+      toast.success("Conta removida com sucesso!")
+      refetch()
+    } catch (error) {
+      toast.error("Erro ao remover conta: " + error)
+    } finally {
+      setOpen(false)
+    }
   }
 
   const columns = [

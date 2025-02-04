@@ -1,5 +1,6 @@
 "use client"
 
+import { Account } from "@/@types/accounts"
 import { Button } from "@/core/components/Button"
 import { LoadingScreen } from "@/core/components/LoadingScreen"
 import { Modal } from "@/core/components/Modals/Modal"
@@ -13,7 +14,7 @@ import {
   removeUser,
 } from "@/modules/user-components/users/infra/remote"
 import { FileXls, Pencil, Trash } from "@phosphor-icons/react"
-import { useMutation, useQuery } from "@tanstack/react-query"
+import { useQuery } from "@tanstack/react-query"
 import { useRouter } from "next/navigation"
 import { useEffect, useState } from "react"
 import { toast } from "sonner"
@@ -39,20 +40,6 @@ export function UsersTable() {
   const [id, setId] = useState("")
   const [filteredResults, setFilteredResults] = useState([])
 
-  const refetchUsersFn = useMutation({
-    mutationFn: getUsers,
-    onSuccess: () => {
-      toast.success("Usuário removido com sucesso!")
-      refetch()
-    },
-    onError: (error) => {
-      toast.error("Erro ao remover usuário: " + error)
-    },
-    onSettled: () => {
-      setOpen(false)
-    },
-  })
-
   const users_create = getPermissionByEntity("users_create")
   const users_edit = getPermissionByEntity("users_edit")
   const users_delete = getPermissionByEntity("users_delete")
@@ -62,7 +49,15 @@ export function UsersTable() {
   }
 
   const handleConfirmDelete = async () => {
-    await removeUser(id).then(() => refetchUsersFn.mutate(account_id))
+    try {
+      await removeUser(id)
+      toast.success("Usuário removido com sucesso!")
+      refetch()
+    } catch (error) {
+      toast.error("Erro ao remover usuário: " + error)
+    } finally {
+      setOpen(false)
+    }
   }
 
   const columns = [
@@ -72,6 +67,11 @@ export function UsersTable() {
       accessor: "email",
     },
     {
+      header: "Conta",
+      accessor: "account",
+      render: (account: Account.Type) => account.name,
+    },
+    {
       header: "Atualizado em",
       accessor: "updated_at",
       render: (value: string) =>
@@ -79,6 +79,7 @@ export function UsersTable() {
           day: "numeric",
           month: "2-digit",
           year: "numeric",
+          timeZone: "Europe/Paris",
         }),
     },
     {
