@@ -12,15 +12,17 @@ export namespace IncomeDetails {
   }
 
   export type GetRequest = {
-    account_id: string
     start_date?: string | Date
     end_date?: string | Date
     is_paid?: boolean
     bank_account_id?: string
+    page: number
+    income_id?: string
   }
 
   export type GetResponse = {
     incomeDetails: IncomeDetailsType[] | []
+    totalPages: number
   }
 
   export type CreateRequest = {
@@ -35,5 +37,17 @@ export namespace IncomeDetails {
 
   export type DeleteRequest = {
     income_details_id: string
+  }
+
+  export type QueryParams = {
+    bank_account_id?: string
+    end_date?: string
+    is_paid?: boolean
+    start_date?: string
+    part?: number
+    max_amount?: number
+    income_id?: string
+    min_amount?: number
+    page: number
   }
 }

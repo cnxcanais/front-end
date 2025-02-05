@@ -11,12 +11,14 @@ import { exportToExcel } from "@/core/utils/exportToExcel"
 import { getPermissionByEntity } from "@/core/utils/getPermissionByEntity"
 import { getCookie } from "@/lib/cookies"
 import { queryClient } from "@/lib/react-query"
+import { useIncomeQuery } from "@/modules/income-components/income-components/income/infra/use-income-query"
+import { IncomeFilters } from "@/modules/income-components/income-components/income/presentation/components/incomeFilters"
 import {
   getIncomes,
   removeIncome,
 } from "@/modules/income-components/income-components/remote"
 import { FileXls, Pencil, Trash } from "@phosphor-icons/react"
-import { useMutation, useQuery } from "@tanstack/react-query"
+import { useMutation } from "@tanstack/react-query"
 import { useRouter } from "next/navigation"
 import { useEffect, useState } from "react"
 import { toast } from "sonner"
@@ -24,20 +26,13 @@ import { toast } from "sonner"
 export function IncomeTable() {
   const accountId = getCookie("accountId")
 
-  const { data: incomes, isLoading } = useQuery({
-    queryKey: ["incomes"],
-    queryFn: () => getIncomes({ account_id: accountId }),
-    enabled: !!accountId,
-  })
+  const { data: incomes, isLoading } = useIncomeQuery(accountId)
 
   const { push } = useRouter()
 
   const [open, setOpen] = useState(false)
   const [id, setId] = useState("")
   const [filteredResults, setFilteredResults] = useState([])
-  const [subArrayControl, setSubArrayControl] = useState<{
-    [key: number]: boolean
-  }>({})
 
   const refetchIncomesFn = useMutation({
     mutationFn: getIncomes,
@@ -63,7 +58,7 @@ export function IncomeTable() {
 
   const handleConfirmDelete = async () => {
     await removeIncome({ income_id: id }).then(() =>
-      refetchIncomesFn.mutate({ account_id: accountId })
+      refetchIncomesFn.mutate(accountId)
     )
   }
 
@@ -103,11 +98,7 @@ export function IncomeTable() {
       ) => (
         <p
           onClick={() => {
-            const index = Number(filteredResults.indexOf(income))
-            setSubArrayControl({
-              ...subArrayControl,
-              [index]: !subArrayControl[index],
-            })
+            push(`/income-details?income_id=${income.income_id}`)
           }}
           className="cursor-pointer text-blue-500 underline">
           {incomeDetails.length}
@@ -148,12 +139,7 @@ export function IncomeTable() {
 
   useEffect(() => {
     if (incomes) {
-      setFilteredResults(incomes)
-      incomes.forEach((item, index) => {
-        if (item.income_details) {
-          setSubArrayControl((prev) => ({ ...prev, [index]: false }))
-        }
-      })
+      setFilteredResults(incomes.incomes)
     }
   }, [incomes, isLoading])
 
@@ -175,11 +161,12 @@ export function IncomeTable() {
           </Button>
         </div>
       </Modal>
+      <IncomeFilters account_id={accountId} />
       <div className="mt-8 flex items-center justify-between">
         <div className="flex h-full gap-4">
           <SearchInput
-            data={incomes}
-            searchParam="name"
+            data={incomes.incomes}
+            searchParam="description"
             onSearchResult={(results) => setFilteredResults(results)}
           />
           {income_create && (
@@ -199,7 +186,7 @@ export function IncomeTable() {
           Exportar
         </Button>
       </div>
-      {incomes.length === 0 ?
+      {incomes.incomes.length === 0 ?
         <h2 className="mt-6 text-xl font-semibold">
           Nenhuma receita cadastrada.
         </h2>

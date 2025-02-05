@@ -1,6 +1,9 @@
 export namespace Organization {
   export type GetRequest = {
-    account_id: string
+    name?: string
+    cnpj?: string
+    email?: string
+    address?: string
   }
 
   export type GetRequestParams = {

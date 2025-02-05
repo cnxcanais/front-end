@@ -14,19 +14,16 @@ import {
   removeIncomeSource,
 } from "@/modules/income-components/income-source-components/income-sources/infra/remote"
 import { FileXls, Pencil, Trash } from "@phosphor-icons/react"
-import { useMutation, useQuery } from "@tanstack/react-query"
+import { useMutation } from "@tanstack/react-query"
 import { useRouter } from "next/navigation"
 import { useEffect, useState } from "react"
 import { toast } from "sonner"
+import { useIncomeSourceQuery } from "../../infra/hooks/use-income-source-query"
 
 export function IncomeSourcesTable() {
   const account_id = getAccountId()
 
-  const { data: incomeSources, isLoading } = useQuery({
-    queryKey: ["income-sources"],
-    queryFn: () => getIncomeSources({ account_id }),
-    enabled: !!account_id,
-  })
+  const { data: incomeSources, isLoading } = useIncomeSourceQuery(account_id)
 
   const { push } = useRouter()
 
@@ -59,7 +56,7 @@ export function IncomeSourcesTable() {
 
   const handleConfirmDelete = async () => {
     await removeIncomeSource({ income_source_id: id }).then(() =>
-      refetchIncomeSourcesFn.mutate({ account_id })
+      refetchIncomeSourcesFn.mutate(account_id)
     )
   }
 

@@ -26,6 +26,7 @@ interface SelectInputProps {
   disabled?: boolean
   value?: string
   onChange?: (value: string | null) => void
+  className?: string
 }
 
 const div = tv({

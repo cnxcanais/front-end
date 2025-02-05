@@ -5,19 +5,21 @@ import { Button } from "@/core/components/Button"
 import { LoadingScreen } from "@/core/components/LoadingScreen"
 import { Modal } from "@/core/components/Modals/Modal"
 import { ModalObservationTrigger } from "@/core/components/Modals/ModalObservation"
-import { SearchInput } from "@/core/components/SearchInput"
+import { PageSelector } from "@/core/components/PageSelector"
 import { Table } from "@/core/components/Table"
+import { formatLocalDate } from "@/core/utils/dateFunctions"
 import { exportToExcel } from "@/core/utils/exportToExcel"
 import { getPermissionByEntity } from "@/core/utils/getPermissionByEntity"
 import { getCookie } from "@/lib/cookies"
 import { queryClient } from "@/lib/react-query"
+import { IncomeDetailsFilters } from "@/modules/income-components/income-details-components/income-details/presentation/components/incomeDetailsFilters"
 import {
   deleteIncomeDetails,
   getIncomeDetails,
 } from "@/modules/income-components/income-details-components/remote"
 import { FileXls, Pencil, Trash } from "@phosphor-icons/react"
 import { useMutation, useQuery } from "@tanstack/react-query"
-import { useRouter } from "next/navigation"
+import { useRouter, useSearchParams } from "next/navigation"
 import { useEffect, useState } from "react"
 import { toast } from "sonner"
 
@@ -27,16 +29,20 @@ export function IncomeDetailsTable() {
   const create = getPermissionByEntity("income_groups_create")
   const edit = getPermissionByEntity("income_groups_edit")
   const deletePermission = getPermissionByEntity("income_groups_delete")
+  const searchParams = useSearchParams()
+
+  const income_id = searchParams.get("income_id") || ""
 
   const account_id = getCookie("accountId")
 
   const [open, setOpen] = useState(false)
   const [id, setId] = useState("")
   const [filteredResults, setFilteredResults] = useState([])
+  const [page, setPage] = useState(1)
 
-  const { data: incomeDetails, isLoading } = useQuery({
+  const { data, isLoading, refetch } = useQuery({
     queryKey: ["income-details"],
-    queryFn: () => getIncomeDetails({ account_id }),
+    queryFn: () => getIncomeDetails(account_id, { page, income_id }),
   })
 
   const fetchIncomeGroups = useMutation({
@@ -54,14 +60,18 @@ export function IncomeDetailsTable() {
   })
 
   const handleEdit = (id: string) => {
-    push(`/income-groups/edit/${id}`)
+    push(`/income-details/edit/${id}`)
   }
 
   const handleConfirmDelete = async () => {
     await deleteIncomeDetails({ income_details_id: id }).then(() =>
-      fetchIncomeGroups.mutate({ account_id })
+      fetchIncomeGroups.mutate(account_id)
     )
   }
+
+  useEffect(() => {
+    if (page) refetch()
+  }, [page])
 
   const columns = [
     {
@@ -90,7 +100,17 @@ export function IncomeDetailsTable() {
     {
       header: "Parc.",
       accessor: "part",
-      render: (part: number) => <p>{`${part} / ${incomeDetails.length}`}</p>,
+      render: (part: number) => <p>{part}</p>,
+    },
+    {
+      header: "Pgto",
+      accessor: "is_paid",
+      render: (is_paid: boolean) => <p>{is_paid ? "Pago" : "Em Aberto"}</p>,
+    },
+    {
+      header: "Vencimento",
+      accessor: "due_date",
+      render: (due_date: Date) => <p>{formatLocalDate(new Date(due_date))}</p>,
     },
     {
       header: "Obs.",
@@ -128,10 +148,10 @@ export function IncomeDetailsTable() {
   ]
 
   useEffect(() => {
-    if (incomeDetails) setFilteredResults(incomeDetails)
-  }, [incomeDetails, isLoading])
+    if (data?.incomeDetails) setFilteredResults(data?.incomeDetails)
+  }, [data?.incomeDetails, isLoading])
 
-  if (!incomeDetails || isLoading) return <LoadingScreen />
+  if (!data?.incomeDetails || isLoading) return <LoadingScreen />
 
   return (
     <>
@@ -150,14 +170,9 @@ export function IncomeDetailsTable() {
         </div>
       </Modal>
 
-      <div className="mt-8 flex items-center justify-between">
-        <div className="flex gap-4">
-          <SearchInput
-            data={incomeDetails}
-            searchParam="group_name"
-            onSearchResult={setFilteredResults}
-          />
-        </div>
+      <IncomeDetailsFilters account_id={account_id} income_id={income_id} />
+
+      <div className="mt-8 flex items-center justify-end">
         <Button
           className="flex items-center gap-1"
           variant="secondary"
@@ -166,11 +181,19 @@ export function IncomeDetailsTable() {
           Exportar
         </Button>
       </div>
-      {incomeDetails.length == 0 ?
+      {data.incomeDetails.length == 0 ?
         <h2 className="mt-6 text-xl font-semibold">
-          Nenhum grupo de receitas cadastrado.
+          Nenhuma parcela cadastrada.
         </h2>
-      : <Table columns={columns} data={filteredResults} />}
+      : <div>
+          <Table columns={columns} data={filteredResults} />
+          <PageSelector
+            page={page}
+            setPage={setPage}
+            totalPages={data.totalPages}
+          />
+        </div>
+      }
     </>
   )
 }

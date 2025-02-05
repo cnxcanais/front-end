@@ -1,6 +1,11 @@
 export namespace IncomeSource {
   export type GetRequest = {
-    account_id: string
+    name?: string
+    cpf_cnpj?: string
+    city?: string
+    state?: string
+    contact_name?: string
+    address?: string
   }
 
   export type Type = {

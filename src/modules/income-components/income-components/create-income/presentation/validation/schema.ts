@@ -9,8 +9,8 @@ const incomeDetailsSchema = z.object({
   due_date: z.union(
     [
       z
-        .string()
-        .nonempty("Data de vencimento é obrigatória")
+        .string({ message: "Data de vencimento é obrigatória" })
+        .nonempty()
         .transform((str) => {
           const date = new Date(str)
           if (isNaN(date.getTime())) {
@@ -37,8 +37,8 @@ export const createIncomeFormSchema = z.object({
   date: z.union(
     [
       z
-        .string()
-        .nonempty("Data de vencimento é obrigatória")
+        .string({ message: "Data é obrigatória" })
+        .nonempty()
         .transform((str) => {
           const date = new Date(str)
           if (isNaN(date.getTime())) {
