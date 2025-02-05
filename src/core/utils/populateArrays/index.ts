@@ -1,20 +1,20 @@
 import { SearchArray } from "@/@types/search-array"
 
 export interface ArrayConfig<T> {
-  fetchFn: (params: any) => Promise<T[]>
+  fetchFn: (account_id: string) => Promise<T[]>
   mapFn: (item: T) => { label: string; value: string }
   setState: (value: SearchArray) => void
 }
 
 export const populateArrays = async <T extends Record<string, any>>(
   configs: ArrayConfig<T>[],
-  params: Record<string, any>,
+  account_id: string,
   onSuccess?: () => void,
   onError?: (error: Error) => void
 ) => {
   try {
     const responses = await Promise.all(
-      configs.map(({ fetchFn }) => fetchFn(params))
+      configs.map(({ fetchFn }) => fetchFn(account_id))
     )
 
     responses.forEach((response, index) => {

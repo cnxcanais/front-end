@@ -8,7 +8,6 @@ export namespace IncomeGroup {
   }
 
   export type GetRequest = {
-    account_id: string
     group_name?: string
   }
 

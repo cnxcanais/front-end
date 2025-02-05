@@ -11,8 +11,8 @@ import { exportToExcel } from "@/core/utils/exportToExcel"
 import { getPermissionByEntity } from "@/core/utils/getPermissionByEntity"
 import { getCookie } from "@/lib/cookies"
 import { queryClient } from "@/lib/react-query"
-import { useIncomeQuery } from "@/modules/income-components/income-components/income/infra/use-income-query"
 import { IncomeFilters } from "@/modules/income-components/income-components/income/presentation/components/incomeFilters"
+import { useIncomeQuery } from "@/modules/income-components/income-components/infra/use-income-query"
 import {
   getIncomes,
   removeIncome,

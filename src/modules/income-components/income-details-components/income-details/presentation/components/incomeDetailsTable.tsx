@@ -17,18 +17,20 @@ import {
   deleteIncomeDetails,
   getIncomeDetails,
 } from "@/modules/income-components/income-details-components/remote"
-import { FileXls, Pencil, Trash } from "@phosphor-icons/react"
+import { FileXls, Money, Pencil, Trash } from "@phosphor-icons/react"
 import { useMutation, useQuery } from "@tanstack/react-query"
 import { useRouter, useSearchParams } from "next/navigation"
 import { useEffect, useState } from "react"
 import { toast } from "sonner"
+import { editIncomeDetails } from "../../../remote/update-income-details"
 
 export function IncomeDetailsTable() {
   const { push } = useRouter()
 
-  const create = getPermissionByEntity("income_groups_create")
-  const edit = getPermissionByEntity("income_groups_edit")
-  const deletePermission = getPermissionByEntity("income_groups_delete")
+  const create = getPermissionByEntity("income_details_create")
+  const pay = getPermissionByEntity("income_details_pay")
+  const edit = getPermissionByEntity("income_details_edit")
+  const deletePermission = getPermissionByEntity("income_details_delete")
   const searchParams = useSearchParams()
 
   const income_id = searchParams.get("income_id") || ""
@@ -39,34 +41,42 @@ export function IncomeDetailsTable() {
   const [id, setId] = useState("")
   const [filteredResults, setFilteredResults] = useState([])
   const [page, setPage] = useState(1)
+  const [payOpen, setPayOpen] = useState(false)
+  const [payId, setPayId] = useState("")
 
   const { data, isLoading, refetch } = useQuery({
     queryKey: ["income-details"],
     queryFn: () => getIncomeDetails(account_id, { page, income_id }),
   })
 
-  const fetchIncomeGroups = useMutation({
+  const fetchIncomeDetails = useMutation({
     mutationFn: getIncomeDetails,
     onSuccess: () => {
-      toast.success("Parcela removida com sucesso!")
       queryClient.invalidateQueries({ queryKey: ["income-details"] })
     },
     onError: (error) => {
-      toast.error("Erro ao remover parcela: " + error)
+      toast.error("Erro ao executar ação: " + error)
     },
     onSettled: () => {
       setOpen(false)
     },
   })
 
+  const handlePay = async (income_details_id: string) => {
+    await editIncomeDetails({ income_details_id, is_paid: true })
+      .then(() => fetchIncomeDetails.mutate(account_id))
+      .then(() => setPayOpen(false))
+      .then(() => toast.success("Parcela paga com sucesso!"))
+  }
+
   const handleEdit = (id: string) => {
     push(`/income-details/edit/${id}`)
   }
 
   const handleConfirmDelete = async () => {
-    await deleteIncomeDetails({ income_details_id: id }).then(() =>
-      fetchIncomeGroups.mutate(account_id)
-    )
+    await deleteIncomeDetails({ income_details_id: id })
+      .then(() => fetchIncomeDetails.mutate(account_id))
+      .then(() => toast.success("Parcela removida com sucesso!"))
   }
 
   useEffect(() => {
@@ -145,6 +155,24 @@ export function IncomeDetailsTable() {
         </div>
       ),
     },
+    {
+      header: "Quitar",
+      accessor: "income_details_id",
+      render: (value: string, row: unknown) => (
+        <div className="flex space-x-4">
+          {pay && (
+            <Money
+              className="cursor-pointer duration-300 ease-in-out hover:text-blue-500"
+              size={24}
+              onClick={() => {
+                setPayId(value)
+                setPayOpen(true)
+              }}
+            />
+          )}
+        </div>
+      ),
+    },
   ]
 
   useEffect(() => {
@@ -165,6 +193,21 @@ export function IncomeDetailsTable() {
             Confirmar
           </Button>
           <Button onClick={() => setOpen(false)} variant="tertiary">
+            Cancelar
+          </Button>
+        </div>
+      </Modal>
+
+      <Modal
+        title="Quitar Parcela"
+        content="Você tem certeza de que deseja quitar esta parcela?"
+        onClose={() => setOpen(false)}
+        open={payOpen}>
+        <div className="flex items-center justify-center gap-4">
+          <Button onClick={() => handlePay(payId)} variant="secondary">
+            Confirmar
+          </Button>
+          <Button onClick={() => setPayOpen(false)} variant="tertiary">
             Cancelar
           </Button>
         </div>

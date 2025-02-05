@@ -73,7 +73,7 @@ export function IncomeForm({
   useEffect(() => {
     populateArrays(
       arrayConfigs,
-      { account_id },
+      account_id,
       () => setArrayPlaceHolder("Digite..."),
       (error) => {
         toast.error("Erro ao buscar dados: " + error.message)

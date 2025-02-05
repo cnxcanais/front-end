@@ -2,7 +2,8 @@ import { Income } from "@/@types/income"
 import { Button } from "@/core/components/Button"
 import * as Input from "@/core/components/Input"
 import { LoadingScreen } from "@/core/components/LoadingScreen"
-import { useIncomeQuery } from "@/modules/income-components/income-components/income/infra/use-income-query"
+import { prepareArrayForSelect } from "@/core/utils/prepare-array-for-select-input"
+import { useIncomeQuery } from "@/modules/income-components/income-components/infra/use-income-query"
 import { useIncomeGroupQuery } from "@/modules/income-components/income-groups-components/remote/use-income-group-query"
 import { useIncomeSourceQuery } from "@/modules/income-components/income-source-components/income-sources/infra/hooks/use-income-source-query"
 import { useOrganizationsQuery } from "@/modules/organization-components/organizations/infra/remote/hooks/use-organizations-query"
@@ -123,10 +124,11 @@ export function IncomeFilters({ account_id }: FilterProps) {
                   <Input.SelectInput
                     name="income_group_id"
                     control={control}
-                    options={incomeGroups.map((group) => ({
-                      label: group.group_name,
-                      value: group.income_group_id,
-                    }))}
+                    options={prepareArrayForSelect(
+                      incomeGroups,
+                      "group_name",
+                      "income_group_id"
+                    )}
                     placeholder="Digite..."
                   />
                 </Input.Root>
@@ -140,10 +142,11 @@ export function IncomeFilters({ account_id }: FilterProps) {
                   <Input.SelectInput
                     name="incomeSourceId"
                     control={control}
-                    options={incomeSources.map((source) => ({
-                      label: source.name,
-                      value: source.income_source_id,
-                    }))}
+                    options={prepareArrayForSelect(
+                      incomeSources,
+                      "name",
+                      "income_source_id"
+                    )}
                     placeholder="Digite..."
                   />
                 </Input.Root>
@@ -161,10 +164,11 @@ export function IncomeFilters({ account_id }: FilterProps) {
                   <Input.SelectInput
                     name="document"
                     control={control}
-                    options={incomes.incomes.map((income) => ({
-                      label: income.document,
-                      value: income.document,
-                    }))}
+                    options={prepareArrayForSelect(
+                      incomes.incomes,
+                      "document",
+                      "document"
+                    )}
                     placeholder="Digite..."
                   />
                 </Input.Root>
@@ -178,10 +182,11 @@ export function IncomeFilters({ account_id }: FilterProps) {
                   <Input.SelectInput
                     name="organization_id"
                     control={control}
-                    options={organizations.map((org) => ({
-                      label: org.name,
-                      value: org.organization_id,
-                    }))}
+                    options={prepareArrayForSelect(
+                      organizations,
+                      "name",
+                      "organization_id"
+                    )}
                     placeholder="Digite..."
                   />
                 </Input.Root>

@@ -17,7 +17,7 @@ export namespace Income {
     income_id: string
     description: string
     document: string
-    date: Date
+    date: string
     income_percentage: string
     observation: string
     income_group: IncomeGroup.Type
@@ -62,7 +62,7 @@ export namespace Income {
   export type UpdateRequest = {
     income_id: string
     amount?: number
-    date?: Date
+    date?: string
     description?: string
     document?: string
     income_group_id?: string

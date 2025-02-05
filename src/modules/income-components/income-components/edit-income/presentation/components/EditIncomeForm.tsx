@@ -6,58 +6,66 @@ import { Button } from "@/core/components/Button"
 import * as Input from "@/core/components/Input"
 import { ArrayConfig, populateArrays } from "@/core/utils/populateArrays"
 import { getCookie } from "@/lib/cookies"
-import { createIncomeFormSchema } from "@/modules/income-components/income-components/create-income/presentation/validation/schema"
-import { createIncome } from "@/modules/income-components/income-components/remote"
+import { useIncomeByIdQuery } from "@/modules/income-components/income-components/infra/use-income-by-id-query"
+import { editIncome } from "@/modules/income-components/income-components/remote"
 import { getAllIncomeGroups } from "@/modules/income-components/income-groups-components/remote/income-group"
 import { getIncomeSources } from "@/modules/income-components/income-source-components/income-sources/infra/remote"
 import { getOrganizations } from "@/modules/organization-components/organizations/infra/remote"
 import { DevTool } from "@hookform/devtools"
 import { zodResolver } from "@hookform/resolvers/zod"
-import { useRouter } from "next/navigation"
-import { useEffect, useState } from "react"
+import { useParams, useRouter } from "next/navigation"
+import { useEffect, useMemo, useState } from "react"
 import { useForm } from "react-hook-form"
 import { toast } from "sonner"
+import { editIncomeSchema } from "../validation/schema"
 
-export function CreateIncomeForm() {
+export function EditIncomeForm() {
   const { push } = useRouter()
 
   const account_id = getCookie("accountId")
+  const params = useParams()
+  const income_id = params.id as string
 
-  const [paymentQty, setPaymentQty] = useState<number | undefined>(1)
-  const [paymentAmount, setPaymentAmount] = useState<number>(0)
   const [organizations, setOrganizations] = useState<SearchArray>([])
   const [incomeGroups, setIncomeGroups] = useState<SearchArray>([])
   const [arrayPlaceHolder, setArrayPlaceHolder] = useState("Carregando...")
   const [incomeSource, setIncomeSource] = useState<SearchArray>([])
 
-  const arrayConfigs: ArrayConfig<any>[] = [
-    {
-      fetchFn: getOrganizations,
-      mapFn: (org) => ({
-        label: org.name,
-        value: org.organization_id,
-      }),
-      setState: setOrganizations,
-    },
-    {
-      fetchFn: getAllIncomeGroups,
-      mapFn: (group) => ({
-        label: group.group_name,
-        value: group.income_group_id,
-      }),
-      setState: setIncomeGroups,
-    },
-    {
-      fetchFn: getIncomeSources,
-      mapFn: (income) => ({
-        label: income.name,
-        value: income.income_source_id,
-      }),
-      setState: setIncomeSource,
-    },
-  ]
+  const { data: income } = useIncomeByIdQuery(income_id)
+
+  const arrayConfigs: ArrayConfig<any>[] = useMemo(
+    () => [
+      {
+        fetchFn: getOrganizations,
+        mapFn: (org) => ({
+          label: org.name,
+          value: org.organization_id,
+        }),
+        setState: setOrganizations,
+      },
+      {
+        fetchFn: getAllIncomeGroups,
+        mapFn: (group) => ({
+          label: group.group_name,
+          value: group.income_group_id,
+        }),
+        setState: setIncomeGroups,
+      },
+      {
+        fetchFn: getIncomeSources,
+        mapFn: (income) => ({
+          label: income.name,
+          value: income.income_source_id,
+        }),
+        setState: setIncomeSource,
+      },
+    ],
+    []
+  )
 
   useEffect(() => {
+    if (!account_id) return
+
     populateArrays(
       arrayConfigs,
       account_id,
@@ -67,7 +75,7 @@ export function CreateIncomeForm() {
         setArrayPlaceHolder("Erro ao carregar...")
       }
     )
-  }, [])
+  }, [arrayConfigs, account_id])
 
   const {
     income_input_fields_amount,
@@ -85,25 +93,31 @@ export function CreateIncomeForm() {
     register,
     handleSubmit,
     formState: { isSubmitting, errors },
+    reset,
     control,
-  } = useForm<Income.CreateResquest>({
-    resolver: zodResolver(createIncomeFormSchema),
-    values: {
-      account_id,
-      date: null,
-      description: "",
-      document: "",
-      income_group_id: "",
-      income_percentage: 100,
-      income_source_id: "",
-      organization_id: "",
-    },
+  } = useForm<Income.UpdateRequest>({
+    resolver: zodResolver(editIncomeSchema),
   })
 
-  async function onSubmit(data: Income.CreateResquest) {
+  useEffect(() => {
+    if (income) {
+      reset({
+        income_percentage: Number(income.income_percentage),
+        date: income.date.substring(0, 10),
+        document: income.document,
+        description: income.description,
+        income_source_id: income.income_source?.income_source_id,
+        organization_id: income.organization_id,
+        income_group_id: income.income_group?.income_group_id,
+        income_id: income.income_id,
+      })
+    }
+  }, [income, reset])
+
+  async function onSubmit(data: Income.UpdateRequest) {
     try {
-      const response = await createIncome(data)
-      toast.success(response)
+      const response = await editIncome(data)
+      toast.success("Receita editada com sucesso!")
       setTimeout(() => push("/incomes"), 2000)
     } catch (error) {
       toast.error("Erro ao criar fonte de receita: " + error)
@@ -219,22 +233,6 @@ export function CreateIncomeForm() {
 
         <div className="flex flex-col gap-4">
           <div className="flex gap-4">
-            <div className="flex max-w-[150px] flex-1 flex-col gap-2">
-              <label className="text-lg" htmlFor="name">
-                Valor
-              </label>
-              <Input.Root>
-                <Input.Currency
-                  name="amount"
-                  disabled={!income_input_fields_amount}
-                  value={paymentAmount}
-                  onChange={(value: number) => {
-                    setPaymentAmount(value)
-                  }}
-                />
-              </Input.Root>
-            </div>
-
             <div className="flex max-w-[100px] flex-1 flex-col gap-2">
               <label className="text-lg" htmlFor="income_percentage">
                 Percentual
@@ -273,29 +271,12 @@ export function CreateIncomeForm() {
                 </span>
               )}
             </div>
-
-            <div className="flex max-w-[100px] flex-1 flex-col gap-2">
-              <label className="text-lg" htmlFor="income_qty">
-                Parcelas
-              </label>
-              <Input.Root variant="primary" className="max-w-100px">
-                <Input.Control
-                  disabled={!income_input_fields_income_qty}
-                  type="number"
-                  value={paymentQty}
-                  onChange={(e: React.ChangeEvent<HTMLInputElement>) => {
-                    const value = e.target.value
-                    setPaymentQty(value && Number(value))
-                  }}
-                />
-              </Input.Root>
-            </div>
           </div>
         </div>
 
         <div className="my-2 flex gap-4">
           <Button type="submit" disabled={isSubmitting} variant="primary">
-            Salvar
+            Editar
           </Button>
           <Button
             type="button"

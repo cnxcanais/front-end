@@ -4,6 +4,6 @@ import { useQuery } from "@tanstack/react-query"
 export function useIncomeGroupQuery(account_id: string) {
   return useQuery({
     queryKey: ["income-groups"],
-    queryFn: () => getAllIncomeGroups({ account_id }),
+    queryFn: () => getAllIncomeGroups(account_id),
   })
 }

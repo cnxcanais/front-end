@@ -3,8 +3,9 @@ import { Button } from "@/core/components/Button"
 import * as Input from "@/core/components/Input"
 import { LoadingScreen } from "@/core/components/LoadingScreen"
 import { SelectInput } from "@/core/components/SelectInput"
+import { prepareArrayForSelect } from "@/core/utils/prepare-array-for-select-input"
 import { useBankAccountsQuery } from "@/modules/bank-accounts-components/bank-accounts/infra/hooks/use-bank-account-query"
-import { useIncomeQuery } from "@/modules/income-components/income-components/income/infra/use-income-query"
+import { useIncomeQuery } from "@/modules/income-components/income-components/infra/use-income-query"
 import { useIncomeDetailsQuery } from "@/modules/income-components/income-details-components/income-details/infra/hooks/use-income-details-query"
 import { CaretDown, CaretRight } from "@phosphor-icons/react"
 import { useEffect, useState } from "react"
@@ -16,7 +17,7 @@ interface FilterProps {
 }
 
 export function IncomeDetailsFilters({ account_id, income_id }: FilterProps) {
-  const [collapsed, setCollapsed] = useState(false)
+  const [collapsed, setCollapsed] = useState(true)
   const [filters, setFilters] = useState<IncomeDetails.QueryParams>(
     {} as IncomeDetails.QueryParams
   )
@@ -62,6 +63,7 @@ export function IncomeDetailsFilters({ account_id, income_id }: FilterProps) {
   function resetFilters() {
     reset()
     setFilters({} as IncomeDetails.QueryParams)
+    setValue("income_id", "")
   }
 
   useEffect(() => {
@@ -153,10 +155,11 @@ export function IncomeDetailsFilters({ account_id, income_id }: FilterProps) {
                   <Input.SelectInput
                     name="income_id"
                     control={control}
-                    options={incomes.incomes.map((income) => ({
-                      label: income.document,
-                      value: income.income_id,
-                    }))}
+                    options={prepareArrayForSelect(
+                      incomes.incomes,
+                      "document",
+                      "income_id"
+                    )}
                     placeholder="Digite..."
                   />
                 </Input.Root>
