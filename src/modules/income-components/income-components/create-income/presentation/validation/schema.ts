@@ -5,7 +5,7 @@ const incomeDetailsSchema = z.object({
   bank_account_id: z
     .string({ message: "Conta bancária é obrigatória" })
     .nonempty(),
-  part: z.number().gt(0, "Parcela deve ser maior que zero"),
+  part: z.coerce.number().gt(0, "Parcela deve ser maior que zero"),
   due_date: z.union(
     [
       z
@@ -58,7 +58,7 @@ export const createIncomeFormSchema = z.object({
   description: z.string().nonempty("Descrição é obrigatória"),
   document: z.string().nonempty("Documento é obrigatório"),
   income_group_id: z.string().nonempty("Grupo é obrigatório"),
-  income_percentage: z.number().min(1, "Porcentagem é obrigatória"),
+  income_percentage: z.coerce.number().min(1, "Porcentagem é obrigatória"),
   income_source_id: z.string().nonempty("Fonte de receita é obrigatória"),
   organization_id: z.string().nonempty("Organização é obrigatória"),
   incomeDetailsArray: z.array(incomeDetailsSchema),

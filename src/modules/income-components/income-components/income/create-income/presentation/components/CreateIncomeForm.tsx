@@ -1,20 +1,19 @@
 "use client"
 
 import { Income } from "@/@types/income"
-import { SearchArray } from "@/@types/search-array"
 import { Button } from "@/core/components/Button"
 import * as Input from "@/core/components/Input"
-import { ArrayConfig, populateArrays } from "@/core/utils/populateArrays"
+import { prepareArrayForSelect } from "@/core/utils/prepare-array-for-select-input"
 import { getCookie } from "@/lib/cookies"
 import { createIncomeFormSchema } from "@/modules/income-components/income-components/create-income/presentation/validation/schema"
 import { createIncome } from "@/modules/income-components/income-components/remote"
-import { getAllIncomeGroups } from "@/modules/income-components/income-groups-components/remote/income-group"
-import { getIncomeSources } from "@/modules/income-components/income-source-components/income-sources/infra/remote"
-import { getOrganizations } from "@/modules/organization-components/organizations/infra/remote"
+import { useIncomeGroupQuery } from "@/modules/income-components/income-groups-components/remote/use-income-group-query"
+import { useIncomeSourceQuery } from "@/modules/income-components/income-source-components/income-sources/infra/hooks/use-income-source-query"
+import { useOrganizationsQuery } from "@/modules/organization-components/organizations/infra/remote/hooks/use-organizations-query"
 import { DevTool } from "@hookform/devtools"
 import { zodResolver } from "@hookform/resolvers/zod"
 import { useRouter } from "next/navigation"
-import { useEffect, useState } from "react"
+import { useState } from "react"
 import { useForm } from "react-hook-form"
 import { toast } from "sonner"
 
@@ -25,49 +24,11 @@ export function CreateIncomeForm() {
 
   const [paymentQty, setPaymentQty] = useState<number | undefined>(1)
   const [paymentAmount, setPaymentAmount] = useState<number>(0)
-  const [organizations, setOrganizations] = useState<SearchArray>([])
-  const [incomeGroups, setIncomeGroups] = useState<SearchArray>([])
   const [arrayPlaceHolder, setArrayPlaceHolder] = useState("Carregando...")
-  const [incomeSource, setIncomeSource] = useState<SearchArray>([])
 
-  const arrayConfigs: ArrayConfig<any>[] = [
-    {
-      fetchFn: getOrganizations,
-      mapFn: (org) => ({
-        label: org.name,
-        value: org.organization_id,
-      }),
-      setState: setOrganizations,
-    },
-    {
-      fetchFn: getAllIncomeGroups,
-      mapFn: (group) => ({
-        label: group.group_name,
-        value: group.income_group_id,
-      }),
-      setState: setIncomeGroups,
-    },
-    {
-      fetchFn: getIncomeSources,
-      mapFn: (income) => ({
-        label: income.name,
-        value: income.income_source_id,
-      }),
-      setState: setIncomeSource,
-    },
-  ]
-
-  useEffect(() => {
-    populateArrays(
-      arrayConfigs,
-      account_id,
-      () => setArrayPlaceHolder("Digite..."),
-      (error) => {
-        toast.error("Erro ao buscar dados: " + error.message)
-        setArrayPlaceHolder("Erro ao carregar...")
-      }
-    )
-  }, [])
+  const { data: incomeGroups } = useIncomeGroupQuery(account_id)
+  const { data: incomeSource } = useIncomeSourceQuery(account_id)
+  const { data: organizations } = useOrganizationsQuery(account_id)
 
   const {
     income_input_fields_amount,
@@ -127,7 +88,11 @@ export function CreateIncomeForm() {
                   name="income_source_id"
                   control={control}
                   disabled={!income_input_fields_income_source_id}
-                  options={incomeSource}
+                  options={prepareArrayForSelect(
+                    incomeSource,
+                    "name",
+                    "income_source_id"
+                  )}
                   placeholder={arrayPlaceHolder}
                 />
               </Input.Root>
@@ -148,7 +113,11 @@ export function CreateIncomeForm() {
                   name="income_group_id"
                   control={control}
                   disabled={!income_input_fields_income_group_id}
-                  options={incomeGroups}
+                  options={prepareArrayForSelect(
+                    incomeGroups,
+                    "group_name",
+                    "income_group_id"
+                  )}
                   placeholder={arrayPlaceHolder}
                 />
               </Input.Root>
@@ -263,7 +232,11 @@ export function CreateIncomeForm() {
                   name="organization_id"
                   control={control}
                   disabled={!income_input_fields_organization_id}
-                  options={organizations}
+                  options={prepareArrayForSelect(
+                    organizations,
+                    "name",
+                    "organization_id"
+                  )}
                   placeholder={arrayPlaceHolder}
                 />
               </Input.Root>
