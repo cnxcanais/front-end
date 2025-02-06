@@ -17,12 +17,12 @@ import {
   deleteIncomeDetails,
   getIncomeDetails,
 } from "@/modules/income-components/income-details-components/remote"
+import { editIncomeDetails } from "@/modules/income-components/income-details-components/remote/update-income-details"
 import { FileXls, Money, Pencil, Trash } from "@phosphor-icons/react"
 import { useMutation, useQuery } from "@tanstack/react-query"
 import { useRouter, useSearchParams } from "next/navigation"
 import { useEffect, useState } from "react"
 import { toast } from "sonner"
-import { editIncomeDetails } from "../../../remote/update-income-details"
 
 export function IncomeDetailsTable() {
   const { push } = useRouter()
@@ -39,7 +39,6 @@ export function IncomeDetailsTable() {
 
   const [open, setOpen] = useState(false)
   const [id, setId] = useState("")
-  const [filteredResults, setFilteredResults] = useState([])
   const [page, setPage] = useState(1)
   const [payOpen, setPayOpen] = useState(false)
   const [payId, setPayId] = useState("")
@@ -175,10 +174,6 @@ export function IncomeDetailsTable() {
     },
   ]
 
-  useEffect(() => {
-    if (data?.incomeDetails) setFilteredResults(data?.incomeDetails)
-  }, [data?.incomeDetails, isLoading])
-
   if (!data?.incomeDetails || isLoading) return <LoadingScreen />
 
   return (
@@ -229,7 +224,7 @@ export function IncomeDetailsTable() {
           Nenhuma parcela cadastrada.
         </h2>
       : <div>
-          <Table columns={columns} data={filteredResults} />
+          <Table columns={columns} data={data.incomeDetails} />
           <PageSelector
             page={page}
             setPage={setPage}

@@ -25,6 +25,10 @@ export namespace IncomeDetails {
     totalPages: number
   }
 
+  export type GetbyIdResponse = {
+    incomeDetails: IncomeDetailsType
+  }
+
   export type CreateRequest = {
     amount: number
     bank_account_id: string
