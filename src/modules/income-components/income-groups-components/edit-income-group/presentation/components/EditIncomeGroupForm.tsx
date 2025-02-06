@@ -26,6 +26,7 @@ export function EditIncomeGroupForm({ id }: { id: string }) {
     queryFn: () => getIncomeGroupById(id),
     enabled: id !== "",
     refetchOnWindowFocus: false,
+    refetchOnReconnect: false,
   })
 
   const {
@@ -39,7 +40,7 @@ export function EditIncomeGroupForm({ id }: { id: string }) {
     },
   })
 
-  async function onSubmit(data: IncomeGroup.Update) {
+  async function onSubmit(data: IncomeGroup.UpdateRequest) {
     try {
       await updateIncomeGroup(id, data)
       toast.success("Grupo editado com sucesso!")

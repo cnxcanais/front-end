@@ -19,7 +19,9 @@ export function ExpenseBudgetFilters({ account_id }: FilterProps) {
   const { register, handleSubmit, control, getValues, reset } =
     useForm<Budget.QueryParamsExpense>({})
 
-  const [filters, setFilters] = useState<Budget.QueryParamsExpense>({})
+  const [filters, setFilters] = useState<Budget.QueryParamsExpense>({
+    page: 1,
+  })
 
   const { data: expenseGroups, isLoading } = useExpenseGroupQuery(account_id)
 
@@ -53,7 +55,9 @@ export function ExpenseBudgetFilters({ account_id }: FilterProps) {
 
   function resetFilters() {
     reset()
-    setFilters({})
+    setFilters((prevState) => ({
+      page: prevState.page,
+    }))
   }
 
   useEffect(() => {

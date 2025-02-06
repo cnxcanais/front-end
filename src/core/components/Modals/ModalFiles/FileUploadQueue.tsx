@@ -3,9 +3,9 @@ import { saveFile } from "@/core/components/Modals/ModalFiles/remote"
 import { formatFileSize } from "@/core/utils/format-file-size"
 import { getAccountId } from "@/core/utils/get-account-id"
 import { File, FileX, UploadSimple } from "@phosphor-icons/react"
-import { useQuery } from "@tanstack/react-query"
 import { useState } from "react"
 import { toast } from "sonner"
+import { useFetchFilesQuery } from "./remote/use-fetch-files-query"
 
 type FileUploadQueueProps = {
   entityType: "income_source_id" | "income_id" | "expense_id" | "supplier_id"
@@ -22,9 +22,7 @@ export function FileUploadQueue({
 
   const [filesInQueue, setFilesInQueue] = useState<File[]>([])
 
-  const { refetch } = useQuery({
-    queryKey: ["files", entityId, entityType],
-  })
+  const { refetch } = useFetchFilesQuery({ account_id, entityId, entityType })
 
   async function handleUpload() {
     try {

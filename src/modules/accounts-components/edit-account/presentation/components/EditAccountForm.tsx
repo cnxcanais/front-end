@@ -26,6 +26,7 @@ export function EditAccountForm({ id }: { id: string }) {
     queryFn: () => getAccountById(id),
     enabled: id !== "",
     refetchOnWindowFocus: false,
+    refetchOnReconnect: false,
   })
 
   const {

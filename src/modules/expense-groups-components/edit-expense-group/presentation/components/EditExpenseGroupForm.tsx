@@ -26,6 +26,7 @@ export function EditExpenseGroupForm({ id }: { id: string }) {
     queryFn: () => getExpenseGroupById(id),
     enabled: id !== "",
     refetchOnWindowFocus: false,
+    refetchOnReconnect: false,
   })
 
   const {

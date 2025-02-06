@@ -17,7 +17,7 @@ export const getAllExpenseGroups = async (accountId: string) => {
 
 export const getExpenseGroupById = async (id: string) => {
   const response = await api.get(`/expenses-groups/${id}`)
-  return response.data
+  return response.data.expenseGroup
 }
 
 export const updateExpenseGroup = async (
@@ -25,10 +25,10 @@ export const updateExpenseGroup = async (
   expenseGroup: ExpenseGroup.UpdateRequest
 ) => {
   const response = await api.put(`/expenses-groups/${id}`, expenseGroup)
-  return response
+  return response.data
 }
 
 export const deleteExpenseGroup = async (id: string) => {
   const response = await api.delete(`/expenses-groups/${id}`)
-  return response.data
+  return response.data.message
 }

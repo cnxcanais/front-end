@@ -21,7 +21,7 @@ export const getAllIncomeGroups = async (
   return response.data.incomeGroups
 }
 
-export const getIncomeGroupById = async (id: IncomeGroup.GetByIdRequest) => {
+export const getIncomeGroupById = async (id: string) => {
   const response = await api.get(`/income-groups/${id}`)
   return response.data
 }
