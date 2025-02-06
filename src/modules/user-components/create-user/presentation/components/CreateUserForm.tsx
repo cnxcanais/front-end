@@ -6,7 +6,6 @@ import * as Input from "@/core/components/Input"
 import { LoadingScreen } from "@/core/components/LoadingScreen"
 import { SelectInput } from "@/core/components/SelectInput"
 import { getAccountId } from "@/core/utils/get-account-id"
-import { getCookie } from "@/lib/cookies"
 import { useGetAccountsQuery } from "@/modules/accounts-components/accounts/infra/hooks/use-get-accounts-query"
 import { useGetProfilesQuery } from "@/modules/profiles-components/profiles/remote/hooks/use-get-profiles-query"
 import { createUser } from "@/modules/user-components/create-user/infra/remote/create-user"
@@ -30,13 +29,6 @@ export function CreateUserForm() {
   const { data: profiles, isLoading: isProfilesLoading } =
     useGetProfilesQuery(account_id)
   const { data: accounts, isLoading: isAccountsLoading } = useGetAccountsQuery()
-
-  const {
-    user_input_fields_name,
-    user_input_fields_email,
-    user_input_fields_account_id,
-    user_input_fields_profile_id,
-  } = JSON.parse(getCookie("permissions")).componentAccess
 
   const {
     register,
@@ -76,11 +68,7 @@ export function CreateUserForm() {
             Nome
           </label>
           <Input.Root variant={errors.name ? "error" : "primary"}>
-            <Input.Control
-              disabled={!user_input_fields_name}
-              {...register("name")}
-              type="text"
-            />
+            <Input.Control {...register("name")} type="text" />
           </Input.Root>
           {errors.name && (
             <span className="text-xs text-red-500">{errors.name.message}</span>
@@ -92,11 +80,7 @@ export function CreateUserForm() {
             Email
           </label>
           <Input.Root variant={errors.email ? "error" : "primary"}>
-            <Input.Control
-              disabled={!user_input_fields_email}
-              {...register("email")}
-              type="email"
-            />
+            <Input.Control {...register("email")} type="email" />
           </Input.Root>
           {errors.email && (
             <span className="text-xs text-red-500">{errors.email.message}</span>

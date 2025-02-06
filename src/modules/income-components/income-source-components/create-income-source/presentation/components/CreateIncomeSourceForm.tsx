@@ -4,7 +4,7 @@ import { IncomeSource } from "@/@types/income-sources"
 import { Button } from "@/core/components/Button"
 import * as Input from "@/core/components/Input"
 import { getAccountId } from "@/core/utils/get-account-id"
-import { getCookie } from "@/lib/cookies"
+import { getPermissionByEntity } from "@/core/utils/getPermissionByEntity"
 import { createIncomeSource } from "@/modules/income-components/income-source-components/create-income-source/infra/remote/create-income-source"
 import {
   CreateIncomeSourceSchema,
@@ -20,19 +20,39 @@ export function CreateIncomeSourceForm() {
 
   const account_id = getAccountId()
 
-  const {
-    income_source_input_fields_name,
-    income_source_input_fields_email,
-    income_source_input_fields_cpf_cnpj,
-    income_source_input_fields_phone,
-    income_source_input_fields_contact_name,
-    income_source_input_fields_address_1,
-    income_source_input_fields_address_2,
-    income_source_input_fields_address_3,
-    income_source_input_fields_state,
-    income_source_input_fields_cep,
-    income_source_input_fields_city,
-  } = JSON.parse(getCookie("permissions")).componentAccess
+  const income_source_input_fields_name = getPermissionByEntity(
+    "income_source_input_fields_name"
+  )
+  const income_source_input_fields_email = getPermissionByEntity(
+    "income_source_input_fields_email"
+  )
+  const income_source_input_fields_cpf_cnpj = getPermissionByEntity(
+    "income_source_input_fields_cpf_cnpj"
+  )
+  const income_source_input_fields_phone = getPermissionByEntity(
+    "income_source_input_fields_phone"
+  )
+  const income_source_input_fields_contact_name = getPermissionByEntity(
+    "income_source_input_fields_contact_name"
+  )
+  const income_source_input_fields_address_1 = getPermissionByEntity(
+    "income_source_input_fields_address_1"
+  )
+  const income_source_input_fields_address_2 = getPermissionByEntity(
+    "income_source_input_fields_address_2"
+  )
+  const income_source_input_fields_address_3 = getPermissionByEntity(
+    "income_source_input_fields_address_3"
+  )
+  const income_source_input_fields_state = getPermissionByEntity(
+    "income_source_input_fields_state"
+  )
+  const income_source_input_fields_cep = getPermissionByEntity(
+    "income_source_input_fields_cep"
+  )
+  const income_source_input_fields_city = getPermissionByEntity(
+    "income_source_input_fields_city"
+  )
 
   const {
     register,

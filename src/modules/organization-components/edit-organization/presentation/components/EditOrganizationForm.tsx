@@ -3,7 +3,7 @@
 import { Button } from "@/core/components/Button"
 import * as Input from "@/core/components/Input"
 import { LoadingScreen } from "@/core/components/LoadingScreen"
-import { getCookie } from "@/lib/cookies"
+import { getPermissionByEntity } from "@/core/utils/getPermissionByEntity"
 import {
   editOrganization,
   getOrganizationById,
@@ -29,13 +29,21 @@ export function EditOrganizationForm({ id }: { id: string }) {
     refetchOnReconnect: false,
   })
 
-  const {
-    organizations_input_fields_name,
-    organizations_input_fields_email,
-    organizations_input_fields_cnpj,
-    organizations_input_fields_address,
-    organizations_input_fields_phone,
-  } = JSON.parse(getCookie("permissions")).componentAccess
+  const organizations_input_fields_name = getPermissionByEntity(
+    "organizations_input_fields_name"
+  )
+  const organizations_input_fields_email = getPermissionByEntity(
+    "organizations_input_fields_email"
+  )
+  const organizations_input_fields_cnpj = getPermissionByEntity(
+    "organizations_input_fields_cnpj"
+  )
+  const organizations_input_fields_address = getPermissionByEntity(
+    "organizations_input_fields_address"
+  )
+  const organizations_input_fields_phone = getPermissionByEntity(
+    "organizations_input_fields_phone"
+  )
 
   const {
     register,

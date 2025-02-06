@@ -6,7 +6,7 @@ import * as Input from "@/core/components/Input"
 import { LoadingScreen } from "@/core/components/LoadingScreen"
 import { SelectInput } from "@/core/components/SelectInput"
 import { getAccountId } from "@/core/utils/get-account-id"
-import { getCookie } from "@/lib/cookies"
+import { getPermissionByEntity } from "@/core/utils/getPermissionByEntity"
 import { createBudgetIncome } from "@/modules/budget-components/budget-income/create-budget-income/infra/remote/create-budget-income"
 import {
   createBudgetIncomeFormSchema,
@@ -24,12 +24,18 @@ export function CreateBudgetIncomeForm() {
 
   const account_id = getAccountId()
 
-  const {
-    budget_income_input_fields_description,
-    budget_income_input_fields_amount,
-    budget_income_input_fields_date,
-    budget_income_input_fields_income_group_id,
-  } = JSON.parse(getCookie("permissions")).componentAccess
+  const budget_income_input_fields_description = getPermissionByEntity(
+    "budget_income_input_fields_description"
+  )
+  const budget_income_input_fields_amount = getPermissionByEntity(
+    "budget_income_input_fields_amount"
+  )
+  const budget_income_input_fields_date = getPermissionByEntity(
+    "budget_income_input_fields_date"
+  )
+  const budget_income_input_fields_income_group_id = getPermissionByEntity(
+    "budget_income_input_fields_income_group_id"
+  )
 
   const { data: incomeGroups, isLoading } = useIncomeGroupQuery(account_id)
 

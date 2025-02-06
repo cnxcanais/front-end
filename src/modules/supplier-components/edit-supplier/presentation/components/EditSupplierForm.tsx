@@ -4,7 +4,7 @@ import { Supplier } from "@/@types/suppliers"
 import { Button } from "@/core/components/Button"
 import * as Input from "@/core/components/Input"
 import { LoadingScreen } from "@/core/components/LoadingScreen"
-import { getCookie } from "@/lib/cookies"
+import { getPermissionByEntity } from "@/core/utils/getPermissionByEntity"
 import {
   editSupplier,
   getSupplierById,
@@ -30,19 +30,39 @@ export function EditSupplierForm({ id }: { id: string }) {
     refetchOnReconnect: false,
   })
 
-  const {
-    supplier_input_fields_name,
-    supplier_input_fields_email,
-    supplier_input_fields_cpf_cnpj,
-    supplier_input_fields_phone,
-    supplier_input_fields_contact_name,
-    supplier_input_fields_address_1,
-    supplier_input_fields_address_2,
-    supplier_input_fields_address_3,
-    supplier_input_fields_state,
-    supplier_input_fields_cep,
-    supplier_input_fields_city,
-  } = JSON.parse(getCookie("permissions") ?? "").componentAccess
+  const supplier_input_fields_name = getPermissionByEntity(
+    "supplier_input_fields_name"
+  )
+  const supplier_input_fields_email = getPermissionByEntity(
+    "supplier_input_fields_email"
+  )
+  const supplier_input_fields_cpf_cnpj = getPermissionByEntity(
+    "supplier_input_fields_cpf_cnpj"
+  )
+  const supplier_input_fields_phone = getPermissionByEntity(
+    "supplier_input_fields_phone"
+  )
+  const supplier_input_fields_contact_name = getPermissionByEntity(
+    "supplier_input_fields_contact_name"
+  )
+  const supplier_input_fields_address_1 = getPermissionByEntity(
+    "supplier_input_fields_address_1"
+  )
+  const supplier_input_fields_address_2 = getPermissionByEntity(
+    "supplier_input_fields_address_2"
+  )
+  const supplier_input_fields_address_3 = getPermissionByEntity(
+    "supplier_input_fields_address_3"
+  )
+  const supplier_input_fields_state = getPermissionByEntity(
+    "supplier_input_fields_state"
+  )
+  const supplier_input_fields_cep = getPermissionByEntity(
+    "supplier_input_fields_cep"
+  )
+  const supplier_input_fields_city = getPermissionByEntity(
+    "supplier_input_fields_city"
+  )
 
   const {
     register,

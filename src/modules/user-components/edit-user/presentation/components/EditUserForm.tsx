@@ -3,7 +3,6 @@
 import { Button } from "@/core/components/Button"
 import * as Input from "@/core/components/Input"
 import { LoadingScreen } from "@/core/components/LoadingScreen"
-import { getCookie } from "@/lib/cookies"
 import { useGetUserByIdQuery } from "@/modules/user-components/edit-user/infra/hooks/use-get-user-by-id-query"
 import { editUser } from "@/modules/user-components/edit-user/infra/remote"
 import {
@@ -22,9 +21,6 @@ export function EditUserForm({ id }: { id: string }) {
   const [showPassword, setShowPassword] = useState(false)
 
   const { data: user, isLoading } = useGetUserByIdQuery(id)
-  const { users_input_fields_name, users_input_fields_email } = JSON.parse(
-    getCookie("permissions")
-  ).componentAccess
 
   const {
     register,
@@ -59,11 +55,7 @@ export function EditUserForm({ id }: { id: string }) {
             Nome
           </label>
           <Input.Root>
-            <Input.Control
-              disabled={!users_input_fields_name}
-              {...register("name")}
-              type="text"
-            />
+            <Input.Control {...register("name")} type="text" />
           </Input.Root>
         </div>
 
@@ -72,11 +64,7 @@ export function EditUserForm({ id }: { id: string }) {
             Email
           </label>
           <Input.Root>
-            <Input.Control
-              disabled={!users_input_fields_email}
-              type="email"
-              {...register("email")}
-            />
+            <Input.Control type="email" {...register("email")} />
           </Input.Root>
         </div>
 
