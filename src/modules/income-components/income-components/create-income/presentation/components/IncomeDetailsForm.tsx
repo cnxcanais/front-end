@@ -148,7 +148,7 @@ export function IncomeDetailForm({
 
   // Initial setup effect: Populates bank accounts and sets initial details if available
   useEffect(() => {
-    populateArrays(arrayConfigs, { account_id })
+    populateArrays(arrayConfigs, account_id)
     if (detailsArray.length > 0) {
       setDetailsInfo({
         totalAmount: totalAmount,

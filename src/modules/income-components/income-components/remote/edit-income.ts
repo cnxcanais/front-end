@@ -12,7 +12,6 @@ export async function editIncome({
   income_percentage,
   income_source_id,
   organization_id,
-  parts_qty,
 }: Income.UpdateRequest) {
   try {
     const { data } = await api.put(`/income/${income_id}`, {
@@ -24,7 +23,6 @@ export async function editIncome({
       income_percentage,
       income_source_id,
       organization_id,
-      parts_qty,
     })
 
     return data.message

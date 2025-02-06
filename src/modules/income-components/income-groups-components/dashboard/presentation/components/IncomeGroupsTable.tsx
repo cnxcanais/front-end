@@ -55,7 +55,7 @@ export function IncomeGroupTable() {
 
   const handleConfirmDelete = async () => {
     await deleteIncomeGroup({ income_group_id: id }).then(() =>
-      fetchIncomeGroups.mutate({ account_id })
+      fetchIncomeGroups.mutate(account_id)
     )
   }
 
