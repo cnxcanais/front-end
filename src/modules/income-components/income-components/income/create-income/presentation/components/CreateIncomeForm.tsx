@@ -4,6 +4,7 @@ import { Income } from "@/@types/income"
 import { SearchArray } from "@/@types/search-array"
 import { Button } from "@/core/components/Button"
 import * as Input from "@/core/components/Input"
+import { getPermissionByEntity } from "@/core/utils/getPermissionByEntity"
 import { ArrayConfig, populateArrays } from "@/core/utils/populateArrays"
 import { getCookie } from "@/lib/cookies"
 import { createIncomeFormSchema } from "@/modules/income-components/income-components/income/create-income/presentation/validation/schema"
@@ -69,17 +70,33 @@ export function CreateIncomeForm() {
     )
   }, [])
 
-  const {
-    income_input_fields_amount,
-    income_input_fields_income_qty,
-    income_input_fields_income_percentage,
-    income_input_fields_date,
-    income_input_fields_document,
-    income_input_fields_description,
-    income_input_fields_income_source_id,
-    income_input_fields_organization_id,
-    income_input_fields_income_group_id,
-  } = JSON.parse(getCookie("permissions")).componentAccess
+  const income_input_fields_amount = getPermissionByEntity(
+    "income_input_fields_amount"
+  )
+  const income_input_fields_income_qty = getPermissionByEntity(
+    "income_input_fields_income_qty"
+  )
+  const income_input_fields_income_percentage = getPermissionByEntity(
+    "income_input_fields_income_percentage"
+  )
+  const income_input_fields_date = getPermissionByEntity(
+    "income_input_fields_date"
+  )
+  const income_input_fields_document = getPermissionByEntity(
+    "income_input_fields_document"
+  )
+  const income_input_fields_description = getPermissionByEntity(
+    "income_input_fields_description"
+  )
+  const income_input_fields_income_source_id = getPermissionByEntity(
+    "income_input_fields_income_source_id"
+  )
+  const income_input_fields_organization_id = getPermissionByEntity(
+    "income_input_fields_organization_id"
+  )
+  const income_input_fields_income_group_id = getPermissionByEntity(
+    "income_input_fields_income_group_id"
+  )
 
   const {
     register,

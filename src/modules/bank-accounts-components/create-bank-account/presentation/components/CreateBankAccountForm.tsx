@@ -3,6 +3,7 @@
 import { BankAccount } from "@/@types/bank-accounts"
 import { Button } from "@/core/components/Button"
 import * as Input from "@/core/components/Input"
+import { LoadingScreen } from "@/core/components/LoadingScreen"
 import { SelectInput } from "@/core/components/SelectInput"
 import { getAccountId } from "@/core/utils/get-account-id"
 import { createBankAccount } from "@/modules/bank-accounts-components/create-bank-account/infra/remote/create-bank-account"
@@ -41,81 +42,82 @@ export function CreateBankAccountForm() {
     }
   }
 
-  if (isLoading || !banks)
-    return (
-      <form className="max-w-[800px]" onSubmit={handleSubmit(onSubmit)}>
-        <div className="flex gap-8">
-          <div className="flex flex-1 flex-col">
-            <div className="mt-8 flex flex-col gap-2">
-              <label className="text-lg" htmlFor="agency">
-                Agência
-              </label>
-              <Input.Root variant={errors.agency ? "error" : "primary"}>
-                <Input.Control {...register("agency")} type="text" />
-              </Input.Root>
-              {errors.agency && (
-                <span className="text-xs text-red-500">
-                  {errors.agency.message}
-                </span>
-              )}
-            </div>
+  if (isLoading || !banks) return <LoadingScreen />
 
-            <div className="mt-8 flex flex-col gap-2">
-              <label className="text-lg" htmlFor="account_number">
-                Número
-              </label>
-              <Input.Root variant={errors.account_number ? "error" : "primary"}>
-                <Input.Control {...register("account_number")} type="text" />
-              </Input.Root>
-              {errors.account_number && (
-                <span className="text-xs text-red-500">
-                  {errors.account_number.message}
-                </span>
-              )}
-            </div>
-
-            <SelectInput
-              options={banks.map((bank) => {
-                return {
-                  text: bank.name,
-                  value: bank.bank_id,
-                }
-              })}
-              field_name="bank_id"
-              label="Banco"
-              {...register("bank_id")}
-            />
+  return (
+    <form className="max-w-[800px]" onSubmit={handleSubmit(onSubmit)}>
+      <div className="flex gap-8">
+        <div className="flex flex-1 flex-col">
+          <div className="mt-8 flex flex-col gap-2">
+            <label className="text-lg" htmlFor="agency">
+              Agência
+            </label>
+            <Input.Root variant={errors.agency ? "error" : "primary"}>
+              <Input.Control {...register("agency")} type="text" />
+            </Input.Root>
+            {errors.agency && (
+              <span className="text-xs text-red-500">
+                {errors.agency.message}
+              </span>
+            )}
           </div>
 
-          <div className="flex flex-1 flex-col">
-            <div className="mt-8 flex flex-1 flex-col gap-2">
-              <label className="text-lg" htmlFor="observation">
-                Observação
-              </label>
-              <Input.Root
-                className="flex-1"
-                variant={errors.observation ? "error" : "primary"}>
-                <textarea
-                  className="h-full w-full resize-none border-none p-0 text-sm"
-                  {...register("observation")}
-                />
-              </Input.Root>
-            </div>
+          <div className="mt-8 flex flex-col gap-2">
+            <label className="text-lg" htmlFor="account_number">
+              Número
+            </label>
+            <Input.Root variant={errors.account_number ? "error" : "primary"}>
+              <Input.Control {...register("account_number")} type="text" />
+            </Input.Root>
+            {errors.account_number && (
+              <span className="text-xs text-red-500">
+                {errors.account_number.message}
+              </span>
+            )}
           </div>
+
+          <SelectInput
+            options={banks.map((bank) => {
+              return {
+                text: bank.name,
+                value: bank.bank_id,
+              }
+            })}
+            field_name="bank_id"
+            label="Banco"
+            {...register("bank_id")}
+          />
         </div>
 
-        <div className="my-2 flex gap-4">
-          <Button type="submit" disabled={isSubmitting} variant="secondary">
-            Salvar
-          </Button>
-          <Button
-            type="button"
-            disabled={isSubmitting}
-            onClick={() => push("/banks/accounts")}
-            variant="tertiary">
-            Voltar
-          </Button>
+        <div className="flex flex-1 flex-col">
+          <div className="mt-8 flex flex-1 flex-col gap-2">
+            <label className="text-lg" htmlFor="observation">
+              Observação
+            </label>
+            <Input.Root
+              className="flex-1"
+              variant={errors.observation ? "error" : "primary"}>
+              <textarea
+                className="h-full w-full resize-none border-none p-0 text-sm"
+                {...register("observation")}
+              />
+            </Input.Root>
+          </div>
         </div>
-      </form>
-    )
+      </div>
+
+      <div className="my-2 flex gap-4">
+        <Button type="submit" disabled={isSubmitting} variant="secondary">
+          Salvar
+        </Button>
+        <Button
+          type="button"
+          disabled={isSubmitting}
+          onClick={() => push("/banks/accounts")}
+          variant="tertiary">
+          Voltar
+        </Button>
+      </div>
+    </form>
+  )
 }

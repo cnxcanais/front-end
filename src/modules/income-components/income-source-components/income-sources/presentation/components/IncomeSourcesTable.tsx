@@ -7,7 +7,7 @@ import { SearchInput } from "@/core/components/SearchInput"
 import { Table } from "@/core/components/Table"
 import { exportToExcel } from "@/core/utils/exportToExcel"
 import { getAccountId } from "@/core/utils/get-account-id"
-import { getCookie } from "@/lib/cookies"
+import { getPermissionByEntity } from "@/core/utils/getPermissionByEntity"
 import { useGetIncomeSourcesQuery } from "@/modules/income-components/income-source-components/income-sources/infra/hooks/use-get-income-sources-query"
 import { removeIncomeSource } from "@/modules/income-components/income-source-components/income-sources/infra/remote"
 import { FileXls, Pencil, Trash } from "@phosphor-icons/react"
@@ -26,8 +26,9 @@ export function IncomeSourcesTable() {
   const [open, setOpen] = useState(false)
   const [id, setId] = useState("")
 
-  const { income_sources_create, income_sources_edit, income_sources_delete } =
-    JSON.parse(getCookie("permissions")).componentAccess
+  const income_sources_create = getPermissionByEntity("income_sources_create")
+  const income_sources_edit = getPermissionByEntity("income_sources_edit")
+  const income_sources_delete = getPermissionByEntity("income_sources_delete")
 
   const [filteredResults, setFilteredResults] = useState([])
 

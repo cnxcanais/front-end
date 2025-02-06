@@ -6,7 +6,7 @@ import * as Input from "@/core/components/Input"
 import { LoadingScreen } from "@/core/components/LoadingScreen"
 import { SelectInput } from "@/core/components/SelectInput"
 import { getAccountId } from "@/core/utils/get-account-id"
-import { getCookie } from "@/lib/cookies"
+import { getPermissionByEntity } from "@/core/utils/getPermissionByEntity"
 import { createBudgetExpense } from "@/modules/budget-components/budget-expense/create-budget-expense/infra/remote/create-budget-expense"
 import {
   createBudgetExpenseFormSchema,
@@ -24,12 +24,18 @@ export function CreateBudgetExpenseForm() {
 
   const account_id = getAccountId()
 
-  const {
-    budget_expense_input_fields_description,
-    budget_expense_input_fields_amount,
-    budget_expense_input_fields_date,
-    budget_expense_input_fields_expense_group_id,
-  } = JSON.parse(getCookie("permissions")).componentAccess
+  const budget_expense_input_fields_description = getPermissionByEntity(
+    "budget_expense_input_fields_description"
+  )
+  const budget_expense_input_fields_amount = getPermissionByEntity(
+    "budget_expense_input_fields_amount"
+  )
+  const budget_expense_input_fields_date = getPermissionByEntity(
+    "budget_expense_input_fields_date"
+  )
+  const budget_expense_input_fields_expense_group_id = getPermissionByEntity(
+    "budget_expense_input_fields_expense_group_id"
+  )
 
   const { data: expenseGroups, isLoading } = useExpenseGroupQuery(account_id)
 

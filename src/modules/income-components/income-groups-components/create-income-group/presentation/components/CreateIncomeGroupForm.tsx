@@ -28,7 +28,7 @@ export function CreateIncomeGroupForm() {
     },
   })
 
-  async function onSubmit(data: IncomeGroup.Request) {
+  async function onSubmit(data: IncomeGroup.CreateRequest) {
     try {
       const response = await createIncomeGroup(data)
       toast.success(response)
