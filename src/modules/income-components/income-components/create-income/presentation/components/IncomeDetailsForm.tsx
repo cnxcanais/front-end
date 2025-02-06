@@ -4,8 +4,8 @@ import { SearchArray } from "@/@types/search-array"
 import { Button } from "@/core/components/Button"
 import * as Input from "@/core/components/Input"
 import { addMonthsToDate } from "@/core/utils/dateFunctions"
+import { usePermissions } from "@/core/utils/hooks/use-permission"
 import { ArrayConfig, populateArrays } from "@/core/utils/populateArrays"
-import { getCookie } from "@/lib/cookies"
 import { getBankAccounts } from "@/modules/bank-accounts-components/bank-accounts/infra/remote"
 import { FormType } from "@/modules/income-components/income-components/create-income/presentation/components/CreateIncomeForm"
 import { useRouter } from "next/navigation"
@@ -32,10 +32,6 @@ type Props = {
   getValues: UseFormGetValues<FormType>
   watch: UseFormWatch<FormType>
 }
-
-const { income_input_fields_bank_account_id } = JSON.parse(
-  getCookie("permissions")
-).componentAccess
 
 /**
  * @component IncomeDetailForm
@@ -93,6 +89,10 @@ export function IncomeDetailForm({
   watch,
 }: Props) {
   const { push } = useRouter()
+
+  const permissions = ["income_input_fields_bank_account_id "]
+
+  const { income_input_fields_bank_account_id } = usePermissions(permissions)
 
   const [bankAccounts, setBankAccounts] = useState<SearchArray>([])
   const [initialIndividualValue, setInitialIndividualValue] = useState<

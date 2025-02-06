@@ -3,8 +3,8 @@
 import { SearchArray } from "@/@types/search-array"
 import { Button } from "@/core/components/Button"
 import * as Input from "@/core/components/Input"
+import { usePermissions } from "@/core/utils/hooks/use-permission"
 import { ArrayConfig, populateArrays } from "@/core/utils/populateArrays"
-import { getCookie } from "@/lib/cookies"
 import { FormType } from "@/modules/income-components/income-components/create-income/presentation/components/CreateIncomeForm"
 import { getAllIncomeGroups } from "@/modules/income-components/income-groups-components/remote/income-group"
 import { getIncomeSources } from "@/modules/income-components/income-source-components/income-sources/infra/remote"
@@ -82,6 +82,16 @@ export function IncomeForm({
     )
   }, [])
 
+  const permissions = [
+    "income_input_fields_income_percentage",
+    "income_input_fields_date",
+    "income_input_fields_document",
+    "income_input_fields_description",
+    "income_input_fields_income_source_id",
+    "income_input_fields_organization_id",
+    "income_input_fields_income_group_id",
+  ]
+
   const {
     income_input_fields_income_percentage,
     income_input_fields_date,
@@ -90,7 +100,7 @@ export function IncomeForm({
     income_input_fields_income_source_id,
     income_input_fields_organization_id,
     income_input_fields_income_group_id,
-  } = JSON.parse(getCookie("permissions")).componentAccess
+  } = usePermissions(permissions)
 
   return (
     <>
