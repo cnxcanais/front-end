@@ -9,7 +9,6 @@ import { PageSelector } from "@/core/components/PageSelector"
 import { Table } from "@/core/components/Table"
 import { formatLocalDate } from "@/core/utils/dateFunctions"
 import { exportToExcel } from "@/core/utils/exportToExcel"
-import { getPermissionByEntity } from "@/core/utils/getPermissionByEntity"
 import { getCookie } from "@/lib/cookies"
 import { queryClient } from "@/lib/react-query"
 import { IncomeDetailsFilters } from "@/modules/income-components/income-details-components/income-details/presentation/components/incomeDetailsFilters"
@@ -18,6 +17,7 @@ import {
   getIncomeDetails,
 } from "@/modules/income-components/income-details-components/remote"
 import { editIncomeDetails } from "@/modules/income-components/income-details-components/remote/update-income-details"
+import { usePermissionQuery } from "@/modules/login-components/login/infra/hooks/use-permissions-query"
 import { FileXls, Money, Pencil, Trash } from "@phosphor-icons/react"
 import { useMutation, useQuery } from "@tanstack/react-query"
 import { useRouter, useSearchParams } from "next/navigation"
@@ -27,10 +27,18 @@ import { toast } from "sonner"
 export function IncomeDetailsTable() {
   const { push } = useRouter()
 
-  const create = getPermissionByEntity("income_details_create")
-  const pay = getPermissionByEntity("income_details_pay")
-  const edit = getPermissionByEntity("income_details_edit")
-  const deletePermission = getPermissionByEntity("income_details_delete")
+  const {
+    data: permissions,
+    refetch: permissionRefetch,
+    isLoading: permissionLoading,
+  } = usePermissionQuery()
+
+  if (!permissions || !permissions?.componentAccess) permissionRefetch()
+
+  const create = permissions?.componentAccess["income_details_create"]
+  const pay = permissions?.componentAccess["income_details_pay"]
+  const edit = permissions?.componentAccess["income_details_edit"]
+  const deletePermission = permissions?.componentAccess["income_details_delete"]
   const searchParams = useSearchParams()
 
   const income_id = searchParams.get("income_id") || ""
@@ -174,7 +182,8 @@ export function IncomeDetailsTable() {
     },
   ]
 
-  if (!data?.incomeDetails || isLoading) return <LoadingScreen />
+  if (!data?.incomeDetails || isLoading || permissionLoading)
+    return <LoadingScreen />
 
   return (
     <>
@@ -210,7 +219,22 @@ export function IncomeDetailsTable() {
 
       <IncomeDetailsFilters account_id={account_id} income_id={income_id} />
 
-      <div className="mt-8 flex items-center justify-end">
+      <div className="mt-8 flex items-center justify-between">
+        <div className="flex gap-4">
+          <Button onClick={() => push("/incomes")} variant="secondary">
+            Voltar
+          </Button>
+
+          {income_id && (
+            <Button
+              variant="secondary"
+              onClick={() => push(`/income-details/create/${income_id}`)}
+              disabled={!create}>
+              Adicionar Parcela
+            </Button>
+          )}
+        </div>
+
         <Button
           className="flex items-center gap-1"
           variant="secondary"

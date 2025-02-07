@@ -31,7 +31,7 @@ export function IncomeDetailsFilters({ account_id, income_id }: FilterProps) {
   const { data: incomes, isLoading: incomesIsLoading } =
     useIncomeQuery(account_id)
 
-  const { refetch } = useIncomeDetailsQuery(account_id, filters)
+  const { refetch } = useIncomeDetailsQuery(account_id, { ...filters, page: 1 })
 
   function onSubmit(data: IncomeDetails.QueryParams) {
     const adjustMonth = (month: string | undefined, isStart: boolean) => {

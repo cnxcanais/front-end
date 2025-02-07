@@ -26,7 +26,7 @@ export namespace Income {
     updated_at: Date
     account_id: string
     organization_id: string
-    income_details: IncomeDetails.GetResponse
+    income_details: IncomeDetails.IncomeDetailsType[]
     total_amount: number
     total_parts: number
     formatted_date: string
