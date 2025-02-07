@@ -9,6 +9,7 @@ import { useBankAccountsQuery } from "@/modules/bank-accounts-components/bank-ac
 import { editIncomeDetailsSchema } from "@/modules/income-components/income-details-components/edit-income-details/validation/schema"
 import { useIncomeDetailsByIdQuery } from "@/modules/income-components/income-details-components/infra/hooks/use-income-details-by-id-query"
 import { editIncomeDetails } from "@/modules/income-components/income-details-components/remote/update-income-details"
+import { usePermissionQuery } from "@/modules/login-components/login/infra/hooks/use-permissions-query"
 import { DevTool } from "@hookform/devtools"
 import { zodResolver } from "@hookform/resolvers/zod"
 import { useParams, useRouter } from "next/navigation"
@@ -29,17 +30,19 @@ export function EditIncomeDetailsForm() {
   const { data: bankAccounts, isLoading: bankAccountIsLoading } =
     useBankAccountsQuery(account_id)
 
-  const {
-    income_input_fields_amount,
-    income_input_fields_income_qty,
-    income_input_fields_income_percentage,
-    income_input_fields_date,
-    income_input_fields_document,
-    income_input_fields_description,
-    income_input_fields_income_source_id,
-    income_input_fields_organization_id,
-    income_input_fields_income_group_id,
-  } = JSON.parse(getCookie("permissions")).componentAccess
+  const { data: permissions, isLoading: permissionLoading } =
+    usePermissionQuery()
+
+  const income_details_edit_input_fields_bank_account =
+    permissions?.componentAccess[
+      "income_details_edit_input_fields_bank_account"
+    ]
+  const income_details_edit_input_fields_amount =
+    permissions?.componentAccess["income_details_edit_input_fields_amount"]
+  const income_details_edit_input_fields_description =
+    permissions?.componentAccess["income_details_edit_input_fields_description"]
+  const income_details_edit_input_fields_date =
+    permissions?.componentAccess[" income_details_edit_input_fields_date"]
 
   const {
     register,
@@ -111,7 +114,7 @@ export function EditIncomeDetailsForm() {
                 <Input.SelectInput
                   name="bank_account_id"
                   control={control}
-                  disabled={!income_input_fields_income_source_id}
+                  disabled={!income_details_edit_input_fields_bank_account}
                   options={[{ label: "", value: "" }].concat(
                     bankAccounts.map((account) => {
                       return {
@@ -136,7 +139,7 @@ export function EditIncomeDetailsForm() {
               </label>
               <Input.Root variant={errors.due_date ? "error" : "primary"}>
                 <Input.Control
-                  disabled={!income_input_fields_date}
+                  disabled={!income_details_edit_input_fields_date}
                   {...register("due_date")}
                   type="date"
                 />
@@ -156,7 +159,7 @@ export function EditIncomeDetailsForm() {
               </label>
               <Input.Root>
                 <Input.Control
-                  disabled={!income_input_fields_description}
+                  disabled={!income_details_edit_input_fields_description}
                   {...register("observation")}
                   type="text"
                 />
@@ -167,12 +170,8 @@ export function EditIncomeDetailsForm() {
               <label className="text-lg" htmlFor="phone">
                 Parte
               </label>
-              <Input.Root variant={errors.part ? "error" : "primary"}>
-                <Input.Control
-                  disabled={!income_input_fields_document}
-                  {...register("part")}
-                  type="text"
-                />
+              <Input.Root variant="primary">
+                <Input.Control disabled {...register("part")} type="text" />
               </Input.Root>
               {errors.part && (
                 <span className="text-xs text-red-500">
@@ -190,7 +189,7 @@ export function EditIncomeDetailsForm() {
             </label>
             <Input.Root variant={errors.amount ? "error" : "primary"}>
               <Input.Currency
-                disabled={!income_input_fields_income_percentage}
+                disabled={!income_details_edit_input_fields_amount}
                 control={control}
                 name="amount"
                 type="text"

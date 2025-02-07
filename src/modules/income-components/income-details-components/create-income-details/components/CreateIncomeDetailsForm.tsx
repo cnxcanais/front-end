@@ -4,9 +4,10 @@ import { IncomeDetails } from "@/@types/income-details"
 import { Button } from "@/core/components/Button"
 import * as Input from "@/core/components/Input"
 import { LoadingScreen } from "@/core/components/LoadingScreen"
-import { usePermissions } from "@/core/utils/hooks/use-permission"
 import { getCookie } from "@/lib/cookies"
 import { useBankAccountsQuery } from "@/modules/bank-accounts-components/bank-accounts/infra/hooks/use-bank-account-query"
+import { useIncomeByIdQuery } from "@/modules/income-components/income-components/infra/use-income-by-id-query"
+import { usePermissionQuery } from "@/modules/login-components/login/infra/hooks/use-permissions-query"
 import { DevTool } from "@hookform/devtools"
 import { zodResolver } from "@hookform/resolvers/zod"
 import { useParams, useRouter } from "next/navigation"
@@ -19,6 +20,23 @@ import { createIncomeDetailsSchema } from "../validation/schema"
 export function CreateIncomeDetailsForm() {
   const { push } = useRouter()
 
+  const {
+    data: permissions,
+    refetch: permissionRefetch,
+    isLoading: permissionLoading,
+  } = usePermissionQuery()
+
+  if (!permissions || !permissions?.componentAccess) permissionRefetch()
+
+  const income_details_input_fields_amount =
+    permissions?.componentAccess["income_details_input_fields_amount"]
+  const income_details_input_fields_abservation =
+    permissions?.componentAccess["income_details_input_fields_abservation"]
+  const income_details_input_fields_date =
+    permissions?.componentAccess["income_details_input_fields_date"]
+  const income_details_input_fields_bank_account =
+    permissions?.componentAccess["income_details_input_fields_bank_account"]
+
   const account_id = getCookie("accountId")
   const params = useParams()
   const income_id = params.id as string
@@ -26,21 +44,14 @@ export function CreateIncomeDetailsForm() {
   const { data: bankAccounts, isLoading: bankAccountIsLoading } =
     useBankAccountsQuery(account_id)
 
-  const permissions = [
-    "income_details_input_fields_amount",
-    "income_details_input_fields_abservation",
-    "income_details_input_fields_part",
-    "income_details_input_fields_date",
-    "income_details_input_fields_bank_account",
-  ]
+  const { data: incomeData, isLoading: isIncomeLoading } =
+    useIncomeByIdQuery(income_id)
 
-  const {
-    income_details_input_fields_amount,
-    income_details_input_fields_abservation,
-    income_details_input_fields_part,
-    income_details_input_fields_date,
-    income_details_input_fields_bank_account,
-  } = usePermissions(permissions)
+  useEffect(() => {
+    if (incomeData) {
+      setValue("part", incomeData.income_details.length + 1)
+    }
+  }, [incomeData])
 
   const {
     register,
@@ -48,6 +59,7 @@ export function CreateIncomeDetailsForm() {
     formState: { isSubmitting, errors },
     control,
     setValue,
+    getValues,
   } = useForm<IncomeDetails.CreateRequest>({
     resolver: zodResolver(createIncomeDetailsSchema),
     defaultValues: {
@@ -75,8 +87,17 @@ export function CreateIncomeDetailsForm() {
     }
   }
 
-  if (!bankAccounts || bankAccountIsLoading) return <LoadingScreen />
+  if (
+    !bankAccounts ||
+    bankAccountIsLoading ||
+    permissionLoading ||
+    !permissions ||
+    !incomeData ||
+    isIncomeLoading
+  )
+    return <LoadingScreen />
 
+  console.log(errors)
   return (
     <>
       <form
@@ -143,24 +164,6 @@ export function CreateIncomeDetailsForm() {
                   type="text"
                 />
               </Input.Root>
-            </div>
-
-            <div className="flex max-w-[50px] flex-1 flex-col gap-2">
-              <label className="text-lg" htmlFor="phone">
-                Parte
-              </label>
-              <Input.Root variant={errors.part ? "error" : "primary"}>
-                <Input.Control
-                  disabled={!income_details_input_fields_part}
-                  {...register("part")}
-                  type="text"
-                />
-              </Input.Root>
-              {errors.part && (
-                <span className="text-xs text-red-500">
-                  {errors.part.message}
-                </span>
-              )}
             </div>
           </div>
         </div>
