@@ -210,7 +210,22 @@ export function IncomeDetailsTable() {
 
       <IncomeDetailsFilters account_id={account_id} income_id={income_id} />
 
-      <div className="mt-8 flex items-center justify-end">
+      <div className="mt-8 flex items-center justify-between">
+        <div className="flex gap-4">
+          <Button onClick={() => push("/incomes")} variant="secondary">
+            Voltar
+          </Button>
+
+          {income_id && (
+            <Button
+              variant="secondary"
+              onClick={() => push(`/income-details/create/${income_id}`)}
+              disabled={!create}>
+              Adicionar Parcela
+            </Button>
+          )}
+        </div>
+
         <Button
           className="flex items-center gap-1"
           variant="secondary"
