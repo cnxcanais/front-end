@@ -8,8 +8,8 @@ import { useIncomeGroupQuery } from "@/modules/income-components/income-groups-c
 import { useIncomeSourceQuery } from "@/modules/income-components/income-source-components/income-sources/infra/hooks/use-income-source-query"
 import { useOrganizationsQuery } from "@/modules/organization-components/organizations/infra/remote/hooks/use-organizations-query"
 import { CaretDown, CaretRight } from "@phosphor-icons/react"
-import { useState } from "react"
-import { useFormContext } from "react-hook-form"
+import { useEffect, useState } from "react"
+import { useFormContext, useWatch } from "react-hook-form"
 
 interface FilterProps {
   onFilterChange: (filters: Income.GetRequest) => void
@@ -18,6 +18,7 @@ interface FilterProps {
 
 export function IncomeFilters({ onFilterChange, incomes }: FilterProps) {
   const [collapsed, setCollapsed] = useState(false)
+  const [isFilterFilled, setIsFilterFilled] = useState(false)
   const account_id = getAccountId()
 
   const {
@@ -28,6 +29,8 @@ export function IncomeFilters({ onFilterChange, incomes }: FilterProps) {
     setValue,
     formState: { isSubmitted },
   } = useFormContext<Income.GetRequest>()
+
+  const formValues = useWatch({ control })
 
   const { data: incomeGroups, isLoading: incomeGroupsIsLoading } =
     useIncomeGroupQuery(account_id)
@@ -57,16 +60,19 @@ export function IncomeFilters({ onFilterChange, incomes }: FilterProps) {
     }
 
     onFilterChange(cleanedData)
-
-    Object.entries(cleanedData).forEach(([key, value]) => {
-      setValue(key as keyof Income.GetRequest, value)
-    })
   }
 
   function resetFilters() {
     reset()
     onFilterChange({})
   }
+
+  useEffect(() => {
+    const hasValue = Object.values(formValues).some(
+      (value) => value !== undefined && value !== null && value !== ""
+    )
+    setIsFilterFilled(hasValue)
+  }, [formValues])
 
   if (
     !incomeGroups ||
@@ -200,7 +206,11 @@ export function IncomeFilters({ onFilterChange, incomes }: FilterProps) {
                 Limpar
               </Button>
 
-              <Button className="w-full" variant="secondary" type="submit">
+              <Button
+                disabled={!isFilterFilled}
+                className="w-full"
+                variant="secondary"
+                type="submit">
                 Pesquisar
               </Button>
             </div>
