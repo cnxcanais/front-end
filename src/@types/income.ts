@@ -4,13 +4,13 @@ import { IncomeSource } from "@/@types/income-sources"
 
 export namespace Income {
   export type GetRequest = {
-    is_paid?: string
     document?: string
     start_date?: string
     end_date?: string
     organization_id?: string
     income_source_id?: string
     income_group_id?: string
+    page?: number
   }
 
   export type IncomeType = {

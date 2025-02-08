@@ -4,10 +4,13 @@ import { useQuery } from "@tanstack/react-query"
 
 export function useIncomeQuery(
   account_id: string,
-  queryParams?: Income.GetRequest
+  queryParams: Income.GetRequest
 ) {
   return useQuery({
-    queryKey: ["incomes"],
+    queryKey:
+      Object.values(queryParams).length > 0 ?
+        ["incomes", queryParams]
+      : ["incomes"],
     queryFn: () => getIncomes(account_id, queryParams),
     enabled: !!account_id,
   })
