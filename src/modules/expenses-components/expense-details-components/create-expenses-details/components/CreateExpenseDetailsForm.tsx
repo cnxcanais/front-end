@@ -1,12 +1,14 @@
 "use client"
 
-import { IncomeDetails } from "@/@types/income-details"
+import { ExpenseDetails } from "@/@types/expense-details"
 import { Button } from "@/core/components/Button"
 import * as Input from "@/core/components/Input"
 import { LoadingScreen } from "@/core/components/LoadingScreen"
 import { getAccountId } from "@/core/utils/get-account-id"
 import { useBankAccountsQuery } from "@/modules/bank-accounts-components/bank-accounts/infra/hooks/use-bank-account-query"
-import { useIncomeByIdQuery } from "@/modules/income-components/income-components/infra/use-income-by-id-query"
+import { useExpenseByIdQuery } from "@/modules/expenses-components/expense-components/infra/use-expense-by-id-query"
+import { createExpenseDetailsSchema } from "@/modules/expenses-components/expense-details-components/create-expenses-details/validation/schema"
+import { createExpenseDetails } from "@/modules/expenses-components/expense-details-components/remote"
 import { usePermissionQuery } from "@/modules/login-components/login/infra/hooks/use-permissions-query"
 import { DevTool } from "@hookform/devtools"
 import { zodResolver } from "@hookform/resolvers/zod"
@@ -14,14 +16,12 @@ import { useParams, useRouter } from "next/navigation"
 import { useEffect } from "react"
 import { useForm } from "react-hook-form"
 import { toast } from "sonner"
-import { createIncomeDetails } from "../../remote"
-import { createIncomeDetailsSchema } from "../validation/schema"
 
-export function CreateIncomeDetailsForm() {
+export function CreateExpenseDetailsForm() {
   const { push } = useRouter()
 
   const params = useParams()
-  const income_id = params.id as string
+  const expense_id = params.id as string
 
   const account_id = getAccountId()
 
@@ -31,19 +31,19 @@ export function CreateIncomeDetailsForm() {
   const { data: bankAccounts, isLoading: bankAccountIsLoading } =
     useBankAccountsQuery(account_id)
 
-  const { data: incomeData, isLoading: isIncomeLoading } =
-    useIncomeByIdQuery(income_id)
+  const { data: expenseData, isLoading: isExpenseLoading } =
+    useExpenseByIdQuery(expense_id)
 
-  const income_details_input_fields_amount =
-    permissions?.componentAccess["income_details_input_fields_amount"]
-  const income_details_input_fields_abservation =
-    permissions?.componentAccess["income_details_input_fields_abservation"]
-  const income_details_input_fields_date =
-    permissions?.componentAccess["income_details_input_fields_date"]
-  const income_details_input_fields_bank_account =
-    permissions?.componentAccess["income_details_input_fields_bank_account"]
+  const expense_details_input_fields_amount =
+    permissions?.componentAccess["expense_details_input_fields_amount"]
+  const expense_details_input_fields_abservation =
+    permissions?.componentAccess["expense_details_input_fields_abservation"]
+  const expense_details_input_fields_date =
+    permissions?.componentAccess["expense_details_input_fields_date"]
+  const expense_details_input_fields_bank_account =
+    permissions?.componentAccess["expense_details_input_fields_bank_account"]
 
-  console.log(income_details_input_fields_amount)
+  console.log(expense_details_input_fields_amount)
 
   const {
     register,
@@ -51,20 +51,21 @@ export function CreateIncomeDetailsForm() {
     formState: { isSubmitting, errors },
     control,
     setValue,
-  } = useForm<IncomeDetails.CreateRequest>({
-    resolver: zodResolver(createIncomeDetailsSchema),
+  } = useForm<ExpenseDetails.CreateRequest>({
+    resolver: zodResolver(createExpenseDetailsSchema),
     defaultValues: {
-      income_id: income_id,
+      expense_id: expense_id,
       account_id,
     },
   })
 
-  async function onSubmit(data: IncomeDetails.CreateRequest) {
+  async function onSubmit(data: ExpenseDetails.CreateRequest) {
     try {
-      await createIncomeDetails(Array(data))
+      await createExpenseDetails(Array(data))
       toast.success("Parcela criada com sucesso!")
       setTimeout(
-        () => push(`/income-details?income_id=${income_id ? income_id : ""}`),
+        () =>
+          push(`/expense-details?expense_id=${expense_id ? expense_id : ""}`),
         2000
       )
     } catch (error) {
@@ -73,18 +74,18 @@ export function CreateIncomeDetailsForm() {
   }
 
   useEffect(() => {
-    if (incomeData) {
-      setValue("part", incomeData.income_details.length + 1)
+    if (expenseData) {
+      setValue("part", expenseData.expense_details.length + 1)
     }
-  }, [incomeData])
+  }, [expenseData])
 
   if (
     !bankAccounts ||
     bankAccountIsLoading ||
     permissionLoading ||
     !permissions ||
-    !incomeData ||
-    isIncomeLoading
+    !expenseData ||
+    isExpenseLoading
   )
     return <LoadingScreen />
 
@@ -96,7 +97,7 @@ export function CreateIncomeDetailsForm() {
         <div className="flex flex-col gap-4">
           <div className="flex gap-4">
             <div className="flex min-w-[500px] flex-col gap-2">
-              <label className="text-lg" htmlFor="income_source_id">
+              <label className="text-lg" htmlFor="expense_source_id">
                 Conta Bancária
               </label>
               <Input.Root
@@ -104,7 +105,7 @@ export function CreateIncomeDetailsForm() {
                 <Input.SelectInput
                   name="bank_account_id"
                   control={control}
-                  disabled={!income_details_input_fields_bank_account}
+                  disabled={!expense_details_input_fields_bank_account}
                   options={[{ label: "", value: "" }].concat(
                     bankAccounts.map((account) => {
                       return {
@@ -129,7 +130,7 @@ export function CreateIncomeDetailsForm() {
               </label>
               <Input.Root variant={errors.due_date ? "error" : "primary"}>
                 <Input.Control
-                  disabled={!income_details_input_fields_date}
+                  disabled={!expense_details_input_fields_date}
                   {...register("due_date")}
                   type="date"
                 />
@@ -149,7 +150,7 @@ export function CreateIncomeDetailsForm() {
               </label>
               <Input.Root>
                 <Input.Control
-                  disabled={!income_details_input_fields_abservation}
+                  disabled={!expense_details_input_fields_abservation}
                   {...register("observation")}
                   type="text"
                 />
@@ -160,12 +161,12 @@ export function CreateIncomeDetailsForm() {
 
         <div className="flex gap-4">
           <div className="flex max-w-[150px] flex-1 flex-col gap-2">
-            <label className="text-lg" htmlFor="income_percentage">
+            <label className="text-lg" htmlFor="expense_percentage">
               Valor
             </label>
             <Input.Root variant={errors.amount ? "error" : "primary"}>
               <Input.Currency
-                disabled={!income_details_input_fields_amount}
+                disabled={!expense_details_input_fields_amount}
                 control={control}
                 name="amount"
                 type="text"
@@ -186,7 +187,7 @@ export function CreateIncomeDetailsForm() {
           <Button
             type="button"
             disabled={isSubmitting}
-            onClick={() => push(`/income-details?income_id=${income_id}`)}
+            onClick={() => push(`/expense-details?expense_id=${expense_id}`)}
             variant="tertiary">
             Voltar
           </Button>

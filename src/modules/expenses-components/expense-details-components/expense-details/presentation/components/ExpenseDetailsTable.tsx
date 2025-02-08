@@ -42,7 +42,7 @@ export function ExpenseDetailsTable() {
     permissions?.componentAccess["expense_details_delete"]
   const searchParams = useSearchParams()
 
-  const expense_id = searchParams.get("expense_id") || ""
+  const expense_id = searchParams.get("expense_id") ?? undefined
 
   const account_id = getCookie("accountId")
 
@@ -53,8 +53,11 @@ export function ExpenseDetailsTable() {
   const [payId, setPayId] = useState("")
 
   const { data, isLoading, refetch } = useQuery({
-    queryKey: ["expense-details"],
-    queryFn: () => getExpenseDetails(account_id, { page, expense_id }),
+    queryKey: ["expense-details", expense_id],
+    queryFn: () =>
+      expense_id ?
+        getExpenseDetails(account_id, { page, expense_id })
+      : getExpenseDetails(account_id, { page }),
   })
 
   const fetchExpenseDetails = useMutation({

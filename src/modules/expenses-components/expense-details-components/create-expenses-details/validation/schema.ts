@@ -1,6 +1,6 @@
 import { z } from "zod"
 
-export const createIncomeDetailsSchema = z.object({
+export const createExpenseDetailsSchema = z.object({
   amount: z.number().min(1, "Valor é obrigatório"),
   bank_account_id: z.string().nonempty("Conta bancária é obrigatória"),
   due_date: z.union(
@@ -24,10 +24,10 @@ export const createIncomeDetailsSchema = z.object({
       required_error: "Data é obrigatória",
     }
   ),
-  income_id: z.coerce.string().nonempty("ID é obrigatório"),
+  expense_id: z.coerce.string().nonempty("ID é obrigatório"),
   observation: z.string().optional(),
   part: z.coerce.number().min(1, "Parte é obrigatória"),
   account_id: z.string().nonempty("Conta é obrigatória"),
 })
 
-export type EditIncomeSchema = z.infer<typeof createIncomeDetailsSchema>
+export type CreateExpenseSchema = z.infer<typeof createExpenseDetailsSchema>

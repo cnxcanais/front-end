@@ -12,7 +12,7 @@ import {
   createBudgetExpenseFormSchema,
   CreateBudgetExpenseSchema,
 } from "@/modules/budget-components/budget-expense/create-budget-expense/presentation/validation/schema"
-import { useExpenseGroupQuery } from "@/modules/expense-groups-components/remote/use-expense-groups-query"
+import { useExpenseGroupQuery } from "@/modules/expenses-components/expense-groups-components/remote/use-expense-groups-query"
 import { zodResolver } from "@hookform/resolvers/zod"
 import { useRouter } from "next/navigation"
 import { useEffect } from "react"

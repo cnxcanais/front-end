@@ -1,12 +1,12 @@
 "use client"
 import { PageTitle } from "@/core/components/PageTitle"
-import { CreateIncomeDetailsForm } from "../components/CreateExpenseDetailsForm"
+import { CreateExpenseDetailsForm } from "../components/CreateExpenseDetailsForm"
 
-export function EditIncomeDetailsPage() {
+export function EditExpenseDetailsPage() {
   return (
     <main className="flex w-full max-w-[1200px] flex-col">
       <PageTitle content="Criar Parcela" />
-      <CreateIncomeDetailsForm />
+      <CreateExpenseDetailsForm />
     </main>
   )
 }

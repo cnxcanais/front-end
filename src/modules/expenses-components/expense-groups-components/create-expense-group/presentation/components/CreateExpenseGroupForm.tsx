@@ -7,8 +7,8 @@ import { getCookie } from "@/lib/cookies"
 import {
   CreateExpenseGroupSchema,
   createExpenseGroupSchema,
-} from "@/modules/expense-groups-components/create-expense-group/presentation/validation/schema"
-import { createExpenseGroup } from "@/modules/expense-groups-components/remote/expense-groups-methods"
+} from "@/modules/expenses-components/expense-groups-components/create-expense-group/presentation/validation/schema"
+import { createExpenseGroup } from "@/modules/expenses-components/expense-groups-components/remote/expense-groups-methods"
 import { zodResolver } from "@hookform/resolvers/zod"
 import { useRouter } from "next/navigation"
 import { useForm } from "react-hook-form"

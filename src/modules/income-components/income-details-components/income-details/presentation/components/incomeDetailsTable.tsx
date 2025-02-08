@@ -9,7 +9,7 @@ import { PageSelector } from "@/core/components/PageSelector"
 import { Table } from "@/core/components/Table"
 import { formatLocalDate } from "@/core/utils/dateFunctions"
 import { exportToExcel } from "@/core/utils/exportToExcel"
-import { getCookie } from "@/lib/cookies"
+import { getAccountId } from "@/core/utils/get-account-id"
 import { queryClient } from "@/lib/react-query"
 import { IncomeDetailsFilters } from "@/modules/income-components/income-details-components/income-details/presentation/components/incomeDetailsFilters"
 import {
@@ -27,23 +27,18 @@ import { toast } from "sonner"
 export function IncomeDetailsTable() {
   const { push } = useRouter()
 
-  const {
-    data: permissions,
-    refetch: permissionRefetch,
-    isLoading: permissionLoading,
-  } = usePermissionQuery()
-
-  if (!permissions || !permissions?.componentAccess) permissionRefetch()
+  const { data: permissions, isLoading: permissionLoading } =
+    usePermissionQuery()
 
   const create = permissions?.componentAccess["income_details_create"]
   const pay = permissions?.componentAccess["income_details_pay"]
   const edit = permissions?.componentAccess["income_details_edit"]
   const deletePermission = permissions?.componentAccess["income_details_delete"]
+
   const searchParams = useSearchParams()
+  const income_id = searchParams.get("income_id") ?? undefined
 
-  const income_id = searchParams.get("income_id") || ""
-
-  const account_id = getCookie("accountId")
+  const account_id = getAccountId()
 
   const [open, setOpen] = useState(false)
   const [id, setId] = useState("")
@@ -52,8 +47,11 @@ export function IncomeDetailsTable() {
   const [payId, setPayId] = useState("")
 
   const { data, isLoading, refetch } = useQuery({
-    queryKey: ["income-details"],
-    queryFn: () => getIncomeDetails(account_id, { page, income_id }),
+    queryKey: ["income-details", income_id],
+    queryFn: () =>
+      income_id ?
+        getIncomeDetails(account_id, { page, income_id })
+      : getIncomeDetails(account_id, { page }),
   })
 
   const fetchIncomeDetails = useMutation({
@@ -182,7 +180,7 @@ export function IncomeDetailsTable() {
     },
   ]
 
-  if (!data?.incomeDetails || isLoading || permissionLoading)
+  if (!data || isLoading || permissionLoading || !permissions)
     return <LoadingScreen />
 
   return (

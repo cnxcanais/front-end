@@ -18,9 +18,9 @@ interface FilterProps {
 
 export function IncomeDetailsFilters({ account_id, income_id }: FilterProps) {
   const [collapsed, setCollapsed] = useState(true)
-  const [filters, setFilters] = useState<IncomeDetails.QueryParams>(
-    {} as IncomeDetails.QueryParams
-  )
+  const [filters, setFilters] = useState<IncomeDetails.QueryParams>({
+    page: 1,
+  } as IncomeDetails.QueryParams)
 
   const { register, handleSubmit, control, reset, setValue } =
     useForm<IncomeDetails.QueryParams>()
@@ -31,7 +31,7 @@ export function IncomeDetailsFilters({ account_id, income_id }: FilterProps) {
   const { data: incomes, isLoading: incomesIsLoading } =
     useIncomeQuery(account_id)
 
-  const { refetch } = useIncomeDetailsQuery(account_id, { ...filters, page: 1 })
+  const { refetch } = useIncomeDetailsQuery(account_id, filters)
 
   function onSubmit(data: IncomeDetails.QueryParams) {
     const adjustMonth = (month: string | undefined, isStart: boolean) => {
@@ -71,7 +71,10 @@ export function IncomeDetailsFilters({ account_id, income_id }: FilterProps) {
   }, [filters])
 
   useEffect(() => {
-    if (income_id) setValue("income_id", income_id)
+    if (income_id) {
+      setValue("income_id", income_id)
+      refetch()
+    }
   }, [income_id])
 
   if (!incomes || incomesIsLoading || !bankAccounts || bankAccountIsLoading)
