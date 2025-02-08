@@ -15,7 +15,6 @@ import { useState } from "react"
 import { useForm } from "react-hook-form"
 import { ClipLoader } from "react-spinners"
 import { toast } from "sonner"
-import { usePermissionQuery } from "../../infra/hooks/use-permissions-query"
 
 export function LoginForm() {
   const { push } = useRouter()
@@ -29,8 +28,6 @@ export function LoginForm() {
   } = useForm<LoginSchema>({
     resolver: zodResolver(loginFormSchema),
   })
-
-  usePermissionQuery()
 
   async function onSubmit(data: LoginSchema) {
     try {

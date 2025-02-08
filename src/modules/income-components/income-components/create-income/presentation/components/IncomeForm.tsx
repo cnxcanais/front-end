@@ -11,32 +11,23 @@ import { getIncomeSources } from "@/modules/income-components/income-source-comp
 import { getOrganizations } from "@/modules/organization-components/organizations/infra/remote"
 import { useRouter } from "next/navigation"
 import { Dispatch, SetStateAction, useEffect, useState } from "react"
-import {
-  Control,
-  FieldErrors,
-  UseFormRegister,
-  UseFormTrigger,
-} from "react-hook-form"
+import { useFormContext } from "react-hook-form"
 import { toast } from "sonner"
 
 type Props = {
   account_id: string
-  errors: FieldErrors<FormType>
-  control: Control<FormType, any>
-  register: UseFormRegister<FormType>
   setSecondPage: Dispatch<SetStateAction<boolean>>
-  trigger: UseFormTrigger<FormType>
 }
 
-export function IncomeForm({
-  account_id,
-  errors,
-  control,
-  register,
-  setSecondPage,
-  trigger,
-}: Props) {
+export function IncomeForm({ account_id, setSecondPage }: Props) {
   const { push } = useRouter()
+
+  const {
+    register,
+    trigger,
+    formState: { errors },
+    control,
+  } = useFormContext<FormType>()
 
   const [organizations, setOrganizations] = useState<SearchArray>([])
   const [incomeGroups, setIncomeGroups] = useState<SearchArray>([])

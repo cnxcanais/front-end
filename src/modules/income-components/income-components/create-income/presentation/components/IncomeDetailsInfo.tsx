@@ -1,28 +1,20 @@
 import * as Input from "@/core/components/Input"
 import { formatDate } from "@/core/utils/dateFunctions"
-import {
-  Control,
-  FieldErrors,
-  UseFormGetValues,
-  UseFormRegister,
-} from "react-hook-form"
+import { useFormContext } from "react-hook-form"
 import { FormType } from "./CreateIncomeForm"
 
-type Props = {
+type IncomeDetailsInfoProps = {
   index: number
-  errors: FieldErrors<FormType>
-  control: Control<FormType, any>
-  register: UseFormRegister<FormType>
-  getValues: UseFormGetValues<FormType>
 }
 
-export function IncomeDetailsInfo({
-  errors,
-  control,
-  index,
-  register,
-  getValues,
-}: Props) {
+export function IncomeDetailsInfo({ index }: IncomeDetailsInfoProps) {
+  const {
+    register,
+    formState: { errors },
+    control,
+    getValues,
+  } = useFormContext<FormType>()
+
   return (
     <>
       <div className="align-center flex gap-4">

@@ -33,7 +33,7 @@ export function Table<T>({ columns, data }: { columns: Column[]; data: T[] }) {
                       {columns.map((column) => (
                         <td
                           key={column.header}
-                          className="whitespace-nowrap px-3 py-4 text-sm text-gray-500">
+                          className="no-scrollbar max-w-96 overflow-x-auto whitespace-nowrap px-3 py-4 text-sm text-gray-500">
                           {column.render ?
                             column.render(
                               column.accessor2 && row[column.accessor] ?

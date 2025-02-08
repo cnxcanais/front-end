@@ -3,7 +3,7 @@ import { z } from "zod"
 const incomeDetailsSchema = z.object({
   amount: z.number().gt(0, "Valor deve ser maior que zero"),
   bank_account_id: z
-    .string({ message: "Conta bancária é obrigatória" })
+    .string({ required_error: "Conta bancária é obrigatória" })
     .nonempty(),
   part: z.coerce.number().gt(0, "Parcela deve ser maior que zero"),
   due_date: z.union(
@@ -34,27 +34,16 @@ const incomeDetailsSchema = z.object({
 
 export const createIncomeFormSchema = z.object({
   account_id: z.string().nonempty("Account ID é obrigatório"),
-  date: z.union(
-    [
-      z
-        .string({ message: "Data é obrigatória" })
-        .nonempty()
-        .transform((str) => {
-          const date = new Date(str)
-          if (isNaN(date.getTime())) {
-            throw new Error("Data inválida")
-          }
-          return date
-        }),
-      z.date({
-        required_error: "Data de vencimento é obrigatória",
-        invalid_type_error: "Data inválida",
-      }),
-    ],
-    {
+  date: z.union([
+    z
+      .string()
+      .nonempty("Data de vencimento é obrigatória")
+      .transform((str) => new Date(str)),
+    z.date({
       required_error: "Data de vencimento é obrigatória",
-    }
-  ),
+      invalid_type_error: "Data inválida",
+    }),
+  ]),
   description: z.string().nonempty("Descrição é obrigatória"),
   document: z.string().nonempty("Documento é obrigatório"),
   income_group_id: z.string().nonempty("Grupo é obrigatório"),

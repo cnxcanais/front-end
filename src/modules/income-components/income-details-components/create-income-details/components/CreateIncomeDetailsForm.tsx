@@ -4,7 +4,7 @@ import { IncomeDetails } from "@/@types/income-details"
 import { Button } from "@/core/components/Button"
 import * as Input from "@/core/components/Input"
 import { LoadingScreen } from "@/core/components/LoadingScreen"
-import { getCookie } from "@/lib/cookies"
+import { getAccountId } from "@/core/utils/get-account-id"
 import { useBankAccountsQuery } from "@/modules/bank-accounts-components/bank-accounts/infra/hooks/use-bank-account-query"
 import { useIncomeByIdQuery } from "@/modules/income-components/income-components/infra/use-income-by-id-query"
 import { usePermissionQuery } from "@/modules/login-components/login/infra/hooks/use-permissions-query"
@@ -20,13 +20,19 @@ import { createIncomeDetailsSchema } from "../validation/schema"
 export function CreateIncomeDetailsForm() {
   const { push } = useRouter()
 
-  const {
-    data: permissions,
-    refetch: permissionRefetch,
-    isLoading: permissionLoading,
-  } = usePermissionQuery()
+  const params = useParams()
+  const income_id = params.id as string
 
-  if (!permissions || !permissions?.componentAccess) permissionRefetch()
+  const account_id = getAccountId()
+
+  const { data: permissions, isLoading: permissionLoading } =
+    usePermissionQuery()
+
+  const { data: bankAccounts, isLoading: bankAccountIsLoading } =
+    useBankAccountsQuery(account_id)
+
+  const { data: incomeData, isLoading: isIncomeLoading } =
+    useIncomeByIdQuery(income_id)
 
   const income_details_input_fields_amount =
     permissions?.componentAccess["income_details_input_fields_amount"]
@@ -37,21 +43,7 @@ export function CreateIncomeDetailsForm() {
   const income_details_input_fields_bank_account =
     permissions?.componentAccess["income_details_input_fields_bank_account"]
 
-  const account_id = getCookie("accountId")
-  const params = useParams()
-  const income_id = params.id as string
-
-  const { data: bankAccounts, isLoading: bankAccountIsLoading } =
-    useBankAccountsQuery(account_id)
-
-  const { data: incomeData, isLoading: isIncomeLoading } =
-    useIncomeByIdQuery(income_id)
-
-  useEffect(() => {
-    if (incomeData) {
-      setValue("part", incomeData.income_details.length + 1)
-    }
-  }, [incomeData])
+  console.log(income_details_input_fields_amount)
 
   const {
     register,
@@ -59,20 +51,13 @@ export function CreateIncomeDetailsForm() {
     formState: { isSubmitting, errors },
     control,
     setValue,
-    getValues,
   } = useForm<IncomeDetails.CreateRequest>({
     resolver: zodResolver(createIncomeDetailsSchema),
     defaultValues: {
       income_id: income_id,
+      account_id,
     },
   })
-
-  useEffect(() => {
-    const accountId = getCookie("accountId")
-    if (accountId) {
-      setValue("account_id", accountId)
-    }
-  }, [setValue])
 
   async function onSubmit(data: IncomeDetails.CreateRequest) {
     try {
@@ -87,6 +72,12 @@ export function CreateIncomeDetailsForm() {
     }
   }
 
+  useEffect(() => {
+    if (incomeData) {
+      setValue("part", incomeData.income_details.length + 1)
+    }
+  }, [incomeData])
+
   if (
     !bankAccounts ||
     bankAccountIsLoading ||
@@ -97,7 +88,6 @@ export function CreateIncomeDetailsForm() {
   )
     return <LoadingScreen />
 
-  console.log(errors)
   return (
     <>
       <form
