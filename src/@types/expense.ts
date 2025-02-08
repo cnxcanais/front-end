@@ -20,6 +20,8 @@ export namespace Expense {
     date: string
     expense_percentage: string
     observation: string
+    expense_group_id: string
+    supplier_id: string
     expense_group: ExpenseGroup.Type
     supplier: Supplier.Type
     created_at: Date
@@ -29,6 +31,8 @@ export namespace Expense {
     expense_details: ExpenseDetails.ExpenseDetailsType[]
     total_amount: number
     total_parts: number
+    is_operational: boolean
+    is_variable: boolean
     formatted_date: string
   }
 
@@ -40,13 +44,15 @@ export namespace Expense {
     expense: ExpenseType
   }
 
-  export type CreateResquest = {
+  export type CreateRequest = {
     account_id: string
     date: Date
     description: string
     document: string
     expense_group_id: string
     expense_percentage: number
+    is_operational: boolean
+    is_variable: boolean
     supplier_id: string
     organization_id: string
   }
@@ -61,5 +67,7 @@ export namespace Expense {
     expense_percentage?: number
     supplier_id?: string
     organization_id?: string
+    is_operational?: boolean
+    is_variable?: boolean
   }
 }

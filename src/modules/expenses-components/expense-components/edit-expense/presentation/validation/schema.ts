@@ -29,6 +29,8 @@ export const editExpenseSchema = z.object({
   expense_percentage: z.coerce.number().min(1, "Porcentagem é obrigatória"),
   supplier: z.string().nonempty("Fornecedor é obrigatório"),
   organization_id: z.string().nonempty("Organização é obrigatória"),
+  is_operational: z.boolean({ required_error: "Obrigatório!" }),
+  is_variable: z.boolean({ required_error: "Obrigatório!" }),
 })
 
 export type EditExpenseSchema = z.infer<typeof editExpenseSchema>

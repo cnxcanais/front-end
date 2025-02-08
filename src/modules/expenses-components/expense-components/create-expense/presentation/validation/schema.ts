@@ -50,6 +50,8 @@ export const createExpenseFormSchema = z.object({
   expense_percentage: z.coerce.number().min(1, "Porcentagem é obrigatória"),
   supplier_id: z.string().nonempty("Fornecedor é obrigatório"),
   organization_id: z.string().nonempty("Organização é obrigatória"),
+  is_operational: z.boolean(),
+  is_variable: z.boolean(),
   expenseDetailsArray: z.array(expenseDetailsSchema),
 })
 

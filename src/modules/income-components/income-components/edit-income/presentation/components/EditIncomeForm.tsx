@@ -4,6 +4,8 @@ import { Income } from "@/@types/income"
 import { SearchArray } from "@/@types/search-array"
 import { Button } from "@/core/components/Button"
 import * as Input from "@/core/components/Input"
+import { LoadingScreen } from "@/core/components/LoadingScreen"
+import { getPermissionByEntity } from "@/core/utils/getPermissionByEntity"
 import { ArrayConfig, populateArrays } from "@/core/utils/populateArrays"
 import { getCookie } from "@/lib/cookies"
 import { useIncomeByIdQuery } from "@/modules/income-components/income-components/infra/use-income-by-id-query"
@@ -11,7 +13,6 @@ import { editIncome } from "@/modules/income-components/income-components/remote
 import { getAllIncomeGroups } from "@/modules/income-components/income-groups-components/remote/income-group"
 import { getIncomeSources } from "@/modules/income-components/income-source-components/income-sources/infra/remote"
 import { getOrganizations } from "@/modules/organization-components/organizations/infra/remote"
-import { DevTool } from "@hookform/devtools"
 import { zodResolver } from "@hookform/resolvers/zod"
 import { useParams, useRouter } from "next/navigation"
 import { useEffect, useMemo, useState } from "react"
@@ -31,7 +32,7 @@ export function EditIncomeForm() {
   const [arrayPlaceHolder, setArrayPlaceHolder] = useState("Carregando...")
   const [incomeSource, setIncomeSource] = useState<SearchArray>([])
 
-  const { data: income } = useIncomeByIdQuery(income_id)
+  const { data: income, isLoading } = useIncomeByIdQuery(income_id)
 
   const arrayConfigs: ArrayConfig<any>[] = useMemo(
     () => [
@@ -77,52 +78,64 @@ export function EditIncomeForm() {
     )
   }, [arrayConfigs, account_id])
 
-  const {
-    income_input_fields_amount,
-    income_input_fields_income_qty,
-    income_input_fields_income_percentage,
-    income_input_fields_date,
-    income_input_fields_document,
-    income_input_fields_description,
-    income_input_fields_income_source_id,
-    income_input_fields_organization_id,
-    income_input_fields_income_group_id,
-  } = JSON.parse(getCookie("permissions")).componentAccess
+  const income_input_fields_amount = getPermissionByEntity(
+    "income_input_fields_amount"
+  )
+  const income_input_fields_income_qty = getPermissionByEntity(
+    "income_input_fields_income_qty"
+  )
+  const income_input_fields_income_percentage = getPermissionByEntity(
+    "income_input_fields_income_percentage"
+  )
+  const income_input_fields_date = getPermissionByEntity(
+    "income_input_fields_date"
+  )
+  const income_input_fields_document = getPermissionByEntity(
+    "income_input_fields_document"
+  )
+  const income_input_fields_description = getPermissionByEntity(
+    "income_input_fields_description"
+  )
+  const income_input_fields_income_source_id = getPermissionByEntity(
+    "income_input_fields_income_source_id"
+  )
+  const income_input_fields_organization_id = getPermissionByEntity(
+    "income_input_fields_organization_id"
+  )
+  const income_input_fields_income_group_id = getPermissionByEntity(
+    "income_input_fields_income_group_id"
+  )
 
   const {
     register,
     handleSubmit,
     formState: { isSubmitting, errors },
-    reset,
     control,
   } = useForm<Income.UpdateRequest>({
     resolver: zodResolver(editIncomeSchema),
+    values: {
+      income_percentage: Number(income?.income_percentage ?? 100),
+      date: income?.date.substring(0, 10),
+      document: income?.document,
+      description: income?.description,
+      income_source_id: income?.income_source_id,
+      organization_id: income?.organization_id,
+      income_group_id: income?.income_group_id,
+      income_id: income?.income_id,
+    },
   })
-
-  useEffect(() => {
-    if (income) {
-      reset({
-        income_percentage: Number(income.income_percentage),
-        date: income.date.substring(0, 10),
-        document: income.document,
-        description: income.description,
-        income_source_id: income.income_source?.income_source_id,
-        organization_id: income.organization_id,
-        income_group_id: income.income_group?.income_group_id,
-        income_id: income.income_id,
-      })
-    }
-  }, [income, reset])
 
   async function onSubmit(data: Income.UpdateRequest) {
     try {
-      const response = await editIncome(data)
+      await editIncome(data)
       toast.success("Receita editada com sucesso!")
       setTimeout(() => push("/incomes"), 2000)
     } catch (error) {
-      toast.error("Erro ao criar fonte de receita: " + error)
+      toast.error("Erro ao editar receita: " + error)
     }
   }
+
+  if (!income || isLoading) return <LoadingScreen />
 
   return (
     <>
@@ -287,7 +300,6 @@ export function EditIncomeForm() {
           </Button>
         </div>
       </form>
-      {process.env.NODE_ENV === "development" && <DevTool control={control} />}
     </>
   )
 }

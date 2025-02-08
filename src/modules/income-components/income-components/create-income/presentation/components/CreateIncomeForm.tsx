@@ -18,7 +18,7 @@ type IncomeDetailsArray = {
   incomeDetailsArray: IncomeDetails.CreateRequest[]
 }
 
-export type FormType = Income.CreateResquest & IncomeDetailsArray
+export type FormType = Income.CreateRequest & IncomeDetailsArray
 
 export function CreateIncomeForm() {
   const account_id = getAccountId()

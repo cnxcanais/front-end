@@ -1,5 +1,5 @@
 import { PageTitle } from "@/core/components/PageTitle"
-import { SuppliersTable } from "@/modules/supplier-components/suppliers/presentation/components/SuppliersTable"
+import { SuppliersTable } from "@/modules/expenses-components/supplier-components/suppliers/presentation/components/SuppliersTable"
 
 export function SuppliersPage() {
   return (

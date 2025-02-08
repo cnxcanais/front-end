@@ -1,5 +1,5 @@
 import { PageTitle } from "@/core/components/PageTitle"
-import { CreateSupplierForm } from "@/modules/supplier-components/create-supplier/presentation/components/CreateSupplierForm"
+import { CreateSupplierForm } from "@/modules/expenses-components/supplier-components/create-supplier/presentation/components/CreateSupplierForm"
 
 export function CreateSupplierPage() {
   return (

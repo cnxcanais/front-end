@@ -1,4 +1,4 @@
-import { EditSupplierPage } from "@/modules/supplier-components/edit-supplier/presentation/pages"
+import { EditSupplierPage } from "@/modules/expenses-components/supplier-components/edit-supplier/presentation/pages"
 
 export default async function EditSupplierRender({
   params,

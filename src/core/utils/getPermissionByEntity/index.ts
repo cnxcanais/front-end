@@ -1,8 +1,10 @@
+import permissionsJson from "@/core/utils/components_permission.json"
 import { getCookie } from "@/lib/cookies"
 
 export function getPermissionByEntity(entity: string): boolean {
   try {
-    const permissionsCookie = getCookie("permissions")
+    const permissionsCookie =
+      getCookie("permissions") || JSON.stringify(permissionsJson)
 
     if (!permissionsCookie) {
       console.warn("No permissions cookie found")

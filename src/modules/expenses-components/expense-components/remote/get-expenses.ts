@@ -7,7 +7,7 @@ export async function getExpenses(
 ) {
   try {
     const { data } = await api.get<Expense.GetResponse>(
-      `/expense/account/${account_id}`,
+      `/expenses/account/${account_id}`,
       {
         params: queryParams,
       }

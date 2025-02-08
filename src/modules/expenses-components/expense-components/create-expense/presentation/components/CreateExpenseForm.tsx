@@ -18,7 +18,7 @@ type ExpenseDetailsArray = {
   expenseDetailsArray: ExpenseDetails.CreateRequest[]
 }
 
-export type FormType = Expense.CreateResquest & ExpenseDetailsArray
+export type FormType = Expense.CreateRequest & ExpenseDetailsArray
 
 export function CreateExpenseForm() {
   const account_id = getAccountId()
@@ -38,6 +38,8 @@ export function CreateExpenseForm() {
       expense_percentage: 100,
       supplier_id: "",
       organization_id: "",
+      is_operational: false,
+      is_variable: false,
       //ExpenseDetails
       expenseDetailsArray: [],
     },
@@ -47,13 +49,14 @@ export function CreateExpenseForm() {
 
   async function onSubmit(data: FormType) {
     if (data.expenseDetailsArray.length === 0) {
-      toast.error("É necessário adicionar pelo menos uma parcela da receita")
+      toast.error("É necessário adicionar pelo menos uma parcela da despesa")
       return
     }
 
     try {
       const { expenseDetailsArray, ...expenseData } = data
 
+      console.log(expenseData)
       const response = await createExpense(expenseData)
       const expense_id = response.expense.expense_id
 
@@ -62,10 +65,10 @@ export function CreateExpenseForm() {
         expenseDetailsArray.map((detail) => ({ ...detail, expense_id }))
       )
       await createExpenseDetails(methods.getValues("expenseDetailsArray"))
-      toast.success("Receita criada com sucesso!")
+      toast.success("Despesa criada com sucesso!")
       setTimeout(() => push("/expenses"), 2000)
     } catch (error) {
-      toast.error("Erro ao criar fonte de receita: " + error)
+      toast.error("Erro ao criar despesa: " + error)
     }
   }
 

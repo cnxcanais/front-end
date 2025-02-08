@@ -1,4 +1,4 @@
-import { SuppliersPage } from "@/modules/supplier-components/suppliers/presentation/pages"
+import { SuppliersPage } from "@/modules/expenses-components/supplier-components/suppliers/presentation/pages"
 
 export default function SuppliersRender() {
   return <SuppliersPage />

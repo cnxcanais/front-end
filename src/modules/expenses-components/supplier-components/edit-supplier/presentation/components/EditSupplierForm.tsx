@@ -8,11 +8,11 @@ import { getPermissionByEntity } from "@/core/utils/getPermissionByEntity"
 import {
   editSupplier,
   getSupplierById,
-} from "@/modules/supplier-components/edit-supplier/infra/remote"
+} from "@/modules/expenses-components/supplier-components/edit-supplier/infra/remote"
 import {
   EditSupplierSchema,
   editSupplierFormSchema,
-} from "@/modules/supplier-components/edit-supplier/presentation/validation/schema"
+} from "@/modules/expenses-components/supplier-components/edit-supplier/presentation/validation/schema"
 import { zodResolver } from "@hookform/resolvers/zod"
 import { useQuery } from "@tanstack/react-query"
 import { useRouter } from "next/navigation"

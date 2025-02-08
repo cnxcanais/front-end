@@ -5,11 +5,11 @@ import { Button } from "@/core/components/Button"
 import * as Input from "@/core/components/Input"
 import { getAccountId } from "@/core/utils/get-account-id"
 import { getPermissionByEntity } from "@/core/utils/getPermissionByEntity"
-import { createSupplier } from "@/modules/supplier-components/create-supplier/infra/remote/create-supplier"
+import { createSupplier } from "@/modules/expenses-components/supplier-components/create-supplier/infra/remote/create-supplier"
 import {
   CreateSupplierSchema,
   createSupplierFormSchema,
-} from "@/modules/supplier-components/create-supplier/presentation/validation/schema"
+} from "@/modules/expenses-components/supplier-components/create-supplier/presentation/validation/schema"
 import { zodResolver } from "@hookform/resolvers/zod"
 import { useRouter } from "next/navigation"
 import { useForm } from "react-hook-form"

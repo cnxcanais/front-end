@@ -7,11 +7,11 @@ import { LoadingScreen } from "@/core/components/LoadingScreen"
 import {
   editExpenseGroupFormSchema,
   EditExpenseGroupFormSchema,
-} from "@/modules/expense-groups-components/edit-expense-group/presentation/validation/schema"
+} from "@/modules/expenses-components/expense-groups-components/edit-expense-group/presentation/validation/schema"
 import {
   getExpenseGroupById,
   updateExpenseGroup,
-} from "@/modules/expense-groups-components/remote/expense-groups-methods"
+} from "@/modules/expenses-components/expense-groups-components/remote/expense-groups-methods"
 import { zodResolver } from "@hookform/resolvers/zod"
 import { useQuery } from "@tanstack/react-query"
 import { useRouter } from "next/navigation"

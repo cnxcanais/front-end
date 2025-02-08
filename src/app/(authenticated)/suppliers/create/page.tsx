@@ -1,4 +1,4 @@
-import { CreateSupplierPage } from "@/modules/supplier-components/create-supplier/presentation/pages"
+import { CreateSupplierPage } from "@/modules/expenses-components/supplier-components/create-supplier/presentation/pages"
 
 export default function CreateSupplierRender() {
   return <CreateSupplierPage />

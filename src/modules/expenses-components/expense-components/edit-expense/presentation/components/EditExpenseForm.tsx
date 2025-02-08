@@ -4,15 +4,15 @@ import { Expense } from "@/@types/expense"
 import { SearchArray } from "@/@types/search-array"
 import { Button } from "@/core/components/Button"
 import * as Input from "@/core/components/Input"
+import { LoadingScreen } from "@/core/components/LoadingScreen"
 import { getAccountId } from "@/core/utils/get-account-id"
+import { getPermissionByEntity } from "@/core/utils/getPermissionByEntity"
 import { ArrayConfig, populateArrays } from "@/core/utils/populateArrays"
-import { getCookie } from "@/lib/cookies"
 import { useExpenseByIdQuery } from "@/modules/expenses-components/expense-components/infra/use-expense-by-id-query"
 import { editExpense } from "@/modules/expenses-components/expense-components/remote"
 import { getAllExpenseGroups } from "@/modules/expenses-components/expense-groups-components/remote/expense-groups-methods"
 import { getSuppliers } from "@/modules/expenses-components/supplier-components/suppliers/infra/remote"
 import { getOrganizations } from "@/modules/organization-components/organizations/infra/remote"
-import { DevTool } from "@hookform/devtools"
 import { zodResolver } from "@hookform/resolvers/zod"
 import { useParams, useRouter } from "next/navigation"
 import { useEffect, useMemo, useState } from "react"
@@ -31,9 +31,9 @@ export function EditExpenseForm() {
   const [organizations, setOrganizations] = useState<SearchArray>([])
   const [expenseGroups, setExpenseGroups] = useState<SearchArray>([])
   const [arrayPlaceHolder, setArrayPlaceHolder] = useState("Carregando...")
-  const [expenseSource, setExpenseSource] = useState<SearchArray>([])
+  const [suppliers, setSuppliers] = useState<SearchArray>([])
 
-  const { data: expense } = useExpenseByIdQuery(expense_id)
+  const { data: expense, isLoading } = useExpenseByIdQuery(expense_id)
 
   const arrayConfigs: ArrayConfig<any>[] = useMemo(
     () => [
@@ -59,7 +59,7 @@ export function EditExpenseForm() {
           label: expense.name,
           value: expense.supplier_id,
         }),
-        setState: setExpenseSource,
+        setState: setSuppliers,
       },
     ],
     []
@@ -79,17 +79,33 @@ export function EditExpenseForm() {
     )
   }, [arrayConfigs, account_id])
 
-  const {
-    expense_input_fields_amount,
-    expense_input_fields_expense_qty,
-    expense_input_fields_expense_percentage,
-    expense_input_fields_date,
-    expense_input_fields_document,
-    expense_input_fields_description,
-    expense_input_fields_supplier_id,
-    expense_input_fields_organization_id,
-    expense_input_fields_expense_group_id,
-  } = JSON.parse(getCookie("permissions")).componentAccess
+  const expense_input_fields_amount = getPermissionByEntity(
+    "expense_input_fields_amount"
+  )
+  const expense_input_fields_expense_qty = getPermissionByEntity(
+    "expense_input_fields_expense_qty"
+  )
+  const expense_input_fields_expense_percentage = getPermissionByEntity(
+    "expense_input_fields_expense_percentage"
+  )
+  const expense_input_fields_date = getPermissionByEntity(
+    "expense_input_fields_date"
+  )
+  const expense_input_fields_document = getPermissionByEntity(
+    "expense_input_fields_document"
+  )
+  const expense_input_fields_description = getPermissionByEntity(
+    "expense_input_fields_description"
+  )
+  const expense_input_fields_supplier_id = getPermissionByEntity(
+    "expense_input_fields_supplier_id"
+  )
+  const expense_input_fields_organization_id = getPermissionByEntity(
+    "expense_input_fields_organization_id"
+  )
+  const expense_input_fields_expense_group_id = getPermissionByEntity(
+    "expense_input_fields_expense_group_id"
+  )
 
   const {
     register,
@@ -99,32 +115,33 @@ export function EditExpenseForm() {
     control,
   } = useForm<Expense.UpdateRequest>({
     resolver: zodResolver(editExpenseSchema),
+    values: {
+      expense_percentage: Number(expense?.expense_percentage ?? 100),
+      date: expense?.date.substring(0, 10),
+      document: expense?.document,
+      description: expense?.description,
+      supplier_id: expense?.supplier_id,
+      organization_id: expense?.organization_id,
+      expense_group_id: expense?.expense_group_id,
+      expense_id: expense?.expense_id,
+      is_operational: expense?.is_operational,
+      is_variable: expense?.is_variable,
+    },
   })
-
-  useEffect(() => {
-    if (expense) {
-      reset({
-        expense_percentage: Number(expense.expense_percentage),
-        date: expense.date.substring(0, 10),
-        document: expense.document,
-        description: expense.description,
-        supplier_id: expense.supplier?.supplier_id,
-        organization_id: expense.organization_id,
-        expense_group_id: expense.expense_group?.expense_group_id,
-        expense_id: expense.expense_id,
-      })
-    }
-  }, [expense, reset])
 
   async function onSubmit(data: Expense.UpdateRequest) {
     try {
-      const response = await editExpense(data)
-      toast.success("Receita editada com sucesso!")
+      await editExpense(data)
+      toast.success("Despesa editada com sucesso!")
       setTimeout(() => push("/expenses"), 2000)
     } catch (error) {
-      toast.error("Erro ao criar fonte de receita: " + error)
+      toast.error("Erro ao editar despesa: " + error)
     }
   }
+
+  if (isLoading || !expense) return <LoadingScreen />
+
+  console.log(expense)
 
   return (
     <>
@@ -135,14 +152,14 @@ export function EditExpenseForm() {
           <div className="flex gap-4">
             <div className="flex min-w-[500px] flex-col gap-2">
               <label className="text-lg" htmlFor="supplier_id">
-                Gerador da Receita
+                Gerador da Despesa
               </label>
               <Input.Root variant={errors.supplier_id ? "error" : "primary"}>
                 <Input.SelectInput
                   name="supplier_id"
                   control={control}
                   disabled={!expense_input_fields_supplier_id}
-                  options={expenseSource}
+                  options={suppliers}
                   placeholder={arrayPlaceHolder}
                 />
               </Input.Root>
@@ -154,8 +171,8 @@ export function EditExpenseForm() {
             </div>
 
             <div className="flex flex-1 flex-col gap-2">
-              <label className="text-lg" htmlFor="city">
-                Grupo de Receitas
+              <label className="text-lg" htmlFor="expense_group_id">
+                Grupo de Despesas
               </label>
               <Input.Root
                 variant={errors.expense_group_id ? "error" : "primary"}>
@@ -272,7 +289,41 @@ export function EditExpenseForm() {
                 </span>
               )}
             </div>
+
+            <div className="mt-4 flex items-center gap-4">
+              <Input.Control
+                className="flex-none"
+                {...register("is_variable")}
+                type="checkbox"
+              />
+
+              <label className="" htmlFor="enabled">
+                Variável
+              </label>
+            </div>
+            {errors.is_variable && (
+              <span className="text-xs text-red-500">
+                {errors.is_variable.message}
+              </span>
+            )}
+
+            <div className="mt-4 flex items-center gap-4">
+              <Input.Control
+                className="flex-none"
+                {...register("is_operational")}
+                type="checkbox"
+              />
+
+              <label className="" htmlFor="enabled">
+                Operacional
+              </label>
+            </div>
           </div>
+          {errors.is_operational && (
+            <span className="text-xs text-red-500">
+              {errors.is_operational.message}
+            </span>
+          )}
         </div>
 
         <div className="my-2 flex gap-4">
@@ -288,7 +339,6 @@ export function EditExpenseForm() {
           </Button>
         </div>
       </form>
-      {process.env.NODE_ENV === "development" && <DevTool control={control} />}
     </>
   )
 }

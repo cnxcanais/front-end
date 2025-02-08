@@ -14,7 +14,7 @@ export async function editExpense({
   organization_id,
 }: Expense.UpdateRequest) {
   try {
-    const { data } = await api.put(`/expense/${expense_id}`, {
+    const { data } = await api.put(`/expenses/${expense_id}`, {
       amount,
       date,
       description,

@@ -22,6 +22,8 @@ export namespace Income {
     observation: string
     income_group: IncomeGroup.Type
     income_source: IncomeSource.Type
+    income_source_id: string
+    income_group_id: string
     created_at: Date
     updated_at: Date
     account_id: string
@@ -44,7 +46,7 @@ export namespace Income {
     income: IncomeType
   }
 
-  export type CreateResquest = {
+  export type CreateRequest = {
     account_id: string
     date: Date
     description: string

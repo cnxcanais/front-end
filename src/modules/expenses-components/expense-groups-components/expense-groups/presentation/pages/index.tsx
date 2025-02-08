@@ -1,5 +1,5 @@
 import { PageTitle } from "@/core/components/PageTitle"
-import { ExpenseGroupTable } from "@/modules/expense-groups-components/expense-groups/presentation/components/ExpenseGroupsTable"
+import { ExpenseGroupTable } from "@/modules/expenses-components/expense-groups-components/expense-groups/presentation/components/ExpenseGroupsTable"
 
 export function ExpenseGroupPage() {
   return (

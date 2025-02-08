@@ -27,12 +27,13 @@ export function ExpenseForm({ account_id, setSecondPage }: Props) {
     trigger,
     formState: { errors },
     control,
+    watch,
   } = useFormContext<FormType>()
 
   const [organizations, setOrganizations] = useState<SearchArray>([])
   const [expenseGroups, setExpenseGroups] = useState<SearchArray>([])
   const [arrayPlaceHolder, setArrayPlaceHolder] = useState("Carregando...")
-  const [expenseSource, setExpenseSource] = useState<SearchArray>([])
+  const [suppliers, setSuppliers] = useState<SearchArray>([])
 
   const arrayConfigs: ArrayConfig<any>[] = [
     {
@@ -57,7 +58,7 @@ export function ExpenseForm({ account_id, setSecondPage }: Props) {
         label: expense.name,
         value: expense.supplier_id,
       }),
-      setState: setExpenseSource,
+      setState: setSuppliers,
     },
   ]
 
@@ -99,14 +100,14 @@ export function ExpenseForm({ account_id, setSecondPage }: Props) {
         <div className="flex gap-4">
           <div className="flex min-w-[500px] flex-col gap-2">
             <label className="text-lg" htmlFor="supplier_id">
-              Gerador da Receita
+              Gerador da Despesa
             </label>
             <Input.Root variant={errors.supplier_id ? "error" : "primary"}>
               <Input.SelectInput
                 name="supplier_id"
                 control={control}
                 disabled={!expense_input_fields_supplier_id}
-                options={expenseSource}
+                options={suppliers}
                 placeholder={arrayPlaceHolder}
               />
             </Input.Root>
@@ -119,7 +120,7 @@ export function ExpenseForm({ account_id, setSecondPage }: Props) {
 
           <div className="flex flex-1 flex-col gap-2">
             <label className="text-lg" htmlFor="city">
-              Grupo de Receitas
+              Grupo de Despesas
             </label>
             <Input.Root variant={errors.expense_group_id ? "error" : "primary"}>
               <Input.SelectInput
@@ -233,7 +234,41 @@ export function ExpenseForm({ account_id, setSecondPage }: Props) {
             </span>
           )}
         </div>
+
+        <div className="mt-4 flex items-center gap-4">
+          <Input.Control
+            className="flex-none"
+            {...register("is_variable")}
+            type="checkbox"
+          />
+
+          <label className="" htmlFor="enabled">
+            Variável
+          </label>
+        </div>
+        {errors.is_variable && (
+          <span className="text-xs text-red-500">
+            {errors.is_variable.message}
+          </span>
+        )}
+
+        <div className="mt-4 flex items-center gap-4">
+          <Input.Control
+            className="flex-none"
+            {...register("is_operational")}
+            type="checkbox"
+          />
+
+          <label className="" htmlFor="enabled">
+            Operacional
+          </label>
+        </div>
       </div>
+      {errors.is_operational && (
+        <span className="text-xs text-red-500">
+          {errors.is_operational.message}
+        </span>
+      )}
 
       <div className="mt-6 flex gap-4">
         <Button

@@ -188,7 +188,7 @@ export function ExpenseTable() {
       </div>
       {expenses.expenses.length === 0 ?
         <h2 className="mt-6 text-xl font-semibold">
-          Nenhuma receita cadastrada.
+          Nenhuma despesa cadastrada.
         </h2>
       : <Table columns={columns} data={filteredResults} />}
     </>

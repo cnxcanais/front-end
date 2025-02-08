@@ -1,4 +1,4 @@
-import { EditExpenseGroupPage } from "@/modules/expense-groups-components/edit-expense-group/presentation/pages"
+import { EditExpenseGroupPage } from "@/modules/expenses-components/expense-groups-components/edit-expense-group/presentation/pages"
 export default async function EditExpenseGroupRender({
   params,
 }: {
