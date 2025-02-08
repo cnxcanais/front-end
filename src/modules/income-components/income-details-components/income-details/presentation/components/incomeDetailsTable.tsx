@@ -30,10 +30,10 @@ export function IncomeDetailsTable() {
   const { data: permissions, isLoading: permissionLoading } =
     usePermissionQuery()
 
-  const create = permissions?.componentAccess["income_details_create"]
-  const pay = permissions?.componentAccess["income_details_pay"]
-  const edit = permissions?.componentAccess["income_details_edit"]
-  const deletePermission = permissions?.componentAccess["income_details_delete"]
+  const create = permissions?.["income_details_create"]
+  const pay = permissions?.["income_details_pay"]
+  const edit = permissions?.["income_details_edit"]
+  const deletePermission = permissions?.["income_details_delete"]
 
   const searchParams = useSearchParams()
   const income_id = searchParams.get("income_id") ?? undefined

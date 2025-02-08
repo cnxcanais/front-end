@@ -1,8 +1,8 @@
-import permissions from "@/core/utils/permission.json"
+import permissions from "@/core/utils/components_permission.json"
 import { useQuery } from "@tanstack/react-query"
 
 const setPermission = () => {
-  return permissions
+  return permissions.componentAccess
 }
 
 export function usePermissionQuery() {

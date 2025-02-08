@@ -1,9 +1,6 @@
-import { ExpenseDetails } from "@/@types/expense-details"
 import { api } from "@/lib/axios"
 
-export const deleteExpenseDetails = async (
-  id: ExpenseDetails.DeleteRequest
-) => {
+export const deleteExpenseDetails = async (id: string) => {
   try {
     const response = await api.delete(`/expense-details/${id}`)
     return response.data

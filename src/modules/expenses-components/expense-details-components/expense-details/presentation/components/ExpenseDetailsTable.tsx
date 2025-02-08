@@ -10,7 +10,6 @@ import { Table } from "@/core/components/Table"
 import { formatLocalDate } from "@/core/utils/dateFunctions"
 import { exportToExcel } from "@/core/utils/exportToExcel"
 import { getCookie } from "@/lib/cookies"
-import { queryClient } from "@/lib/react-query"
 import { ExpenseDetailsFilters } from "@/modules/expenses-components/expense-details-components/expense-details/presentation/components/ExpenseDetailsFilters"
 import {
   deleteExpenseDetails,
@@ -19,7 +18,7 @@ import {
 import { editExpenseDetails } from "@/modules/expenses-components/expense-details-components/remote/update-expense-details"
 import { usePermissionQuery } from "@/modules/login-components/login/infra/hooks/use-permissions-query"
 import { FileXls, Money, Pencil, Trash } from "@phosphor-icons/react"
-import { useMutation, useQuery } from "@tanstack/react-query"
+import { useQuery } from "@tanstack/react-query"
 import { useRouter, useSearchParams } from "next/navigation"
 import { useEffect, useState } from "react"
 import { toast } from "sonner"
@@ -27,19 +26,16 @@ import { toast } from "sonner"
 export function ExpenseDetailsTable() {
   const { push } = useRouter()
 
-  const {
-    data: permissions,
-    refetch: permissionRefetch,
-    isLoading: permissionLoading,
-  } = usePermissionQuery()
+  const { data: permissions, isLoading: permissionLoading } =
+    usePermissionQuery()
 
-  if (!permissions || !permissions?.componentAccess) permissionRefetch()
+  const create = permissions?.["expense_details_create"]
+  const pay = permissions?.["expense_details_pay"]
+  const edit = permissions?.["expense_details_edit"]
+  const deletePermission = permissions?.["expense_details_delete"]
 
-  const create = permissions?.componentAccess["expense_details_create"]
-  const pay = permissions?.componentAccess["expense_details_pay"]
-  const edit = permissions?.componentAccess["expense_details_edit"]
-  const deletePermission =
-    permissions?.componentAccess["expense_details_delete"]
+  console.log(permissions)
+
   const searchParams = useSearchParams()
 
   const expense_id = searchParams.get("expense_id") ?? undefined
@@ -60,24 +56,15 @@ export function ExpenseDetailsTable() {
       : getExpenseDetails(account_id, { page }),
   })
 
-  const fetchExpenseDetails = useMutation({
-    mutationFn: getExpenseDetails,
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["expense-details"] })
-    },
-    onError: (error) => {
-      toast.error("Erro ao executar ação: " + error)
-    },
-    onSettled: () => {
-      setOpen(false)
-    },
-  })
-
   const handlePay = async (expense_details_id: string) => {
-    await editExpenseDetails({ expense_details_id, is_paid: true })
-      .then(() => fetchExpenseDetails.mutate(account_id))
-      .then(() => setPayOpen(false))
-      .then(() => toast.success("Parcela paga com sucesso!"))
+    try {
+      await editExpenseDetails({ expense_details_id, is_paid: true })
+      refetch()
+      setPayOpen(false)
+      toast.success("Parcela paga com sucesso!")
+    } catch (error) {
+      toast.error(`Erro ao atualizar parcela: ${error}`)
+    }
   }
 
   const handleEdit = (id: string) => {
@@ -85,9 +72,13 @@ export function ExpenseDetailsTable() {
   }
 
   const handleConfirmDelete = async () => {
-    await deleteExpenseDetails({ expense_details_id: id })
-      .then(() => fetchExpenseDetails.mutate(account_id))
-      .then(() => toast.success("Parcela removida com sucesso!"))
+    try {
+      await deleteExpenseDetails(id)
+      refetch()
+      toast.success("Parcela removida com sucesso!")
+    } catch (error) {
+      toast.error(`Erro ao remover parcela: ${error}`)
+    }
   }
 
   useEffect(() => {

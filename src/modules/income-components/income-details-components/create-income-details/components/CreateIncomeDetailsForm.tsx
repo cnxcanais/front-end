@@ -35,13 +35,13 @@ export function CreateIncomeDetailsForm() {
     useIncomeByIdQuery(income_id)
 
   const income_details_input_fields_amount =
-    permissions?.componentAccess["income_details_input_fields_amount"]
+    permissions?.["income_details_input_fields_amount"]
   const income_details_input_fields_abservation =
-    permissions?.componentAccess["income_details_input_fields_abservation"]
+    permissions?.["income_details_input_fields_abservation"]
   const income_details_input_fields_date =
-    permissions?.componentAccess["income_details_input_fields_date"]
+    permissions?.["income_details_input_fields_date"]
   const income_details_input_fields_bank_account =
-    permissions?.componentAccess["income_details_input_fields_bank_account"]
+    permissions?.["income_details_input_fields_bank_account"]
 
   const {
     register,

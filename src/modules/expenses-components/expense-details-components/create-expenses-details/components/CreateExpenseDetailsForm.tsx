@@ -35,13 +35,13 @@ export function CreateExpenseDetailsForm() {
     useExpenseByIdQuery(expense_id)
 
   const expense_details_input_fields_amount =
-    permissions?.componentAccess["expense_details_input_fields_amount"]
+    permissions?.["expense_details_input_fields_amount"]
   const expense_details_input_fields_abservation =
-    permissions?.componentAccess["expense_details_input_fields_abservation"]
+    permissions?.["expense_details_input_fields_abservation"]
   const expense_details_input_fields_date =
-    permissions?.componentAccess["expense_details_input_fields_date"]
+    permissions?.["expense_details_input_fields_date"]
   const expense_details_input_fields_bank_account =
-    permissions?.componentAccess["expense_details_input_fields_bank_account"]
+    permissions?.["expense_details_input_fields_bank_account"]
 
   console.log(expense_details_input_fields_amount)
 

@@ -34,15 +34,13 @@ export function EditIncomeDetailsForm() {
     usePermissionQuery()
 
   const income_details_edit_input_fields_bank_account =
-    permissions?.componentAccess[
-      "income_details_edit_input_fields_bank_account"
-    ]
+    permissions?.["income_details_edit_input_fields_bank_account"]
   const income_details_edit_input_fields_amount =
-    permissions?.componentAccess["income_details_edit_input_fields_amount"]
+    permissions?.["income_details_edit_input_fields_amount"]
   const income_details_edit_input_fields_description =
-    permissions?.componentAccess["income_details_edit_input_fields_description"]
+    permissions?.["income_details_edit_input_fields_description"]
   const income_details_edit_input_fields_date =
-    permissions?.componentAccess[" income_details_edit_input_fields_date"]
+    permissions?.[" income_details_edit_input_fields_date"]
 
   const {
     register,
