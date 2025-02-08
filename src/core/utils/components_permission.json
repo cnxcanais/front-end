@@ -1,20 +1,4 @@
 {
-  "id": "a3e1e4a3-9f7e-4e6b-9e1c-9f7e4e6b9e1c",
-  "name": "ADMIN",
-  "urlAccess": {
-    "/dashboard": true,
-    "/accounts": true,
-    "/accounts/create": true,
-    "/accounts/edit": true,
-    "/income-groups": true,
-    "/income-groups/create": true,
-    "/income-groups/edit": true,
-    "/income-sources": true,
-    "/income-sources/create": true,
-    "/income-sources/edit": true,
-    "/incomes": true,
-    "/incomes/create": true
-  },
   "componentAccess": {
     "dashboard_button": true,
     "organizations_create": true,
