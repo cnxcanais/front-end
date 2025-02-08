@@ -1,5 +1,3 @@
-"use client"
-
 import { LoadingScreen } from "@/core/components/LoadingScreen"
 import { EditIncomeDetailsPage } from "@/modules/income-components/income-details-components/edit-income-details/pages/edit-income-details"
 import { Suspense } from "react"
