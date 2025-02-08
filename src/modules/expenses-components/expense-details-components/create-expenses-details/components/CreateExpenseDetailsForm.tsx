@@ -43,6 +43,8 @@ export function CreateIncomeDetailsForm() {
   const income_details_input_fields_bank_account =
     permissions?.componentAccess["income_details_input_fields_bank_account"]
 
+  console.log(income_details_input_fields_amount)
+
   const {
     register,
     handleSubmit,

@@ -1,0 +1,294 @@
+"use client"
+
+import { Expense } from "@/@types/expense"
+import { SearchArray } from "@/@types/search-array"
+import { Button } from "@/core/components/Button"
+import * as Input from "@/core/components/Input"
+import { getAccountId } from "@/core/utils/get-account-id"
+import { ArrayConfig, populateArrays } from "@/core/utils/populateArrays"
+import { getCookie } from "@/lib/cookies"
+import { useExpenseByIdQuery } from "@/modules/expenses-components/expense-components/infra/use-expense-by-id-query"
+import { editExpense } from "@/modules/expenses-components/expense-components/remote"
+import { getAllExpenseGroups } from "@/modules/expenses-components/expense-groups-components/remote/expense-groups-methods"
+import { getSuppliers } from "@/modules/expenses-components/supplier-components/suppliers/infra/remote"
+import { getOrganizations } from "@/modules/organization-components/organizations/infra/remote"
+import { DevTool } from "@hookform/devtools"
+import { zodResolver } from "@hookform/resolvers/zod"
+import { useParams, useRouter } from "next/navigation"
+import { useEffect, useMemo, useState } from "react"
+import { useForm } from "react-hook-form"
+import { toast } from "sonner"
+import { editExpenseSchema } from "../validation/schema"
+
+export function EditExpenseForm() {
+  const { push } = useRouter()
+
+  const account_id = getAccountId()
+
+  const params = useParams()
+  const expense_id = params.id as string
+
+  const [organizations, setOrganizations] = useState<SearchArray>([])
+  const [expenseGroups, setExpenseGroups] = useState<SearchArray>([])
+  const [arrayPlaceHolder, setArrayPlaceHolder] = useState("Carregando...")
+  const [expenseSource, setExpenseSource] = useState<SearchArray>([])
+
+  const { data: expense } = useExpenseByIdQuery(expense_id)
+
+  const arrayConfigs: ArrayConfig<any>[] = useMemo(
+    () => [
+      {
+        fetchFn: getOrganizations,
+        mapFn: (org) => ({
+          label: org.name,
+          value: org.organization_id,
+        }),
+        setState: setOrganizations,
+      },
+      {
+        fetchFn: getAllExpenseGroups,
+        mapFn: (group) => ({
+          label: group.group_name,
+          value: group.expense_group_id,
+        }),
+        setState: setExpenseGroups,
+      },
+      {
+        fetchFn: getSuppliers,
+        mapFn: (expense) => ({
+          label: expense.name,
+          value: expense.supplier_id,
+        }),
+        setState: setExpenseSource,
+      },
+    ],
+    []
+  )
+
+  useEffect(() => {
+    if (!account_id) return
+
+    populateArrays(
+      arrayConfigs,
+      account_id,
+      () => setArrayPlaceHolder("Digite..."),
+      (error) => {
+        toast.error("Erro ao buscar dados: " + error.message)
+        setArrayPlaceHolder("Erro ao carregar...")
+      }
+    )
+  }, [arrayConfigs, account_id])
+
+  const {
+    expense_input_fields_amount,
+    expense_input_fields_expense_qty,
+    expense_input_fields_expense_percentage,
+    expense_input_fields_date,
+    expense_input_fields_document,
+    expense_input_fields_description,
+    expense_input_fields_supplier_id,
+    expense_input_fields_organization_id,
+    expense_input_fields_expense_group_id,
+  } = JSON.parse(getCookie("permissions")).componentAccess
+
+  const {
+    register,
+    handleSubmit,
+    formState: { isSubmitting, errors },
+    reset,
+    control,
+  } = useForm<Expense.UpdateRequest>({
+    resolver: zodResolver(editExpenseSchema),
+  })
+
+  useEffect(() => {
+    if (expense) {
+      reset({
+        expense_percentage: Number(expense.expense_percentage),
+        date: expense.date.substring(0, 10),
+        document: expense.document,
+        description: expense.description,
+        supplier_id: expense.supplier?.supplier_id,
+        organization_id: expense.organization_id,
+        expense_group_id: expense.expense_group?.expense_group_id,
+        expense_id: expense.expense_id,
+      })
+    }
+  }, [expense, reset])
+
+  async function onSubmit(data: Expense.UpdateRequest) {
+    try {
+      const response = await editExpense(data)
+      toast.success("Receita editada com sucesso!")
+      setTimeout(() => push("/expenses"), 2000)
+    } catch (error) {
+      toast.error("Erro ao criar fonte de receita: " + error)
+    }
+  }
+
+  return (
+    <>
+      <form
+        className="mt-6 flex max-w-[1000px] flex-col gap-4"
+        onSubmit={handleSubmit(onSubmit)}>
+        <div className="flex flex-col gap-4">
+          <div className="flex gap-4">
+            <div className="flex min-w-[500px] flex-col gap-2">
+              <label className="text-lg" htmlFor="supplier_id">
+                Gerador da Receita
+              </label>
+              <Input.Root variant={errors.supplier_id ? "error" : "primary"}>
+                <Input.SelectInput
+                  name="supplier_id"
+                  control={control}
+                  disabled={!expense_input_fields_supplier_id}
+                  options={expenseSource}
+                  placeholder={arrayPlaceHolder}
+                />
+              </Input.Root>
+              {errors.supplier_id && (
+                <span className="text-xs text-red-500">
+                  {errors.supplier_id.message}
+                </span>
+              )}
+            </div>
+
+            <div className="flex flex-1 flex-col gap-2">
+              <label className="text-lg" htmlFor="city">
+                Grupo de Receitas
+              </label>
+              <Input.Root
+                variant={errors.expense_group_id ? "error" : "primary"}>
+                <Input.SelectInput
+                  name="expense_group_id"
+                  control={control}
+                  disabled={!expense_input_fields_expense_group_id}
+                  options={expenseGroups}
+                  placeholder={arrayPlaceHolder}
+                />
+              </Input.Root>
+              {errors.expense_group_id && (
+                <span className="text-xs text-red-500">
+                  {errors.expense_group_id.message}
+                </span>
+              )}
+            </div>
+
+            <div className="flex max-w-[150px] flex-1 flex-col gap-2">
+              <label className="text-lg" htmlFor="cpf_cnpj">
+                Data
+              </label>
+              <Input.Root variant={errors.date ? "error" : "primary"}>
+                <Input.Control
+                  disabled={!expense_input_fields_date}
+                  {...register("date")}
+                  type="date"
+                />
+              </Input.Root>
+              {errors.date && (
+                <span className="text-xs text-red-500">
+                  {errors.date.message}
+                </span>
+              )}
+            </div>
+          </div>
+
+          <div className="flex gap-4">
+            <div className="flex flex-1 flex-col gap-2">
+              <label className="min-w-[600px] text-lg" htmlFor="address_1">
+                Descrição
+              </label>
+              <Input.Root variant={errors.description ? "error" : "primary"}>
+                <Input.Control
+                  disabled={!expense_input_fields_description}
+                  {...register("description")}
+                  type="text"
+                />
+              </Input.Root>
+              {errors.description && (
+                <span className="text-xs text-red-500">
+                  {errors.description.message}
+                </span>
+              )}
+            </div>
+
+            <div className="flex flex-1 flex-col gap-2">
+              <label className="text-lg" htmlFor="phone">
+                NF/Recibo
+              </label>
+              <Input.Root variant={errors.document ? "error" : "primary"}>
+                <Input.Control
+                  disabled={!expense_input_fields_document}
+                  {...register("document")}
+                  type="text"
+                />
+              </Input.Root>
+              {errors.document && (
+                <span className="text-xs text-red-500">
+                  {errors.document.message}
+                </span>
+              )}
+            </div>
+          </div>
+        </div>
+
+        <div className="flex flex-col gap-4">
+          <div className="flex gap-4">
+            <div className="flex max-w-[100px] flex-1 flex-col gap-2">
+              <label className="text-lg" htmlFor="expense_percentage">
+                Percentual
+              </label>
+              <Input.Root
+                variant={errors.expense_percentage ? "error" : "primary"}>
+                <Input.Control
+                  disabled={!expense_input_fields_expense_percentage}
+                  {...register("expense_percentage")}
+                  type="text"
+                />
+              </Input.Root>
+              {errors.expense_percentage && (
+                <span className="text-xs text-red-500">
+                  {errors.expense_percentage.message}
+                </span>
+              )}
+            </div>
+
+            <div className="flex min-w-[400px] flex-col gap-2">
+              <label className="text-lg" htmlFor="cep">
+                Organização
+              </label>
+              <Input.Root>
+                <Input.SelectInput
+                  name="organization_id"
+                  control={control}
+                  disabled={!expense_input_fields_organization_id}
+                  options={organizations}
+                  placeholder={arrayPlaceHolder}
+                />
+              </Input.Root>
+              {errors.organization_id && (
+                <span className="text-xs text-red-500">
+                  {errors.organization_id.message}
+                </span>
+              )}
+            </div>
+          </div>
+        </div>
+
+        <div className="my-2 flex gap-4">
+          <Button type="submit" disabled={isSubmitting} variant="primary">
+            Editar
+          </Button>
+          <Button
+            type="button"
+            disabled={isSubmitting}
+            onClick={() => push("/expenses")}
+            variant="tertiary">
+            Voltar
+          </Button>
+        </div>
+      </form>
+      {process.env.NODE_ENV === "development" && <DevTool control={control} />}
+    </>
+  )
+}

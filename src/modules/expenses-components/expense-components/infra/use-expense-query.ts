@@ -1,0 +1,14 @@
+import { Expense } from "@/@types/expense"
+import { getExpenses } from "@/modules/expenses-components/expense-components/remote"
+import { useQuery } from "@tanstack/react-query"
+
+export function useExpenseQuery(
+  account_id: string,
+  queryParams?: Expense.GetRequest
+) {
+  return useQuery({
+    queryKey: ["expenses"],
+    queryFn: () => getExpenses(account_id, queryParams),
+    enabled: !!account_id,
+  })
+}
