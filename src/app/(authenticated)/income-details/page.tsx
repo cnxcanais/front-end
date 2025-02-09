@@ -5,12 +5,12 @@ import { Suspense } from "react"
 
 type SearchParams = { income_id: string | undefined }
 
-export default function IncomeDetailsRender({
+export default async function IncomeDetailsRender({
   searchParams,
 }: {
-  searchParams: SearchParams
+  searchParams: Promise<SearchParams>
 }) {
-  const { income_id } = searchParams
+  const { income_id } = await searchParams
 
   return (
     <Suspense fallback={<LoadingScreen />}>
