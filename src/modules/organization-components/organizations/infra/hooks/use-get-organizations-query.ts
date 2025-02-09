@@ -6,7 +6,5 @@ export function useGetOrganizationsQuery(account_id: string) {
     queryKey: ["organizations"],
     queryFn: () => getOrganizations(account_id),
     enabled: !!account_id,
-    refetchOnWindowFocus: false,
-    refetchOnReconnect: false,
   })
 }

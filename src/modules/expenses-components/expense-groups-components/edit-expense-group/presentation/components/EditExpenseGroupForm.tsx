@@ -25,8 +25,6 @@ export function EditExpenseGroupForm({ id }: { id: string }) {
     queryKey: ["expense-group", id],
     queryFn: () => getExpenseGroupById(id),
     enabled: id !== "",
-    refetchOnWindowFocus: false,
-    refetchOnReconnect: false,
   })
 
   const {
@@ -43,10 +41,10 @@ export function EditExpenseGroupForm({ id }: { id: string }) {
   async function onSubmit(data: ExpenseGroup.UpdateRequest) {
     try {
       await updateExpenseGroup(id, data)
-      toast.success("Grupo editado com sucesso!")
+      toast.success("Grupo de despesa editado com sucesso!")
       setTimeout(() => push("/expense-groups"), 2000)
     } catch (error) {
-      toast.error("Erro ao editar grupo: " + error)
+      toast.error("Erro ao editar grupo de despesa: " + error)
     }
   }
 
@@ -66,7 +64,7 @@ export function EditExpenseGroupForm({ id }: { id: string }) {
         )}
       </div>
 
-      <div className="my-2 flex gap-4">
+      <div className="mt-6 flex gap-4">
         <Button disabled={isSubmitting} onClick={() => {}} variant="secondary">
           Salvar
         </Button>

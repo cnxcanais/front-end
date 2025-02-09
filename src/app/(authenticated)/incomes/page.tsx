@@ -3,7 +3,7 @@ import { IncomeTable } from "@/modules/income-components/income-components/incom
 
 export default function IncomeRender() {
   return (
-    <main className="flex w-full max-w-[1200px] flex-col">
+    <main className="flex w-full flex-col">
       <PageTitle content="Receitas" />
       <IncomeTable />
     </main>

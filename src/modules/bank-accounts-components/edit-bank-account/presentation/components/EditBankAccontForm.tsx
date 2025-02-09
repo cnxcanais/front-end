@@ -29,8 +29,6 @@ export function EditBankAccountForm({ id }: { id: string }) {
     queryKey: ["bank-account", id],
     queryFn: () => getBankAccountById(id),
     enabled: !!id && id !== "",
-    refetchOnWindowFocus: false,
-    refetchOnReconnect: false,
   })
 
   const { data: banks, isLoading: isBanksLoading } =
@@ -64,7 +62,7 @@ export function EditBankAccountForm({ id }: { id: string }) {
     return <LoadingScreen />
 
   return (
-    <form className="max-w-[800px]" onSubmit={handleSubmit(onSubmit)}>
+    <form onSubmit={handleSubmit(onSubmit)}>
       <div className="flex gap-8">
         <div className="flex flex-1 flex-col">
           <div className="mt-8 flex flex-col gap-2">

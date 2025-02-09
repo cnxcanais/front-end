@@ -48,7 +48,7 @@ export function EditUserForm({ id }: { id: string }) {
   if (!user || isLoading) return <LoadingScreen />
 
   return (
-    <form className="mt-6 max-w-[400px]" onSubmit={handleSubmit(onSubmit)}>
+    <form className="mt-6 max-w-96" onSubmit={handleSubmit(onSubmit)}>
       <div className="flex flex-col gap-4">
         <div className="flex flex-col gap-2">
           <label htmlFor="name">Nome</label>

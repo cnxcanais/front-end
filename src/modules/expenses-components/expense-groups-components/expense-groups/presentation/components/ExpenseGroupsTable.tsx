@@ -5,6 +5,7 @@ import { LoadingScreen } from "@/core/components/LoadingScreen"
 import { Modal } from "@/core/components/Modals/Modal"
 import { SearchInput } from "@/core/components/SearchInput"
 import { Table } from "@/core/components/Table"
+import { formatLocalDate } from "@/core/utils/dateFunctions"
 import { exportToExcel } from "@/core/utils/exportToExcel"
 import { getAccountId } from "@/core/utils/get-account-id"
 import { getPermissionByEntity } from "@/core/utils/getPermissionByEntity"
@@ -52,6 +53,11 @@ export function ExpenseGroupTable() {
 
   const columns = [
     { header: "Nome", accessor: "group_name" },
+    {
+      header: "Atualizado Em",
+      accessor: "updated_at",
+      render: (value: string) => formatLocalDate(new Date(value)),
+    },
     {
       header: "Ações",
       accessor: "expense_group_id",

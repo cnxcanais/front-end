@@ -7,7 +7,6 @@ type CreateBudgetIncomeSchema = {
 }
 
 export async function createBudgetIncome({ data }: CreateBudgetIncomeSchema) {
-  console.log(data)
   try {
     const response = await api.post("/budget-income", data)
 

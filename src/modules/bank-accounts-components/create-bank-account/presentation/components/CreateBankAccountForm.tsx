@@ -45,7 +45,7 @@ export function CreateBankAccountForm() {
   if (isLoading || !banks) return <LoadingScreen />
 
   return (
-    <form className="max-w-[800px]" onSubmit={handleSubmit(onSubmit)}>
+    <form onSubmit={handleSubmit(onSubmit)}>
       <div className="flex gap-8">
         <div className="flex flex-1 flex-col">
           <div className="mt-8 flex flex-col gap-2">

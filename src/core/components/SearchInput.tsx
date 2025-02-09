@@ -29,8 +29,10 @@ export function SearchInput<T>({
     onSearchResult?.(filteredResults)
   }
 
+  if (data.length === 0) return <></>
+
   return (
-    <Input.Root className="min-w-96 text-sm">
+    <Input.Root className="min-w-80 text-sm">
       <Input.Control
         type="text"
         placeholder={placeholder}

@@ -21,7 +21,7 @@ import { usePermissionQuery } from "@/modules/login-components/login/infra/hooks
 import { FileXls, Money, Pencil, Trash } from "@phosphor-icons/react"
 import { useQuery } from "@tanstack/react-query"
 import { useRouter } from "next/navigation"
-import { useEffect, useState } from "react"
+import { useState } from "react"
 import { FormProvider, useForm } from "react-hook-form"
 import { toast } from "sonner"
 
@@ -45,14 +45,24 @@ export function ExpenseDetailsTable({ expense_id }: { expense_id?: string }) {
   const edit = permissions?.["expense_details_edit"]
   const deletePermission = permissions?.["expense_details_delete"]
 
-  const methods = useForm<ExpenseDetails.QueryParams>()
+  const methods = useForm<ExpenseDetails.QueryParams>({
+    values: {
+      expense_id,
+      bank_account_id: "",
+      start_date: "",
+      end_date: "",
+      is_paid: null,
+      max_amount: null,
+      min_amount: null,
+    },
+  })
 
   const [filters, setFilters] = useState<ExpenseDetails.QueryParams>({
     expense_id,
   })
 
   const { data, isLoading, refetch } = useQuery({
-    queryKey: ["expense-details", expense_id],
+    queryKey: ["expense-details", { filters }],
     queryFn: () => getExpenseDetails(account_id, { page, ...filters }),
   })
 
@@ -85,10 +95,6 @@ export function ExpenseDetailsTable({ expense_id }: { expense_id?: string }) {
       toast.error(`Erro ao remover parcela: ${error}`)
     }
   }
-
-  useEffect(() => {
-    if (page) refetch()
-  }, [page])
 
   const columns = [
     {

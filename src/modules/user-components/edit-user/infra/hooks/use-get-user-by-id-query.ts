@@ -6,7 +6,5 @@ export function useGetUserByIdQuery(user_id: string) {
     queryKey: ["user", user_id],
     queryFn: () => getUserById(user_id),
     enabled: user_id !== "",
-    refetchOnWindowFocus: false,
-    refetchOnReconnect: false,
   })
 }

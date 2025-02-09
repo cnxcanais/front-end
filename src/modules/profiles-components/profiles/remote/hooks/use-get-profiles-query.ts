@@ -6,7 +6,5 @@ export function useGetProfilesQuery(account_id: string) {
     queryKey: ["profiles", account_id],
     queryFn: () => getProfiles(account_id),
     enabled: !!account_id,
-    refetchOnWindowFocus: false,
-    refetchOnReconnect: false,
   })
 }

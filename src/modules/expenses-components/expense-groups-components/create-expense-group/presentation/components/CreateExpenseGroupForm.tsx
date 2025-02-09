@@ -3,7 +3,7 @@
 import { ExpenseGroup } from "@/@types/expense-group"
 import { Button } from "@/core/components/Button"
 import * as Input from "@/core/components/Input"
-import { getCookie } from "@/lib/cookies"
+import { getAccountId } from "@/core/utils/get-account-id"
 import {
   CreateExpenseGroupSchema,
   createExpenseGroupSchema,
@@ -24,7 +24,7 @@ export function CreateExpenseGroupForm() {
   } = useForm<CreateExpenseGroupSchema>({
     resolver: zodResolver(createExpenseGroupSchema),
     values: {
-      account_id: getCookie("accountId"),
+      account_id: getAccountId(),
     },
   })
 
@@ -46,7 +46,7 @@ export function CreateExpenseGroupForm() {
           <Input.Control {...register("group_name")} type="text" />
         </Input.Root>
       </div>
-      <div className="my-2 flex gap-4">
+      <div className="mt-6 flex gap-4">
         <Button type="submit" disabled={isSubmitting} variant="secondary">
           Salvar
         </Button>

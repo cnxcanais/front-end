@@ -14,7 +14,7 @@ export default async function IncomeDetailsRender({
 
   return (
     <Suspense fallback={<LoadingScreen />}>
-      <main className="flex w-full max-w-[1200px] flex-col">
+      <main className="flex w-full flex-col">
         <PageTitle content="Parcelas" />
         <IncomeDetailsTable income_id={income_id} />
       </main>

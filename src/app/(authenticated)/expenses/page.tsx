@@ -3,7 +3,7 @@ import { ExpenseTable } from "@/modules/expenses-components/expense-components/e
 
 export default function ExpenseRender() {
   return (
-    <main className="flex w-full max-w-[1200px] flex-col">
+    <main className="flex w-full flex-col">
       <PageTitle content="Despesas" />
       <ExpenseTable />
     </main>

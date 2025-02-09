@@ -56,7 +56,6 @@ export function CreateExpenseForm() {
     try {
       const { expenseDetailsArray, ...expenseData } = data
 
-      console.log(expenseData)
       const response = await createExpense(expenseData)
       const expense_id = response.expense.expense_id
 

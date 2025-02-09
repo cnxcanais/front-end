@@ -138,8 +138,6 @@ export function EditExpenseForm({ expense_id }: { expense_id: string }) {
 
   if (isLoading || !expense) return <LoadingScreen />
 
-  console.log(expense)
-
   return (
     <>
       <form

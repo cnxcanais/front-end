@@ -3,7 +3,7 @@ import { BankAccountsTable } from "@/modules/bank-accounts-components/bank-accou
 
 export default function BankAccountsRender() {
   return (
-    <main className="flex w-full max-w-[1200px] flex-col">
+    <main className="flex w-full flex-col">
       <PageTitle content="Contas de Bancos" />
       <BankAccountsTable />
     </main>

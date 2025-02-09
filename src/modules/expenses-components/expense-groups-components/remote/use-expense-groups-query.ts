@@ -6,7 +6,5 @@ export function useExpenseGroupQuery(account_id: string) {
     queryKey: ["expense-groups"],
     queryFn: () => getAllExpenseGroups(account_id),
     enabled: !!account_id,
-    refetchOnWindowFocus: false,
-    refetchOnReconnect: false,
   })
 }

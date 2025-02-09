@@ -3,7 +3,7 @@ import { AccountsTable } from "@/modules/accounts-components/accounts/presentati
 
 export default function AccountsRender() {
   return (
-    <main className="flex w-full max-w-[1200px] flex-col">
+    <main className="flex w-full flex-col">
       <PageTitle content="Contas" />
       <AccountsTable />
     </main>

@@ -25,8 +25,6 @@ export function EditIncomeGroupForm({ id }: { id: string }) {
     queryKey: ["income-group", id],
     queryFn: () => getIncomeGroupById(id),
     enabled: id !== "",
-    refetchOnWindowFocus: false,
-    refetchOnReconnect: false,
   })
 
   const {
@@ -46,7 +44,7 @@ export function EditIncomeGroupForm({ id }: { id: string }) {
       toast.success("Grupo editado com sucesso!")
       setTimeout(() => push("/income-groups"), 2000)
     } catch (error) {
-      toast.error("Erro ao editar grupo: " + error)
+      toast.error("Erro ao editar grupo de receita: " + error)
     }
   }
 
@@ -66,11 +64,12 @@ export function EditIncomeGroupForm({ id }: { id: string }) {
         )}
       </div>
 
-      <div className="my-2 flex gap-4">
-        <Button disabled={isSubmitting} onClick={() => {}} variant="secondary">
+      <div className="mt-6 flex gap-4">
+        <Button disabled={isSubmitting} type="submit" variant="secondary">
           Salvar
         </Button>
         <Button
+          type="button"
           disabled={isSubmitting}
           onClick={() => push("/income-groups")}
           variant="tertiary">

@@ -15,6 +15,7 @@ type FileListProps = {
 
 export function FileList({ entityId, entityType }: FileListProps) {
   const [filteredFiles, setFilteredFiles] = useState([])
+  const [entityFiles, setEntityFiles] = useState([])
 
   const account_id = getAccountId()
 
@@ -35,12 +36,19 @@ export function FileList({ entityId, entityType }: FileListProps) {
   }
 
   useEffect(() => {
-    if (fileList && fileList.length > 0) setFilteredFiles(fileList)
+    if (fileList && fileList.length > 0) {
+      const filteredFilesByEntityId = fileList.filter(
+        (file) => file[entityType] === entityId
+      )
+
+      setEntityFiles(filteredFilesByEntityId)
+      setFilteredFiles(filteredFilesByEntityId)
+    }
   }, [fileList])
 
   if (!fileList || isLoading) return <LoadingScreen fullScreen={false} />
 
-  if (fileList.length === 0)
+  if (entityFiles.length === 0)
     return (
       <h3 className="text-sm font-medium text-gray-500">
         Nenhum arquivo salvo.
@@ -55,7 +63,7 @@ export function FileList({ entityId, entityType }: FileListProps) {
 
       <div className="max-w-96 pb-2">
         <SearchInput
-          data={fileList}
+          data={entityFiles}
           searchParam="description"
           onSearchResult={(result) => setFilteredFiles(result)}
         />

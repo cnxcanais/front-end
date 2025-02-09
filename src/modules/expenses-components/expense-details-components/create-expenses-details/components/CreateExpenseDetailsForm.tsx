@@ -44,8 +44,6 @@ export function CreateExpenseDetailsForm({
   const expense_details_input_fields_bank_account =
     permissions?.["expense_details_input_fields_bank_account"]
 
-  console.log(expense_details_input_fields_amount)
-
   const {
     register,
     handleSubmit,
@@ -93,7 +91,7 @@ export function CreateExpenseDetailsForm({
   return (
     <>
       <form
-        className="mt-6 flex max-w-[1000px] flex-col gap-4"
+        className="mt-6 flex flex-col gap-4"
         onSubmit={handleSubmit(onSubmit)}>
         <div className="flex flex-col gap-4">
           <div className="flex gap-4">

@@ -6,7 +6,5 @@ export function useGetBanksQuery(account_id: string) {
     queryKey: ["bank"],
     queryFn: () => getBanks(account_id),
     enabled: !!account_id,
-    refetchOnWindowFocus: false,
-    refetchOnReconnect: false,
   })
 }

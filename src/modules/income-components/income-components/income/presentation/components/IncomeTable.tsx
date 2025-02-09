@@ -121,7 +121,9 @@ export function IncomeTable() {
     {
       header: "Obs.",
       accessor: "observation",
-      render: (value: string) => <ModalObservationTrigger content={value} />,
+      render: (value: string) => {
+        if (value) return <ModalObservationTrigger content={value} />
+      },
     },
     {
       header: "Ações",

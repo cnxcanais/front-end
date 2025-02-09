@@ -30,8 +30,6 @@ export function UsersTable() {
     queryKey: ["users"],
     queryFn: () => getUsers(account_id),
     enabled: !!account_id,
-    refetchOnWindowFocus: false,
-    refetchOnReconnect: false,
   })
 
   const { push } = useRouter()

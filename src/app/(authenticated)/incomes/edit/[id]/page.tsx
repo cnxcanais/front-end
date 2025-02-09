@@ -9,7 +9,7 @@ export default async function EditIncomeRender({
   const id = (await params).id
 
   return (
-    <main className="flex w-full max-w-[1200px] flex-col">
+    <main className="flex w-full flex-col">
       <PageTitle content="Editar Receitas" />
       <EditIncomeForm income_id={id} />
     </main>

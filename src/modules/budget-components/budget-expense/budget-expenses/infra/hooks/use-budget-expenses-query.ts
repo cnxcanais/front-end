@@ -10,7 +10,5 @@ export function useBudgetExpensesQuery(
     queryKey: ["budget_expenses"],
     queryFn: () => getBudgetExpenses(account_id, queryParams),
     enabled: !!account_id,
-    refetchOnWindowFocus: false,
-    refetchOnReconnect: false,
   })
 }

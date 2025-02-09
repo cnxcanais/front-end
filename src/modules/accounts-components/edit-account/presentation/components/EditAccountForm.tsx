@@ -25,8 +25,6 @@ export function EditAccountForm({ id }: { id: string }) {
     queryKey: ["account", id],
     queryFn: () => getAccountById(id),
     enabled: id !== "",
-    refetchOnWindowFocus: false,
-    refetchOnReconnect: false,
   })
 
   const {
@@ -36,9 +34,9 @@ export function EditAccountForm({ id }: { id: string }) {
   } = useForm<EditFormSchema>({
     resolver: zodResolver(editFormSchema),
     values: {
-      accountId: id,
+      account_id: id,
       name: account?.name || "",
-      enabled: account?.enabled || true,
+      enabled: account?.enabled,
     },
   })
 
@@ -78,11 +76,12 @@ export function EditAccountForm({ id }: { id: string }) {
         </div>
       </div>
 
-      <div className="my-2 flex gap-4">
-        <Button disabled={isSubmitting} onClick={() => {}} variant="secondary">
+      <div className="mt-6 flex gap-4">
+        <Button type="submit" disabled={isSubmitting} variant="secondary">
           Salvar
         </Button>
         <Button
+          type="button"
           disabled={isSubmitting}
           onClick={() => push("/accounts")}
           variant="tertiary">

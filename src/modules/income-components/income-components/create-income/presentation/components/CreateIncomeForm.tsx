@@ -30,7 +30,7 @@ export function CreateIncomeForm() {
     mode: "onChange",
     values: {
       //Income
-      account_id,
+      account_id: account_id ?? "",
       date: undefined,
       description: "",
       document: "",

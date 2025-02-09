@@ -3,7 +3,7 @@ import { ExpenseBudgetTable } from "@/modules/budget-components/budget-expense/b
 
 export function ExpenseBudgetPage() {
   return (
-    <main className="flex w-full max-w-[1200px] flex-col">
+    <main className="flex w-full flex-col">
       <PageTitle content="Orçamentos de Despesas" />
       <ExpenseBudgetTable />
     </main>

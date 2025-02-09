@@ -99,7 +99,7 @@ export function EditExpenseDetailsForm({
   return (
     <>
       <form
-        className="mt-6 flex max-w-[1000px] flex-col gap-4"
+        className="mt-6 flex flex-col gap-4"
         onSubmit={handleSubmit(onSubmit)}>
         <div className="flex flex-col gap-4">
           <div className="flex gap-4">

@@ -3,7 +3,7 @@ import { SuppliersTable } from "@/modules/expenses-components/supplier-component
 
 export default function SuppliersRender() {
   return (
-    <main className="flex w-full max-w-[1400px] flex-col">
+    <main className="flex w-full flex-col">
       <PageTitle content="Fornecedores" />
       <SuppliersTable />
     </main>

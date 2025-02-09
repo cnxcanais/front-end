@@ -25,8 +25,6 @@ export function EditOrganizationForm({ id }: { id: string }) {
     queryKey: ["organization", id],
     queryFn: () => getOrganizationById(id),
     enabled: id !== "",
-    refetchOnWindowFocus: false,
-    refetchOnReconnect: false,
   })
 
   const organizations_input_fields_name = getPermissionByEntity(

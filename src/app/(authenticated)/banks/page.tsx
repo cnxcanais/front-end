@@ -3,7 +3,7 @@ import { BanksTable } from "@/modules/banks-components/banks/presentation/compon
 
 export default function BanksRender() {
   return (
-    <main className="flex w-full max-w-[1200px] flex-col">
+    <main className="flex w-full flex-col">
       <PageTitle content="Bancos" />
       <BanksTable />
     </main>

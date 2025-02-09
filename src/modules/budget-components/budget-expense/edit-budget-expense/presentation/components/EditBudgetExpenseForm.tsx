@@ -74,7 +74,7 @@ export function EditBudgetExpenseForm({ id }: { id: string }) {
 
   return (
     <form
-      className="mt-6 flex max-w-[1200px] flex-col gap-4"
+      className="mt-6 flex max-w-[1000px] flex-col gap-4"
       onSubmit={handleSubmit(onSubmit)}>
       <div className="flex flex-1 items-center gap-4">
         <div className="flex flex-1 flex-col gap-2">

@@ -27,7 +27,6 @@ export function CreateAccountForm() {
   async function onSubmit(data: Account.CreateRequest) {
     try {
       const response = await createAccount(data)
-      console.log(response)
       toast.success(response)
       setTimeout(() => push("/accounts"), 2000)
     } catch (error) {
@@ -46,7 +45,7 @@ export function CreateAccountForm() {
           <span className="text-xs text-red-500">{errors.name.message}</span>
         )}
       </div>
-      <div className="my-2 flex gap-4">
+      <div className="mt-6 flex gap-4">
         <Button type="submit" disabled={isSubmitting} variant="secondary">
           Salvar
         </Button>

@@ -12,7 +12,7 @@ export default async function EditIncomeDetailsRender({
 
   return (
     <Suspense fallback={<LoadingScreen />}>
-      <main className="flex w-full max-w-[1200px] flex-col">
+      <main className="flex w-full flex-col">
         <PageTitle content="Editar Receitas" />
         <EditIncomeDetailsForm income_details_id={id} />
       </main>

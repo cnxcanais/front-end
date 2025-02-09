@@ -10,7 +10,5 @@ export function useBudgetIncomesQuery(
     queryKey: ["budget_incomes"],
     queryFn: () => getBudgetIncomes(account_id, queryParams),
     enabled: !!account_id,
-    refetchOnWindowFocus: false,
-    refetchOnReconnect: false,
   })
 }

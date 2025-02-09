@@ -42,9 +42,6 @@ export function CreateUserForm() {
     },
   })
 
-  const watchForm = watch()
-  console.log(watchForm)
-
   async function onSubmit(data: User.CreateRequest) {
     try {
       const response = await createUser(data)

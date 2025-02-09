@@ -3,7 +3,7 @@ import { UsersTable } from "@/modules/user-components/users/presentation/compone
 
 export default function UsersRenderer() {
   return (
-    <main className="flex w-full max-w-[1200px] flex-col">
+    <main className="flex w-full flex-col">
       <PageTitle content="Usuários" />
       <UsersTable />
     </main>

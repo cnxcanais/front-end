@@ -9,7 +9,7 @@ export default async function CreateExpenseDetailsRender({
   const id = (await params).id
 
   return (
-    <main className="flex w-full max-w-[1200px] flex-col">
+    <main className="flex w-full flex-col">
       <PageTitle content="Criar Parcela" />
       <CreateExpenseDetailsForm expense_id={id} />
     </main>
