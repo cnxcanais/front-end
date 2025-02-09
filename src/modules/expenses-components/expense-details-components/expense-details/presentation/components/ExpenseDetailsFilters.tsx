@@ -3,38 +3,34 @@ import { Button } from "@/core/components/Button"
 import * as Input from "@/core/components/Input"
 import { LoadingScreen } from "@/core/components/LoadingScreen"
 import { SelectInput } from "@/core/components/SelectInput"
+import { getAccountId } from "@/core/utils/get-account-id"
 import { prepareArrayForSelect } from "@/core/utils/prepare-array-for-select-input"
 import { useBankAccountsQuery } from "@/modules/bank-accounts-components/bank-accounts/infra/hooks/use-bank-account-query"
 import { useExpenseQuery } from "@/modules/expenses-components/expense-components/infra/use-expense-query"
-import { useExpenseDetailsQuery } from "@/modules/expenses-components/expense-details-components/infra/hooks/use-expense-details-query"
 import { CaretDown, CaretRight } from "@phosphor-icons/react"
 import { useEffect, useState } from "react"
-import { useForm } from "react-hook-form"
+import { useFormContext, useWatch } from "react-hook-form"
 
 interface FilterProps {
-  account_id: string
-  expense_id?: string
+  onFilterChange: (filters: ExpenseDetails.QueryParams) => void
 }
 
-export function ExpenseDetailsFilters({ account_id, expense_id }: FilterProps) {
+export function ExpenseDetailsFilters({ onFilterChange }: FilterProps) {
   const [collapsed, setCollapsed] = useState(true)
-  const [filters, setFilters] = useState<ExpenseDetails.QueryParams>(
-    {} as ExpenseDetails.QueryParams
-  )
+  const [isFilterFilled, setIsFilterFilled] = useState(false)
+
+  const account_id = getAccountId()
 
   const { register, handleSubmit, control, reset, setValue } =
-    useForm<ExpenseDetails.QueryParams>()
+    useFormContext<ExpenseDetails.QueryParams>()
+
+  const formValues = useWatch({ control })
 
   const { data: bankAccounts, isLoading: bankAccountIsLoading } =
     useBankAccountsQuery(account_id)
 
   const { data: expenses, isLoading: expensesIsLoading } =
     useExpenseQuery(account_id)
-
-  const { refetch } = useExpenseDetailsQuery(account_id, {
-    ...filters,
-    page: 1,
-  })
 
   function onSubmit(data: ExpenseDetails.QueryParams) {
     const adjustMonth = (month: string | undefined, isStart: boolean) => {
@@ -60,22 +56,31 @@ export function ExpenseDetailsFilters({ account_id, expense_id }: FilterProps) {
       page: 1,
     }
 
-    setFilters(cleanedData)
+    onFilterChange(cleanedData)
   }
 
   function resetFilters() {
     reset()
-    setFilters({} as ExpenseDetails.QueryParams)
     setValue("expense_id", "")
+    onFilterChange({})
+    window.history.replaceState(
+      {
+        ...window.history.state,
+        as: "/expense-details",
+        url: "/expense-details",
+      },
+      "",
+      "/expense-details"
+    ) // remove query param but without refreshing the page
   }
 
   useEffect(() => {
-    refetch()
-  }, [filters])
+    const hasValue = Object.values(formValues).some(
+      (value) => value !== undefined && value !== null && value !== ""
+    )
 
-  useEffect(() => {
-    if (expense_id) setValue("expense_id", expense_id)
-  }, [expense_id])
+    setIsFilterFilled(hasValue)
+  }, [formValues])
 
   if (!expenses || expensesIsLoading || !bankAccounts || bankAccountIsLoading)
     return <LoadingScreen fullScreen={false} />
@@ -172,16 +177,20 @@ export function ExpenseDetailsFilters({ account_id, expense_id }: FilterProps) {
             </div>
 
             <div className="flex h-12 w-full gap-2">
-              {Object.values(filters).length > 0 && (
-                <Button
-                  onClick={resetFilters}
-                  className="w-full"
-                  variant="secondary"
-                  type="button">
-                  Limpar
-                </Button>
-              )}
-              <Button className="w-full" variant="secondary" type="submit">
+              <Button
+                onClick={resetFilters}
+                disabled={!isFilterFilled}
+                className="w-full"
+                variant="secondary"
+                type="button">
+                Limpar
+              </Button>
+
+              <Button
+                disabled={!isFilterFilled}
+                className="w-full"
+                variant="secondary"
+                type="submit">
                 Pesquisar
               </Button>
             </div>

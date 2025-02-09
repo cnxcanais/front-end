@@ -35,7 +35,6 @@ export function ExpenseTable() {
 
   const methods = useForm<Expense.GetRequest>({
     defaultValues: {
-      page,
       document: "",
       end_date: "",
       expense_group_id: "",

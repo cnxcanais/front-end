@@ -95,6 +95,7 @@
     "income_details_input_fields_abservation": true,
     "income_details_input_fields_part": true,
     "income_details_input_fields_date": true,
+    "income_details_input_fields_bank_account": true,
     "income_details_edit_input_fields_bank_account": true,
     "income_details_edit_input_fields_amount": true,
     "income_details_edit_input_fields_date": true,

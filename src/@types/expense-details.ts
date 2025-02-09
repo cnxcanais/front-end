@@ -63,6 +63,6 @@ export namespace ExpenseDetails {
     max_amount?: number
     expense_id?: string
     min_amount?: number
-    page: number
+    page?: number
   }
 }

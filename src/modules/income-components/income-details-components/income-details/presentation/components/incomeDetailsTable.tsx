@@ -11,7 +11,6 @@ import { Table } from "@/core/components/Table"
 import { formatLocalDate } from "@/core/utils/dateFunctions"
 import { exportToExcel } from "@/core/utils/exportToExcel"
 import { getAccountId } from "@/core/utils/get-account-id"
-import { IncomeDetailsFilters } from "@/modules/income-components/income-details-components/income-details/presentation/components/incomeDetailsFilters"
 import {
   deleteIncomeDetails,
   getIncomeDetails,
@@ -24,6 +23,7 @@ import { useRouter } from "next/navigation"
 import { useEffect, useState } from "react"
 import { FormProvider, useForm } from "react-hook-form"
 import { toast } from "sonner"
+import { IncomeDetailsFilters } from "./IncomeDetailsFilters"
 
 export function IncomeDetailsTable({ income_id }: { income_id?: string }) {
   const { push } = useRouter()

@@ -1,6 +1,7 @@
 "use client"
 
 import { Expense } from "@/@types/expense"
+import { ExpenseDetails } from "@/@types/expense-details"
 import { Button } from "@/core/components/Button"
 import { LoadingScreen } from "@/core/components/LoadingScreen"
 import { Modal } from "@/core/components/Modals/Modal"
@@ -19,24 +20,13 @@ import { editExpenseDetails } from "@/modules/expenses-components/expense-detail
 import { usePermissionQuery } from "@/modules/login-components/login/infra/hooks/use-permissions-query"
 import { FileXls, Money, Pencil, Trash } from "@phosphor-icons/react"
 import { useQuery } from "@tanstack/react-query"
-import { useRouter, useSearchParams } from "next/navigation"
+import { useRouter } from "next/navigation"
 import { useEffect, useState } from "react"
+import { FormProvider, useForm } from "react-hook-form"
 import { toast } from "sonner"
 
-export function ExpenseDetailsTable() {
+export function ExpenseDetailsTable({ expense_id }: { expense_id?: string }) {
   const { push } = useRouter()
-
-  const { data: permissions, isLoading: permissionLoading } =
-    usePermissionQuery()
-
-  const create = permissions?.["expense_details_create"]
-  const pay = permissions?.["expense_details_pay"]
-  const edit = permissions?.["expense_details_edit"]
-  const deletePermission = permissions?.["expense_details_delete"]
-
-  const searchParams = useSearchParams()
-
-  const expense_id = searchParams.get("expense_id") ?? undefined
 
   const account_id = getCookie("accountId")
 
@@ -46,20 +36,37 @@ export function ExpenseDetailsTable() {
   const [payOpen, setPayOpen] = useState(false)
   const [payId, setPayId] = useState("")
 
+  // check permissions
+  const { data: permissions, isLoading: permissionLoading } =
+    usePermissionQuery()
+
+  const create = permissions?.["expense_details_create"]
+  const pay = permissions?.["expense_details_pay"]
+  const edit = permissions?.["expense_details_edit"]
+  const deletePermission = permissions?.["expense_details_delete"]
+
+  const methods = useForm<ExpenseDetails.QueryParams>()
+
+  const [filters, setFilters] = useState<ExpenseDetails.QueryParams>({
+    expense_id,
+  })
+
   const { data, isLoading, refetch } = useQuery({
     queryKey: ["expense-details", expense_id],
-    queryFn: () =>
-      expense_id ?
-        getExpenseDetails(account_id, { page, expense_id })
-      : getExpenseDetails(account_id, { page }),
+    queryFn: () => getExpenseDetails(account_id, { page, ...filters }),
   })
+
+  // HANDLERS
+  const handleFilterChange = (newFilters: ExpenseDetails.QueryParams) => {
+    setFilters(newFilters)
+  }
 
   const handlePay = async (expense_details_id: string) => {
     try {
       await editExpenseDetails({ expense_details_id, is_paid: true })
-      refetch()
-      setPayOpen(false)
       toast.success("Parcela paga com sucesso!")
+      setPayOpen(false)
+      refetch()
     } catch (error) {
       toast.error(`Erro ao atualizar parcela: ${error}`)
     }
@@ -72,8 +79,8 @@ export function ExpenseDetailsTable() {
   const handleConfirmDelete = async () => {
     try {
       await deleteExpenseDetails(id)
-      refetch()
       toast.success("Parcela removida com sucesso!")
+      refetch()
     } catch (error) {
       toast.error(`Erro ao remover parcela: ${error}`)
     }
@@ -210,45 +217,47 @@ export function ExpenseDetailsTable() {
         </div>
       </Modal>
 
-      <ExpenseDetailsFilters account_id={account_id} expense_id={expense_id} />
+      <FormProvider {...methods}>
+        <ExpenseDetailsFilters onFilterChange={handleFilterChange} />
 
-      <div className="mt-8 flex items-center justify-between">
-        <div className="flex gap-4">
-          <Button onClick={() => push("/expenses")} variant="secondary">
-            Voltar
-          </Button>
-
-          {expense_id && (
-            <Button
-              variant="secondary"
-              onClick={() => push(`/expense-details/create/${expense_id}`)}
-              disabled={!create}>
-              Adicionar Parcela
+        <div className="mt-8 flex items-center justify-between">
+          <div className="flex gap-4">
+            <Button onClick={() => push("/expenses")} variant="secondary">
+              Voltar
             </Button>
-          )}
-        </div>
 
-        <Button
-          className="flex items-center gap-1"
-          variant="secondary"
-          onClick={exportToExcel}>
-          <FileXls size={22} />
-          Exportar
-        </Button>
-      </div>
-      {data.expenseDetails.length == 0 ?
-        <h2 className="mt-6 text-xl font-semibold">
-          Nenhuma parcela cadastrada.
-        </h2>
-      : <div>
-          <Table columns={columns} data={data.expenseDetails} />
-          <PageSelector
-            page={page}
-            setPage={setPage}
-            totalPages={data.totalPages}
-          />
+            {expense_id && (
+              <Button
+                variant="secondary"
+                onClick={() => push(`/expense-details/create/${expense_id}`)}
+                disabled={!create}>
+                Adicionar Parcela
+              </Button>
+            )}
+          </div>
+
+          <Button
+            className="flex items-center gap-1"
+            variant="secondary"
+            onClick={exportToExcel}>
+            <FileXls size={22} />
+            Exportar
+          </Button>
         </div>
-      }
+        {data.expenseDetails.length == 0 ?
+          <h2 className="mt-6 text-xl font-semibold">
+            Nenhuma parcela cadastrada.
+          </h2>
+        : <div>
+            <Table columns={columns} data={data.expenseDetails} />
+            <PageSelector
+              page={page}
+              setPage={setPage}
+              totalPages={data.totalPages}
+            />
+          </div>
+        }
+      </FormProvider>
     </>
   )
 }

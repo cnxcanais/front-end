@@ -1,6 +1,6 @@
 import { LoadingScreen } from "@/core/components/LoadingScreen"
 import { PageTitle } from "@/core/components/PageTitle"
-import { IncomeDetailsTable } from "@/modules/income-components/income-details-components/income-details/presentation/components/incomeDetailsTable"
+import { IncomeDetailsTable } from "@/modules/income-components/income-details-components/income-details/presentation/components/IncomeDetailsTable"
 import { Suspense } from "react"
 
 type SearchParams = { income_id: string | undefined }
