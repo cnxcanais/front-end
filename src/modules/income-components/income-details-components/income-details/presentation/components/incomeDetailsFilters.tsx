@@ -3,35 +3,34 @@ import { Button } from "@/core/components/Button"
 import * as Input from "@/core/components/Input"
 import { LoadingScreen } from "@/core/components/LoadingScreen"
 import { SelectInput } from "@/core/components/SelectInput"
+import { getAccountId } from "@/core/utils/get-account-id"
 import { prepareArrayForSelect } from "@/core/utils/prepare-array-for-select-input"
 import { useBankAccountsQuery } from "@/modules/bank-accounts-components/bank-accounts/infra/hooks/use-bank-account-query"
 import { useIncomeQuery } from "@/modules/income-components/income-components/infra/use-income-query"
-import { useIncomeDetailsQuery } from "@/modules/income-components/income-details-components/infra/hooks/use-income-details-query"
 import { CaretDown, CaretRight } from "@phosphor-icons/react"
 import { useEffect, useState } from "react"
-import { useForm } from "react-hook-form"
+import { useFormContext, useWatch } from "react-hook-form"
 
 interface FilterProps {
-  account_id: string
-  income_id?: string
+  onFilterChange: (filters: IncomeDetails.QueryParams) => void
 }
 
-export function IncomeDetailsFilters({ account_id, income_id }: FilterProps) {
+export function IncomeDetailsFilters({ onFilterChange }: FilterProps) {
   const [collapsed, setCollapsed] = useState(true)
-  const [filters, setFilters] = useState<IncomeDetails.QueryParams>({
-    page: 1,
-  } as IncomeDetails.QueryParams)
+  const [isFilterFilled, setIsFilterFilled] = useState(false)
+  const account_id = getAccountId()
 
   const { register, handleSubmit, control, reset, setValue } =
-    useForm<IncomeDetails.QueryParams>()
+    useFormContext<IncomeDetails.QueryParams>()
+
+  const formValues = useWatch({ control })
+  console.log(formValues)
 
   const { data: bankAccounts, isLoading: bankAccountIsLoading } =
     useBankAccountsQuery(account_id)
 
   const { data: incomes, isLoading: incomesIsLoading } =
     useIncomeQuery(account_id)
-
-  const { refetch } = useIncomeDetailsQuery(account_id, filters)
 
   function onSubmit(data: IncomeDetails.QueryParams) {
     const adjustMonth = (month: string | undefined, isStart: boolean) => {
@@ -57,25 +56,31 @@ export function IncomeDetailsFilters({ account_id, income_id }: FilterProps) {
       page: 1,
     }
 
-    setFilters(cleanedData)
+    onFilterChange(cleanedData)
   }
 
   function resetFilters() {
     reset()
-    setFilters({} as IncomeDetails.QueryParams)
     setValue("income_id", "")
+    onFilterChange({})
+    window.history.replaceState(
+      {
+        ...window.history.state,
+        as: "/income-details",
+        url: "/income-details",
+      },
+      "",
+      "/income-details"
+    ) // remove query param but without refreshing the page
   }
 
   useEffect(() => {
-    refetch()
-  }, [filters])
+    const hasValue = Object.values(formValues).some(
+      (value) => value !== undefined && value !== null && value !== ""
+    )
 
-  useEffect(() => {
-    if (income_id) {
-      setValue("income_id", income_id)
-      refetch()
-    }
-  }, [income_id])
+    setIsFilterFilled(hasValue)
+  }, [formValues])
 
   if (!incomes || incomesIsLoading || !bankAccounts || bankAccountIsLoading)
     return <LoadingScreen fullScreen={false} />
@@ -150,7 +155,7 @@ export function IncomeDetailsFilters({ account_id, income_id }: FilterProps) {
                 {...register("bank_account_id")}
               />
 
-              <div className="flex min-w-[200px] flex-col gap-2">
+              <div className="flex flex-1 flex-col gap-2">
                 <label className="text-lg" htmlFor="income_id">
                   NF
                 </label>
@@ -159,7 +164,7 @@ export function IncomeDetailsFilters({ account_id, income_id }: FilterProps) {
                     name="income_id"
                     control={control}
                     options={prepareArrayForSelect(
-                      incomes.incomes,
+                      incomes,
                       "document",
                       "income_id"
                     )}
@@ -182,16 +187,20 @@ export function IncomeDetailsFilters({ account_id, income_id }: FilterProps) {
             </div>
 
             <div className="flex h-12 w-full gap-2">
-              {Object.values(filters).length > 0 && (
-                <Button
-                  onClick={resetFilters}
-                  className="w-full"
-                  variant="secondary"
-                  type="button">
-                  Limpar
-                </Button>
-              )}
-              <Button className="w-full" variant="secondary" type="submit">
+              <Button
+                className="w-full"
+                disabled={!isFilterFilled}
+                onClick={resetFilters}
+                variant="secondary"
+                type="button">
+                Limpar
+              </Button>
+
+              <Button
+                className="w-full"
+                disabled={!isFilterFilled}
+                variant="secondary"
+                type="submit">
                 Pesquisar
               </Button>
             </div>

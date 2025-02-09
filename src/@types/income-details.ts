@@ -16,7 +16,7 @@ export namespace IncomeDetails {
     end_date?: string | Date
     is_paid?: boolean
     bank_account_id?: string
-    page: number
+    page?: number
     income_id?: string
   }
 
@@ -63,6 +63,6 @@ export namespace IncomeDetails {
     max_amount?: number
     income_id?: string
     min_amount?: number
-    page: number
+    page?: number
   }
 }

@@ -175,7 +175,7 @@ export function IncomeTable() {
         </div>
       </Modal>
       <FormProvider {...methods}>
-        <IncomeFilters incomes={incomes} onFilterChange={handleFilterChange} />
+        <IncomeFilters onFilterChange={handleFilterChange} />
         <div className="mt-8 flex items-center justify-between">
           <div className="flex h-full gap-4">
             <SearchInput

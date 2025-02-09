@@ -10,13 +10,13 @@ import { useOrganizationsQuery } from "@/modules/organization-components/organiz
 import { CaretDown, CaretRight } from "@phosphor-icons/react"
 import { useEffect, useState } from "react"
 import { useFormContext, useWatch } from "react-hook-form"
+import { useIncomeQuery } from "../../../infra/use-income-query"
 
 interface FilterProps {
   onFilterChange: (filters: Income.GetRequest) => void
-  incomes: Income.IncomeType[]
 }
 
-export function IncomeFilters({ onFilterChange, incomes }: FilterProps) {
+export function IncomeFilters({ onFilterChange }: FilterProps) {
   const [collapsed, setCollapsed] = useState(false)
   const [isFilterFilled, setIsFilterFilled] = useState(false)
   const account_id = getAccountId()
@@ -26,11 +26,12 @@ export function IncomeFilters({ onFilterChange, incomes }: FilterProps) {
     handleSubmit,
     control,
     reset,
-    setValue,
     formState: { isSubmitted },
   } = useFormContext<Income.GetRequest>()
 
   const formValues = useWatch({ control })
+
+  const { data: incomes } = useIncomeQuery(account_id)
 
   const { data: incomeGroups, isLoading: incomeGroupsIsLoading } =
     useIncomeGroupQuery(account_id)
@@ -44,6 +45,7 @@ export function IncomeFilters({ onFilterChange, incomes }: FilterProps) {
   function onSubmit(data: Income.GetRequest) {
     const adjustMonth = (month: string | undefined, isStart: boolean) => {
       if (!month) return undefined
+
       const [year, monthIndex] = month.split("-").map(Number)
       return isStart ?
           new Date(year, monthIndex - 1, 1)
@@ -76,6 +78,7 @@ export function IncomeFilters({ onFilterChange, incomes }: FilterProps) {
 
   if (
     !incomeGroups ||
+    !incomes ||
     incomeGroupsIsLoading ||
     !incomeSources ||
     incomeSourcesIsLoading ||

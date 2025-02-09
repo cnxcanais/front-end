@@ -2,30 +2,37 @@ import { Expense } from "@/@types/expense"
 import { Button } from "@/core/components/Button"
 import * as Input from "@/core/components/Input"
 import { LoadingScreen } from "@/core/components/LoadingScreen"
+import { getAccountId } from "@/core/utils/get-account-id"
 import { prepareArrayForSelect } from "@/core/utils/prepare-array-for-select-input"
-import { useExpenseQuery } from "@/modules/expenses-components/expense-components/infra/use-expense-query"
 import { useExpenseGroupQuery } from "@/modules/expenses-components/expense-groups-components/remote/use-expense-groups-query"
 import { useSupplierQuery } from "@/modules/expenses-components/supplier-components/suppliers/infra/hooks/use-supplier-query"
 import { useOrganizationsQuery } from "@/modules/organization-components/organizations/infra/remote/hooks/use-organizations-query"
 import { CaretDown, CaretRight } from "@phosphor-icons/react"
 import { useEffect, useState } from "react"
-import { useForm } from "react-hook-form"
+import { useFormContext, useWatch } from "react-hook-form"
+import { useExpenseQuery } from "../../../infra/use-expense-query"
 
 interface FilterProps {
-  account_id: string
+  onFilterChange: (filters: Expense.GetRequest) => void
 }
 
-export function ExpenseFilters({ account_id }: FilterProps) {
+export function ExpenseFilters({ onFilterChange }: FilterProps) {
+  const account_id = getAccountId()
+
   const [collapsed, setCollapsed] = useState(false)
-  const [filters, setFilters] = useState<Expense.GetRequest>(
-    {} as Expense.GetRequest
-  )
+  const [isFilterFilled, setIsFilterFilled] = useState(false)
 
-  const { register, handleSubmit, control, reset } =
-    useForm<Expense.GetRequest>()
+  const {
+    register,
+    handleSubmit,
+    control,
+    reset,
+    formState: { isSubmitted },
+  } = useFormContext<Expense.GetRequest>()
 
-  const { data: expenses, isLoading: expensesIsLoading } =
-    useExpenseQuery(account_id)
+  const formValues = useWatch({ control })
+
+  const { data: expenses } = useExpenseQuery(account_id)
 
   const { data: expenseGroups, isLoading: expenseGroupsIsLoading } =
     useExpenseGroupQuery(account_id)
@@ -36,11 +43,10 @@ export function ExpenseFilters({ account_id }: FilterProps) {
   const { data: organizations, isLoading: organizationsIsLoading } =
     useOrganizationsQuery(account_id)
 
-  const { refetch } = useExpenseQuery(account_id, filters)
-
   function onSubmit(data: Expense.GetRequest) {
     const adjustMonth = (month: string | undefined, isStart: boolean) => {
       if (!month) return undefined
+
       const [year, monthIndex] = month.split("-").map(Number)
       return isStart ?
           new Date(year, monthIndex - 1, 1)
@@ -53,25 +59,26 @@ export function ExpenseFilters({ account_id }: FilterProps) {
         ?.toISOString()
         .split("T")[0],
       end_date: adjustMonth(data.end_date, false)?.toISOString().split("T")[0],
-
       page: 1,
     }
 
-    setFilters(cleanedData)
+    onFilterChange(cleanedData)
   }
 
   function resetFilters() {
     reset()
-    setFilters({} as Expense.GetRequest)
+    onFilterChange({})
   }
 
   useEffect(() => {
-    refetch()
-  }, [filters])
+    const hasValue = Object.values(formValues).some(
+      (value) => value !== undefined && value !== null && value !== ""
+    )
+    setIsFilterFilled(hasValue)
+  }, [formValues])
 
   if (
     !expenses ||
-    expensesIsLoading ||
     !expenseGroups ||
     expenseGroupsIsLoading ||
     !expenseSources ||
@@ -116,9 +123,9 @@ export function ExpenseFilters({ account_id }: FilterProps) {
             </div>
 
             <div className="flex items-center gap-4">
-              <div className="flex min-w-[250px] flex-col gap-2">
+              <div className="flex flex-1 flex-col gap-2">
                 <label className="text-lg" htmlFor="expense_id">
-                  Grupo de Receita
+                  Grupo de Despesa
                 </label>
                 <Input.Root>
                   <Input.SelectInput
@@ -134,7 +141,7 @@ export function ExpenseFilters({ account_id }: FilterProps) {
                 </Input.Root>
               </div>
 
-              <div className="flex min-w-[250px] flex-col gap-2">
+              <div className="flex flex-1 flex-col gap-2">
                 <label className="text-lg" htmlFor="expense_id">
                   Cliente
                 </label>
@@ -156,7 +163,7 @@ export function ExpenseFilters({ account_id }: FilterProps) {
 
           <div className="flex flex-1 flex-col justify-between gap-4">
             <div className="flex gap-4">
-              <div className="flex min-w-[200px] flex-col gap-2">
+              <div className="flex flex-1 flex-col gap-2">
                 <label className="text-lg" htmlFor="expense_id">
                   NF
                 </label>
@@ -165,7 +172,7 @@ export function ExpenseFilters({ account_id }: FilterProps) {
                     name="document"
                     control={control}
                     options={prepareArrayForSelect(
-                      expenses.expenses,
+                      expenses,
                       "document",
                       "document"
                     )}
@@ -174,7 +181,7 @@ export function ExpenseFilters({ account_id }: FilterProps) {
                 </Input.Root>
               </div>
 
-              <div className="flex min-w-[200px] flex-col gap-2">
+              <div className="flex flex-1 flex-col gap-2">
                 <label className="text-lg" htmlFor="expense_id">
                   Organização
                 </label>
@@ -194,16 +201,20 @@ export function ExpenseFilters({ account_id }: FilterProps) {
             </div>
 
             <div className="flex h-12 w-full gap-2">
-              {Object.values(filters).length > 0 && (
-                <Button
-                  onClick={resetFilters}
-                  className="w-full"
-                  variant="secondary"
-                  type="button">
-                  Limpar
-                </Button>
-              )}
-              <Button className="w-full" variant="secondary" type="submit">
+              <Button
+                onClick={resetFilters}
+                disabled={!isSubmitted}
+                className="w-full"
+                variant="secondary"
+                type="button">
+                Limpar
+              </Button>
+
+              <Button
+                disabled={!isFilterFilled}
+                className="w-full"
+                variant="secondary"
+                type="submit">
                 Pesquisar
               </Button>
             </div>

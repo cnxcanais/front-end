@@ -13,7 +13,7 @@ export async function getExpenses(
       }
     )
 
-    return data
+    return data.expenses
   } catch (error) {
     console.error(error)
   }

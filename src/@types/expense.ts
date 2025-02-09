@@ -4,13 +4,13 @@ import { Supplier } from "@/@types/suppliers"
 
 export namespace Expense {
   export type GetRequest = {
-    is_paid?: string
     document?: string
     start_date?: string
     end_date?: string
     organization_id?: string
     supplier_id?: string
     expense_group_id?: string
+    page?: number
   }
 
   export type ExpenseType = {

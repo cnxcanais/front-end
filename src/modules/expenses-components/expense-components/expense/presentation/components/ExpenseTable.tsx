@@ -1,5 +1,6 @@
 "use client"
 
+import { Expense } from "@/@types/expense"
 import { ExpenseDetails } from "@/@types/expense-details"
 import { Button } from "@/core/components/Button"
 import { LoadingScreen } from "@/core/components/LoadingScreen"
@@ -10,41 +11,37 @@ import { Table } from "@/core/components/Table"
 import { exportToExcel } from "@/core/utils/exportToExcel"
 import { getAccountId } from "@/core/utils/get-account-id"
 import { getPermissionByEntity } from "@/core/utils/getPermissionByEntity"
-import { queryClient } from "@/lib/react-query"
 import { ExpenseFilters } from "@/modules/expenses-components/expense-components/expense/presentation/components/ExpenseFilters"
 import { useExpenseQuery } from "@/modules/expenses-components/expense-components/infra/use-expense-query"
-import {
-  getExpenses,
-  removeExpense,
-} from "@/modules/expenses-components/expense-components/remote"
+import { removeExpense } from "@/modules/expenses-components/expense-components/remote"
 import { FileXls, Pencil, Trash } from "@phosphor-icons/react"
-import { useMutation } from "@tanstack/react-query"
 import { useRouter } from "next/navigation"
 import { useEffect, useState } from "react"
+import { FormProvider, useForm } from "react-hook-form"
 import { toast } from "sonner"
 
 export function ExpenseTable() {
   const accountId = getAccountId()
 
-  const { data: expenses, isLoading } = useExpenseQuery(accountId)
-
   const { push } = useRouter()
 
   const [open, setOpen] = useState(false)
   const [id, setId] = useState("")
-  const [filteredResults, setFilteredResults] = useState([])
+  const [page, setPage] = useState(1)
 
-  const refetchExpensesFn = useMutation({
-    mutationFn: getExpenses,
-    onSuccess: () => {
-      toast.success("Receita removida com sucesso!")
-      queryClient.invalidateQueries({ queryKey: ["expenses"] })
-    },
-    onError: (error) => {
-      toast.error("Erro ao remover receita: " + error)
-    },
-    onSettled: () => {
-      setOpen(false)
+  // filters state
+  const [filteredResults, setFilteredResults] = useState([])
+  const [filters, setFilters] = useState<Expense.GetRequest>({})
+
+  const methods = useForm<Expense.GetRequest>({
+    defaultValues: {
+      page,
+      document: "",
+      end_date: "",
+      expense_group_id: "",
+      organization_id: "",
+      start_date: "",
+      supplier_id: "",
     },
   })
 
@@ -52,12 +49,33 @@ export function ExpenseTable() {
   const expense_edit = getPermissionByEntity("expense_edit")
   const expense_delete = getPermissionByEntity("expense_delete")
 
+  const {
+    data: expenses,
+    isLoading,
+    refetch,
+  } = useExpenseQuery(accountId, {
+    ...filters,
+    page,
+  })
+
+  const handleFilterChange = (newFilters: Expense.GetRequest) => {
+    setFilters(newFilters)
+  }
+
   const handleEdit = (id: string) => {
     push(`/expenses/edit/${id}`)
   }
 
   const handleConfirmDelete = async () => {
-    await removeExpense(id).then(() => refetchExpensesFn.mutate(accountId))
+    try {
+      await removeExpense(id)
+      toast.success("Despesa removida com sucesso!")
+      refetch()
+    } catch (error) {
+      toast.error("Erro ao remover despesa: " + error)
+    } finally {
+      setOpen(false)
+    }
   }
 
   const columns = [
@@ -137,7 +155,7 @@ export function ExpenseTable() {
 
   useEffect(() => {
     if (expenses) {
-      setFilteredResults(expenses.expenses)
+      setFilteredResults(expenses)
     }
   }, [expenses, isLoading])
 
@@ -146,8 +164,8 @@ export function ExpenseTable() {
   return (
     <>
       <Modal
-        title="Remover Receita"
-        content="Você tem certeza de que deseja remover esta receita?"
+        title="Remover Despesa"
+        content="Você tem certeza de que deseja remover esta despesa?"
         onClose={() => setOpen(false)}
         open={open}>
         <div className="flex items-center justify-center gap-4">
@@ -159,38 +177,43 @@ export function ExpenseTable() {
           </Button>
         </div>
       </Modal>
-      <ExpenseFilters account_id={accountId} />
-      <div className="mt-8 flex items-center justify-between">
-        <div className="flex h-full gap-4">
-          <SearchInput
-            data={expenses.expenses}
-            searchParam="description"
-            onSearchResult={(results) => setFilteredResults(results)}
-          />
-          {expense_create && (
+
+      <FormProvider {...methods}>
+        <ExpenseFilters onFilterChange={handleFilterChange} />
+        <div className="mt-8 flex items-center justify-between">
+          <div className="flex h-full gap-4">
+            <SearchInput
+              data={expenses}
+              searchParam="description"
+              onSearchResult={(results) => setFilteredResults(results)}
+            />
+            {expense_create && (
+              <Button
+                onClick={() => push("/expenses/create")}
+                variant="secondary">
+                Cadastrar
+              </Button>
+            )}
             <Button
-              onClick={() => push("/expenses/create")}
+              onClick={() => push("/expense-details")}
               variant="secondary">
-              Cadastrar
+              Consultar Parcelas
             </Button>
-          )}
-          <Button onClick={() => push("/expense-details")} variant="secondary">
-            Consultar Parcelas
+          </div>
+          <Button
+            className="flex items-center gap-1"
+            variant="secondary"
+            onClick={exportToExcel}>
+            <FileXls size={22} />
+            Exportar
           </Button>
         </div>
-        <Button
-          className="flex items-center gap-1"
-          variant="secondary"
-          onClick={exportToExcel}>
-          <FileXls size={22} />
-          Exportar
-        </Button>
-      </div>
-      {expenses.expenses.length === 0 ?
-        <h2 className="mt-6 text-xl font-semibold">
-          Nenhuma despesa cadastrada.
-        </h2>
-      : <Table columns={columns} data={filteredResults} />}
+        {expenses.length === 0 ?
+          <h2 className="mt-6 text-xl font-semibold">
+            Nenhuma despesa cadastrada.
+          </h2>
+        : <Table columns={columns} data={filteredResults} />}
+      </FormProvider>
     </>
   )
 }

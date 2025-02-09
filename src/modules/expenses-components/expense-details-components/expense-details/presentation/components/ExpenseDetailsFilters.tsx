@@ -159,7 +159,7 @@ export function ExpenseDetailsFilters({ account_id, expense_id }: FilterProps) {
                     name="expense_id"
                     control={control}
                     options={prepareArrayForSelect(
-                      expenses.expenses,
+                      expenses,
                       "document",
                       "expense_id"
                     )}
