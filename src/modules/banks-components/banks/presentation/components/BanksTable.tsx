@@ -144,9 +144,6 @@ export function BanksTable() {
       {banks.length === 0 ?
         <h2 className="mt-6 text-xl font-semibold">Nenhum banco cadastrado.</h2>
       : <Table columns={columns} data={filteredResults} />}
-      {filteredResults.length === 0 && (
-        <h2 className="text-xl font-semibold">Nenhum banco encontrado.</h2>
-      )}
     </>
   )
 }

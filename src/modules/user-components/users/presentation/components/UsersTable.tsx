@@ -151,7 +151,7 @@ export function UsersTable() {
         </Button>
       </div>
       {users.length === 0 ?
-        <h2 className="mt-6 text-xl font-semibold">Nenhum usuário.</h2>
+        <h2 className="mt-6 text-xl font-semibold">Nenhum usuário criado.</h2>
       : <Table columns={columns} data={filteredResults} />}
     </>
   )

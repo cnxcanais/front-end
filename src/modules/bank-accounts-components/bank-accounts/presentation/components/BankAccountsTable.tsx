@@ -168,12 +168,6 @@ export function BankAccountsTable() {
           Nenhuma conta de banco cadastrada.
         </h2>
       : <Table columns={columns} data={filteredResults} />}
-
-      {filteredResults.length === 0 && (
-        <h2 className="text-xl font-semibold">
-          Nenhuma conta de banco encontrada.
-        </h2>
-      )}
     </>
   )
 }
