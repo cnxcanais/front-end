@@ -82,10 +82,11 @@ export function IncomeTable() {
       header: "Valor",
       accessor: "total_amount",
       render: (value: number) => {
-        return value.toLocaleString("pt-BR", {
-          style: "currency",
-          currency: "BRL",
-        })
+        if (value)
+          return value.toLocaleString("pt-BR", {
+            style: "currency",
+            currency: "BRL",
+          })
       },
     },
     {

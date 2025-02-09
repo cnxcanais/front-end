@@ -109,14 +109,15 @@ export function IncomeDetailsTable({ income_id }: { income_id?: string }) {
     {
       header: "Valor",
       accessor: "amount",
-      render: (amount: string) => (
-        <p>
-          {Number(amount).toLocaleString("pt-br", {
-            style: "currency",
-            currency: "BRL",
-          })}
-        </p>
-      ),
+      render: (amount: string) =>
+        amount && (
+          <p>
+            {Number(amount).toLocaleString("pt-br", {
+              style: "currency",
+              currency: "BRL",
+            })}
+          </p>
+        ),
     },
     {
       header: "Parc.",
