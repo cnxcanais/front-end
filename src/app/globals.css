@@ -1,3 +1,39 @@
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+
+/* Works on Firefox */
+* {
+  scrollbar-width: thin;
+  scrollbar-color: #c2a360 #cecfd1;
+}
+
+/* Works on Chrome, Edge, and Safari */
+*::-webkit-scrollbar {
+  width: 12px;
+}
+
+*::-webkit-scrollbar-track {
+  background: #c2a360;
+}
+
+*::-webkit-scrollbar-thumb {
+  background-color: #c2a360;
+  border-radius: 20px;
+  border: 3px solid #cecfd1;
+}
+
+input:focus, textarea:focus {
+  border-color: transparent;
+  box-shadow: none;
+  border: 0;
+}
+
+@layer utilities {
+  .no-scrollbar {
+    -ms-overflow-style: none !important;
+    /* IE and Edge */
+    scrollbar-width: none !important;
+    /* Firefox */
+  }
+}

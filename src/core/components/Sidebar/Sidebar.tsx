@@ -1,11 +1,10 @@
 "use client"
 
 import { SidebarItem } from "@/core/components/Sidebar"
-import { List } from "@phosphor-icons/react"
-import { X } from "@phosphor-icons/react/dist/ssr"
+import { List, X } from "@phosphor-icons/react"
 import Image from "next/image"
 import { usePathname } from "next/navigation"
-import { useEffect, useState } from "react"
+import { Fragment, useState } from "react"
 import { sidebarGroupedByGroups } from "./options"
 
 export function Sidebar() {
@@ -16,14 +15,10 @@ export function Sidebar() {
     setIsOpen(!isOpen)
   }
 
-  useEffect(() => {
-    document.body.style.paddingLeft = isOpen ? "18rem" : "4rem"
-  }, [isOpen])
-
   return (
     <aside
-      className={`fixed left-0 top-0 h-full transition-all duration-300 ease-in-out ${
-        isOpen ? "w-72" : "w-0"
+      className={`left-0 top-0 h-full overflow-y-auto transition-all duration-300 ease-in-out ${
+        isOpen ? "w-72" : "mr-10 w-0"
       } border-r border-gray-200 bg-blue-500`}>
       <div className="flex items-center justify-between p-4">
         <Image
@@ -46,20 +41,22 @@ export function Sidebar() {
           <ul role="list" className="flex flex-1 flex-col gap-y-7">
             <ul role="list" className="-mx-2 space-y-1">
               {Object.keys(sidebarGroupedByGroups).map((group) => (
-                <div key={group}>
-                  <h3 className="my-2 text-lg font-semibold text-white">
+                <Fragment key={group}>
+                  <h3 className="!my-3 border-b-2 pb-0.5 text-lg font-semibold text-white">
                     {group}
                   </h3>
-                  {sidebarGroupedByGroups[group].map((item) => (
-                    <SidebarItem
-                      key={item.name}
-                      href={item.href}
-                      Icon={item.Icon}
-                      name={item.name}
-                      current={pathname === item.href}
-                    />
-                  ))}
-                </div>
+                  <div className="space-y-1">
+                    {sidebarGroupedByGroups[group].map((item) => (
+                      <SidebarItem
+                        key={item.name}
+                        href={item.href}
+                        Icon={item.Icon}
+                        name={item.name}
+                        current={pathname === item.href}
+                      />
+                    ))}
+                  </div>
+                </Fragment>
               ))}
             </ul>
           </ul>

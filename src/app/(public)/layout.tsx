@@ -6,15 +6,22 @@ export default function LoginComponentsLayout({
   children: React.ReactNode
 }) {
   return (
-    <>
-      <nav className="m-0 bg-blue-200">
+    <div className="flex h-screen flex-col bg-blue-500">
+      <nav className="bg-black/60 opacity-90">
         <div className="p-2.5">
-          <Image src="/images/logo.svg" alt="Logo" width={100} height={50} />
+          <Image
+            className="h-24 w-auto"
+            src="/images/light-logo.png"
+            alt="Logo"
+            width={400}
+            height={400}
+          />
         </div>
       </nav>
-      <main className="flex h-screen items-center justify-center bg-blue-500">
+
+      <main className="flex flex-1 items-center justify-center">
         {children}
       </main>
-    </>
+    </div>
   )
 }

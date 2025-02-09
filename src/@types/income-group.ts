@@ -1,0 +1,37 @@
+export namespace IncomeGroup {
+  export type Type = {
+    income_group_id: string
+    group_name: string
+    created_at: Date
+    updated_at: Date
+    account_id: string
+  }
+
+  export type GetRequest = {
+    group_name?: string
+  }
+
+  export type GetResponse = {
+    incomeGroups: Type[]
+  }
+
+  export type GetByIdRequest = {
+    income_group_id: string
+  }
+
+  export type GetByIdResponse = {
+    incomeGroup: Type
+  }
+
+  export type CreateRequest = {
+    group_name: string
+  }
+
+  export type DeleteRequest = {
+    income_group_id: string
+  }
+
+  export type UpdateRequest = {
+    group_name: string
+  }
+}
