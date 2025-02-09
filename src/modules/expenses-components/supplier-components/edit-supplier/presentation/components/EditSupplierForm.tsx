@@ -105,9 +105,7 @@ export function EditSupplierForm({ id }: { id: string }) {
       <div className="flex flex-col gap-4">
         <div className="flex gap-4">
           <div className="flex flex-1 flex-col gap-2">
-            <label className="text-lg" htmlFor="name">
-              Nome
-            </label>
+            <label htmlFor="name">Nome</label>
             <Input.Root variant={errors.name ? "error" : "primary"}>
               <Input.Control
                 disabled={!supplier_input_fields_name}
@@ -123,9 +121,7 @@ export function EditSupplierForm({ id }: { id: string }) {
           </div>
 
           <div className="flex flex-1 flex-col gap-2">
-            <label className="text-lg" htmlFor="cpf_cnpj">
-              Documento
-            </label>
+            <label htmlFor="cpf_cnpj">Documento</label>
             <Input.Root variant={errors.cpf_cnpj ? "error" : "primary"}>
               <Input.Control
                 disabled={!supplier_input_fields_cpf_cnpj}
@@ -143,9 +139,7 @@ export function EditSupplierForm({ id }: { id: string }) {
 
         <div className="flex gap-4">
           <div className="flex flex-1 flex-col gap-2">
-            <label className="text-lg" htmlFor="address_1">
-              Contato
-            </label>
+            <label htmlFor="address_1">Contato</label>
             <Input.Root variant={errors.contact_name ? "error" : "primary"}>
               <Input.Control
                 disabled={!supplier_input_fields_contact_name}
@@ -161,9 +155,7 @@ export function EditSupplierForm({ id }: { id: string }) {
           </div>
 
           <div className="flex flex-1 flex-col gap-2">
-            <label className="text-lg" htmlFor="phone">
-              Telefone
-            </label>
+            <label htmlFor="phone">Telefone</label>
             <Input.Root variant={errors.phone ? "error" : "primary"}>
               <Input.Control
                 disabled={!supplier_input_fields_phone}
@@ -179,9 +171,7 @@ export function EditSupplierForm({ id }: { id: string }) {
           </div>
 
           <div className="flex flex-1 flex-col gap-2">
-            <label className="text-lg" htmlFor="email">
-              Email
-            </label>
+            <label htmlFor="email">Email</label>
             <Input.Root variant={errors.email ? "error" : "primary"}>
               <Input.Control
                 disabled={!supplier_input_fields_email}
@@ -201,9 +191,7 @@ export function EditSupplierForm({ id }: { id: string }) {
       <div className="flex flex-col gap-4">
         <div className="flex gap-4">
           <div className="flex flex-1 flex-col gap-2">
-            <label className="text-lg" htmlFor="city">
-              Cidade
-            </label>
+            <label htmlFor="city">Cidade</label>
             <Input.Root variant={errors.city ? "error" : "primary"}>
               <Input.Control
                 disabled={!supplier_input_fields_city}
@@ -219,9 +207,7 @@ export function EditSupplierForm({ id }: { id: string }) {
           </div>
 
           <div className="flex flex-col gap-2">
-            <label className="text-lg" htmlFor="state">
-              Estado
-            </label>
+            <label htmlFor="state">Estado</label>
             <Input.Root variant={errors.state ? "error" : "primary"}>
               <Input.Control
                 disabled={!supplier_input_fields_state}
@@ -237,9 +223,7 @@ export function EditSupplierForm({ id }: { id: string }) {
           </div>
 
           <div className="flex flex-col gap-2">
-            <label className="text-lg" htmlFor="cep">
-              CEP
-            </label>
+            <label htmlFor="cep">CEP</label>
             <Input.Root variant={errors.cep ? "error" : "primary"}>
               <Input.Control
                 disabled={!supplier_input_fields_cep}
@@ -255,9 +239,7 @@ export function EditSupplierForm({ id }: { id: string }) {
 
         <div className="flex gap-4">
           <div className="flex flex-1 flex-col gap-2">
-            <label className="text-lg" htmlFor="address_1">
-              Endereço
-            </label>
+            <label htmlFor="address_1">Endereço</label>
             <Input.Root variant={errors.address_1 ? "error" : "primary"}>
               <Input.Control
                 disabled={!supplier_input_fields_address_1}
@@ -273,9 +255,7 @@ export function EditSupplierForm({ id }: { id: string }) {
           </div>
 
           <div className="flex flex-col gap-2">
-            <label className="text-lg" htmlFor="address_2">
-              Número
-            </label>
+            <label htmlFor="address_2">Número</label>
             <Input.Root variant="primary">
               <Input.Control
                 disabled={!supplier_input_fields_address_2}
@@ -286,9 +266,7 @@ export function EditSupplierForm({ id }: { id: string }) {
           </div>
 
           <div className="flex flex-col gap-2">
-            <label className="text-lg" htmlFor="address_3">
-              Complemento
-            </label>
+            <label htmlFor="address_3">Complemento</label>
             <Input.Root variant="primary">
               <Input.Control
                 disabled={!supplier_input_fields_address_3}

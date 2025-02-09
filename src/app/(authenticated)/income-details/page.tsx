@@ -3,7 +3,7 @@ import { PageTitle } from "@/core/components/PageTitle"
 import { IncomeDetailsTable } from "@/modules/income-components/income-details-components/income-details/presentation/components/incomeDetailsTable"
 import { Suspense } from "react"
 
-type SearchParams = { [key: string]: string | undefined }
+type SearchParams = { income_id: string | undefined }
 
 export default function IncomeDetailsRender({
   searchParams,

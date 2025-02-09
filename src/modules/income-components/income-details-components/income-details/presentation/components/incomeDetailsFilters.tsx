@@ -24,7 +24,6 @@ export function IncomeDetailsFilters({ onFilterChange }: FilterProps) {
     useFormContext<IncomeDetails.QueryParams>()
 
   const formValues = useWatch({ control })
-  console.log(formValues)
 
   const { data: bankAccounts, isLoading: bankAccountIsLoading } =
     useBankAccountsQuery(account_id)
@@ -101,18 +100,14 @@ export function IncomeDetailsFilters({ onFilterChange }: FilterProps) {
           <div className="flex flex-1 flex-col gap-2">
             <div className="flex items-center gap-4">
               <div className="flex flex-1 flex-col gap-2">
-                <label className="text-lg" htmlFor="start_date">
-                  Data Inicial
-                </label>
+                <label htmlFor="start_date">Data Inicial</label>
                 <Input.Root>
                   <Input.Control {...register("start_date")} type="month" />
                 </Input.Root>
               </div>
 
               <div className="flex flex-1 flex-col gap-2">
-                <label className="text-lg" htmlFor="end_date">
-                  Data Final
-                </label>
+                <label htmlFor="end_date">Data Final</label>
                 <Input.Root>
                   <Input.Control {...register("end_date")} type="month" />
                 </Input.Root>
@@ -121,18 +116,14 @@ export function IncomeDetailsFilters({ onFilterChange }: FilterProps) {
 
             <div className="flex items-center gap-4">
               <div className="flex flex-1 flex-col gap-2">
-                <label className="text-lg" htmlFor="min_amount">
-                  Valor Inicial
-                </label>
+                <label htmlFor="min_amount">Valor Inicial</label>
                 <Input.Root>
                   <Input.Currency name="min_amount" control={control} />
                 </Input.Root>
               </div>
 
               <div className="flex flex-1 flex-col gap-2">
-                <label className="text-lg" htmlFor="max_amount">
-                  Valor Final
-                </label>
+                <label htmlFor="max_amount">Valor Final</label>
                 <Input.Root>
                   <Input.Currency name="max_amount" control={control} />
                 </Input.Root>
@@ -156,9 +147,7 @@ export function IncomeDetailsFilters({ onFilterChange }: FilterProps) {
               />
 
               <div className="flex flex-1 flex-col gap-2">
-                <label className="text-lg" htmlFor="income_id">
-                  NF
-                </label>
+                <label htmlFor="income_id">NF</label>
                 <Input.Root>
                   <Input.SelectInput
                     name="income_id"

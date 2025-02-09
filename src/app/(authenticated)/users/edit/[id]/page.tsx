@@ -1,4 +1,5 @@
-import { EditUserPage } from "@/modules/user-components/edit-user/presentation/pages"
+import { PageTitle } from "@/core/components/PageTitle"
+import { EditUserForm } from "@/modules/user-components/edit-user/presentation/components/EditUserForm"
 
 export default async function EditUserRender({
   params,
@@ -7,5 +8,10 @@ export default async function EditUserRender({
 }) {
   const id = (await params).id
 
-  return <EditUserPage id={id} />
+  return (
+    <>
+      <PageTitle content="Editar Usuário" />
+      <EditUserForm id={id} />
+    </>
+  )
 }

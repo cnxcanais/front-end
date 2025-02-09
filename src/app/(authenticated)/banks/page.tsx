@@ -1,5 +1,11 @@
-import { BanksPage } from "@/modules/banks-components/banks/presentation/pages"
+import { PageTitle } from "@/core/components/PageTitle"
+import { BanksTable } from "@/modules/banks-components/banks/presentation/components/BanksTable"
 
 export default function BanksRender() {
-  return <BanksPage />
+  return (
+    <main className="flex w-full max-w-[1200px] flex-col">
+      <PageTitle content="Bancos" />
+      <BanksTable />
+    </main>
+  )
 }

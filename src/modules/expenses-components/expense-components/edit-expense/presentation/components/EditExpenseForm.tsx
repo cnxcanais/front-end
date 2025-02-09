@@ -8,25 +8,22 @@ import { LoadingScreen } from "@/core/components/LoadingScreen"
 import { getAccountId } from "@/core/utils/get-account-id"
 import { getPermissionByEntity } from "@/core/utils/getPermissionByEntity"
 import { ArrayConfig, populateArrays } from "@/core/utils/populateArrays"
+import { editExpenseSchema } from "@/modules/expenses-components/expense-components/edit-expense/presentation/validation/schema"
 import { useExpenseByIdQuery } from "@/modules/expenses-components/expense-components/infra/use-expense-by-id-query"
 import { editExpense } from "@/modules/expenses-components/expense-components/remote"
 import { getAllExpenseGroups } from "@/modules/expenses-components/expense-groups-components/remote/expense-groups-methods"
 import { getSuppliers } from "@/modules/expenses-components/supplier-components/suppliers/infra/remote"
 import { getOrganizations } from "@/modules/organization-components/organizations/infra/remote"
 import { zodResolver } from "@hookform/resolvers/zod"
-import { useParams, useRouter } from "next/navigation"
+import { useRouter } from "next/navigation"
 import { useEffect, useMemo, useState } from "react"
 import { useForm } from "react-hook-form"
 import { toast } from "sonner"
-import { editExpenseSchema } from "../validation/schema"
 
-export function EditExpenseForm() {
+export function EditExpenseForm({ expense_id }: { expense_id: string }) {
   const { push } = useRouter()
 
   const account_id = getAccountId()
-
-  const params = useParams()
-  const expense_id = params.id as string
 
   const [organizations, setOrganizations] = useState<SearchArray>([])
   const [expenseGroups, setExpenseGroups] = useState<SearchArray>([])
@@ -151,9 +148,7 @@ export function EditExpenseForm() {
         <div className="flex flex-col gap-4">
           <div className="flex gap-4">
             <div className="flex min-w-[500px] flex-col gap-2">
-              <label className="text-lg" htmlFor="supplier_id">
-                Gerador da Despesa
-              </label>
+              <label htmlFor="supplier_id">Gerador da Despesa</label>
               <Input.Root variant={errors.supplier_id ? "error" : "primary"}>
                 <Input.SelectInput
                   name="supplier_id"
@@ -171,9 +166,7 @@ export function EditExpenseForm() {
             </div>
 
             <div className="flex flex-1 flex-col gap-2">
-              <label className="text-lg" htmlFor="expense_group_id">
-                Grupo de Despesas
-              </label>
+              <label htmlFor="expense_group_id">Grupo de Despesas</label>
               <Input.Root
                 variant={errors.expense_group_id ? "error" : "primary"}>
                 <Input.SelectInput
@@ -192,9 +185,7 @@ export function EditExpenseForm() {
             </div>
 
             <div className="flex max-w-[150px] flex-1 flex-col gap-2">
-              <label className="text-lg" htmlFor="cpf_cnpj">
-                Data
-              </label>
+              <label htmlFor="date">Data</label>
               <Input.Root variant={errors.date ? "error" : "primary"}>
                 <Input.Control
                   disabled={!expense_input_fields_date}
@@ -211,10 +202,8 @@ export function EditExpenseForm() {
           </div>
 
           <div className="flex gap-4">
-            <div className="flex flex-1 flex-col gap-2">
-              <label className="min-w-[600px] text-lg" htmlFor="address_1">
-                Descrição
-              </label>
+            <div className="flex min-w-[600px] flex-1 flex-col gap-2">
+              <label htmlFor="description">Descrição</label>
               <Input.Root variant={errors.description ? "error" : "primary"}>
                 <Input.Control
                   disabled={!expense_input_fields_description}
@@ -230,9 +219,7 @@ export function EditExpenseForm() {
             </div>
 
             <div className="flex flex-1 flex-col gap-2">
-              <label className="text-lg" htmlFor="phone">
-                NF/Recibo
-              </label>
+              <label htmlFor="document">NF/Recibo</label>
               <Input.Root variant={errors.document ? "error" : "primary"}>
                 <Input.Control
                   disabled={!expense_input_fields_document}
@@ -252,9 +239,7 @@ export function EditExpenseForm() {
         <div className="flex flex-col gap-4">
           <div className="flex gap-4">
             <div className="flex max-w-[100px] flex-1 flex-col gap-2">
-              <label className="text-lg" htmlFor="expense_percentage">
-                Percentual
-              </label>
+              <label htmlFor="expense_percentage">Percentual</label>
               <Input.Root
                 variant={errors.expense_percentage ? "error" : "primary"}>
                 <Input.Control
@@ -271,9 +256,7 @@ export function EditExpenseForm() {
             </div>
 
             <div className="flex min-w-[400px] flex-col gap-2">
-              <label className="text-lg" htmlFor="cep">
-                Organização
-              </label>
+              <label htmlFor="cep">Organização</label>
               <Input.Root>
                 <Input.SelectInput
                   name="organization_id"

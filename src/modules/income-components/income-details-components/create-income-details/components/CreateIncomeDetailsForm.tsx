@@ -7,21 +7,17 @@ import { LoadingScreen } from "@/core/components/LoadingScreen"
 import { getAccountId } from "@/core/utils/get-account-id"
 import { useBankAccountsQuery } from "@/modules/bank-accounts-components/bank-accounts/infra/hooks/use-bank-account-query"
 import { useIncomeByIdQuery } from "@/modules/income-components/income-components/infra/use-income-by-id-query"
+import { createIncomeDetailsSchema } from "@/modules/income-components/income-details-components/create-income-details/validation/schema"
+import { createIncomeDetails } from "@/modules/income-components/income-details-components/remote"
 import { usePermissionQuery } from "@/modules/login-components/login/infra/hooks/use-permissions-query"
-import { DevTool } from "@hookform/devtools"
 import { zodResolver } from "@hookform/resolvers/zod"
-import { useParams, useRouter } from "next/navigation"
+import { useRouter } from "next/navigation"
 import { useEffect } from "react"
 import { useForm } from "react-hook-form"
 import { toast } from "sonner"
-import { createIncomeDetails } from "../../remote"
-import { createIncomeDetailsSchema } from "../validation/schema"
 
-export function CreateIncomeDetailsForm() {
+export function CreateIncomeDetailsForm({ income_id }: { income_id: string }) {
   const { push } = useRouter()
-
-  const params = useParams()
-  const income_id = params.id as string
 
   const account_id = getAccountId()
 
@@ -94,9 +90,7 @@ export function CreateIncomeDetailsForm() {
         <div className="flex flex-col gap-4">
           <div className="flex gap-4">
             <div className="flex min-w-[500px] flex-col gap-2">
-              <label className="text-lg" htmlFor="income_source_id">
-                Conta Bancária
-              </label>
+              <label htmlFor="income_source_id">Conta Bancária</label>
               <Input.Root
                 variant={errors.bank_account_id ? "error" : "primary"}>
                 <Input.SelectInput
@@ -122,9 +116,7 @@ export function CreateIncomeDetailsForm() {
             </div>
 
             <div className="flex max-w-[150px] flex-1 flex-col gap-2">
-              <label className="text-lg" htmlFor="cpf_cnpj">
-                Data
-              </label>
+              <label htmlFor="cpf_cnpj">Data</label>
               <Input.Root variant={errors.due_date ? "error" : "primary"}>
                 <Input.Control
                   disabled={!income_details_input_fields_date}
@@ -142,9 +134,7 @@ export function CreateIncomeDetailsForm() {
 
           <div className="flex max-w-[300px] gap-4">
             <div className="flex flex-1 flex-col gap-2">
-              <label className="min-w-[600px] text-lg" htmlFor="address_1">
-                Observação
-              </label>
+              <label htmlFor="address_1">Observação</label>
               <Input.Root>
                 <Input.Control
                   disabled={!income_details_input_fields_abservation}
@@ -158,9 +148,7 @@ export function CreateIncomeDetailsForm() {
 
         <div className="flex gap-4">
           <div className="flex max-w-[150px] flex-1 flex-col gap-2">
-            <label className="text-lg" htmlFor="income_percentage">
-              Valor
-            </label>
+            <label htmlFor="income_percentage">Valor</label>
             <Input.Root variant={errors.amount ? "error" : "primary"}>
               <Input.Currency
                 disabled={!income_details_input_fields_amount}
@@ -190,7 +178,7 @@ export function CreateIncomeDetailsForm() {
           </Button>
         </div>
       </form>
-      {process.env.NODE_ENV === "development" && <DevTool control={control} />}
+      {/* {process.env.NODE_ENV === "development" && <DevTool control={control} />} */}
     </>
   )
 }

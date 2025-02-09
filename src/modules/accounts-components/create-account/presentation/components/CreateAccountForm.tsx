@@ -38,9 +38,7 @@ export function CreateAccountForm() {
   return (
     <form onSubmit={handleSubmit(onSubmit)}>
       <div className="mt-8 flex max-w-96 flex-col gap-2">
-        <label className="text-lg" htmlFor="name">
-          Nome
-        </label>
+        <label htmlFor="name">Nome</label>
         <Input.Root variant={errors.name ? "error" : "primary"}>
           <Input.Control {...register("name")} type="text" />
         </Input.Root>

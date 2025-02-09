@@ -103,18 +103,14 @@ export function IncomeFilters({ onFilterChange }: FilterProps) {
           <div className="flex flex-1 flex-col gap-2">
             <div className="flex items-center gap-4">
               <div className="flex flex-1 flex-col gap-2">
-                <label className="text-lg" htmlFor="start_date">
-                  Data Inicial
-                </label>
+                <label htmlFor="start_date">Data Inicial</label>
                 <Input.Root>
                   <Input.Control {...register("start_date")} type="month" />
                 </Input.Root>
               </div>
 
               <div className="flex flex-1 flex-col gap-2">
-                <label className="text-lg" htmlFor="end_date">
-                  Data Final
-                </label>
+                <label htmlFor="end_date">Data Final</label>
                 <Input.Root>
                   <Input.Control {...register("end_date")} type="month" />
                 </Input.Root>
@@ -123,9 +119,7 @@ export function IncomeFilters({ onFilterChange }: FilterProps) {
 
             <div className="flex items-center gap-4">
               <div className="flex flex-1 flex-col gap-2">
-                <label className="text-lg" htmlFor="income_id">
-                  Grupo de Receita
-                </label>
+                <label htmlFor="income_id">Grupo de Receita</label>
                 <Input.Root>
                   <Input.SelectInput
                     name="income_group_id"
@@ -141,9 +135,7 @@ export function IncomeFilters({ onFilterChange }: FilterProps) {
               </div>
 
               <div className="flex flex-1 flex-col gap-2">
-                <label className="text-lg" htmlFor="income_id">
-                  Cliente
-                </label>
+                <label htmlFor="income_id">Cliente</label>
                 <Input.Root>
                   <Input.SelectInput
                     name="income_source_id"
@@ -163,9 +155,7 @@ export function IncomeFilters({ onFilterChange }: FilterProps) {
           <div className="flex flex-1 flex-col justify-between gap-4">
             <div className="flex gap-4">
               <div className="flex flex-1 flex-col gap-2">
-                <label className="text-lg" htmlFor="income_id">
-                  NF
-                </label>
+                <label htmlFor="income_id">NF</label>
                 <Input.Root>
                   <Input.SelectInput
                     name="document"
@@ -181,9 +171,7 @@ export function IncomeFilters({ onFilterChange }: FilterProps) {
               </div>
 
               <div className="flex flex-1 flex-col gap-2">
-                <label className="text-lg" htmlFor="income_id">
-                  Organização
-                </label>
+                <label htmlFor="income_id">Organização</label>
                 <Input.Root>
                   <Input.SelectInput
                     name="organization_id"

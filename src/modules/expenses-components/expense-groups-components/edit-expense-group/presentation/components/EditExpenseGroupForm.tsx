@@ -55,9 +55,7 @@ export function EditExpenseGroupForm({ id }: { id: string }) {
   return (
     <form onSubmit={handleSubmit(onSubmit)}>
       <div className="mt-8 flex max-w-96 flex-col gap-2">
-        <label className="text-lg" htmlFor="name">
-          Nome
-        </label>
+        <label htmlFor="name">Nome</label>
         <Input.Root>
           <Input.Control {...register("group_name")} type="text" />
         </Input.Root>

@@ -64,9 +64,7 @@ export function CreateUserForm() {
       onSubmit={handleSubmit(onSubmit)}>
       <div className="flex flex-col gap-4">
         <div className="flex flex-col gap-2">
-          <label className="text-lg" htmlFor="name">
-            Nome
-          </label>
+          <label htmlFor="name">Nome</label>
           <Input.Root variant={errors.name ? "error" : "primary"}>
             <Input.Control {...register("name")} type="text" />
           </Input.Root>
@@ -76,9 +74,7 @@ export function CreateUserForm() {
         </div>
 
         <div className="flex flex-col gap-2">
-          <label className="text-lg" htmlFor="email">
-            Email
-          </label>
+          <label htmlFor="email">Email</label>
           <Input.Root variant={errors.email ? "error" : "primary"}>
             <Input.Control {...register("email")} type="email" />
           </Input.Root>

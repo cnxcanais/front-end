@@ -12,16 +12,17 @@ import { createExpenseDetails } from "@/modules/expenses-components/expense-deta
 import { usePermissionQuery } from "@/modules/login-components/login/infra/hooks/use-permissions-query"
 import { DevTool } from "@hookform/devtools"
 import { zodResolver } from "@hookform/resolvers/zod"
-import { useParams, useRouter } from "next/navigation"
+import { useRouter } from "next/navigation"
 import { useEffect } from "react"
 import { useForm } from "react-hook-form"
 import { toast } from "sonner"
 
-export function CreateExpenseDetailsForm() {
+export function CreateExpenseDetailsForm({
+  expense_id,
+}: {
+  expense_id: string
+}) {
   const { push } = useRouter()
-
-  const params = useParams()
-  const expense_id = params.id as string
 
   const account_id = getAccountId()
 
@@ -97,9 +98,7 @@ export function CreateExpenseDetailsForm() {
         <div className="flex flex-col gap-4">
           <div className="flex gap-4">
             <div className="flex min-w-[500px] flex-col gap-2">
-              <label className="text-lg" htmlFor="expense_source_id">
-                Conta Bancária
-              </label>
+              <label htmlFor="expense_source_id">Conta Bancária</label>
               <Input.Root
                 variant={errors.bank_account_id ? "error" : "primary"}>
                 <Input.SelectInput
@@ -125,9 +124,7 @@ export function CreateExpenseDetailsForm() {
             </div>
 
             <div className="flex max-w-[150px] flex-1 flex-col gap-2">
-              <label className="text-lg" htmlFor="cpf_cnpj">
-                Data
-              </label>
+              <label htmlFor="cpf_cnpj">Data</label>
               <Input.Root variant={errors.due_date ? "error" : "primary"}>
                 <Input.Control
                   disabled={!expense_details_input_fields_date}
@@ -145,7 +142,7 @@ export function CreateExpenseDetailsForm() {
 
           <div className="flex max-w-[300px] gap-4">
             <div className="flex flex-1 flex-col gap-2">
-              <label className="min-w-[600px] text-lg" htmlFor="address_1">
+              <label className="min-w-[600px]" htmlFor="address_1">
                 Observação
               </label>
               <Input.Root>
@@ -161,9 +158,7 @@ export function CreateExpenseDetailsForm() {
 
         <div className="flex gap-4">
           <div className="flex max-w-[150px] flex-1 flex-col gap-2">
-            <label className="text-lg" htmlFor="expense_percentage">
-              Valor
-            </label>
+            <label htmlFor="expense_percentage">Valor</label>
             <Input.Root variant={errors.amount ? "error" : "primary"}>
               <Input.Currency
                 disabled={!expense_details_input_fields_amount}

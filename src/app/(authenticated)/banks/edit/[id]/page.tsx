@@ -1,4 +1,5 @@
-import { EditBankPage } from "@/modules/banks-components/edit-bank/presentation/pages"
+import { PageTitle } from "@/core/components/PageTitle"
+import { EditBankForm } from "@/modules/banks-components/edit-bank/presentation/components/EditBankForm"
 
 export default async function EditBankRender({
   params,
@@ -7,5 +8,10 @@ export default async function EditBankRender({
 }) {
   const id = (await params).id
 
-  return <EditBankPage id={id} />
+  return (
+    <>
+      <PageTitle content="Editar Conta" />
+      <EditBankForm id={id} />
+    </>
+  )
 }

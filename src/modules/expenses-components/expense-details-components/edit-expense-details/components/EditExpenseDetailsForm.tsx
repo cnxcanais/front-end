@@ -1,96 +1,96 @@
 "use client"
 
-import { IncomeDetails } from "@/@types/income-details"
+import { ExpenseDetails } from "@/@types/expense-details"
 import { Button } from "@/core/components/Button"
 import * as Input from "@/core/components/Input"
 import { LoadingScreen } from "@/core/components/LoadingScreen"
-import { getCookie } from "@/lib/cookies"
+import { getAccountId } from "@/core/utils/get-account-id"
 import { useBankAccountsQuery } from "@/modules/bank-accounts-components/bank-accounts/infra/hooks/use-bank-account-query"
-import { editIncomeDetailsSchema } from "@/modules/income-components/income-details-components/edit-income-details/validation/schema"
-import { useIncomeDetailsByIdQuery } from "@/modules/income-components/income-details-components/infra/hooks/use-income-details-by-id-query"
-import { editIncomeDetails } from "@/modules/income-components/income-details-components/remote/update-income-details"
+import { editExpenseDetailsSchema } from "@/modules/expenses-components/expense-details-components/edit-expense-details/validation/schema"
+import { useExpenseDetailsByIdQuery } from "@/modules/expenses-components/expense-details-components/infra/hooks/use-expense-details-by-id-query"
+import { editExpenseDetails } from "@/modules/expenses-components/expense-details-components/remote/update-expense-details"
 import { usePermissionQuery } from "@/modules/login-components/login/infra/hooks/use-permissions-query"
 import { DevTool } from "@hookform/devtools"
 import { zodResolver } from "@hookform/resolvers/zod"
-import { useParams, useRouter } from "next/navigation"
+import { useRouter } from "next/navigation"
 import { useEffect } from "react"
 import { useForm } from "react-hook-form"
 import { toast } from "sonner"
 
-export function EditIncomeDetailsForm() {
+export function EditExpenseDetailsForm({
+  expense_details_id,
+}: {
+  expense_details_id: string
+}) {
   const { push } = useRouter()
 
-  const account_id = getCookie("accountId")
-  const params = useParams()
-  const income_details_id = params.id as string
+  const account_id = getAccountId()
 
-  const { data: incomeDetails, refetch } =
-    useIncomeDetailsByIdQuery(income_details_id)
+  const { data: expenseDetails } =
+    useExpenseDetailsByIdQuery(expense_details_id)
 
   const { data: bankAccounts, isLoading: bankAccountIsLoading } =
     useBankAccountsQuery(account_id)
 
-  const { data: permissions, isLoading: permissionLoading } =
-    usePermissionQuery()
+  const { data: permissions } = usePermissionQuery()
 
-  const income_details_edit_input_fields_bank_account =
-    permissions?.["income_details_edit_input_fields_bank_account"]
-  const income_details_edit_input_fields_amount =
-    permissions?.["income_details_edit_input_fields_amount"]
-  const income_details_edit_input_fields_description =
-    permissions?.["income_details_edit_input_fields_description"]
-  const income_details_edit_input_fields_date =
-    permissions?.[" income_details_edit_input_fields_date"]
+  const expense_details_edit_input_fields_bank_account =
+    permissions?.["expense_details_edit_input_fields_bank_account"]
+  const expense_details_edit_input_fields_amount =
+    permissions?.["expense_details_edit_input_fields_amount"]
+  const expense_details_edit_input_fields_description =
+    permissions?.["expense_details_edit_input_fields_description"]
+  const expense_details_edit_input_fields_date =
+    permissions?.[" expense_details_edit_input_fields_date"]
 
   const {
     register,
     handleSubmit,
     formState: { isSubmitting, errors },
     reset,
-    setValue,
     control,
-  } = useForm<IncomeDetails.UpdateRequest>({
-    resolver: zodResolver(editIncomeDetailsSchema),
+  } = useForm<ExpenseDetails.UpdateRequest>({
+    resolver: zodResolver(editExpenseDetailsSchema),
   })
 
   useEffect(() => {
-    if (incomeDetails) {
+    if (expenseDetails) {
       const {
         amount,
         bank_account_id,
         part,
         due_date,
-        income_id,
+        expense_id,
         observation,
         is_paid,
-        income_details_id,
-      } = incomeDetails.incomeDetails
+        expense_details_id,
+      } = expenseDetails.expenseDetails
       reset({
         amount: Number(amount),
         bank_account_id: bank_account_id,
         part: part,
         due_date: String(due_date).substring(0, 10),
-        income_id: income_id,
+        expense_id: expense_id,
         observation: observation,
         is_paid: is_paid,
-        income_details_id: income_details_id,
+        expense_details_id: expense_details_id,
       })
     }
-  }, [incomeDetails, reset])
+  }, [expenseDetails, reset])
 
-  async function onSubmit(data: IncomeDetails.UpdateRequest) {
+  async function onSubmit(data: ExpenseDetails.UpdateRequest) {
     try {
-      await editIncomeDetails(data)
+      await editExpenseDetails(data)
       toast.success("Parcela editada com sucesso!")
       setTimeout(
         () =>
           push(
-            `/income-details?income_id=${incomeDetails.incomeDetails.income_id ? incomeDetails.incomeDetails.income_id : ""}`
+            `/expense-details?expense_id=${expenseDetails.expenseDetails.expense_id ? expenseDetails.expenseDetails.expense_id : ""}`
           ),
         2000
       )
     } catch (error) {
-      toast.error("Erro ao criar parcela: " + error)
+      toast.error("Erro ao editar parcela: " + error)
     }
   }
 
@@ -104,15 +104,13 @@ export function EditIncomeDetailsForm() {
         <div className="flex flex-col gap-4">
           <div className="flex gap-4">
             <div className="flex min-w-[500px] flex-col gap-2">
-              <label className="text-lg" htmlFor="income_source_id">
-                Conta Bancária
-              </label>
+              <label htmlFor="expense_source_id">Conta Bancária</label>
               <Input.Root
                 variant={errors.bank_account_id ? "error" : "primary"}>
                 <Input.SelectInput
                   name="bank_account_id"
                   control={control}
-                  disabled={!income_details_edit_input_fields_bank_account}
+                  disabled={!expense_details_edit_input_fields_bank_account}
                   options={[{ label: "", value: "" }].concat(
                     bankAccounts.map((account) => {
                       return {
@@ -132,12 +130,10 @@ export function EditIncomeDetailsForm() {
             </div>
 
             <div className="flex max-w-[150px] flex-1 flex-col gap-2">
-              <label className="text-lg" htmlFor="cpf_cnpj">
-                Data
-              </label>
+              <label htmlFor="due_date">Data</label>
               <Input.Root variant={errors.due_date ? "error" : "primary"}>
                 <Input.Control
-                  disabled={!income_details_edit_input_fields_date}
+                  disabled={!expense_details_edit_input_fields_date}
                   {...register("due_date")}
                   type="date"
                 />
@@ -152,12 +148,10 @@ export function EditIncomeDetailsForm() {
 
           <div className="flex max-w-[300px] gap-4">
             <div className="flex flex-1 flex-col gap-2">
-              <label className="min-w-[600px] text-lg" htmlFor="address_1">
-                Observação
-              </label>
+              <label htmlFor="observation">Observação</label>
               <Input.Root>
                 <Input.Control
-                  disabled={!income_details_edit_input_fields_description}
+                  disabled={!expense_details_edit_input_fields_description}
                   {...register("observation")}
                   type="text"
                 />
@@ -165,9 +159,7 @@ export function EditIncomeDetailsForm() {
             </div>
 
             <div className="flex max-w-[50px] flex-1 flex-col gap-2">
-              <label className="text-lg" htmlFor="phone">
-                Parte
-              </label>
+              <label htmlFor="part">Parte</label>
               <Input.Root variant="primary">
                 <Input.Control disabled {...register("part")} type="text" />
               </Input.Root>
@@ -182,12 +174,10 @@ export function EditIncomeDetailsForm() {
 
         <div className="flex gap-4">
           <div className="flex max-w-[150px] flex-1 flex-col gap-2">
-            <label className="text-lg" htmlFor="income_percentage">
-              Valor
-            </label>
+            <label htmlFor="amount">Valor</label>
             <Input.Root variant={errors.amount ? "error" : "primary"}>
               <Input.Currency
-                disabled={!income_details_edit_input_fields_amount}
+                disabled={!expense_details_edit_input_fields_amount}
                 control={control}
                 name="amount"
                 type="text"
@@ -201,9 +191,7 @@ export function EditIncomeDetailsForm() {
           </div>
 
           <div className="flex flex-col items-center justify-around gap-2">
-            <label className="text-lg" htmlFor="cep">
-              Pago
-            </label>
+            <label htmlFor="cep">Pago</label>
 
             <input
               {...register("is_paid")}
@@ -229,7 +217,7 @@ export function EditIncomeDetailsForm() {
             disabled={isSubmitting}
             onClick={() =>
               push(
-                `/income-details?income_id=${incomeDetails?.incomeDetails.income_id}`
+                `/expense-details?expense_id=${expenseDetails?.expenseDetails.expense_id}`
               )
             }
             variant="tertiary">

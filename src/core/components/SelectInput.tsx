@@ -19,9 +19,7 @@ export function SelectInput({
 }: SelectInputProps) {
   return (
     <div className="">
-      <label htmlFor={field_name} className="text-lg">
-        {label}
-      </label>
+      <label htmlFor={field_name}>{label}</label>
       <div className="mt-2 grid flex-1 grid-cols-1">
         <select
           {...props}

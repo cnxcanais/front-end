@@ -1,4 +1,5 @@
-import { EditAccountPage } from "@/modules/accounts-components/edit-account/presentation/pages"
+import { PageTitle } from "@/core/components/PageTitle"
+import { EditAccountForm } from "@/modules/accounts-components/edit-account/presentation/components/EditAccountForm"
 
 export default async function EditAccountRender({
   params,
@@ -7,5 +8,10 @@ export default async function EditAccountRender({
 }) {
   const id = (await params).id
 
-  return <EditAccountPage id={id} />
+  return (
+    <>
+      <PageTitle content="Editar Conta" />
+      <EditAccountForm id={id} />
+    </>
+  )
 }

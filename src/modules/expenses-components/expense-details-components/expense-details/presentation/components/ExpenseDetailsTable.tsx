@@ -34,8 +34,6 @@ export function ExpenseDetailsTable() {
   const edit = permissions?.["expense_details_edit"]
   const deletePermission = permissions?.["expense_details_delete"]
 
-  console.log(permissions)
-
   const searchParams = useSearchParams()
 
   const expense_id = searchParams.get("expense_id") ?? undefined

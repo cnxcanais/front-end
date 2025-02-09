@@ -41,9 +41,7 @@ export function CreateBankForm() {
   return (
     <form className="max-w-96" onSubmit={handleSubmit(onSubmit)}>
       <div className="mt-8 flex max-w-96 flex-col gap-2">
-        <label className="text-lg" htmlFor="name">
-          Nome
-        </label>
+        <label htmlFor="name">Nome</label>
         <Input.Root variant={errors.name ? "error" : "primary"}>
           <Input.Control {...register("name")} type="text" />
         </Input.Root>
@@ -53,9 +51,7 @@ export function CreateBankForm() {
       </div>
 
       <div className="mt-8 flex flex-col gap-2">
-        <label className="text-lg" htmlFor="bank_number">
-          Número
-        </label>
+        <label htmlFor="bank_number">Número</label>
         <Input.Root variant={errors.bank_number ? "error" : "primary"}>
           <Input.Control {...register("bank_number")} type="text" />
         </Input.Root>

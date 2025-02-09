@@ -1,4 +1,5 @@
-import { EditBudgetIncomePage } from "@/modules/budget-components/budget-income/edit-budget-income/presentation/pages"
+import { PageTitle } from "@/core/components/PageTitle"
+import { EditBudgetIncomeForm } from "@/modules/budget-components/budget-income/edit-budget-income/presentation/components/EditBudgetIncomeForm"
 
 export default async function EditBudgetIncomeRender({
   params,
@@ -7,5 +8,10 @@ export default async function EditBudgetIncomeRender({
 }) {
   const id = (await params).id
 
-  return <EditBudgetIncomePage id={id} />
+  return (
+    <main>
+      <PageTitle content="Editar Orçamento de Receita" />
+      <EditBudgetIncomeForm id={id} />
+    </main>
+  )
 }

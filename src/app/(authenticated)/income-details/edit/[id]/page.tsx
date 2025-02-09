@@ -1,10 +1,21 @@
 import { LoadingScreen } from "@/core/components/LoadingScreen"
-import { EditIncomeDetailsPage } from "@/modules/income-components/income-details-components/edit-income-details/pages/edit-income-details"
+import { PageTitle } from "@/core/components/PageTitle"
+import { EditIncomeDetailsForm } from "@/modules/income-components/income-details-components/edit-income-details/components/EditIncomeDetailsForm"
 import { Suspense } from "react"
-export default function IncomeDetailsRender() {
+
+export default async function EditIncomeDetailsRender({
+  params,
+}: {
+  params: Promise<{ id: string }>
+}) {
+  const id = (await params).id
+
   return (
     <Suspense fallback={<LoadingScreen />}>
-      <EditIncomeDetailsPage />
+      <main className="flex w-full max-w-[1200px] flex-col">
+        <PageTitle content="Editar Receitas" />
+        <EditIncomeDetailsForm income_details_id={id} />
+      </main>
     </Suspense>
   )
 }

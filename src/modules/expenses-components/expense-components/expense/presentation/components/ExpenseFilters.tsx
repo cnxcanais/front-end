@@ -4,13 +4,13 @@ import * as Input from "@/core/components/Input"
 import { LoadingScreen } from "@/core/components/LoadingScreen"
 import { getAccountId } from "@/core/utils/get-account-id"
 import { prepareArrayForSelect } from "@/core/utils/prepare-array-for-select-input"
+import { useExpenseQuery } from "@/modules/expenses-components/expense-components/infra/use-expense-query"
 import { useExpenseGroupQuery } from "@/modules/expenses-components/expense-groups-components/remote/use-expense-groups-query"
 import { useSupplierQuery } from "@/modules/expenses-components/supplier-components/suppliers/infra/hooks/use-supplier-query"
 import { useOrganizationsQuery } from "@/modules/organization-components/organizations/infra/remote/hooks/use-organizations-query"
 import { CaretDown, CaretRight } from "@phosphor-icons/react"
 import { useEffect, useState } from "react"
 import { useFormContext, useWatch } from "react-hook-form"
-import { useExpenseQuery } from "../../../infra/use-expense-query"
 
 interface FilterProps {
   onFilterChange: (filters: Expense.GetRequest) => void
@@ -104,18 +104,14 @@ export function ExpenseFilters({ onFilterChange }: FilterProps) {
           <div className="flex flex-1 flex-col gap-2">
             <div className="flex items-center gap-4">
               <div className="flex flex-1 flex-col gap-2">
-                <label className="text-lg" htmlFor="start_date">
-                  Data Inicial
-                </label>
+                <label htmlFor="start_date">Data Inicial</label>
                 <Input.Root>
                   <Input.Control {...register("start_date")} type="month" />
                 </Input.Root>
               </div>
 
               <div className="flex flex-1 flex-col gap-2">
-                <label className="text-lg" htmlFor="end_date">
-                  Data Final
-                </label>
+                <label htmlFor="end_date">Data Final</label>
                 <Input.Root>
                   <Input.Control {...register("end_date")} type="month" />
                 </Input.Root>
@@ -124,9 +120,7 @@ export function ExpenseFilters({ onFilterChange }: FilterProps) {
 
             <div className="flex items-center gap-4">
               <div className="flex flex-1 flex-col gap-2">
-                <label className="text-lg" htmlFor="expense_id">
-                  Grupo de Despesa
-                </label>
+                <label htmlFor="expense_id">Grupo de Despesa</label>
                 <Input.Root>
                   <Input.SelectInput
                     name="expense_group_id"
@@ -142,9 +136,7 @@ export function ExpenseFilters({ onFilterChange }: FilterProps) {
               </div>
 
               <div className="flex flex-1 flex-col gap-2">
-                <label className="text-lg" htmlFor="expense_id">
-                  Cliente
-                </label>
+                <label htmlFor="expense_id">Cliente</label>
                 <Input.Root>
                   <Input.SelectInput
                     name="expenseSourceId"
@@ -164,9 +156,7 @@ export function ExpenseFilters({ onFilterChange }: FilterProps) {
           <div className="flex flex-1 flex-col justify-between gap-4">
             <div className="flex gap-4">
               <div className="flex flex-1 flex-col gap-2">
-                <label className="text-lg" htmlFor="expense_id">
-                  NF
-                </label>
+                <label htmlFor="expense_id">NF</label>
                 <Input.Root>
                   <Input.SelectInput
                     name="document"
@@ -182,9 +172,7 @@ export function ExpenseFilters({ onFilterChange }: FilterProps) {
               </div>
 
               <div className="flex flex-1 flex-col gap-2">
-                <label className="text-lg" htmlFor="expense_id">
-                  Organização
-                </label>
+                <label htmlFor="expense_id">Organização</label>
                 <Input.Root>
                   <Input.SelectInput
                     name="organization_id"

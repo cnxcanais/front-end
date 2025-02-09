@@ -51,27 +51,21 @@ export function EditUserForm({ id }: { id: string }) {
     <form className="mt-6 max-w-[400px]" onSubmit={handleSubmit(onSubmit)}>
       <div className="flex flex-col gap-4">
         <div className="flex flex-col gap-2">
-          <label className="text-lg" htmlFor="name">
-            Nome
-          </label>
+          <label htmlFor="name">Nome</label>
           <Input.Root>
             <Input.Control {...register("name")} type="text" />
           </Input.Root>
         </div>
 
         <div className="flex flex-col gap-2">
-          <label className="text-lg" htmlFor="email">
-            Email
-          </label>
+          <label htmlFor="email">Email</label>
           <Input.Root>
             <Input.Control type="email" {...register("email")} />
           </Input.Root>
         </div>
 
         <div className="flex flex-col gap-2">
-          <label className="text-lg" htmlFor="password">
-            Senha
-          </label>
+          <label htmlFor="password">Senha</label>
           <Input.Root variant={errors.password ? "error" : "primary"}>
             <Input.Control
               {...register("password")}

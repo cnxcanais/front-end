@@ -1,9 +1,9 @@
-import { IncomeDetails } from "@/@types/income-details"
+import { ExpenseDetails } from "@/@types/expense-details"
 import { api } from "@/lib/axios"
 
-export const getIncomeDetailsById = async (id: string) => {
-  const { data } = await api.get<IncomeDetails.GetbyIdResponse>(
-    `/income-details/${id}`
+export const getExpenseDetailsById = async (id: string) => {
+  const { data } = await api.get<ExpenseDetails.GetbyIdResponse>(
+    `/expense-details/${id}`
   )
   return data
 }

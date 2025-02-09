@@ -27,7 +27,6 @@ export function ExpenseForm({ account_id, setSecondPage }: Props) {
     trigger,
     formState: { errors },
     control,
-    watch,
   } = useFormContext<FormType>()
 
   const [organizations, setOrganizations] = useState<SearchArray>([])
@@ -99,9 +98,7 @@ export function ExpenseForm({ account_id, setSecondPage }: Props) {
       <div className="flex flex-col gap-4">
         <div className="flex gap-4">
           <div className="flex min-w-[500px] flex-col gap-2">
-            <label className="text-lg" htmlFor="supplier_id">
-              Gerador da Despesa
-            </label>
+            <label htmlFor="supplier_id">Gerador da Despesa</label>
             <Input.Root variant={errors.supplier_id ? "error" : "primary"}>
               <Input.SelectInput
                 name="supplier_id"
@@ -119,9 +116,7 @@ export function ExpenseForm({ account_id, setSecondPage }: Props) {
           </div>
 
           <div className="flex flex-1 flex-col gap-2">
-            <label className="text-lg" htmlFor="city">
-              Grupo de Despesas
-            </label>
+            <label htmlFor="expense_group_id">Grupo de Despesas</label>
             <Input.Root variant={errors.expense_group_id ? "error" : "primary"}>
               <Input.SelectInput
                 name="expense_group_id"
@@ -139,9 +134,7 @@ export function ExpenseForm({ account_id, setSecondPage }: Props) {
           </div>
 
           <div className="flex max-w-[150px] flex-1 flex-col gap-2">
-            <label className="text-lg" htmlFor="cpf_cnpj">
-              Data
-            </label>
+            <label htmlFor="date">Data</label>
             <Input.Root variant={errors.date ? "error" : "primary"}>
               <Input.Control
                 disabled={!expense_input_fields_date}
@@ -159,7 +152,7 @@ export function ExpenseForm({ account_id, setSecondPage }: Props) {
 
         <div className="flex gap-4">
           <div className="flex flex-1 flex-col gap-2">
-            <label className="min-w-[600px] text-lg" htmlFor="address_1">
+            <label className="min-w-[600px]" htmlFor="description">
               Descrição
             </label>
             <Input.Root variant={errors.description ? "error" : "primary"}>
@@ -177,9 +170,7 @@ export function ExpenseForm({ account_id, setSecondPage }: Props) {
           </div>
 
           <div className="flex flex-1 flex-col gap-2">
-            <label className="text-lg" htmlFor="phone">
-              NF/Recibo
-            </label>
+            <label htmlFor="document">NF/Recibo</label>
             <Input.Root variant={errors.document ? "error" : "primary"}>
               <Input.Control
                 disabled={!expense_input_fields_document}
@@ -198,9 +189,7 @@ export function ExpenseForm({ account_id, setSecondPage }: Props) {
 
       <div className="mt-4 flex gap-4">
         <div className="flex max-w-[100px] flex-1 flex-col gap-2">
-          <label className="text-lg" htmlFor="expense_percentage">
-            Percentual
-          </label>
+          <label htmlFor="expense_percentage">Percentual</label>
           <Input.Root variant={errors.expense_percentage ? "error" : "primary"}>
             <Input.Control
               disabled={!expense_input_fields_expense_percentage}
@@ -216,9 +205,7 @@ export function ExpenseForm({ account_id, setSecondPage }: Props) {
         </div>
 
         <div className="flex min-w-[400px] flex-col gap-2">
-          <label className="text-lg" htmlFor="cep">
-            Organização
-          </label>
+          <label htmlFor="cep">Organização</label>
           <Input.Root>
             <Input.SelectInput
               name="organization_id"

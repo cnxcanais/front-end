@@ -1,10 +1,17 @@
-import { LoadingScreen } from "@/core/components/LoadingScreen"
-import { EditIncomeDetailsPage } from "@/modules/income-components/income-details-components/edit-income-details/pages/edit-income-details"
-import { Suspense } from "react"
-export default function IncomeDetailsRender() {
+import { PageTitle } from "@/core/components/PageTitle"
+import { EditExpenseDetailsForm } from "@/modules/expenses-components/expense-details-components/edit-expense-details/components/EditExpenseDetailsForm"
+
+export default async function EditExpenseDetailsRender({
+  params,
+}: {
+  params: Promise<{ id: string }>
+}) {
+  const id = (await params).id
+
   return (
-    <Suspense fallback={<LoadingScreen />}>
-      <EditIncomeDetailsPage />
-    </Suspense>
+    <main className="flex w-full max-w-[1200px] flex-col">
+      <PageTitle content="Editar Parcela" />
+      <EditExpenseDetailsForm expense_details_id={id} />
+    </main>
   )
 }

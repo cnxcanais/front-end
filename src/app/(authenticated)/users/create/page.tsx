@@ -1,5 +1,11 @@
-import { CreateUserPage } from "@/modules/user-components/create-user/presentation/pages"
+import { PageTitle } from "@/core/components/PageTitle"
+import { CreateUserForm } from "@/modules/user-components/create-user/presentation/components/CreateUserForm"
 
 export default function CreateUserRender() {
-  return <CreateUserPage />
+  return (
+    <>
+      <PageTitle content="Criar Usuário" />
+      <CreateUserForm />
+    </>
+  )
 }

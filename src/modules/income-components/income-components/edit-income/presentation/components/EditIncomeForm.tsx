@@ -14,18 +14,16 @@ import { getAllIncomeGroups } from "@/modules/income-components/income-groups-co
 import { getIncomeSources } from "@/modules/income-components/income-source-components/income-sources/infra/remote"
 import { getOrganizations } from "@/modules/organization-components/organizations/infra/remote"
 import { zodResolver } from "@hookform/resolvers/zod"
-import { useParams, useRouter } from "next/navigation"
+import { useRouter } from "next/navigation"
 import { useEffect, useMemo, useState } from "react"
 import { useForm } from "react-hook-form"
 import { toast } from "sonner"
 import { editIncomeSchema } from "../validation/schema"
 
-export function EditIncomeForm() {
+export function EditIncomeForm({ income_id }: { income_id: string }) {
   const { push } = useRouter()
 
   const account_id = getCookie("accountId")
-  const params = useParams()
-  const income_id = params.id as string
 
   const [organizations, setOrganizations] = useState<SearchArray>([])
   const [incomeGroups, setIncomeGroups] = useState<SearchArray>([])
@@ -145,9 +143,7 @@ export function EditIncomeForm() {
         <div className="flex flex-col gap-4">
           <div className="flex gap-4">
             <div className="flex min-w-[500px] flex-col gap-2">
-              <label className="text-lg" htmlFor="income_source_id">
-                Gerador da Receita
-              </label>
+              <label htmlFor="income_source_id">Gerador da Receita</label>
               <Input.Root
                 variant={errors.income_source_id ? "error" : "primary"}>
                 <Input.SelectInput
@@ -166,9 +162,7 @@ export function EditIncomeForm() {
             </div>
 
             <div className="flex flex-1 flex-col gap-2">
-              <label className="text-lg" htmlFor="city">
-                Grupo de Receitas
-              </label>
+              <label htmlFor="city">Grupo de Receitas</label>
               <Input.Root
                 variant={errors.income_group_id ? "error" : "primary"}>
                 <Input.SelectInput
@@ -187,9 +181,7 @@ export function EditIncomeForm() {
             </div>
 
             <div className="flex max-w-[150px] flex-1 flex-col gap-2">
-              <label className="text-lg" htmlFor="cpf_cnpj">
-                Data
-              </label>
+              <label htmlFor="cpf_cnpj">Data</label>
               <Input.Root variant={errors.date ? "error" : "primary"}>
                 <Input.Control
                   disabled={!income_input_fields_date}
@@ -207,7 +199,7 @@ export function EditIncomeForm() {
 
           <div className="flex gap-4">
             <div className="flex flex-1 flex-col gap-2">
-              <label className="min-w-[600px] text-lg" htmlFor="address_1">
+              <label className="min-w-[600px]" htmlFor="address_1">
                 Descrição
               </label>
               <Input.Root variant={errors.description ? "error" : "primary"}>
@@ -225,9 +217,7 @@ export function EditIncomeForm() {
             </div>
 
             <div className="flex flex-1 flex-col gap-2">
-              <label className="text-lg" htmlFor="phone">
-                NF/Recibo
-              </label>
+              <label htmlFor="phone">NF/Recibo</label>
               <Input.Root variant={errors.document ? "error" : "primary"}>
                 <Input.Control
                   disabled={!income_input_fields_document}
@@ -247,9 +237,7 @@ export function EditIncomeForm() {
         <div className="flex flex-col gap-4">
           <div className="flex gap-4">
             <div className="flex max-w-[100px] flex-1 flex-col gap-2">
-              <label className="text-lg" htmlFor="income_percentage">
-                Percentual
-              </label>
+              <label htmlFor="income_percentage">Percentual</label>
               <Input.Root
                 variant={errors.income_percentage ? "error" : "primary"}>
                 <Input.Control
@@ -266,9 +254,7 @@ export function EditIncomeForm() {
             </div>
 
             <div className="flex min-w-[400px] flex-col gap-2">
-              <label className="text-lg" htmlFor="cep">
-                Organização
-              </label>
+              <label htmlFor="cep">Organização</label>
               <Input.Root>
                 <Input.SelectInput
                   name="organization_id"

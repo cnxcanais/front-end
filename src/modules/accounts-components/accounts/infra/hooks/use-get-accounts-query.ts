@@ -1,5 +1,5 @@
+import { getAccounts } from "@/modules/accounts-components/accounts/infra/remote"
 import { useQuery } from "@tanstack/react-query"
-import { getAccounts } from "../remote"
 
 export function useGetAccountsQuery() {
   return useQuery({
