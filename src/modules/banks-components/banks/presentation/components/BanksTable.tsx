@@ -5,6 +5,7 @@ import { LoadingScreen } from "@/core/components/LoadingScreen"
 import { Modal } from "@/core/components/Modals/Modal"
 import { SearchInput } from "@/core/components/SearchInput"
 import { Table } from "@/core/components/Table"
+import { formatLocalDate } from "@/core/utils/dateFunctions"
 import { exportToExcel } from "@/core/utils/exportToExcel"
 import { getAccountId } from "@/core/utils/get-account-id"
 import { getPermissionByEntity } from "@/core/utils/getPermissionByEntity"
@@ -64,6 +65,11 @@ export function BanksTable() {
     {
       header: "Número",
       accessor: "bank_number",
+    },
+    {
+      header: "Atualizado Em",
+      accessor: "updated_at",
+      render: (value: string) => formatLocalDate(new Date(value)),
     },
     {
       header: "Ações",
@@ -138,6 +144,9 @@ export function BanksTable() {
       {banks.length === 0 ?
         <h2 className="mt-6 text-xl font-semibold">Nenhum banco cadastrado.</h2>
       : <Table columns={columns} data={filteredResults} />}
+      {filteredResults.length === 0 && (
+        <h2 className="text-xl font-semibold">Nenhum banco encontrado.</h2>
+      )}
     </>
   )
 }

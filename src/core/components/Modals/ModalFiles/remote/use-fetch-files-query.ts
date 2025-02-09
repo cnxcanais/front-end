@@ -17,7 +17,5 @@ export function useFetchFilesQuery({
     queryFn: () =>
       fetchFiles(account_id, [{ key: entityType, value: entityId }]),
     enabled: !!account_id,
-    refetchOnWindowFocus: false,
-    refetchOnReconnect: false,
   })
 }

@@ -3,35 +3,33 @@ import { Button } from "@/core/components/Button"
 import * as Input from "@/core/components/Input"
 import { LoadingScreen } from "@/core/components/LoadingScreen"
 import { SelectInput } from "@/core/components/SelectInput"
+import { getAccountId } from "@/core/utils/get-account-id"
 import { prepareArrayForSelect } from "@/core/utils/prepare-array-for-select-input"
 import { useBankAccountsQuery } from "@/modules/bank-accounts-components/bank-accounts/infra/hooks/use-bank-account-query"
 import { useIncomeQuery } from "@/modules/income-components/income-components/infra/use-income-query"
-import { useIncomeDetailsQuery } from "@/modules/income-components/income-details-components/infra/hooks/use-income-details-query"
 import { CaretDown, CaretRight } from "@phosphor-icons/react"
 import { useEffect, useState } from "react"
-import { useForm } from "react-hook-form"
+import { useFormContext, useWatch } from "react-hook-form"
 
 interface FilterProps {
-  account_id: string
-  income_id?: string
+  onFilterChange: (filters: IncomeDetails.QueryParams) => void
 }
 
-export function IncomeDetailsFilters({ account_id, income_id }: FilterProps) {
+export function IncomeDetailsFilters({ onFilterChange }: FilterProps) {
   const [collapsed, setCollapsed] = useState(true)
-  const [filters, setFilters] = useState<IncomeDetails.QueryParams>(
-    {} as IncomeDetails.QueryParams
-  )
+  const [isFilterFilled, setIsFilterFilled] = useState(false)
+  const account_id = getAccountId()
 
   const { register, handleSubmit, control, reset, setValue } =
-    useForm<IncomeDetails.QueryParams>()
+    useFormContext<IncomeDetails.QueryParams>()
+
+  const formValues = useWatch({ control })
 
   const { data: bankAccounts, isLoading: bankAccountIsLoading } =
     useBankAccountsQuery(account_id)
 
   const { data: incomes, isLoading: incomesIsLoading } =
     useIncomeQuery(account_id)
-
-  const { refetch } = useIncomeDetailsQuery(account_id, { ...filters, page: 1 })
 
   function onSubmit(data: IncomeDetails.QueryParams) {
     const adjustMonth = (month: string | undefined, isStart: boolean) => {
@@ -57,22 +55,31 @@ export function IncomeDetailsFilters({ account_id, income_id }: FilterProps) {
       page: 1,
     }
 
-    setFilters(cleanedData)
+    onFilterChange(cleanedData)
   }
 
   function resetFilters() {
     reset()
-    setFilters({} as IncomeDetails.QueryParams)
     setValue("income_id", "")
+    onFilterChange({})
+    window.history.replaceState(
+      {
+        ...window.history.state,
+        as: "/income-details",
+        url: "/income-details",
+      },
+      "",
+      "/income-details"
+    ) // remove query param but without refreshing the page
   }
 
   useEffect(() => {
-    refetch()
-  }, [filters])
+    const hasValue = Object.values(formValues).some(
+      (value) => value !== undefined && value !== null && value !== ""
+    )
 
-  useEffect(() => {
-    if (income_id) setValue("income_id", income_id)
-  }, [income_id])
+    setIsFilterFilled(hasValue)
+  }, [formValues])
 
   if (!incomes || incomesIsLoading || !bankAccounts || bankAccountIsLoading)
     return <LoadingScreen fullScreen={false} />
@@ -93,18 +100,14 @@ export function IncomeDetailsFilters({ account_id, income_id }: FilterProps) {
           <div className="flex flex-1 flex-col gap-2">
             <div className="flex items-center gap-4">
               <div className="flex flex-1 flex-col gap-2">
-                <label className="text-lg" htmlFor="start_date">
-                  Data Inicial
-                </label>
+                <label htmlFor="start_date">Data Inicial</label>
                 <Input.Root>
                   <Input.Control {...register("start_date")} type="month" />
                 </Input.Root>
               </div>
 
               <div className="flex flex-1 flex-col gap-2">
-                <label className="text-lg" htmlFor="end_date">
-                  Data Final
-                </label>
+                <label htmlFor="end_date">Data Final</label>
                 <Input.Root>
                   <Input.Control {...register("end_date")} type="month" />
                 </Input.Root>
@@ -113,18 +116,14 @@ export function IncomeDetailsFilters({ account_id, income_id }: FilterProps) {
 
             <div className="flex items-center gap-4">
               <div className="flex flex-1 flex-col gap-2">
-                <label className="text-lg" htmlFor="min_amount">
-                  Valor Inicial
-                </label>
+                <label htmlFor="min_amount">Valor Inicial</label>
                 <Input.Root>
                   <Input.Currency name="min_amount" control={control} />
                 </Input.Root>
               </div>
 
               <div className="flex flex-1 flex-col gap-2">
-                <label className="text-lg" htmlFor="max_amount">
-                  Valor Final
-                </label>
+                <label htmlFor="max_amount">Valor Final</label>
                 <Input.Root>
                   <Input.Currency name="max_amount" control={control} />
                 </Input.Root>
@@ -147,16 +146,14 @@ export function IncomeDetailsFilters({ account_id, income_id }: FilterProps) {
                 {...register("bank_account_id")}
               />
 
-              <div className="flex min-w-[200px] flex-col gap-2">
-                <label className="text-lg" htmlFor="income_id">
-                  NF
-                </label>
+              <div className="flex flex-1 flex-col gap-2">
+                <label htmlFor="income_id">NF</label>
                 <Input.Root>
                   <Input.SelectInput
                     name="income_id"
                     control={control}
                     options={prepareArrayForSelect(
-                      incomes.incomes,
+                      incomes,
                       "document",
                       "income_id"
                     )}
@@ -179,16 +176,20 @@ export function IncomeDetailsFilters({ account_id, income_id }: FilterProps) {
             </div>
 
             <div className="flex h-12 w-full gap-2">
-              {Object.values(filters).length > 0 && (
-                <Button
-                  onClick={resetFilters}
-                  className="w-full"
-                  variant="secondary"
-                  type="button">
-                  Limpar
-                </Button>
-              )}
-              <Button className="w-full" variant="secondary" type="submit">
+              <Button
+                className="w-full"
+                disabled={!isFilterFilled}
+                onClick={resetFilters}
+                variant="secondary"
+                type="button">
+                Limpar
+              </Button>
+
+              <Button
+                className="w-full"
+                disabled={!isFilterFilled}
+                variant="secondary"
+                type="submit">
                 Pesquisar
               </Button>
             </div>

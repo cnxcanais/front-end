@@ -4,13 +4,13 @@ import { IncomeSource } from "@/@types/income-sources"
 
 export namespace Income {
   export type GetRequest = {
-    is_paid?: string
     document?: string
     start_date?: string
     end_date?: string
     organization_id?: string
     income_source_id?: string
     income_group_id?: string
+    page?: number
   }
 
   export type IncomeType = {
@@ -22,6 +22,8 @@ export namespace Income {
     observation: string
     income_group: IncomeGroup.Type
     income_source: IncomeSource.Type
+    income_source_id: string
+    income_group_id: string
     created_at: Date
     updated_at: Date
     account_id: string
@@ -44,7 +46,7 @@ export namespace Income {
     income: IncomeType
   }
 
-  export type CreateResquest = {
+  export type CreateRequest = {
     account_id: string
     date: Date
     description: string

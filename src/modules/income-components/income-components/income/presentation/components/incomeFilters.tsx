@@ -2,30 +2,36 @@ import { Income } from "@/@types/income"
 import { Button } from "@/core/components/Button"
 import * as Input from "@/core/components/Input"
 import { LoadingScreen } from "@/core/components/LoadingScreen"
+import { getAccountId } from "@/core/utils/get-account-id"
 import { prepareArrayForSelect } from "@/core/utils/prepare-array-for-select-input"
-import { useIncomeQuery } from "@/modules/income-components/income-components/infra/use-income-query"
 import { useIncomeGroupQuery } from "@/modules/income-components/income-groups-components/remote/use-income-group-query"
 import { useIncomeSourceQuery } from "@/modules/income-components/income-source-components/income-sources/infra/hooks/use-income-source-query"
 import { useOrganizationsQuery } from "@/modules/organization-components/organizations/infra/remote/hooks/use-organizations-query"
 import { CaretDown, CaretRight } from "@phosphor-icons/react"
 import { useEffect, useState } from "react"
-import { useForm } from "react-hook-form"
+import { useFormContext, useWatch } from "react-hook-form"
+import { useIncomeQuery } from "../../../infra/use-income-query"
 
 interface FilterProps {
-  account_id: string
+  onFilterChange: (filters: Income.GetRequest) => void
 }
 
-export function IncomeFilters({ account_id }: FilterProps) {
+export function IncomeFilters({ onFilterChange }: FilterProps) {
   const [collapsed, setCollapsed] = useState(false)
-  const [filters, setFilters] = useState<Income.GetRequest>(
-    {} as Income.GetRequest
-  )
+  const [isFilterFilled, setIsFilterFilled] = useState(false)
+  const account_id = getAccountId()
 
-  const { register, handleSubmit, control, reset, setValue } =
-    useForm<Income.GetRequest>()
+  const {
+    register,
+    handleSubmit,
+    control,
+    reset,
+    formState: { isSubmitted },
+  } = useFormContext<Income.GetRequest>()
 
-  const { data: incomes, isLoading: incomesIsLoading } =
-    useIncomeQuery(account_id)
+  const formValues = useWatch({ control })
+
+  const { data: incomes } = useIncomeQuery(account_id)
 
   const { data: incomeGroups, isLoading: incomeGroupsIsLoading } =
     useIncomeGroupQuery(account_id)
@@ -36,11 +42,10 @@ export function IncomeFilters({ account_id }: FilterProps) {
   const { data: organizations, isLoading: organizationsIsLoading } =
     useOrganizationsQuery(account_id)
 
-  const { refetch } = useIncomeQuery(account_id, filters)
-
   function onSubmit(data: Income.GetRequest) {
     const adjustMonth = (month: string | undefined, isStart: boolean) => {
       if (!month) return undefined
+
       const [year, monthIndex] = month.split("-").map(Number)
       return isStart ?
           new Date(year, monthIndex - 1, 1)
@@ -53,26 +58,27 @@ export function IncomeFilters({ account_id }: FilterProps) {
         ?.toISOString()
         .split("T")[0],
       end_date: adjustMonth(data.end_date, false)?.toISOString().split("T")[0],
-
       page: 1,
     }
 
-    setFilters(cleanedData)
+    onFilterChange(cleanedData)
   }
 
   function resetFilters() {
     reset()
-    setFilters({} as Income.GetRequest)
+    onFilterChange({})
   }
 
   useEffect(() => {
-    refetch()
-  }, [filters])
+    const hasValue = Object.values(formValues).some(
+      (value) => value !== undefined && value !== null && value !== ""
+    )
+    setIsFilterFilled(hasValue)
+  }, [formValues])
 
   if (
-    !incomes ||
-    incomesIsLoading ||
     !incomeGroups ||
+    !incomes ||
     incomeGroupsIsLoading ||
     !incomeSources ||
     incomeSourcesIsLoading ||
@@ -97,18 +103,14 @@ export function IncomeFilters({ account_id }: FilterProps) {
           <div className="flex flex-1 flex-col gap-2">
             <div className="flex items-center gap-4">
               <div className="flex flex-1 flex-col gap-2">
-                <label className="text-lg" htmlFor="start_date">
-                  Data Inicial
-                </label>
+                <label htmlFor="start_date">Data Inicial</label>
                 <Input.Root>
                   <Input.Control {...register("start_date")} type="month" />
                 </Input.Root>
               </div>
 
               <div className="flex flex-1 flex-col gap-2">
-                <label className="text-lg" htmlFor="end_date">
-                  Data Final
-                </label>
+                <label htmlFor="end_date">Data Final</label>
                 <Input.Root>
                   <Input.Control {...register("end_date")} type="month" />
                 </Input.Root>
@@ -116,10 +118,8 @@ export function IncomeFilters({ account_id }: FilterProps) {
             </div>
 
             <div className="flex items-center gap-4">
-              <div className="flex min-w-[250px] flex-col gap-2">
-                <label className="text-lg" htmlFor="income_id">
-                  Grupo de Receita
-                </label>
+              <div className="flex flex-1 flex-col gap-2">
+                <label htmlFor="income_id">Grupo de Receita</label>
                 <Input.Root>
                   <Input.SelectInput
                     name="income_group_id"
@@ -134,13 +134,11 @@ export function IncomeFilters({ account_id }: FilterProps) {
                 </Input.Root>
               </div>
 
-              <div className="flex min-w-[250px] flex-col gap-2">
-                <label className="text-lg" htmlFor="income_id">
-                  Cliente
-                </label>
+              <div className="flex flex-1 flex-col gap-2">
+                <label htmlFor="income_id">Cliente</label>
                 <Input.Root>
                   <Input.SelectInput
-                    name="incomeSourceId"
+                    name="income_source_id"
                     control={control}
                     options={prepareArrayForSelect(
                       incomeSources,
@@ -156,16 +154,14 @@ export function IncomeFilters({ account_id }: FilterProps) {
 
           <div className="flex flex-1 flex-col justify-between gap-4">
             <div className="flex gap-4">
-              <div className="flex min-w-[200px] flex-col gap-2">
-                <label className="text-lg" htmlFor="income_id">
-                  NF
-                </label>
+              <div className="flex flex-1 flex-col gap-2">
+                <label htmlFor="income_id">NF</label>
                 <Input.Root>
                   <Input.SelectInput
                     name="document"
                     control={control}
                     options={prepareArrayForSelect(
-                      incomes.incomes,
+                      incomes,
                       "document",
                       "document"
                     )}
@@ -174,10 +170,8 @@ export function IncomeFilters({ account_id }: FilterProps) {
                 </Input.Root>
               </div>
 
-              <div className="flex min-w-[200px] flex-col gap-2">
-                <label className="text-lg" htmlFor="income_id">
-                  Organização
-                </label>
+              <div className="flex flex-1 flex-col gap-2">
+                <label htmlFor="income_id">Organização</label>
                 <Input.Root>
                   <Input.SelectInput
                     name="organization_id"
@@ -194,16 +188,20 @@ export function IncomeFilters({ account_id }: FilterProps) {
             </div>
 
             <div className="flex h-12 w-full gap-2">
-              {Object.values(filters).length > 0 && (
-                <Button
-                  onClick={resetFilters}
-                  className="w-full"
-                  variant="secondary"
-                  type="button">
-                  Limpar
-                </Button>
-              )}
-              <Button className="w-full" variant="secondary" type="submit">
+              <Button
+                onClick={resetFilters}
+                disabled={!isSubmitted}
+                className="w-full"
+                variant="secondary"
+                type="button">
+                Limpar
+              </Button>
+
+              <Button
+                disabled={!isFilterFilled}
+                className="w-full"
+                variant="secondary"
+                type="submit">
                 Pesquisar
               </Button>
             </div>

@@ -1,12 +1,12 @@
 import { ArrowCircleLeft, ArrowCircleRight } from "@phosphor-icons/react"
 
-type Props = {
+type PageSelectorProps = {
   page: number
-  setPage: any
+  setPage: (page: number) => void
   totalPages: number
 }
 
-export function PageSelector({ page, setPage, totalPages }: Props) {
+export function PageSelector({ page, setPage, totalPages }: PageSelectorProps) {
   const handleAdvance = () => {
     if (page < totalPages) setPage(page + 1)
   }
@@ -21,14 +21,14 @@ export function PageSelector({ page, setPage, totalPages }: Props) {
           onClick={handleBack}
           className="cursor-pointer rounded-md p-2 text-blue-500 transition-all hover:bg-gray-200 disabled:cursor-not-allowed disabled:opacity-50"
           disabled={page <= 1}>
-          <ArrowCircleLeft size={20} />
+          <ArrowCircleLeft size={26} />
         </button>
-        <p className="font-bold text-blue-500">{`${page < 10 ? "0" + page : page} de ${totalPages < 10 ? "0" + totalPages : totalPages}`}</p>
+        <p className="text-sm font-bold text-blue-500">{`${page < 10 ? "0" + page : page} de ${totalPages < 10 ? "0" + totalPages : totalPages}`}</p>
         <button
           onClick={handleAdvance}
           className="cursor-pointer rounded-md p-2 text-blue-500 transition-all hover:bg-gray-200 disabled:cursor-not-allowed disabled:opacity-50"
           disabled={page === totalPages}>
-          <ArrowCircleRight size={20} />
+          <ArrowCircleRight size={26} />
         </button>
       </div>
     </div>

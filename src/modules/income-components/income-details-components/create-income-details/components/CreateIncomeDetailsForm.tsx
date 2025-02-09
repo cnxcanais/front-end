@@ -4,42 +4,25 @@ import { IncomeDetails } from "@/@types/income-details"
 import { Button } from "@/core/components/Button"
 import * as Input from "@/core/components/Input"
 import { LoadingScreen } from "@/core/components/LoadingScreen"
-import { getCookie } from "@/lib/cookies"
+import { getAccountId } from "@/core/utils/get-account-id"
 import { useBankAccountsQuery } from "@/modules/bank-accounts-components/bank-accounts/infra/hooks/use-bank-account-query"
 import { useIncomeByIdQuery } from "@/modules/income-components/income-components/infra/use-income-by-id-query"
+import { createIncomeDetailsSchema } from "@/modules/income-components/income-details-components/create-income-details/validation/schema"
+import { createIncomeDetails } from "@/modules/income-components/income-details-components/remote"
 import { usePermissionQuery } from "@/modules/login-components/login/infra/hooks/use-permissions-query"
-import { DevTool } from "@hookform/devtools"
 import { zodResolver } from "@hookform/resolvers/zod"
-import { useParams, useRouter } from "next/navigation"
+import { useRouter } from "next/navigation"
 import { useEffect } from "react"
 import { useForm } from "react-hook-form"
 import { toast } from "sonner"
-import { createIncomeDetails } from "../../remote"
-import { createIncomeDetailsSchema } from "../validation/schema"
 
-export function CreateIncomeDetailsForm() {
+export function CreateIncomeDetailsForm({ income_id }: { income_id: string }) {
   const { push } = useRouter()
 
-  const {
-    data: permissions,
-    refetch: permissionRefetch,
-    isLoading: permissionLoading,
-  } = usePermissionQuery()
+  const account_id = getAccountId()
 
-  if (!permissions || !permissions?.componentAccess) permissionRefetch()
-
-  const income_details_input_fields_amount =
-    permissions?.componentAccess["income_details_input_fields_amount"]
-  const income_details_input_fields_abservation =
-    permissions?.componentAccess["income_details_input_fields_abservation"]
-  const income_details_input_fields_date =
-    permissions?.componentAccess["income_details_input_fields_date"]
-  const income_details_input_fields_bank_account =
-    permissions?.componentAccess["income_details_input_fields_bank_account"]
-
-  const account_id = getCookie("accountId")
-  const params = useParams()
-  const income_id = params.id as string
+  const { data: permissions, isLoading: permissionLoading } =
+    usePermissionQuery()
 
   const { data: bankAccounts, isLoading: bankAccountIsLoading } =
     useBankAccountsQuery(account_id)
@@ -47,11 +30,14 @@ export function CreateIncomeDetailsForm() {
   const { data: incomeData, isLoading: isIncomeLoading } =
     useIncomeByIdQuery(income_id)
 
-  useEffect(() => {
-    if (incomeData) {
-      setValue("part", incomeData.income_details.length + 1)
-    }
-  }, [incomeData])
+  const income_details_input_fields_amount =
+    permissions?.["income_details_input_fields_amount"]
+  const income_details_input_fields_abservation =
+    permissions?.["income_details_input_fields_abservation"]
+  const income_details_input_fields_date =
+    permissions?.["income_details_input_fields_date"]
+  const income_details_input_fields_bank_account =
+    permissions?.["income_details_input_fields_bank_account"]
 
   const {
     register,
@@ -59,20 +45,13 @@ export function CreateIncomeDetailsForm() {
     formState: { isSubmitting, errors },
     control,
     setValue,
-    getValues,
   } = useForm<IncomeDetails.CreateRequest>({
     resolver: zodResolver(createIncomeDetailsSchema),
     defaultValues: {
       income_id: income_id,
+      account_id,
     },
   })
-
-  useEffect(() => {
-    const accountId = getCookie("accountId")
-    if (accountId) {
-      setValue("account_id", accountId)
-    }
-  }, [setValue])
 
   async function onSubmit(data: IncomeDetails.CreateRequest) {
     try {
@@ -87,6 +66,12 @@ export function CreateIncomeDetailsForm() {
     }
   }
 
+  useEffect(() => {
+    if (incomeData) {
+      setValue("part", incomeData.income_details.length + 1)
+    }
+  }, [incomeData])
+
   if (
     !bankAccounts ||
     bankAccountIsLoading ||
@@ -97,18 +82,15 @@ export function CreateIncomeDetailsForm() {
   )
     return <LoadingScreen />
 
-  console.log(errors)
   return (
     <>
       <form
-        className="mt-6 flex max-w-[1000px] flex-col gap-4"
+        className="mt-6 flex flex-col gap-4"
         onSubmit={handleSubmit(onSubmit)}>
         <div className="flex flex-col gap-4">
           <div className="flex gap-4">
             <div className="flex min-w-[500px] flex-col gap-2">
-              <label className="text-lg" htmlFor="income_source_id">
-                Conta Bancária
-              </label>
+              <label htmlFor="income_source_id">Conta Bancária</label>
               <Input.Root
                 variant={errors.bank_account_id ? "error" : "primary"}>
                 <Input.SelectInput
@@ -134,9 +116,7 @@ export function CreateIncomeDetailsForm() {
             </div>
 
             <div className="flex max-w-[150px] flex-1 flex-col gap-2">
-              <label className="text-lg" htmlFor="cpf_cnpj">
-                Data
-              </label>
+              <label htmlFor="cpf_cnpj">Data</label>
               <Input.Root variant={errors.due_date ? "error" : "primary"}>
                 <Input.Control
                   disabled={!income_details_input_fields_date}
@@ -154,9 +134,7 @@ export function CreateIncomeDetailsForm() {
 
           <div className="flex max-w-[300px] gap-4">
             <div className="flex flex-1 flex-col gap-2">
-              <label className="min-w-[600px] text-lg" htmlFor="address_1">
-                Observação
-              </label>
+              <label htmlFor="address_1">Observação</label>
               <Input.Root>
                 <Input.Control
                   disabled={!income_details_input_fields_abservation}
@@ -170,9 +148,7 @@ export function CreateIncomeDetailsForm() {
 
         <div className="flex gap-4">
           <div className="flex max-w-[150px] flex-1 flex-col gap-2">
-            <label className="text-lg" htmlFor="income_percentage">
-              Valor
-            </label>
+            <label htmlFor="income_percentage">Valor</label>
             <Input.Root variant={errors.amount ? "error" : "primary"}>
               <Input.Currency
                 disabled={!income_details_input_fields_amount}
@@ -202,7 +178,7 @@ export function CreateIncomeDetailsForm() {
           </Button>
         </div>
       </form>
-      {process.env.NODE_ENV === "development" && <DevTool control={control} />}
+      {/* {process.env.NODE_ENV === "development" && <DevTool control={control} />} */}
     </>
   )
 }

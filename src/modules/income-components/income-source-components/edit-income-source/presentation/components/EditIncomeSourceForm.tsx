@@ -4,7 +4,7 @@ import { IncomeSource } from "@/@types/income-sources"
 import { Button } from "@/core/components/Button"
 import * as Input from "@/core/components/Input"
 import { LoadingScreen } from "@/core/components/LoadingScreen"
-import { getPermissionByEntity } from "@/core/utils/getPermissionByEntity"
+import { usePermissions } from "@/core/utils/hooks/use-permission"
 import {
   editIncomeSource,
   getIncomeSourceById,
@@ -19,49 +19,47 @@ import { useRouter } from "next/navigation"
 import { useForm } from "react-hook-form"
 import { toast } from "sonner"
 
-export function EditIncomeSourceForm({ id }: { id: string }) {
+export function EditIncomeSourceForm({
+  income_source_id,
+}: {
+  income_source_id: string
+}) {
   const { push } = useRouter()
 
   const { data: incomeSource, isLoading } = useQuery({
-    queryKey: ["income-source", id],
-    queryFn: () => getIncomeSourceById({ income_source_id: id }),
-    enabled: id !== "",
+    queryKey: ["income-source", income_source_id],
+    queryFn: () => getIncomeSourceById({ income_source_id }),
+    enabled: income_source_id !== "",
     refetchOnWindowFocus: false,
   })
 
-  const income_source_input_fields_name = getPermissionByEntity(
-    "income_source_input_fields_name"
-  )
-  const income_source_input_fields_email = getPermissionByEntity(
-    "income_source_input_fields_email"
-  )
-  const income_source_input_fields_cpf_cnpj = getPermissionByEntity(
-    "income_source_input_fields_cpf_cnpj"
-  )
-  const income_source_input_fields_phone = getPermissionByEntity(
-    "income_source_input_fields_phone"
-  )
-  const income_source_input_fields_contact_name = getPermissionByEntity(
-    "income_source_input_fields_contact_name"
-  )
-  const income_source_input_fields_address_1 = getPermissionByEntity(
-    "income_source_input_fields_address_1"
-  )
-  const income_source_input_fields_address_2 = getPermissionByEntity(
-    "income_source_input_fields_address_2"
-  )
-  const income_source_input_fields_address_3 = getPermissionByEntity(
-    "income_source_input_fields_address_3"
-  )
-  const income_source_input_fields_state = getPermissionByEntity(
-    "income_source_input_fields_state"
-  )
-  const income_source_input_fields_cep = getPermissionByEntity(
-    "income_source_input_fields_cep"
-  )
-  const income_source_input_fields_city = getPermissionByEntity(
-    "income_source_input_fields_city"
-  )
+  const permissions = [
+    "income_source_input_fields_name",
+    "income_source_input_fields_email",
+    "income_source_input_fields_cpf_cnpj",
+    "income_source_input_fields_phone",
+    "income_source_input_fields_contact_name",
+    "income_source_input_fields_address_1",
+    "income_source_input_fields_address_2",
+    "income_source_input_fields_address_3",
+    "income_source_input_fields_state",
+    "income_source_input_fields_cep",
+    "income_source_input_fields_city",
+  ]
+
+  const {
+    income_source_input_fields_name,
+    income_source_input_fields_email,
+    income_source_input_fields_cpf_cnpj,
+    income_source_input_fields_phone,
+    income_source_input_fields_contact_name,
+    income_source_input_fields_address_1,
+    income_source_input_fields_address_2,
+    income_source_input_fields_address_3,
+    income_source_input_fields_state,
+    income_source_input_fields_cep,
+    income_source_input_fields_city,
+  } = usePermissions(permissions)
 
   const {
     register,
@@ -87,7 +85,7 @@ export function EditIncomeSourceForm({ id }: { id: string }) {
 
   async function onSubmit(data: IncomeSource.UpdateRequest) {
     try {
-      await editIncomeSource({ income_source_id: id, ...data })
+      await editIncomeSource({ income_source_id, ...data })
       toast.success("Fonte de receita editada com sucesso!")
       setTimeout(() => push("/income-sources"), 2000)
     } catch (error) {
@@ -104,9 +102,7 @@ export function EditIncomeSourceForm({ id }: { id: string }) {
       <div className="flex flex-col gap-4">
         <div className="flex gap-4">
           <div className="flex flex-1 flex-col gap-2">
-            <label className="text-lg" htmlFor="name">
-              Nome
-            </label>
+            <label htmlFor="name">Nome</label>
             <Input.Root variant={errors.name ? "error" : "primary"}>
               <Input.Control
                 disabled={!income_source_input_fields_name}
@@ -122,9 +118,7 @@ export function EditIncomeSourceForm({ id }: { id: string }) {
           </div>
 
           <div className="flex flex-1 flex-col gap-2">
-            <label className="text-lg" htmlFor="cpf_cnpj">
-              Documento
-            </label>
+            <label htmlFor="cpf_cnpj">Documento</label>
             <Input.Root variant={errors.cpf_cnpj ? "error" : "primary"}>
               <Input.Control
                 disabled={!income_source_input_fields_cpf_cnpj}
@@ -142,9 +136,7 @@ export function EditIncomeSourceForm({ id }: { id: string }) {
 
         <div className="flex gap-4">
           <div className="flex flex-1 flex-col gap-2">
-            <label className="text-lg" htmlFor="address_1">
-              Contato
-            </label>
+            <label htmlFor="address_1">Contato</label>
             <Input.Root variant={errors.contact_name ? "error" : "primary"}>
               <Input.Control
                 disabled={!income_source_input_fields_contact_name}
@@ -160,9 +152,7 @@ export function EditIncomeSourceForm({ id }: { id: string }) {
           </div>
 
           <div className="flex flex-1 flex-col gap-2">
-            <label className="text-lg" htmlFor="phone">
-              Telefone
-            </label>
+            <label htmlFor="phone">Telefone</label>
             <Input.Root variant={errors.phone ? "error" : "primary"}>
               <Input.Control
                 disabled={!income_source_input_fields_phone}
@@ -178,9 +168,7 @@ export function EditIncomeSourceForm({ id }: { id: string }) {
           </div>
 
           <div className="flex flex-1 flex-col gap-2">
-            <label className="text-lg" htmlFor="email">
-              Email
-            </label>
+            <label htmlFor="email">Email</label>
             <Input.Root variant={errors.email ? "error" : "primary"}>
               <Input.Control
                 disabled={!income_source_input_fields_email}
@@ -200,9 +188,7 @@ export function EditIncomeSourceForm({ id }: { id: string }) {
       <div className="flex flex-col gap-4">
         <div className="flex gap-4">
           <div className="flex flex-1 flex-col gap-2">
-            <label className="text-lg" htmlFor="city">
-              Cidade
-            </label>
+            <label htmlFor="city">Cidade</label>
             <Input.Root variant={errors.city ? "error" : "primary"}>
               <Input.Control
                 disabled={!income_source_input_fields_city}
@@ -218,9 +204,7 @@ export function EditIncomeSourceForm({ id }: { id: string }) {
           </div>
 
           <div className="flex flex-col gap-2">
-            <label className="text-lg" htmlFor="state">
-              Estado
-            </label>
+            <label htmlFor="state">Estado</label>
             <Input.Root variant={errors.state ? "error" : "primary"}>
               <Input.Control
                 disabled={!income_source_input_fields_state}
@@ -236,9 +220,7 @@ export function EditIncomeSourceForm({ id }: { id: string }) {
           </div>
 
           <div className="flex flex-col gap-2">
-            <label className="text-lg" htmlFor="cep">
-              CEP
-            </label>
+            <label htmlFor="cep">CEP</label>
             <Input.Root variant={errors.cep ? "error" : "primary"}>
               <Input.Control
                 disabled={!income_source_input_fields_cep}
@@ -254,9 +236,7 @@ export function EditIncomeSourceForm({ id }: { id: string }) {
 
         <div className="flex gap-4">
           <div className="flex flex-1 flex-col gap-2">
-            <label className="text-lg" htmlFor="address_1">
-              Endereço
-            </label>
+            <label htmlFor="address_1">Endereço</label>
             <Input.Root variant={errors.address_1 ? "error" : "primary"}>
               <Input.Control
                 disabled={!income_source_input_fields_address_1}
@@ -272,9 +252,7 @@ export function EditIncomeSourceForm({ id }: { id: string }) {
           </div>
 
           <div className="flex flex-col gap-2">
-            <label className="text-lg" htmlFor="address_2">
-              Número
-            </label>
+            <label htmlFor="address_2">Número</label>
             <Input.Root variant="primary">
               <Input.Control
                 disabled={!income_source_input_fields_address_2}
@@ -285,9 +263,7 @@ export function EditIncomeSourceForm({ id }: { id: string }) {
           </div>
 
           <div className="flex flex-col gap-2">
-            <label className="text-lg" htmlFor="address_3">
-              Complemento
-            </label>
+            <label htmlFor="address_3">Complemento</label>
             <Input.Root variant="primary">
               <Input.Control
                 disabled={!income_source_input_fields_address_3}

@@ -5,7 +5,5 @@ export function useFetchBankAccountsQuery(account_id: string) {
   return useQuery({
     queryKey: ["bank-accounts"],
     queryFn: () => getBankAccounts(account_id),
-    refetchOnWindowFocus: false,
-    refetchOnReconnect: false,
   })
 }

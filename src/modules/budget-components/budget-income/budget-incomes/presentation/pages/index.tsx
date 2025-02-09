@@ -3,7 +3,7 @@ import { IncomeBudgetTable } from "@/modules/budget-components/budget-income/bud
 
 export function IncomeBudgetPage() {
   return (
-    <main className="flex w-full max-w-[1200px] flex-col">
+    <main className="flex w-full flex-col">
       <PageTitle content="Orçamentos de Receitas" />
       <IncomeBudgetTable />
     </main>

@@ -3,7 +3,7 @@
 import { IncomeGroup } from "@/@types/income-group"
 import { Button } from "@/core/components/Button"
 import * as Input from "@/core/components/Input"
-import { getCookie } from "@/lib/cookies"
+import { getAccountId } from "@/core/utils/get-account-id"
 import {
   CreateIncomeGroupSchema,
   createIncomeGroupSchema,
@@ -24,7 +24,7 @@ export function CreateIncomeGroupForm() {
   } = useForm<CreateIncomeGroupSchema>({
     resolver: zodResolver(createIncomeGroupSchema),
     values: {
-      account_id: getCookie("accountId"),
+      account_id: getAccountId(),
     },
   })
 
@@ -34,21 +34,19 @@ export function CreateIncomeGroupForm() {
       toast.success(response)
       setTimeout(() => push("/income-groups"), 2000)
     } catch (error) {
-      toast.error("Erro ao criar conta: " + error)
+      toast.error("Erro ao criar grupo de receita: " + error)
     }
   }
 
   return (
     <form onSubmit={handleSubmit(onSubmit)}>
       <div className="mt-8 flex max-w-96 flex-col gap-2">
-        <label className="text-lg" htmlFor="name">
-          Nome
-        </label>
+        <label htmlFor="name">Nome</label>
         <Input.Root>
           <Input.Control {...register("group_name")} type="text" />
         </Input.Root>
       </div>
-      <div className="my-2 flex gap-4">
+      <div className="mt-6 flex gap-4">
         <Button type="submit" disabled={isSubmitting} variant="secondary">
           Salvar
         </Button>

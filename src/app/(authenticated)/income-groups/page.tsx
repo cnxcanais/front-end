@@ -1,7 +1,11 @@
-"use client"
-
-import { IncomeGroupPage } from "@/modules/income-components/income-groups-components/dashboard/presentation/pages"
+import { PageTitle } from "@/core/components/PageTitle"
+import { IncomeGroupTable } from "@/modules/income-components/income-groups-components/dashboard/presentation/components/IncomeGroupsTable"
 
 export default function IncomeGroupRender() {
-  return <IncomeGroupPage />
+  return (
+    <main className="flex w-full flex-col">
+      <PageTitle content="Grupos de Receitas" />
+      <IncomeGroupTable />
+    </main>
+  )
 }

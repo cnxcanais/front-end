@@ -4,6 +4,8 @@ import { Income } from "@/@types/income"
 import { SearchArray } from "@/@types/search-array"
 import { Button } from "@/core/components/Button"
 import * as Input from "@/core/components/Input"
+import { LoadingScreen } from "@/core/components/LoadingScreen"
+import { getPermissionByEntity } from "@/core/utils/getPermissionByEntity"
 import { ArrayConfig, populateArrays } from "@/core/utils/populateArrays"
 import { getCookie } from "@/lib/cookies"
 import { useIncomeByIdQuery } from "@/modules/income-components/income-components/infra/use-income-by-id-query"
@@ -11,27 +13,24 @@ import { editIncome } from "@/modules/income-components/income-components/remote
 import { getAllIncomeGroups } from "@/modules/income-components/income-groups-components/remote/income-group"
 import { getIncomeSources } from "@/modules/income-components/income-source-components/income-sources/infra/remote"
 import { getOrganizations } from "@/modules/organization-components/organizations/infra/remote"
-import { DevTool } from "@hookform/devtools"
 import { zodResolver } from "@hookform/resolvers/zod"
-import { useParams, useRouter } from "next/navigation"
+import { useRouter } from "next/navigation"
 import { useEffect, useMemo, useState } from "react"
 import { useForm } from "react-hook-form"
 import { toast } from "sonner"
 import { editIncomeSchema } from "../validation/schema"
 
-export function EditIncomeForm() {
+export function EditIncomeForm({ income_id }: { income_id: string }) {
   const { push } = useRouter()
 
   const account_id = getCookie("accountId")
-  const params = useParams()
-  const income_id = params.id as string
 
   const [organizations, setOrganizations] = useState<SearchArray>([])
   const [incomeGroups, setIncomeGroups] = useState<SearchArray>([])
   const [arrayPlaceHolder, setArrayPlaceHolder] = useState("Carregando...")
   const [incomeSource, setIncomeSource] = useState<SearchArray>([])
 
-  const { data: income } = useIncomeByIdQuery(income_id)
+  const { data: income, isLoading } = useIncomeByIdQuery(income_id)
 
   const arrayConfigs: ArrayConfig<any>[] = useMemo(
     () => [
@@ -77,52 +76,64 @@ export function EditIncomeForm() {
     )
   }, [arrayConfigs, account_id])
 
-  const {
-    income_input_fields_amount,
-    income_input_fields_income_qty,
-    income_input_fields_income_percentage,
-    income_input_fields_date,
-    income_input_fields_document,
-    income_input_fields_description,
-    income_input_fields_income_source_id,
-    income_input_fields_organization_id,
-    income_input_fields_income_group_id,
-  } = JSON.parse(getCookie("permissions")).componentAccess
+  const income_input_fields_amount = getPermissionByEntity(
+    "income_input_fields_amount"
+  )
+  const income_input_fields_income_qty = getPermissionByEntity(
+    "income_input_fields_income_qty"
+  )
+  const income_input_fields_income_percentage = getPermissionByEntity(
+    "income_input_fields_income_percentage"
+  )
+  const income_input_fields_date = getPermissionByEntity(
+    "income_input_fields_date"
+  )
+  const income_input_fields_document = getPermissionByEntity(
+    "income_input_fields_document"
+  )
+  const income_input_fields_description = getPermissionByEntity(
+    "income_input_fields_description"
+  )
+  const income_input_fields_income_source_id = getPermissionByEntity(
+    "income_input_fields_income_source_id"
+  )
+  const income_input_fields_organization_id = getPermissionByEntity(
+    "income_input_fields_organization_id"
+  )
+  const income_input_fields_income_group_id = getPermissionByEntity(
+    "income_input_fields_income_group_id"
+  )
 
   const {
     register,
     handleSubmit,
     formState: { isSubmitting, errors },
-    reset,
     control,
   } = useForm<Income.UpdateRequest>({
     resolver: zodResolver(editIncomeSchema),
+    values: {
+      income_percentage: Number(income?.income_percentage ?? 100),
+      date: income?.date.substring(0, 10),
+      document: income?.document,
+      description: income?.description,
+      income_source_id: income?.income_source_id,
+      organization_id: income?.organization_id,
+      income_group_id: income?.income_group_id,
+      income_id: income?.income_id,
+    },
   })
-
-  useEffect(() => {
-    if (income) {
-      reset({
-        income_percentage: Number(income.income_percentage),
-        date: income.date.substring(0, 10),
-        document: income.document,
-        description: income.description,
-        income_source_id: income.income_source?.income_source_id,
-        organization_id: income.organization_id,
-        income_group_id: income.income_group?.income_group_id,
-        income_id: income.income_id,
-      })
-    }
-  }, [income, reset])
 
   async function onSubmit(data: Income.UpdateRequest) {
     try {
-      const response = await editIncome(data)
+      await editIncome(data)
       toast.success("Receita editada com sucesso!")
       setTimeout(() => push("/incomes"), 2000)
     } catch (error) {
-      toast.error("Erro ao criar fonte de receita: " + error)
+      toast.error("Erro ao editar receita: " + error)
     }
   }
+
+  if (!income || isLoading) return <LoadingScreen />
 
   return (
     <>
@@ -132,9 +143,7 @@ export function EditIncomeForm() {
         <div className="flex flex-col gap-4">
           <div className="flex gap-4">
             <div className="flex min-w-[500px] flex-col gap-2">
-              <label className="text-lg" htmlFor="income_source_id">
-                Gerador da Receita
-              </label>
+              <label htmlFor="income_source_id">Gerador da Receita</label>
               <Input.Root
                 variant={errors.income_source_id ? "error" : "primary"}>
                 <Input.SelectInput
@@ -153,9 +162,7 @@ export function EditIncomeForm() {
             </div>
 
             <div className="flex flex-1 flex-col gap-2">
-              <label className="text-lg" htmlFor="city">
-                Grupo de Receitas
-              </label>
+              <label htmlFor="city">Grupo de Receitas</label>
               <Input.Root
                 variant={errors.income_group_id ? "error" : "primary"}>
                 <Input.SelectInput
@@ -174,9 +181,7 @@ export function EditIncomeForm() {
             </div>
 
             <div className="flex max-w-[150px] flex-1 flex-col gap-2">
-              <label className="text-lg" htmlFor="cpf_cnpj">
-                Data
-              </label>
+              <label htmlFor="cpf_cnpj">Data</label>
               <Input.Root variant={errors.date ? "error" : "primary"}>
                 <Input.Control
                   disabled={!income_input_fields_date}
@@ -194,7 +199,7 @@ export function EditIncomeForm() {
 
           <div className="flex gap-4">
             <div className="flex flex-1 flex-col gap-2">
-              <label className="min-w-[600px] text-lg" htmlFor="address_1">
+              <label className="min-w-[600px]" htmlFor="address_1">
                 Descrição
               </label>
               <Input.Root variant={errors.description ? "error" : "primary"}>
@@ -212,9 +217,7 @@ export function EditIncomeForm() {
             </div>
 
             <div className="flex flex-1 flex-col gap-2">
-              <label className="text-lg" htmlFor="phone">
-                NF/Recibo
-              </label>
+              <label htmlFor="phone">NF/Recibo</label>
               <Input.Root variant={errors.document ? "error" : "primary"}>
                 <Input.Control
                   disabled={!income_input_fields_document}
@@ -234,9 +237,7 @@ export function EditIncomeForm() {
         <div className="flex flex-col gap-4">
           <div className="flex gap-4">
             <div className="flex max-w-[100px] flex-1 flex-col gap-2">
-              <label className="text-lg" htmlFor="income_percentage">
-                Percentual
-              </label>
+              <label htmlFor="income_percentage">Percentual</label>
               <Input.Root
                 variant={errors.income_percentage ? "error" : "primary"}>
                 <Input.Control
@@ -253,9 +254,7 @@ export function EditIncomeForm() {
             </div>
 
             <div className="flex min-w-[400px] flex-col gap-2">
-              <label className="text-lg" htmlFor="cep">
-                Organização
-              </label>
+              <label htmlFor="cep">Organização</label>
               <Input.Root>
                 <Input.SelectInput
                   name="organization_id"
@@ -287,7 +286,6 @@ export function EditIncomeForm() {
           </Button>
         </div>
       </form>
-      {process.env.NODE_ENV === "development" && <DevTool control={control} />}
     </>
   )
 }

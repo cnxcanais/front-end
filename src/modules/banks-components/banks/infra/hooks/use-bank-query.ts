@@ -1,5 +1,5 @@
+import { getBanks } from "@/modules/banks-components/banks/infra/remote"
 import { useQuery } from "@tanstack/react-query"
-import { getBanks } from "../remote"
 
 export function useBankQuery(account_id: string) {
   return useQuery({

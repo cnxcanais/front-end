@@ -1,7 +1,11 @@
-"use client"
-
-import { IncomePage } from "@/modules/income-components/income-components/income/presentation/pages"
+import { PageTitle } from "@/core/components/PageTitle"
+import { IncomeTable } from "@/modules/income-components/income-components/income/presentation/components/IncomeTable"
 
 export default function IncomeRender() {
-  return <IncomePage />
+  return (
+    <main className="flex w-full flex-col">
+      <PageTitle content="Receitas" />
+      <IncomeTable />
+    </main>
+  )
 }

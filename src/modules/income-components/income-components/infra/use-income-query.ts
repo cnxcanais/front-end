@@ -7,7 +7,7 @@ export function useIncomeQuery(
   queryParams?: Income.GetRequest
 ) {
   return useQuery({
-    queryKey: ["incomes"],
+    queryKey: ["incomes", { queryParams }],
     queryFn: () => getIncomes(account_id, queryParams),
     enabled: !!account_id,
   })

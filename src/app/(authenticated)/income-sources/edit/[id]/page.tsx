@@ -1,4 +1,5 @@
-import { EditIncomeSourcePage } from "@/modules/income-components/income-source-components/edit-income-source/presentation/pages"
+import { PageTitle } from "@/core/components/PageTitle"
+import { EditIncomeSourceForm } from "@/modules/income-components/income-source-components/edit-income-source/presentation/components/EditIncomeSourceForm"
 
 export default async function EditIncomeSourceRender({
   params,
@@ -7,5 +8,10 @@ export default async function EditIncomeSourceRender({
 }) {
   const id = (await params).id
 
-  return <EditIncomeSourcePage id={id} />
+  return (
+    <>
+      <PageTitle content="Editar Fonte de Receita" />
+      <EditIncomeSourceForm income_source_id={id} />
+    </>
+  )
 }

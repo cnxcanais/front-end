@@ -11,7 +11,7 @@ export async function createIncome({
   income_percentage,
   income_source_id,
   organization_id,
-}: Income.CreateResquest) {
+}: Income.CreateRequest) {
   try {
     const { data } = await api.post(`/income`, {
       account_id,

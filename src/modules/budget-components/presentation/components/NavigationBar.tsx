@@ -16,7 +16,7 @@ export type NavigationBarProps = {
 
 export function NavigationBar({ setTab, activeTab }: NavigationBarProps) {
   return (
-    <div className="max-w-[1200px]">
+    <div className="">
       <nav
         aria-label="Tabs"
         className="isolate flex divide-x divide-gray-200 rounded-lg shadow">

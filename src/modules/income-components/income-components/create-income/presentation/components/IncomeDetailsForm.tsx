@@ -8,45 +8,21 @@ import { usePermissions } from "@/core/utils/hooks/use-permission"
 import { ArrayConfig, populateArrays } from "@/core/utils/populateArrays"
 import { getBankAccounts } from "@/modules/bank-accounts-components/bank-accounts/infra/remote"
 import { FormType } from "@/modules/income-components/income-components/create-income/presentation/components/CreateIncomeForm"
-import { useRouter } from "next/navigation"
+import { IncomeDetailsInfo } from "@/modules/income-components/income-components/create-income/presentation/components/IncomeDetailsInfo"
 import { Dispatch, SetStateAction, useEffect, useRef, useState } from "react"
-import {
-  Control,
-  FieldErrors,
-  UseFormGetValues,
-  UseFormRegister,
-  UseFormSetValue,
-  UseFormTrigger,
-  UseFormWatch,
-} from "react-hook-form"
-import { IncomeDetailsInfo } from "./IncomeDetailsInfo"
+import { useFormContext } from "react-hook-form"
 
-type Props = {
+type IncomeDetailFormProps = {
   account_id: string
-  errors: FieldErrors<FormType>
-  control: Control<FormType, any>
-  register: UseFormRegister<FormType>
   setSecondPage: Dispatch<SetStateAction<boolean>>
-  trigger: UseFormTrigger<FormType>
-  setValue: UseFormSetValue<FormType>
-  getValues: UseFormGetValues<FormType>
-  watch: UseFormWatch<FormType>
 }
 
 /**
  * @component IncomeDetailForm
  * @description A form component for handling income details including total amount, installment parts, and bank account selection.
  *
- * @param {Object} props
  * @param {string} props.account_id - The ID of the current account
- * @param {FieldErrors<FormType>} props.errors - Form validation errors from react-hook-form
- * @param {Control<FormType>} props.control - Form control object from react-hook-form
- * @param {UseFormRegister<FormType>} props.register - Register function from react-hook-form
  * @param {Dispatch<SetStateAction<boolean>>} props.setSecondPage - State setter for managing form page navigation
- * @param {UseFormTrigger<FormType>} props.trigger - Form trigger function from react-hook-form
- * @param {UseFormSetValue<FormType>} props.setValue - Function to set form values
- * @param {UseFormGetValues<FormType>} props.getValues - Function to get form values
- * @param {UseFormWatch<FormType>} props.watch - Function to watch form value changes
  *
  * @state {SearchArray} bankAccounts - Array of available bank accounts
  * @state {number | null} initialIndividualValue - Initial value for each installment
@@ -55,40 +31,17 @@ type Props = {
  * @state {number} detailsInfo.partsQty - Number of installments
  * @state {string} detailsInfo.bankAccountId - Selected bank account ID
  *
- * @features
- * - Manages income details with multiple installments
- * - Automatically calculates individual installment amounts
- * - Handles bank account selection
- * - Validates form inputs
- * - Maintains form state across navigation
- * - Automatically adjusts dates for installments
- * - Handles permission-based input restrictions
- *
- * @example
- * <IncomeDetailForm
- *   account_id="123"
- *   errors={errors}
- *   control={control}
- *   register={register}
- *   setSecondPage={setSecondPage}
- *   trigger={trigger}
- *   setValue={setValue}
- *   getValues={getValues}
- *   watch={watch}
- * />
  */
 export function IncomeDetailForm({
   account_id,
-  errors,
-  control,
-  register,
   setSecondPage,
-  trigger,
-  getValues,
-  setValue,
-  watch,
-}: Props) {
-  const { push } = useRouter()
+}: IncomeDetailFormProps) {
+  const {
+    watch,
+    formState: { errors },
+    setValue,
+    getValues,
+  } = useFormContext<FormType>()
 
   const permissions = ["income_input_fields_bank_account_id "]
 
@@ -130,16 +83,7 @@ export function IncomeDetailForm({
   const renderDetailsInfo = () => {
     return Array(detailsInfo.partsQty)
       .fill(null)
-      .map((_, index) => (
-        <IncomeDetailsInfo
-          key={index}
-          errors={errors}
-          control={control}
-          index={index}
-          register={register}
-          getValues={getValues}
-        />
-      ))
+      .map((_, index) => <IncomeDetailsInfo key={index} index={index} />)
   }
 
   // Used to simulate a dirty state on first installment amount, after first value is adjusted to match total amount the
@@ -162,7 +106,9 @@ export function IncomeDetailForm({
   useEffect(() => {
     if (detailsArray?.length && bankAccountId) {
       detailsArray.forEach((item, index) => {
-        setValue(`incomeDetailsArray.${index}.bank_account_id`, bankAccountId)
+        setValue(`incomeDetailsArray.${index}.bank_account_id`, bankAccountId, {
+          shouldValidate: true,
+        })
       })
     }
   }, [detailsArray.length, bankAccountId, setValue])
@@ -291,52 +237,7 @@ export function IncomeDetailForm({
           <label htmlFor="income_bank_account_id">Conta Bancária</label>
           <Input.Root
             variant={
-              (
-                errors?.incomeDetailsArray /**
-                 * @component IncomeDetailForm
-                 * @description A form component for handling income details including total amount, installment parts, and bank account selection.
-                 *
-                 * @param {Object} props
-                 * @param {string} props.account_id - The ID of the current account
-                 * @param {FieldErrors<FormType>} props.errors - Form validation errors from react-hook-form
-                 * @param {Control<FormType>} props.control - Form control object from react-hook-form
-                 * @param {UseFormRegister<FormType>} props.register - Register function from react-hook-form
-                 * @param {Dispatch<SetStateAction<boolean>>} props.setSecondPage - State setter for managing form page navigation
-                 * @param {UseFormTrigger<FormType>} props.trigger - Form trigger function from react-hook-form
-                 * @param {UseFormSetValue<FormType>} props.setValue - Function to set form values
-                 * @param {UseFormGetValues<FormType>} props.getValues - Function to get form values
-                 * @param {UseFormWatch<FormType>} props.watch - Function to watch form value changes
-                 *
-                 * @state {SearchArray} bankAccounts - Array of available bank accounts
-                 * @state {number | null} initialIndividualValue - Initial value for each installment
-                 * @state {Object} detailsInfo - Object containing form state
-                 * @state {number} detailsInfo.totalAmount - Total amount of the income
-                 * @state {number} detailsInfo.partsQty - Number of installments
-                 * @state {string} detailsInfo.bankAccountId - Selected bank account ID
-                 *
-                 * @features
-                 * - Manages income details with multiple installments
-                 * - Automatically calculates individual installment amounts
-                 * - Handles bank account selection
-                 * - Validates form inputs
-                 * - Maintains form state across navigation
-                 * - Automatically adjusts dates for installments
-                 * - Handles permission-based input restrictions
-                 *
-                 * @example
-                 * <IncomeDetailForm
-                 *   account_id="123"
-                 *   errors={errors}
-                 *   control={control}
-                 *   register={register}
-                 *   setSecondPage={setSecondPage}
-                 *   trigger={trigger}
-                 *   setValue={setValue}
-                 *   getValues={getValues}
-                 *   watch={watch}
-                 * />
-                 */?.[0]?.bank_account_id
-              ) ?
+              errors?.incomeDetailsArray?.[0]?.bank_account_id ?
                 "error"
               : "primary"
             }>

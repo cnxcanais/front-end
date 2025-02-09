@@ -35,9 +35,7 @@ export function PasswordResetForm() {
       </h2>
 
       <div className="mb-2 flex flex-col gap-3">
-        <label className="text-lg" htmlFor="email">
-          E-mail
-        </label>
+        <label htmlFor="email">E-mail</label>
         <Input.Root variant="secondary">
           <Input.Control {...register("email")} type="email" />
         </Input.Root>

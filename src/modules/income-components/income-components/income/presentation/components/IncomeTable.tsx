@@ -1,5 +1,6 @@
 "use client"
 
+import { Income } from "@/@types/income"
 import { IncomeDetails } from "@/@types/income-details"
 import { Button } from "@/core/components/Button"
 import { LoadingScreen } from "@/core/components/LoadingScreen"
@@ -8,45 +9,51 @@ import { ModalObservationTrigger } from "@/core/components/Modals/ModalObservati
 import { SearchInput } from "@/core/components/SearchInput"
 import { Table } from "@/core/components/Table"
 import { exportToExcel } from "@/core/utils/exportToExcel"
+import { getAccountId } from "@/core/utils/get-account-id"
 import { getPermissionByEntity } from "@/core/utils/getPermissionByEntity"
-import { getCookie } from "@/lib/cookies"
-import { queryClient } from "@/lib/react-query"
 import { IncomeFilters } from "@/modules/income-components/income-components/income/presentation/components/incomeFilters"
 import { useIncomeQuery } from "@/modules/income-components/income-components/infra/use-income-query"
-import {
-  getIncomes,
-  removeIncome,
-} from "@/modules/income-components/income-components/remote"
+import { removeIncome } from "@/modules/income-components/income-components/remote"
 import { FileXls, Pencil, Trash } from "@phosphor-icons/react"
-import { useMutation } from "@tanstack/react-query"
 import { useRouter } from "next/navigation"
 import { useEffect, useState } from "react"
+import { FormProvider, useForm } from "react-hook-form"
 import { toast } from "sonner"
 
 export function IncomeTable() {
-  const accountId = getCookie("accountId")
-
-  const { data: incomes, isLoading } = useIncomeQuery(accountId)
-
   const { push } = useRouter()
 
   const [open, setOpen] = useState(false)
   const [id, setId] = useState("")
+  const [page, setPage] = useState(1)
   const [filteredResults, setFilteredResults] = useState([])
+  const [filters, setFilters] = useState<Income.GetRequest>({})
 
-  const refetchIncomesFn = useMutation({
-    mutationFn: getIncomes,
-    onSuccess: () => {
-      toast.success("Receita removida com sucesso!")
-      queryClient.invalidateQueries({ queryKey: ["incomes"] })
-    },
-    onError: (error) => {
-      toast.error("Erro ao remover receita: " + error)
-    },
-    onSettled: () => {
-      setOpen(false)
+  const accountId = getAccountId()
+
+  const methods = useForm<Income.GetRequest>({
+    defaultValues: {
+      document: "",
+      start_date: "",
+      end_date: "",
+      income_group_id: "",
+      income_source_id: "",
+      organization_id: "",
     },
   })
+
+  const {
+    data: incomes,
+    isLoading,
+    refetch,
+  } = useIncomeQuery(accountId, {
+    ...filters,
+    page,
+  })
+
+  const handleFilterChange = (newFilters: Income.GetRequest) => {
+    setFilters(newFilters)
+  }
 
   const income_create = getPermissionByEntity("income_create")
   const income_edit = getPermissionByEntity("income_edit")
@@ -57,9 +64,15 @@ export function IncomeTable() {
   }
 
   const handleConfirmDelete = async () => {
-    await removeIncome({ income_id: id }).then(() =>
-      refetchIncomesFn.mutate(accountId)
-    )
+    try {
+      await removeIncome({ income_id: id })
+      refetch()
+      toast.success("Receita removida com sucesso!")
+    } catch (error) {
+      toast.error("Erro ao remover receita: " + error)
+    } finally {
+      setOpen(false)
+    }
   }
 
   const columns = [
@@ -108,7 +121,9 @@ export function IncomeTable() {
     {
       header: "Obs.",
       accessor: "observation",
-      render: (value: string) => <ModalObservationTrigger content={value} />,
+      render: (value: string) => {
+        if (value) return <ModalObservationTrigger content={value} />
+      },
     },
     {
       header: "Ações",
@@ -139,7 +154,7 @@ export function IncomeTable() {
 
   useEffect(() => {
     if (incomes) {
-      setFilteredResults(incomes.incomes)
+      setFilteredResults(incomes)
     }
   }, [incomes, isLoading])
 
@@ -161,36 +176,40 @@ export function IncomeTable() {
           </Button>
         </div>
       </Modal>
-      <IncomeFilters account_id={accountId} />
-      <div className="mt-8 flex items-center justify-between">
-        <div className="flex h-full gap-4">
-          <SearchInput
-            data={incomes.incomes}
-            searchParam="description"
-            onSearchResult={(results) => setFilteredResults(results)}
-          />
-          {income_create && (
-            <Button onClick={() => push("/incomes/create")} variant="secondary">
-              Cadastrar
+      <FormProvider {...methods}>
+        <IncomeFilters onFilterChange={handleFilterChange} />
+        <div className="mt-8 flex items-center justify-between">
+          <div className="flex h-full gap-4">
+            <SearchInput
+              data={incomes}
+              searchParam="description"
+              onSearchResult={(results) => setFilteredResults(results)}
+            />
+            {income_create && (
+              <Button
+                onClick={() => push("/incomes/create")}
+                variant="secondary">
+                Cadastrar
+              </Button>
+            )}
+            <Button onClick={() => push("/income-details")} variant="secondary">
+              Consultar Parcelas
             </Button>
-          )}
-          <Button onClick={() => push("/income-details")} variant="secondary">
-            Consultar Parcelas
+          </div>
+          <Button
+            className="flex items-center gap-1"
+            variant="secondary"
+            onClick={exportToExcel}>
+            <FileXls size={22} />
+            Exportar
           </Button>
         </div>
-        <Button
-          className="flex items-center gap-1"
-          variant="secondary"
-          onClick={exportToExcel}>
-          <FileXls size={22} />
-          Exportar
-        </Button>
-      </div>
-      {incomes.incomes.length === 0 ?
-        <h2 className="mt-6 text-xl font-semibold">
-          Nenhuma receita cadastrada.
-        </h2>
-      : <Table columns={columns} data={filteredResults} />}
+        {incomes.length === 0 ?
+          <h2 className="mt-6 text-xl font-semibold">
+            Nenhuma receita cadastrada.
+          </h2>
+        : <Table columns={columns} data={filteredResults} />}
+      </FormProvider>
     </>
   )
 }

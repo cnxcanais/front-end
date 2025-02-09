@@ -25,8 +25,6 @@ export function EditAccountForm({ id }: { id: string }) {
     queryKey: ["account", id],
     queryFn: () => getAccountById(id),
     enabled: id !== "",
-    refetchOnWindowFocus: false,
-    refetchOnReconnect: false,
   })
 
   const {
@@ -36,9 +34,9 @@ export function EditAccountForm({ id }: { id: string }) {
   } = useForm<EditFormSchema>({
     resolver: zodResolver(editFormSchema),
     values: {
-      accountId: id,
+      account_id: id,
       name: account?.name || "",
-      enabled: account?.enabled || true,
+      enabled: account?.enabled,
     },
   })
 
@@ -57,9 +55,7 @@ export function EditAccountForm({ id }: { id: string }) {
   return (
     <form onSubmit={handleSubmit(onSubmit)}>
       <div className="mt-8 flex max-w-96 flex-col gap-2">
-        <label className="text-lg" htmlFor="name">
-          Nome
-        </label>
+        <label htmlFor="name">Nome</label>
         <Input.Root>
           <Input.Control {...register("name")} type="text" />
         </Input.Root>
@@ -80,11 +76,12 @@ export function EditAccountForm({ id }: { id: string }) {
         </div>
       </div>
 
-      <div className="my-2 flex gap-4">
-        <Button disabled={isSubmitting} onClick={() => {}} variant="secondary">
+      <div className="mt-6 flex gap-4">
+        <Button type="submit" disabled={isSubmitting} variant="secondary">
           Salvar
         </Button>
         <Button
+          type="button"
           disabled={isSubmitting}
           onClick={() => push("/accounts")}
           variant="tertiary">

@@ -1,6 +1,7 @@
 "use client"
 
 import { Income } from "@/@types/income"
+import { IncomeDetails } from "@/@types/income-details"
 import { Button } from "@/core/components/Button"
 import { LoadingScreen } from "@/core/components/LoadingScreen"
 import { Modal } from "@/core/components/Modals/Modal"
@@ -9,9 +10,7 @@ import { PageSelector } from "@/core/components/PageSelector"
 import { Table } from "@/core/components/Table"
 import { formatLocalDate } from "@/core/utils/dateFunctions"
 import { exportToExcel } from "@/core/utils/exportToExcel"
-import { getCookie } from "@/lib/cookies"
-import { queryClient } from "@/lib/react-query"
-import { IncomeDetailsFilters } from "@/modules/income-components/income-details-components/income-details/presentation/components/incomeDetailsFilters"
+import { getAccountId } from "@/core/utils/get-account-id"
 import {
   deleteIncomeDetails,
   getIncomeDetails,
@@ -19,31 +18,17 @@ import {
 import { editIncomeDetails } from "@/modules/income-components/income-details-components/remote/update-income-details"
 import { usePermissionQuery } from "@/modules/login-components/login/infra/hooks/use-permissions-query"
 import { FileXls, Money, Pencil, Trash } from "@phosphor-icons/react"
-import { useMutation, useQuery } from "@tanstack/react-query"
-import { useRouter, useSearchParams } from "next/navigation"
+import { useQuery } from "@tanstack/react-query"
+import { useRouter } from "next/navigation"
 import { useEffect, useState } from "react"
+import { FormProvider, useForm } from "react-hook-form"
 import { toast } from "sonner"
+import { IncomeDetailsFilters } from "./IncomeDetailsFilters"
 
-export function IncomeDetailsTable() {
+export function IncomeDetailsTable({ income_id }: { income_id?: string }) {
   const { push } = useRouter()
 
-  const {
-    data: permissions,
-    refetch: permissionRefetch,
-    isLoading: permissionLoading,
-  } = usePermissionQuery()
-
-  if (!permissions || !permissions?.componentAccess) permissionRefetch()
-
-  const create = permissions?.componentAccess["income_details_create"]
-  const pay = permissions?.componentAccess["income_details_pay"]
-  const edit = permissions?.componentAccess["income_details_edit"]
-  const deletePermission = permissions?.componentAccess["income_details_delete"]
-  const searchParams = useSearchParams()
-
-  const income_id = searchParams.get("income_id") || ""
-
-  const account_id = getCookie("accountId")
+  const account_id = getAccountId()
 
   const [open, setOpen] = useState(false)
   const [id, setId] = useState("")
@@ -51,29 +36,44 @@ export function IncomeDetailsTable() {
   const [payOpen, setPayOpen] = useState(false)
   const [payId, setPayId] = useState("")
 
-  const { data, isLoading, refetch } = useQuery({
-    queryKey: ["income-details"],
-    queryFn: () => getIncomeDetails(account_id, { page, income_id }),
+  const { data: permissions, isLoading: permissionLoading } =
+    usePermissionQuery()
+
+  const create = permissions?.["income_details_create"]
+  const pay = permissions?.["income_details_pay"]
+  const edit = permissions?.["income_details_edit"]
+  const deletePermission = permissions?.["income_details_delete"]
+
+  const [filters, setFilters] = useState<IncomeDetails.QueryParams>({
+    income_id,
   })
 
-  const fetchIncomeDetails = useMutation({
-    mutationFn: getIncomeDetails,
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["income-details"] })
-    },
-    onError: (error) => {
-      toast.error("Erro ao executar ação: " + error)
-    },
-    onSettled: () => {
-      setOpen(false)
+  const { data, isLoading, refetch } = useQuery({
+    queryKey: ["income-details", { filters }],
+    queryFn: () => getIncomeDetails(account_id, { ...filters, page }),
+  })
+
+  const methods = useForm<IncomeDetails.QueryParams>({
+    values: {
+      income_id,
     },
   })
+
+  // HANDLERS
+  const handleFilterChange = (newFilters: IncomeDetails.QueryParams) => {
+    setFilters(newFilters)
+  }
 
   const handlePay = async (income_details_id: string) => {
-    await editIncomeDetails({ income_details_id, is_paid: true })
-      .then(() => fetchIncomeDetails.mutate(account_id))
-      .then(() => setPayOpen(false))
-      .then(() => toast.success("Parcela paga com sucesso!"))
+    try {
+      await editIncomeDetails({ income_details_id, is_paid: true })
+      refetch()
+      toast.success("Parcela paga com sucesso!")
+    } catch (error) {
+      toast.error("Erro ao executar ação: " + error)
+    } finally {
+      setPayOpen(false)
+    }
   }
 
   const handleEdit = (id: string) => {
@@ -81,9 +81,13 @@ export function IncomeDetailsTable() {
   }
 
   const handleConfirmDelete = async () => {
-    await deleteIncomeDetails({ income_details_id: id })
-      .then(() => fetchIncomeDetails.mutate(account_id))
-      .then(() => toast.success("Parcela removida com sucesso!"))
+    try {
+      await deleteIncomeDetails({ income_details_id: id })
+      toast.success("Parcela removida com sucesso!")
+      refetch()
+    } catch (error) {
+      toast.error("Erro ao remover parcela: " + error)
+    }
   }
 
   useEffect(() => {
@@ -182,7 +186,7 @@ export function IncomeDetailsTable() {
     },
   ]
 
-  if (!data?.incomeDetails || isLoading || permissionLoading)
+  if (!data || isLoading || permissionLoading || !permissions)
     return <LoadingScreen />
 
   return (
@@ -217,45 +221,47 @@ export function IncomeDetailsTable() {
         </div>
       </Modal>
 
-      <IncomeDetailsFilters account_id={account_id} income_id={income_id} />
+      <FormProvider {...methods}>
+        <IncomeDetailsFilters onFilterChange={handleFilterChange} />
 
-      <div className="mt-8 flex items-center justify-between">
-        <div className="flex gap-4">
-          <Button onClick={() => push("/incomes")} variant="secondary">
-            Voltar
-          </Button>
-
-          {income_id && (
-            <Button
-              variant="secondary"
-              onClick={() => push(`/income-details/create/${income_id}`)}
-              disabled={!create}>
-              Adicionar Parcela
+        <div className="mt-8 flex items-center justify-between">
+          <div className="flex gap-4">
+            <Button onClick={() => push("/incomes")} variant="secondary">
+              Voltar
             </Button>
-          )}
-        </div>
 
-        <Button
-          className="flex items-center gap-1"
-          variant="secondary"
-          onClick={exportToExcel}>
-          <FileXls size={22} />
-          Exportar
-        </Button>
-      </div>
-      {data.incomeDetails.length == 0 ?
-        <h2 className="mt-6 text-xl font-semibold">
-          Nenhuma parcela cadastrada.
-        </h2>
-      : <div>
-          <Table columns={columns} data={data.incomeDetails} />
-          <PageSelector
-            page={page}
-            setPage={setPage}
-            totalPages={data.totalPages}
-          />
+            {income_id && (
+              <Button
+                variant="secondary"
+                onClick={() => push(`/income-details/create/${income_id}`)}
+                disabled={!create}>
+                Adicionar Parcela
+              </Button>
+            )}
+          </div>
+
+          <Button
+            className="flex items-center gap-1"
+            variant="secondary"
+            onClick={exportToExcel}>
+            <FileXls size={22} />
+            Exportar
+          </Button>
         </div>
-      }
+        {data.incomeDetails.length == 0 ?
+          <h2 className="mt-6 text-xl font-semibold">
+            Nenhuma parcela cadastrada.
+          </h2>
+        : <div>
+            <Table columns={columns} data={data.incomeDetails} />
+            <PageSelector
+              page={page}
+              setPage={setPage}
+              totalPages={data.totalPages}
+            />
+          </div>
+        }
+      </FormProvider>
     </>
   )
 }

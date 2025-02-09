@@ -3,7 +3,7 @@ import { OrganizationsTable } from "@/modules/organization-components/organizati
 
 export function OrganizationsPage() {
   return (
-    <main className="flex w-full max-w-[1200px] flex-col">
+    <main className="flex w-full flex-col">
       <PageTitle content="Organizações" />
       <OrganizationsTable />
     </main>

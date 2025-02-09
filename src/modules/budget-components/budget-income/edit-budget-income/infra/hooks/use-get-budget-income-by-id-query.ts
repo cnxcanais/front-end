@@ -6,7 +6,5 @@ export function useGetBudgetIncomeByIdQuery(budget_income_id: string) {
     queryKey: ["budget_income", budget_income_id],
     queryFn: () => getBudgetIncomeById(budget_income_id),
     enabled: budget_income_id !== "",
-    refetchOnWindowFocus: false,
-    refetchOnReconnect: false,
   })
 }

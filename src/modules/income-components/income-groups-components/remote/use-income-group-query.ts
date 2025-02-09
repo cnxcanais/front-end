@@ -5,7 +5,5 @@ export function useIncomeGroupQuery(account_id: string) {
   return useQuery({
     queryKey: ["income-groups"],
     queryFn: () => getAllIncomeGroups(account_id),
-    refetchOnWindowFocus: false,
-    refetchOnReconnect: false,
   })
 }

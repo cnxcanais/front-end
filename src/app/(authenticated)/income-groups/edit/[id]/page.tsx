@@ -1,4 +1,6 @@
-import { EditIncomeGroupPage } from "@/modules/income-components/income-groups-components/edit-income-group/presentation/pages"
+import { PageTitle } from "@/core/components/PageTitle"
+import { EditIncomeGroupForm } from "@/modules/income-components/income-groups-components/edit-income-group/presentation/components/EditIncomeGroupForm"
+
 export default async function EditIncomeGroupRender({
   params,
 }: {
@@ -6,5 +8,10 @@ export default async function EditIncomeGroupRender({
 }) {
   const id = (await params).id
 
-  return <EditIncomeGroupPage id={id} />
+  return (
+    <>
+      <PageTitle content="Editar Grupo de Receita" />
+      <EditIncomeGroupForm id={id} />
+    </>
+  )
 }

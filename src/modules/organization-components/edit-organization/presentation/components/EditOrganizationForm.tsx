@@ -25,8 +25,6 @@ export function EditOrganizationForm({ id }: { id: string }) {
     queryKey: ["organization", id],
     queryFn: () => getOrganizationById(id),
     enabled: id !== "",
-    refetchOnWindowFocus: false,
-    refetchOnReconnect: false,
   })
 
   const organizations_input_fields_name = getPermissionByEntity(
@@ -79,9 +77,7 @@ export function EditOrganizationForm({ id }: { id: string }) {
       onSubmit={handleSubmit(onSubmit)}>
       <div className="flex flex-col gap-4">
         <div className="flex flex-col gap-2">
-          <label className="text-lg" htmlFor="name">
-            Nome
-          </label>
+          <label htmlFor="name">Nome</label>
           <Input.Root variant={errors.name ? "error" : "primary"}>
             <Input.Control
               disabled={!organizations_input_fields_name}
@@ -95,9 +91,7 @@ export function EditOrganizationForm({ id }: { id: string }) {
         </div>
 
         <div className="flex flex-col gap-2">
-          <label className="text-lg" htmlFor="cnpj">
-            CNPJ
-          </label>
+          <label htmlFor="cnpj">CNPJ</label>
           <Input.Root variant={errors.cnpj ? "error" : "primary"}>
             <Input.Control
               disabled={!organizations_input_fields_cnpj}
@@ -111,9 +105,7 @@ export function EditOrganizationForm({ id }: { id: string }) {
         </div>
 
         <div className="flex flex-col gap-2">
-          <label className="text-lg" htmlFor="address">
-            Endereço
-          </label>
+          <label htmlFor="address">Endereço</label>
           <Input.Root variant={errors.address ? "error" : "primary"}>
             <Input.Control
               disabled={!organizations_input_fields_address}
@@ -131,9 +123,7 @@ export function EditOrganizationForm({ id }: { id: string }) {
 
       <div className="flex flex-col gap-4">
         <div className="flex flex-col gap-2">
-          <label className="text-lg" htmlFor="phone">
-            Telefone
-          </label>
+          <label htmlFor="phone">Telefone</label>
           <Input.Root variant={errors.phone ? "error" : "primary"}>
             <Input.Control
               disabled={!organizations_input_fields_phone}
@@ -147,9 +137,7 @@ export function EditOrganizationForm({ id }: { id: string }) {
         </div>
 
         <div className="flex flex-col gap-2">
-          <label className="text-lg" htmlFor="email">
-            Email
-          </label>
+          <label htmlFor="email">Email</label>
           <Input.Root variant={errors.email ? "error" : "primary"}>
             <Input.Control
               disabled={!organizations_input_fields_email}

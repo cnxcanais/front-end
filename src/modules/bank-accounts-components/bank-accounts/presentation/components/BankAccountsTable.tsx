@@ -6,6 +6,7 @@ import { Modal } from "@/core/components/Modals/Modal"
 import { ModalObservationTrigger } from "@/core/components/Modals/ModalObservation"
 import { SearchInput } from "@/core/components/SearchInput"
 import { Table } from "@/core/components/Table"
+import { formatLocalDate } from "@/core/utils/dateFunctions"
 import { exportToExcel } from "@/core/utils/exportToExcel"
 import { getAccountId } from "@/core/utils/get-account-id"
 import { getPermissionByEntity } from "@/core/utils/getPermissionByEntity"
@@ -74,9 +75,21 @@ export function BankAccountsTable() {
       render: (value: any, row: unknown) => value.name,
     },
     {
+      header: "Número do Banco",
+      accessor: "bank",
+      render: (value: any, row: unknown) => value.bank_number,
+    },
+    {
+      header: "Atualizado Em",
+      accessor: "updated_at",
+      render: (value: string) => formatLocalDate(new Date(value)),
+    },
+    {
       header: "Obs.",
       accessor: "observation",
-      render: (value) => <ModalObservationTrigger content={value} />,
+      render: (value: string) => {
+        if (value) return <ModalObservationTrigger content={value} />
+      },
     },
     {
       header: "Ações",
@@ -155,6 +168,12 @@ export function BankAccountsTable() {
           Nenhuma conta de banco cadastrada.
         </h2>
       : <Table columns={columns} data={filteredResults} />}
+
+      {filteredResults.length === 0 && (
+        <h2 className="text-xl font-semibold">
+          Nenhuma conta de banco encontrada.
+        </h2>
+      )}
     </>
   )
 }

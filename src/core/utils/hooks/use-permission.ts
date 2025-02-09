@@ -1,3 +1,4 @@
+import permissionsJson from "@/core/utils/components_permission.json"
 import { getCookie } from "@/lib/cookies"
 import { useEffect, useState } from "react"
 
@@ -13,7 +14,8 @@ export function usePermissions(fieldNames: string[]): Permissions {
 
   useEffect(() => {
     try {
-      const permissionsCookie = getCookie("permissions")
+      const permissionsCookie =
+        getCookie("permissions") || JSON.stringify(permissionsJson)
       if (permissionsCookie) {
         const parsed = JSON.parse(permissionsCookie)
         setPermissions(parsed.componentAccess || permissions)

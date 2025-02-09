@@ -1,5 +1,11 @@
-import { SuppliersPage } from "@/modules/supplier-components/suppliers/presentation/pages"
+import { PageTitle } from "@/core/components/PageTitle"
+import { SuppliersTable } from "@/modules/expenses-components/supplier-components/suppliers/presentation/components/SuppliersTable"
 
 export default function SuppliersRender() {
-  return <SuppliersPage />
+  return (
+    <main className="flex w-full flex-col">
+      <PageTitle content="Fornecedores" />
+      <SuppliersTable />
+    </main>
+  )
 }

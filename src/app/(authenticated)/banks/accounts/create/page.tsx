@@ -1,5 +1,11 @@
-import { CreateBankAccountPage } from "@/modules/bank-accounts-components/create-bank-account/presentation/pages"
+import { PageTitle } from "@/core/components/PageTitle"
+import { CreateBankAccountForm } from "@/modules/bank-accounts-components/create-bank-account/presentation/components/CreateBankAccountForm"
 
 export default function BankAccountsCreateRender() {
-  return <CreateBankAccountPage />
+  return (
+    <>
+      <PageTitle content="Criar Conta de Banco" />
+      <CreateBankAccountForm />
+    </>
+  )
 }

@@ -1,7 +1,7 @@
 import { z } from "zod"
 
 export const editFormSchema = z.object({
-  accountId: z.string(),
+  account_id: z.string(),
   name: z.string().nonempty(),
   enabled: z.boolean().optional(),
 })

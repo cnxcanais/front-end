@@ -3,7 +3,7 @@ import { api } from "@/lib/axios"
 
 export async function getIncomes(
   account_id: string,
-  queryParams?: Income.GetRequest
+  queryParams: Income.GetRequest
 ) {
   try {
     const { data } = await api.get<Income.GetResponse>(
@@ -13,7 +13,7 @@ export async function getIncomes(
       }
     )
 
-    return data
+    return data.incomes
   } catch (error) {
     console.error(error)
   }

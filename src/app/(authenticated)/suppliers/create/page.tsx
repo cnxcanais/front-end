@@ -1,5 +1,11 @@
-import { CreateSupplierPage } from "@/modules/supplier-components/create-supplier/presentation/pages"
+import { PageTitle } from "@/core/components/PageTitle"
+import { CreateSupplierForm } from "@/modules/expenses-components/supplier-components/create-supplier/presentation/components/CreateSupplierForm"
 
 export default function CreateSupplierRender() {
-  return <CreateSupplierPage />
+  return (
+    <>
+      <PageTitle content="Criar Fornecedor" />
+      <CreateSupplierForm />
+    </>
+  )
 }

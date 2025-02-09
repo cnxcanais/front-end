@@ -73,13 +73,11 @@ export function EditBudgetIncomeForm({ id }: { id: string }) {
 
   return (
     <form
-      className="mt-6 flex max-w-[1200px] flex-col gap-4"
+      className="mt-6 flex max-w-[1000px] flex-col gap-4"
       onSubmit={handleSubmit(onSubmit)}>
       <div className="flex flex-1 items-center gap-4">
         <div className="flex flex-1 flex-col gap-2">
-          <label className="text-lg" htmlFor="description">
-            Descrição
-          </label>
+          <label htmlFor="description">Descrição</label>
           <Input.Root>
             <Input.Control
               disabled={!budget_income_input_fields_description}
@@ -107,9 +105,7 @@ export function EditBudgetIncomeForm({ id }: { id: string }) {
         <div className="flex flex-col gap-2">
           <div className="flex items-center gap-4">
             <div className="flex flex-col gap-2">
-              <label className="text-lg" htmlFor="amount">
-                Valor
-              </label>
+              <label htmlFor="amount">Valor</label>
               <Input.Root>
                 <Input.Currency
                   name={"amount"}
@@ -120,9 +116,7 @@ export function EditBudgetIncomeForm({ id }: { id: string }) {
             </div>
 
             <div className="flex flex-col gap-2">
-              <label className="text-lg" htmlFor="date">
-                Data
-              </label>
+              <label htmlFor="date">Data</label>
               <Input.Root>
                 <Input.Control
                   disabled={!budget_income_input_fields_date}

@@ -1,5 +1,11 @@
-import { CreateBudgetIncomePage } from "@/modules/budget-components/budget-income/create-budget-income/presentation/pages"
+import { PageTitle } from "@/core/components/PageTitle"
+import { CreateBudgetIncomeForm } from "@/modules/budget-components/budget-income/create-budget-income/presentation/components/CreateBudgetIncomeForm"
 
 export default function BudgetIncomeCreateRender() {
-  return <CreateBudgetIncomePage />
+  return (
+    <main>
+      <PageTitle content="Criar Orçamento de Receita" />
+      <CreateBudgetIncomeForm />
+    </main>
+  )
 }

@@ -6,7 +6,5 @@ export function useGetIncomeSourcesQuery(account_id: string) {
     queryKey: ["income-sources"],
     queryFn: () => getIncomeSources(account_id),
     enabled: !!account_id,
-    refetchOnWindowFocus: false,
-    refetchOnReconnect: false,
   })
 }

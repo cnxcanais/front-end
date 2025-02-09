@@ -45,13 +45,11 @@ export function CreateBankAccountForm() {
   if (isLoading || !banks) return <LoadingScreen />
 
   return (
-    <form className="max-w-[800px]" onSubmit={handleSubmit(onSubmit)}>
+    <form onSubmit={handleSubmit(onSubmit)}>
       <div className="flex gap-8">
         <div className="flex flex-1 flex-col">
           <div className="mt-8 flex flex-col gap-2">
-            <label className="text-lg" htmlFor="agency">
-              Agência
-            </label>
+            <label htmlFor="agency">Agência</label>
             <Input.Root variant={errors.agency ? "error" : "primary"}>
               <Input.Control {...register("agency")} type="text" />
             </Input.Root>
@@ -63,9 +61,7 @@ export function CreateBankAccountForm() {
           </div>
 
           <div className="mt-8 flex flex-col gap-2">
-            <label className="text-lg" htmlFor="account_number">
-              Número
-            </label>
+            <label htmlFor="account_number">Número</label>
             <Input.Root variant={errors.account_number ? "error" : "primary"}>
               <Input.Control {...register("account_number")} type="text" />
             </Input.Root>
@@ -91,9 +87,7 @@ export function CreateBankAccountForm() {
 
         <div className="flex flex-1 flex-col">
           <div className="mt-8 flex flex-1 flex-col gap-2">
-            <label className="text-lg" htmlFor="observation">
-              Observação
-            </label>
+            <label htmlFor="observation">Observação</label>
             <Input.Root
               className="flex-1"
               variant={errors.observation ? "error" : "primary"}>

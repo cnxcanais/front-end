@@ -10,7 +10,7 @@ export async function fetchFiles(
       `/file/account/${account_id}`,
       {
         params: {
-          ...queryParams,
+          queryParams,
         },
       }
     )
