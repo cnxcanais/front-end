@@ -23,7 +23,7 @@ import { useRouter } from "next/navigation"
 import { useEffect, useState } from "react"
 import { FormProvider, useForm } from "react-hook-form"
 import { toast } from "sonner"
-import { IncomeDetailsFilters } from "./IncomeDetailsFilters"
+import { IncomeDetailsFilters } from "./incomeDetailsFilters"
 
 export function IncomeDetailsTable({ income_id }: { income_id?: string }) {
   const { push } = useRouter()
