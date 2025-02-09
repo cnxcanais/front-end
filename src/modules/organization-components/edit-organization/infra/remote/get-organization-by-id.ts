@@ -9,6 +9,6 @@ export async function getOrganizationById(organization_id: string) {
 
     return data.organization
   } catch (error) {
-    console.error(error)
+    console.info(error)
   }
 }

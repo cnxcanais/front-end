@@ -20,7 +20,7 @@ export function getPermissionByEntity(entity: string): boolean {
 
     return Boolean(permissions.componentAccess[entity])
   } catch (error) {
-    console.error("Error parsing permissions:", error)
+    console.info("Error parsing permissions:", error)
     return false
   }
 }

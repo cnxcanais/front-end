@@ -15,6 +15,6 @@ export async function getBudgetExpenses(
 
     return data.budgetExpenses
   } catch (error) {
-    console.error(error)
+    console.info(error)
   }
 }

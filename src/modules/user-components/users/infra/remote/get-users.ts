@@ -9,6 +9,6 @@ export async function getUsers(account_id: string) {
 
     return data.users
   } catch (error) {
-    console.error(error)
+    console.info(error)
   }
 }

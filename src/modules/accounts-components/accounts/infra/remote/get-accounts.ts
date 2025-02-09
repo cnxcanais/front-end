@@ -7,6 +7,6 @@ export async function getAccounts() {
 
     return data.accounts
   } catch (error) {
-    console.error(error)
+    console.info(error)
   }
 }

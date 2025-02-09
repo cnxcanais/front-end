@@ -38,7 +38,7 @@ export function FileUploadQueue({
       setFilesInQueue([])
       refetch()
     } catch (error) {
-      console.error("Erro ao fazer upload:", error)
+      console.info("Erro ao fazer upload:", error)
     }
   }
 

@@ -17,6 +17,6 @@ export async function authenticate(formData: LoginSchema) {
     setCookie("accountId", process.env.NEXT_PUBLIC_ACCOUNT_ID)
     setCookie("path_permissions", JSON.stringify(urlPermissions))
   } catch (error) {
-    console.error(error)
+    console.info(error)
   }
 }

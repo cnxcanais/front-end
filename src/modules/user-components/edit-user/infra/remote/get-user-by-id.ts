@@ -7,7 +7,7 @@ export async function getUserById(user_id: string) {
 
     return data.user
   } catch (error) {
-    console.error(error)
+    console.info(error)
     throw error
   }
 }

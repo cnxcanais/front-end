@@ -9,6 +9,6 @@ export async function getOrganizations(account_id: string) {
 
     return data.organizations
   } catch (error) {
-    console.error(error)
+    console.info(error)
   }
 }

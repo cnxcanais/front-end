@@ -7,6 +7,6 @@ export async function getSupplierById(id: string) {
 
     return data.supplier
   } catch (error) {
-    console.error(error)
+    console.info(error)
   }
 }

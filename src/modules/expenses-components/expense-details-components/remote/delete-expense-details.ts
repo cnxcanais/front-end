@@ -5,7 +5,7 @@ export const deleteExpenseDetails = async (id: string) => {
     const response = await api.delete(`/expense-details/${id}`)
     return response.data
   } catch (error) {
-    console.error("Erro ao deletar parcela de despesa:", error)
+    console.info("Erro ao deletar parcela de despesa:", error)
     throw error
   }
 }

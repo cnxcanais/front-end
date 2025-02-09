@@ -6,6 +6,6 @@ export async function removeBudgetIncome(budget_income_id: string) {
 
     return data.message
   } catch (error) {
-    console.error(error)
+    console.info(error)
   }
 }

@@ -9,6 +9,6 @@ export async function getProfiles(account_id: string) {
 
     return data.profiles
   } catch (error) {
-    console.error(error)
+    console.info(error)
   }
 }

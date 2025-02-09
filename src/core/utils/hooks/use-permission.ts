@@ -21,7 +21,7 @@ export function usePermissions(fieldNames: string[]): Permissions {
         setPermissions(parsed.componentAccess || permissions)
       }
     } catch (error) {
-      console.error("Error parsing permissions:", error)
+      console.info("Error parsing permissions:", error)
     }
   }, [])
 

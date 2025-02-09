@@ -9,6 +9,6 @@ export async function getSuppliers(account_id: string) {
 
     return data.suppliers
   } catch (error) {
-    console.error(error)
+    console.info(error)
   }
 }

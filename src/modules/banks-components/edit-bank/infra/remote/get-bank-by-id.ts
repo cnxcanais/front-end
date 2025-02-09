@@ -7,6 +7,6 @@ export async function getBankById(id: string) {
 
     return data.bank
   } catch (error) {
-    console.error(error)
+    console.info(error)
   }
 }

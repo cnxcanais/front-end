@@ -15,6 +15,6 @@ export async function getIncomes(
 
     return data.incomes
   } catch (error) {
-    console.error(error)
+    console.info(error)
   }
 }
