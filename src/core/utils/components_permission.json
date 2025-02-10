@@ -121,6 +121,7 @@
     "expense_details_input_fields_abservation": true,
     "expense_details_input_fields_part": true,
     "expense_details_input_fields_date": true,
+    "expense_details_input_fields_bank_account": true,
     "expense_details_edit_input_fields_bank_account": true,
     "expense_details_edit_input_fields_amount": true,
     "expense_details_edit_input_fields_date": true,
