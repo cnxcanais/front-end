@@ -152,13 +152,15 @@ export function IncomeSourcesTable() {
             </Button>
           )}
         </div>
-        <Button
-          className="flex items-center gap-1"
-          variant="secondary"
-          onClick={exportToExcel}>
-          <FileXls size={22} />
-          Exportar
-        </Button>
+        {incomeSources.length > 0 && (
+          <Button
+            className="flex items-center gap-1"
+            variant="secondary"
+            onClick={exportToExcel}>
+            <FileXls size={22} />
+            Exportar
+          </Button>
+        )}
       </div>
 
       {incomeSources.length == 0 ?

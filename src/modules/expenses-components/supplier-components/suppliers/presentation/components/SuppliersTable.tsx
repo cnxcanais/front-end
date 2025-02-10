@@ -162,13 +162,15 @@ export function SuppliersTable() {
             </Button>
           )}
         </div>
-        <Button
-          className="flex items-center gap-1"
-          variant="secondary"
-          onClick={exportToExcel}>
-          <FileXls size={22} />
-          Exportar
-        </Button>
+        {suppliers.length > 0 && (
+          <Button
+            className="flex items-center gap-1"
+            variant="secondary"
+            onClick={exportToExcel}>
+            <FileXls size={22} />
+            Exportar
+          </Button>
+        )}
       </div>
 
       {suppliers.length == 0 ?

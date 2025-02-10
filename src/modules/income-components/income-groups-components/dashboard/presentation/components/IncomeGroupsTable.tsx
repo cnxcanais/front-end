@@ -133,13 +133,15 @@ export function IncomeGroupTable() {
             </Button>
           )}
         </div>
-        <Button
-          className="flex items-center gap-1"
-          variant="secondary"
-          onClick={exportToExcel}>
-          <FileXls size={22} />
-          Exportar
-        </Button>
+        {incomeGroups.length > 0 && (
+          <Button
+            className="flex items-center gap-1"
+            variant="secondary"
+            onClick={exportToExcel}>
+            <FileXls size={22} />
+            Exportar
+          </Button>
+        )}
       </div>
       {incomeGroups.length == 0 ?
         <h2 className="mt-6 text-xl font-semibold">
