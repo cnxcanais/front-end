@@ -154,7 +154,7 @@ export function ExpenseDetailsFilters({ onFilterChange }: FilterProps) {
                     name="expense_id"
                     control={control}
                     options={prepareArrayForSelect(
-                      expenses,
+                      expenses?.expenses,
                       "document",
                       "expense_id"
                     )}
