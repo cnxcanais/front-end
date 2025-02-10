@@ -162,7 +162,7 @@ export function ExpenseFilters({ onFilterChange }: FilterProps) {
                     name="document"
                     control={control}
                     options={prepareArrayForSelect(
-                      expenses.expenses,
+                      expenses?.expenses,
                       "document",
                       "document"
                     )}
