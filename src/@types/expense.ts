@@ -38,6 +38,7 @@ export namespace Expense {
 
   export type GetResponse = {
     expenses: ExpenseType[]
+    totalPages: number
   }
 
   export type GetByIdResponse = {

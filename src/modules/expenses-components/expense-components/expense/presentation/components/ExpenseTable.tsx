@@ -48,11 +48,7 @@ export function ExpenseTable() {
   const expense_edit = getPermissionByEntity("expense_edit")
   const expense_delete = getPermissionByEntity("expense_delete")
 
-  const {
-    data: expenses,
-    isLoading,
-    refetch,
-  } = useExpenseQuery(accountId, {
+  const { data, isLoading, refetch } = useExpenseQuery(accountId, {
     ...filters,
     page,
   })
@@ -156,12 +152,12 @@ export function ExpenseTable() {
   ]
 
   useEffect(() => {
-    if (expenses) {
-      setFilteredResults(expenses)
+    if (data) {
+      setFilteredResults(data.expenses)
     }
-  }, [expenses, isLoading])
+  }, [data, isLoading])
 
-  if (!expenses || isLoading) return <LoadingScreen />
+  if (!data || isLoading) return <LoadingScreen />
 
   return (
     <>
@@ -185,7 +181,7 @@ export function ExpenseTable() {
         <div className="mt-8 flex items-center justify-between">
           <div className="flex h-full gap-4">
             <SearchInput
-              data={expenses}
+              data={data.expenses}
               searchParam="description"
               onSearchResult={(results) => setFilteredResults(results)}
             />
@@ -210,7 +206,7 @@ export function ExpenseTable() {
             Exportar
           </Button>
         </div>
-        {expenses.length === 0 ?
+        {data.expenses.length === 0 ?
           <h2 className="mt-6 text-xl font-semibold">
             Nenhuma despesa cadastrada.
           </h2>

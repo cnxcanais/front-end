@@ -13,9 +13,7 @@ export async function getExpenses(
       }
     )
 
-    console.log(data)
-
-    return data.expenses
+    return { expenses: data.expenses, totalPages: data.totalPages }
   } catch (error) {
     console.info(error)
   }
