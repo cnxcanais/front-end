@@ -12,7 +12,7 @@ export const getAllExpenseGroups = async (accountId: string) => {
   const response = await api.get<ExpenseGroup.GetResponse>(
     `/expenses-groups/account/${accountId}`
   )
-  return response.data.expenseGroups
+  return response.data.groups
 }
 
 export const getExpenseGroupById = async (id: string) => {

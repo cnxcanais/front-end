@@ -6,8 +6,8 @@ export const prepareArrayForSelect = (
   return [{ label: "", value: "" }].concat(
     array.map((item) => {
       return {
-        label: item[label],
-        value: item[value],
+        label: item?.[label],
+        value: item?.[value],
       }
     })
   )
