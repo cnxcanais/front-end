@@ -4,6 +4,8 @@ import { IncomeSource } from "@/@types/income-sources"
 import { Button } from "@/core/components/Button"
 import * as Input from "@/core/components/Input"
 import { fetchCep } from "@/core/utils/findCep"
+import { formatDocumentNumber } from "@/core/utils/formatDocumentNumber"
+import { formatPhoneNumber } from "@/core/utils/formatPhoneNumber"
 import { getAccountId } from "@/core/utils/get-account-id"
 import { usePermissions } from "@/core/utils/hooks/use-permission"
 import { createIncomeSource } from "@/modules/income-components/income-source-components/create-income-source/infra/remote/create-income-source"
@@ -64,7 +66,12 @@ export function CreateIncomeSourceForm() {
 
   async function onSubmit(data: IncomeSource.CreateRequest) {
     try {
-      const response = await createIncomeSource(data)
+      const formattedData = {
+        ...data,
+        cpf_cnpj: data.cpf_cnpj.replace(/\D/g, ""),
+        phone: data.phone.replace(/\D/g, ""),
+      }
+      const response = await createIncomeSource(formattedData)
       toast.success(response)
       setTimeout(() => push("/income-sources"), 2000)
     } catch (error) {
@@ -99,7 +106,12 @@ export function CreateIncomeSourceForm() {
             <Input.Root variant={errors.cpf_cnpj ? "error" : "primary"}>
               <Input.Control
                 disabled={!income_source_input_fields_cpf_cnpj}
-                {...register("cpf_cnpj")}
+                {...register("cpf_cnpj", {
+                  onChange: (e) => {
+                    const formatted = formatDocumentNumber(e.target.value)
+                    e.target.value = formatted
+                  },
+                })}
                 type="text"
               />
             </Input.Root>
@@ -133,7 +145,12 @@ export function CreateIncomeSourceForm() {
             <Input.Root variant={errors.phone ? "error" : "primary"}>
               <Input.Control
                 disabled={!income_source_input_fields_phone}
-                {...register("phone")}
+                {...register("phone", {
+                  onChange: (e) => {
+                    const formatted = formatPhoneNumber(e.target.value)
+                    e.target.value = formatted
+                  },
+                })}
                 type="text"
               />
             </Input.Root>
