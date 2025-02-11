@@ -3,6 +3,7 @@
 import { IncomeSource } from "@/@types/income-sources"
 import { Button } from "@/core/components/Button"
 import * as Input from "@/core/components/Input"
+import { fetchCep } from "@/core/utils/findCep"
 import { getAccountId } from "@/core/utils/get-account-id"
 import { usePermissions } from "@/core/utils/hooks/use-permission"
 import { createIncomeSource } from "@/modules/income-components/income-source-components/create-income-source/infra/remote/create-income-source"
@@ -11,6 +12,7 @@ import {
   createIncomeSourceFormSchema,
 } from "@/modules/income-components/income-source-components/create-income-source/presentation/validation/schema"
 import { zodResolver } from "@hookform/resolvers/zod"
+import { MagnifyingGlass } from "@phosphor-icons/react"
 import { useRouter } from "next/navigation"
 import { useForm } from "react-hook-form"
 import { toast } from "sonner"
@@ -51,6 +53,7 @@ export function CreateIncomeSourceForm() {
   const {
     register,
     handleSubmit,
+    setValue,
     formState: { isSubmitting, errors },
   } = useForm<CreateIncomeSourceSchema>({
     resolver: zodResolver(createIncomeSourceFormSchema),
@@ -161,9 +164,26 @@ export function CreateIncomeSourceForm() {
 
       <div className="flex flex-col gap-4">
         <div className="flex gap-4">
+          <div className="flex flex-col gap-2">
+            <label htmlFor="cep">CEP</label>
+            <Input.Root variant={errors.cep ? "error" : "primary"}>
+              <Input.Icon>
+                <MagnifyingGlass className="mr-2 h-5 w-5" />
+              </Input.Icon>
+              <Input.Control
+                disabled={!income_source_input_fields_cep}
+                {...register("cep")}
+                type="text"
+                onBlur={(e) => fetchCep(e.target.value, setValue)}
+              />
+            </Input.Root>
+            {errors.cep && (
+              <span className="text-xs text-red-500">{errors.cep.message}</span>
+            )}
+          </div>
           <div className="flex flex-1 flex-col gap-2">
             <label htmlFor="city">Cidade</label>
-            <Input.Root variant={errors.city ? "error" : "primary"}>
+            <Input.Root variant={errors.city ? "error" : "disabled"}>
               <Input.Control
                 disabled={!income_source_input_fields_city}
                 {...register("city")}
@@ -179,7 +199,7 @@ export function CreateIncomeSourceForm() {
 
           <div className="flex flex-col gap-2">
             <label htmlFor="state">Estado</label>
-            <Input.Root variant={errors.state ? "error" : "primary"}>
+            <Input.Root variant={errors.state ? "error" : "disabled"}>
               <Input.Control
                 disabled={!income_source_input_fields_state}
                 {...register("state")}
@@ -192,26 +212,12 @@ export function CreateIncomeSourceForm() {
               </span>
             )}
           </div>
-
-          <div className="flex flex-col gap-2">
-            <label htmlFor="cep">CEP</label>
-            <Input.Root variant={errors.cep ? "error" : "primary"}>
-              <Input.Control
-                disabled={!income_source_input_fields_cep}
-                {...register("cep")}
-                type="cep"
-              />
-            </Input.Root>
-            {errors.cep && (
-              <span className="text-xs text-red-500">{errors.cep.message}</span>
-            )}
-          </div>
         </div>
 
         <div className="flex gap-4">
           <div className="flex flex-1 flex-col gap-2">
             <label htmlFor="address_1">Endereço</label>
-            <Input.Root variant={errors.address_1 ? "error" : "primary"}>
+            <Input.Root variant={errors.address_1 ? "error" : "disabled"}>
               <Input.Control
                 disabled={!income_source_input_fields_address_1}
                 {...register("address_1")}

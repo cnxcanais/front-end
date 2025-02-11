@@ -3,17 +3,21 @@
 import { Supplier } from "@/@types/suppliers"
 import { Button } from "@/core/components/Button"
 import * as Input from "@/core/components/Input"
+import { fetchCep } from "@/core/utils/findCep"
+import { formatDocumentNumber } from "@/core/utils/formatDocumentNumber"
+import { formatPhoneNumber } from "@/core/utils/formatPhoneNumber"
 import { getAccountId } from "@/core/utils/get-account-id"
 import { getPermissionByEntity } from "@/core/utils/getPermissionByEntity"
-import { createSupplier } from "@/modules/expenses-components/supplier-components/create-supplier/infra/remote/create-supplier"
 import {
   CreateSupplierSchema,
   createSupplierFormSchema,
 } from "@/modules/expenses-components/supplier-components/create-supplier/presentation/validation/schema"
 import { zodResolver } from "@hookform/resolvers/zod"
+import { MagnifyingGlass } from "@phosphor-icons/react"
 import { useRouter } from "next/navigation"
 import { useForm } from "react-hook-form"
 import { toast } from "sonner"
+import { createSupplier } from "../../infra/remote/create-supplier"
 
 export function CreateSupplierForm() {
   const { push } = useRouter()
@@ -57,6 +61,8 @@ export function CreateSupplierForm() {
   const {
     register,
     handleSubmit,
+    setValue,
+    getValues,
     formState: { isSubmitting, errors },
   } = useForm<CreateSupplierSchema>({
     resolver: zodResolver(createSupplierFormSchema),
@@ -67,7 +73,12 @@ export function CreateSupplierForm() {
 
   async function onSubmit(data: Supplier.CreateRequest) {
     try {
-      const response = await createSupplier(data)
+      const formattedData = {
+        ...data,
+        cpf_cnpj: data.cpf_cnpj.replace(/\D/g, ""),
+        phone: data.phone.replace(/\D/g, ""),
+      }
+      const response = await createSupplier(formattedData)
       toast.success(response)
       setTimeout(() => push("/suppliers"), 2000)
     } catch (error) {
@@ -102,7 +113,12 @@ export function CreateSupplierForm() {
             <Input.Root variant={errors.cpf_cnpj ? "error" : "primary"}>
               <Input.Control
                 disabled={!supplier_input_fields_cpf_cnpj}
-                {...register("cpf_cnpj")}
+                {...register("cpf_cnpj", {
+                  onChange: (e) => {
+                    const formatted = formatDocumentNumber(e.target.value)
+                    e.target.value = formatted
+                  },
+                })}
                 type="text"
               />
             </Input.Root>
@@ -136,7 +152,12 @@ export function CreateSupplierForm() {
             <Input.Root variant={errors.phone ? "error" : "primary"}>
               <Input.Control
                 disabled={!supplier_input_fields_phone}
-                {...register("phone")}
+                {...register("phone", {
+                  onChange: (e) => {
+                    const formatted = formatPhoneNumber(e.target.value)
+                    e.target.value = formatted
+                  },
+                })}
                 type="text"
               />
             </Input.Root>
@@ -167,14 +188,28 @@ export function CreateSupplierForm() {
 
       <div className="flex flex-col gap-4">
         <div className="flex gap-4">
+          <div className="flex flex-col gap-2">
+            <label htmlFor="cep">CEP</label>
+            <Input.Root variant={errors.cep ? "error" : "primary"}>
+              <Input.Icon>
+                <MagnifyingGlass className="mr-2 h-5 w-5" />
+              </Input.Icon>
+              <Input.Control
+                disabled={!supplier_input_fields_cep}
+                {...register("cep")}
+                type="text"
+                onBlur={(e) => fetchCep(e.target.value, setValue)}
+              />
+            </Input.Root>
+            {errors.cep && (
+              <span className="text-xs text-red-500">{errors.cep.message}</span>
+            )}
+          </div>
+
           <div className="flex flex-1 flex-col gap-2">
             <label htmlFor="city">Cidade</label>
-            <Input.Root variant={errors.city ? "error" : "primary"}>
-              <Input.Control
-                disabled={!supplier_input_fields_city}
-                {...register("city")}
-                type="text"
-              />
+            <Input.Root variant={errors.city ? "error" : "disabled"}>
+              <Input.Control disabled {...register("city")} type="text" />
             </Input.Root>
             {errors.city && (
               <span className="text-xs text-red-500">
@@ -185,12 +220,8 @@ export function CreateSupplierForm() {
 
           <div className="flex flex-col gap-2">
             <label htmlFor="state">Estado</label>
-            <Input.Root variant={errors.state ? "error" : "primary"}>
-              <Input.Control
-                disabled={!supplier_input_fields_state}
-                {...register("state")}
-                type="state"
-              />
+            <Input.Root variant={errors.state ? "error" : "disabled"}>
+              <Input.Control disabled {...register("state")} type="state" />
             </Input.Root>
             {errors.state && (
               <span className="text-xs text-red-500">
@@ -198,31 +229,13 @@ export function CreateSupplierForm() {
               </span>
             )}
           </div>
-
-          <div className="flex flex-col gap-2">
-            <label htmlFor="cep">CEP</label>
-            <Input.Root variant={errors.cep ? "error" : "primary"}>
-              <Input.Control
-                disabled={!supplier_input_fields_cep}
-                {...register("cep")}
-                type="cep"
-              />
-            </Input.Root>
-            {errors.cep && (
-              <span className="text-xs text-red-500">{errors.cep.message}</span>
-            )}
-          </div>
         </div>
 
         <div className="flex gap-4">
           <div className="flex flex-1 flex-col gap-2">
             <label htmlFor="address_1">Endereço</label>
-            <Input.Root variant={errors.address_1 ? "error" : "primary"}>
-              <Input.Control
-                disabled={!supplier_input_fields_address_1}
-                {...register("address_1")}
-                type="text"
-              />
+            <Input.Root variant={errors.address_1 ? "error" : "disabled"}>
+              <Input.Control disabled {...register("address_1")} type="text" />
             </Input.Root>
             {errors.address_1 && (
               <span className="text-xs text-red-500">

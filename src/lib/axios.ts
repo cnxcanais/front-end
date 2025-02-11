@@ -22,4 +22,8 @@ const api = axios.create({
 //   }
 // )
 
+export const cepApi = axios.create({
+  baseURL: process.env.NEXT_PUBLIC_CEP_URL,
+})
+
 export { api }
