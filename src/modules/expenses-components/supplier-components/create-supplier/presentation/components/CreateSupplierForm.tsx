@@ -8,6 +8,7 @@ import { formatDocumentNumber } from "@/core/utils/formatDocumentNumber"
 import { formatPhoneNumber } from "@/core/utils/formatPhoneNumber"
 import { getAccountId } from "@/core/utils/get-account-id"
 import { getPermissionByEntity } from "@/core/utils/getPermissionByEntity"
+import { createSupplier } from "@/modules/expenses-components/supplier-components/create-supplier/infra/remote/create-supplier"
 import {
   CreateSupplierSchema,
   createSupplierFormSchema,
@@ -17,7 +18,6 @@ import { MagnifyingGlass } from "@phosphor-icons/react"
 import { useRouter } from "next/navigation"
 import { useForm } from "react-hook-form"
 import { toast } from "sonner"
-import { createSupplier } from "../../infra/remote/create-supplier"
 
 export function CreateSupplierForm() {
   const { push } = useRouter()
@@ -39,30 +39,21 @@ export function CreateSupplierForm() {
   const supplier_input_fields_contact_name = getPermissionByEntity(
     "supplier_input_fields_contact_name"
   )
-  const supplier_input_fields_address_1 = getPermissionByEntity(
-    "supplier_input_fields_address_1"
-  )
   const supplier_input_fields_address_2 = getPermissionByEntity(
     "supplier_input_fields_address_2"
   )
   const supplier_input_fields_address_3 = getPermissionByEntity(
     "supplier_input_fields_address_3"
   )
-  const supplier_input_fields_state = getPermissionByEntity(
-    "supplier_input_fields_state"
-  )
+
   const supplier_input_fields_cep = getPermissionByEntity(
     "supplier_input_fields_cep"
-  )
-  const supplier_input_fields_city = getPermissionByEntity(
-    "supplier_input_fields_city"
   )
 
   const {
     register,
     handleSubmit,
     setValue,
-    getValues,
     formState: { isSubmitting, errors },
   } = useForm<CreateSupplierSchema>({
     resolver: zodResolver(createSupplierFormSchema),

@@ -44,12 +44,9 @@ export function EditSupplierForm({ id }: { id: string }) {
     "supplier_input_fields_cpf_cnpj",
     "supplier_input_fields_phone",
     "supplier_input_fields_contact_name",
-    "supplier_input_fields_address_1",
     "supplier_input_fields_address_2",
     "supplier_input_fields_address_3",
-    "supplier_input_fields_state",
     "supplier_input_fields_cep",
-    "supplier_input_fields_city",
   ]
 
   const {
@@ -58,12 +55,9 @@ export function EditSupplierForm({ id }: { id: string }) {
     supplier_input_fields_cpf_cnpj,
     supplier_input_fields_phone,
     supplier_input_fields_contact_name,
-    supplier_input_fields_address_1,
     supplier_input_fields_address_2,
     supplier_input_fields_address_3,
-    supplier_input_fields_state,
     supplier_input_fields_cep,
-    supplier_input_fields_city,
   } = usePermissions(permissions)
 
   const {

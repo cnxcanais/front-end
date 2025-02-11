@@ -44,12 +44,9 @@ export function CreateIncomeSourceForm() {
     income_source_input_fields_cpf_cnpj,
     income_source_input_fields_phone,
     income_source_input_fields_contact_name,
-    income_source_input_fields_address_1,
     income_source_input_fields_address_2,
     income_source_input_fields_address_3,
-    income_source_input_fields_state,
     income_source_input_fields_cep,
-    income_source_input_fields_city,
   } = usePermissions(permissions)
 
   const {
@@ -201,11 +198,7 @@ export function CreateIncomeSourceForm() {
           <div className="flex flex-1 flex-col gap-2">
             <label htmlFor="city">Cidade</label>
             <Input.Root variant={errors.city ? "error" : "disabled"}>
-              <Input.Control
-                disabled={!income_source_input_fields_city}
-                {...register("city")}
-                type="text"
-              />
+              <Input.Control disabled {...register("city")} type="text" />
             </Input.Root>
             {errors.city && (
               <span className="text-xs text-red-500">
@@ -217,11 +210,7 @@ export function CreateIncomeSourceForm() {
           <div className="flex flex-col gap-2">
             <label htmlFor="state">Estado</label>
             <Input.Root variant={errors.state ? "error" : "disabled"}>
-              <Input.Control
-                disabled={!income_source_input_fields_state}
-                {...register("state")}
-                type="state"
-              />
+              <Input.Control disabled {...register("state")} type="state" />
             </Input.Root>
             {errors.state && (
               <span className="text-xs text-red-500">
@@ -235,11 +224,7 @@ export function CreateIncomeSourceForm() {
           <div className="flex flex-1 flex-col gap-2">
             <label htmlFor="address_1">Endereço</label>
             <Input.Root variant={errors.address_1 ? "error" : "disabled"}>
-              <Input.Control
-                disabled={!income_source_input_fields_address_1}
-                {...register("address_1")}
-                type="text"
-              />
+              <Input.Control disabled {...register("address_1")} type="text" />
             </Input.Root>
             {errors.address_1 && (
               <span className="text-xs text-red-500">
