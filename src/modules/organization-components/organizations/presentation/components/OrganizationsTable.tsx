@@ -6,6 +6,8 @@ import { Modal } from "@/core/components/Modals/Modal"
 import { SearchInput } from "@/core/components/SearchInput"
 import { Table } from "@/core/components/Table"
 import { exportToExcel } from "@/core/utils/exportToExcel"
+import { formatStaticDocument } from "@/core/utils/formatDocumentNumber"
+import { formatStaticPhoneNumber } from "@/core/utils/formatPhoneNumber"
 import { getAccountId } from "@/core/utils/get-account-id"
 import { getPermissionByEntity } from "@/core/utils/getPermissionByEntity"
 import { useGetOrganizationsQuery } from "@/modules/organization-components/organizations/infra/hooks/use-get-organizations-query"
@@ -59,6 +61,9 @@ export function OrganizationsTable() {
     {
       header: "Telefone",
       accessor: "phone",
+      render: (value: string) => {
+        if (value) return formatStaticPhoneNumber(value)
+      },
     },
     {
       header: "Endereço",
@@ -67,6 +72,9 @@ export function OrganizationsTable() {
     {
       header: "CNPJ",
       accessor: "cnpj",
+      render: (value: string) => {
+        if (value) return formatStaticDocument(value)
+      },
     },
     {
       header: "Ações",

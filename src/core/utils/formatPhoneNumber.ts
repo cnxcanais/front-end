@@ -13,13 +13,13 @@ export function formatPhoneNumber(phone: string) {
     if (formattedPhone.length === 11) {
       formattedPhone = formattedPhone.replace(
         /(\(\d{2}\))(\d{5})(\d{4})/,
-        "$1$2-$3"
+        "$1 $2-$3"
       )
     } else {
       // For landline numbers (10 digits total)
       formattedPhone = formattedPhone.replace(
         /(\(\d{2}\))(\d{4})(\d{4})/,
-        "$1$2-$3"
+        "$1 $2-$3"
       )
     }
   }
@@ -38,13 +38,13 @@ export function formatStaticPhoneNumber(phone: string) {
     // Mobile numbers (11 digits)
     formattedPhone = formattedPhone.replace(
       /^(\d{2})(\d{5})(\d{4})/,
-      "($1)$2-$3"
+      "($1) $2-$3"
     )
   } else if (formattedPhone.length === 10) {
     // Landline numbers (10 digits)
     formattedPhone = formattedPhone.replace(
       /^(\d{2})(\d{4})(\d{4})/,
-      "($1)$2-$3"
+      "($1) $2-$3"
     )
   }
 

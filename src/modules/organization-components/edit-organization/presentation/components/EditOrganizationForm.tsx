@@ -3,6 +3,8 @@
 import { Button } from "@/core/components/Button"
 import * as Input from "@/core/components/Input"
 import { LoadingScreen } from "@/core/components/LoadingScreen"
+import { formatDocumentNumber } from "@/core/utils/formatDocumentNumber"
+import { formatPhoneNumber } from "@/core/utils/formatPhoneNumber"
 import { getPermissionByEntity } from "@/core/utils/getPermissionByEntity"
 import {
   editOrganization,
@@ -95,7 +97,12 @@ export function EditOrganizationForm({ id }: { id: string }) {
           <Input.Root variant={errors.cnpj ? "error" : "primary"}>
             <Input.Control
               disabled={!organizations_input_fields_cnpj}
-              {...register("cnpj")}
+              {...register("cnpj", {
+                onChange: (e) => {
+                  const formatted = formatDocumentNumber(e.target.value)
+                  e.target.value = formatted
+                },
+              })}
               type="text"
             />
           </Input.Root>
@@ -127,7 +134,12 @@ export function EditOrganizationForm({ id }: { id: string }) {
           <Input.Root variant={errors.phone ? "error" : "primary"}>
             <Input.Control
               disabled={!organizations_input_fields_phone}
-              {...register("phone")}
+              {...register("phone", {
+                onChange: (e) => {
+                  const formatted = formatPhoneNumber(e.target.value)
+                  e.target.value = formatted
+                },
+              })}
               type="text"
             />
           </Input.Root>

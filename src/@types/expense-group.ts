@@ -8,7 +8,7 @@ export namespace ExpenseGroup {
   }
 
   export type GetResponse = {
-    groups: Type[]
+    expenseGroups: Type[]
   }
 
   export type GetByIdRequest = {

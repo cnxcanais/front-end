@@ -23,7 +23,7 @@ const api = axios.create({
 // )
 
 export const cepApi = axios.create({
-  baseURL: process.env.NEXT_PUBLIC_CEP_URL,
+  baseURL: "https://viacep.com.br/ws",
 })
 
 export { api }
