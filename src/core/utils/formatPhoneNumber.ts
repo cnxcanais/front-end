@@ -1,5 +1,5 @@
 export function formatPhoneNumber(phone: string) {
-  if (!phone) return phone
+  if (!phone) return ""
   // Remove any non-digit characters
   let formattedPhone = phone.replace(/\D/g, "")
 
@@ -28,7 +28,7 @@ export function formatPhoneNumber(phone: string) {
 }
 
 export function formatStaticPhoneNumber(phone: string) {
-  if (!phone) return phone
+  if (!phone) return ""
 
   // Remove any non-digit characters
   let formattedPhone = phone.replace(/\D/g, "")

@@ -1,6 +1,7 @@
 export function formatDocumentNumber(document: string) {
+  if (!document) return ""
+
   let formattedDocument = document.replace(/\D/g, "")
-  if (!document) return document
 
   if (document.length <= 14) {
     formattedDocument = formattedDocument.replace(/(\d{3})(\d)/, "$1.$2")
@@ -20,7 +21,7 @@ export function formatDocumentNumber(document: string) {
 }
 
 export function formatStaticDocument(document: string) {
-  if (!document) return document
+  if (!document) return ""
 
   let formattedDocument = document.replace(/\D/g, "")
   if (document.length === 14) {
