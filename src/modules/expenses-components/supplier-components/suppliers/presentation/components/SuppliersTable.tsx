@@ -7,6 +7,8 @@ import { ModalFilesTrigger } from "@/core/components/Modals/ModalFiles/ModalFile
 import { SearchInput } from "@/core/components/SearchInput"
 import { Table } from "@/core/components/Table"
 import { exportToExcel } from "@/core/utils/exportToExcel"
+import { formatStaticDocument } from "@/core/utils/formatDocumentNumber"
+import { formatStaticPhoneNumber } from "@/core/utils/formatPhoneNumber"
 import { getAccountId } from "@/core/utils/get-account-id"
 import { getPermissionByEntity } from "@/core/utils/getPermissionByEntity"
 import { queryClient } from "@/lib/react-query"
@@ -65,6 +67,9 @@ export function SuppliersTable() {
     {
       header: "Documento",
       accessor: "cpf_cnpj",
+      render: (value: string, row: unknown) => (
+        <p>{formatStaticDocument(value)}</p>
+      ),
     },
     {
       header: "Email",
@@ -85,6 +90,7 @@ export function SuppliersTable() {
     {
       header: "Telefone",
       accessor: "phone",
+      render: (value: string) => <p>{formatStaticPhoneNumber(value)}</p>,
     },
     {
       header: "Endereço",

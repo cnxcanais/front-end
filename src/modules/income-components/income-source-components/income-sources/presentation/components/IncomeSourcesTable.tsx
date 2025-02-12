@@ -7,6 +7,8 @@ import { ModalFilesTrigger } from "@/core/components/Modals/ModalFiles/ModalFile
 import { SearchInput } from "@/core/components/SearchInput"
 import { Table } from "@/core/components/Table"
 import { exportToExcel } from "@/core/utils/exportToExcel"
+import { formatStaticDocument } from "@/core/utils/formatDocumentNumber"
+import { formatStaticPhoneNumber } from "@/core/utils/formatPhoneNumber"
 import { getAccountId } from "@/core/utils/get-account-id"
 import { getPermissionByEntity } from "@/core/utils/getPermissionByEntity"
 import { useGetIncomeSourcesQuery } from "@/modules/income-components/income-source-components/income-sources/infra/hooks/use-get-income-sources-query"
@@ -55,6 +57,7 @@ export function IncomeSourcesTable() {
     {
       header: "Documento",
       accessor: "cpf_cnpj",
+      render: (value: string) => formatStaticDocument(value),
     },
     {
       header: "Email",
@@ -75,6 +78,7 @@ export function IncomeSourcesTable() {
     {
       header: "Telefone",
       accessor: "phone",
+      render: (value: string) => formatStaticPhoneNumber(value),
     },
     {
       header: "Endereço",

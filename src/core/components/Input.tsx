@@ -42,6 +42,7 @@ const div = tv({
       secondary: "border-white bg-transparent !text-white",
       error:
         "border-red-500 focus-within:border-red-500 focus-within:ring-2 focus-within:ring-red-100",
+      disabled: "border-blue-100 bg-transparent !text-blue-200",
     },
   },
 
