@@ -34,7 +34,7 @@ export function EditExpenseGroupForm({ id }: { id: string }) {
   } = useForm<EditExpenseGroupFormSchema>({
     resolver: zodResolver(editExpenseGroupFormSchema),
     values: {
-      group_name: expenseGroup?.expenseGroup.group_name,
+      group_name: expenseGroup?.group_name,
     },
   })
 
@@ -70,6 +70,7 @@ export function EditExpenseGroupForm({ id }: { id: string }) {
         </Button>
         <Button
           disabled={isSubmitting}
+          type="button"
           onClick={() => push("/accounts")}
           variant="tertiary">
           Voltar
