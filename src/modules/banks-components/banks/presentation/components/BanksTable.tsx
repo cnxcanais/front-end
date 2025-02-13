@@ -10,13 +10,9 @@ import { exportToExcel } from "@/core/utils/exportToExcel"
 import { getAccountId } from "@/core/utils/get-account-id"
 import { getPermissionByEntity } from "@/core/utils/getPermissionByEntity"
 import { useGetBanksQuery } from "@/modules/banks-components/banks/infra/hooks/use-get-banks-query"
-import {
-  getBanks,
-  removeBank,
-} from "@/modules/banks-components/banks/infra/remote"
+import { removeBank } from "@/modules/banks-components/banks/infra/remote"
 import { Pencil, Trash } from "@phosphor-icons/react"
 import { FileXls } from "@phosphor-icons/react/dist/ssr"
-import { useMutation } from "@tanstack/react-query"
 import { useRouter } from "next/navigation"
 import { useEffect, useState } from "react"
 import { toast } from "sonner"
@@ -36,28 +32,20 @@ export function BanksTable() {
   const [id, setId] = useState("")
   const [filteredResults, setFilteredResults] = useState([])
 
-  const refetchBanks = useMutation({
-    mutationFn: getBanks,
-    onSuccess: () => {
-      toast.success("Banco removido com sucesso!")
-      refetch()
-    },
-    onError: (error) => {
-      toast.error("Erro ao remover Banco: " + error)
-    },
-    onSettled: () => {
-      setOpen(false)
-    },
-  })
-
   const handleEdit = (id: string) => {
     push(`/banks/edit/${id}`)
   }
 
   const handleConfirmDelete = async () => {
-    await removeBank({ bank_id: id }).then(() =>
-      refetchBanks.mutate(account_id)
-    )
+    try {
+      await removeBank({ bank_id: id })
+      toast.success("Banco removido com sucesso!")
+      refetch()
+    } catch (error) {
+      toast.error(error)
+    } finally {
+      setOpen(false)
+    }
   }
 
   const columns = [

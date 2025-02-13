@@ -9,14 +9,9 @@ import { formatLocalDate } from "@/core/utils/dateFunctions"
 import { exportToExcel } from "@/core/utils/exportToExcel"
 import { getAccountId } from "@/core/utils/get-account-id"
 import { getPermissionByEntity } from "@/core/utils/getPermissionByEntity"
-import { queryClient } from "@/lib/react-query"
-import {
-  deleteIncomeGroup,
-  getAllIncomeGroups,
-} from "@/modules/income-components/income-groups-components/remote/income-group"
+import { deleteIncomeGroup } from "@/modules/income-components/income-groups-components/remote/income-group"
 import { useIncomeGroupQuery } from "@/modules/income-components/income-groups-components/remote/use-income-group-query"
 import { FileXls, Pencil, Trash } from "@phosphor-icons/react"
-import { useMutation } from "@tanstack/react-query"
 import { useRouter } from "next/navigation"
 import { useEffect, useState } from "react"
 import { toast } from "sonner"
@@ -34,30 +29,26 @@ export function IncomeGroupTable() {
   const [id, setId] = useState("")
   const [filteredResults, setFilteredResults] = useState([])
 
-  const { data: incomeGroups, isLoading } = useIncomeGroupQuery(account_id)
-
-  const fetchIncomeGroups = useMutation({
-    mutationFn: getAllIncomeGroups,
-    onSuccess: () => {
-      toast.success("Grupo removido com sucesso!")
-      queryClient.invalidateQueries({ queryKey: ["income-groups"] })
-    },
-    onError: (error) => {
-      toast.error("Erro ao remover grupo: " + error)
-    },
-    onSettled: () => {
-      setOpen(false)
-    },
-  })
+  const {
+    data: incomeGroups,
+    isLoading,
+    refetch,
+  } = useIncomeGroupQuery(account_id)
 
   const handleEdit = (id: string) => {
     push(`/income-groups/edit/${id}`)
   }
 
   const handleConfirmDelete = async () => {
-    await deleteIncomeGroup({ income_group_id: id }).then(() =>
-      fetchIncomeGroups.mutate(account_id)
-    )
+    try {
+      await deleteIncomeGroup({ income_group_id: id })
+      toast.success("Grupo removido com sucesso!")
+      refetch()
+    } catch (error) {
+      toast.error(error)
+    } finally {
+      setOpen(false)
+    }
   }
 
   const columns = [

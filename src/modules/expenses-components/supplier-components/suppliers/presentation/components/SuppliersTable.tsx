@@ -11,14 +11,9 @@ import { formatStaticDocument } from "@/core/utils/formatDocumentNumber"
 import { formatStaticPhoneNumber } from "@/core/utils/formatPhoneNumber"
 import { getAccountId } from "@/core/utils/get-account-id"
 import { getPermissionByEntity } from "@/core/utils/getPermissionByEntity"
-import { queryClient } from "@/lib/react-query"
 import { useSupplierQuery } from "@/modules/expenses-components/supplier-components/suppliers/infra/hooks/use-supplier-query"
-import {
-  getSuppliers,
-  removeSupplier,
-} from "@/modules/expenses-components/supplier-components/suppliers/infra/remote"
+import { removeSupplier } from "@/modules/expenses-components/supplier-components/suppliers/infra/remote"
 import { FileXls, Pencil, Trash } from "@phosphor-icons/react"
-import { useMutation } from "@tanstack/react-query"
 import { useRouter } from "next/navigation"
 import { useEffect, useState } from "react"
 import { toast } from "sonner"
@@ -26,7 +21,7 @@ import { toast } from "sonner"
 export function SuppliersTable() {
   const account_id = getAccountId()
 
-  const { data: suppliers, isLoading } = useSupplierQuery(account_id)
+  const { data: suppliers, isLoading, refetch } = useSupplierQuery(account_id)
   const { push } = useRouter()
 
   const [open, setOpen] = useState(false)
@@ -38,27 +33,21 @@ export function SuppliersTable() {
 
   const [filteredResults, setFilteredResults] = useState([])
 
-  const refetchSuppliersFn = useMutation({
-    mutationFn: getSuppliers,
-    onSuccess: () => {
-      toast.success("Fornecedor removido com sucesso!")
-      queryClient.invalidateQueries({ queryKey: ["suppliers"] })
-    },
-    onError: (error) => {
-      toast.error("Erro ao remover fornecedor: " + error)
-    },
-    onSettled: () => {
-      setOpen(false)
-    },
-  })
-
   // handlers for Delete and Edit
   const handleEdit = (id: string) => {
     push(`/suppliers/edit/${id}`)
   }
 
   const handleConfirmDelete = async () => {
-    await removeSupplier(id).then(() => refetchSuppliersFn.mutate(account_id))
+    try {
+      await removeSupplier(id)
+      toast.success("Fornecedor removido com sucesso!")
+      refetch()
+    } catch (error) {
+      toast.error(error)
+    } finally {
+      setOpen(false)
+    }
   }
 
   // column structure for table

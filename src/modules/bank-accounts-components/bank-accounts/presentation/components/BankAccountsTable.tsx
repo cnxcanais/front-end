@@ -10,15 +10,10 @@ import { formatLocalDate } from "@/core/utils/dateFunctions"
 import { exportToExcel } from "@/core/utils/exportToExcel"
 import { getAccountId } from "@/core/utils/get-account-id"
 import { getPermissionByEntity } from "@/core/utils/getPermissionByEntity"
-import { queryClient } from "@/lib/react-query"
 import { useFetchBankAccountsQuery } from "@/modules/bank-accounts-components/bank-accounts/infra/hooks/use-fetch-bank-accounts-query"
-import {
-  getBankAccounts,
-  removeBankAccount,
-} from "@/modules/bank-accounts-components/bank-accounts/infra/remote"
+import { removeBankAccount } from "@/modules/bank-accounts-components/bank-accounts/infra/remote"
 import { Pencil, Trash } from "@phosphor-icons/react"
 import { FileXls } from "@phosphor-icons/react/dist/ssr"
-import { useMutation } from "@tanstack/react-query"
 import { useRouter } from "next/navigation"
 import { useEffect, useState } from "react"
 import { toast } from "sonner"
@@ -26,8 +21,11 @@ import { toast } from "sonner"
 export function BankAccountsTable() {
   const account_id = getAccountId()
 
-  const { data: bankAccounts, isLoading } =
-    useFetchBankAccountsQuery(account_id)
+  const {
+    data: bankAccounts,
+    isLoading,
+    refetch,
+  } = useFetchBankAccountsQuery(account_id)
 
   const bank_accounts_create = getPermissionByEntity("bank_accounts_create")
   const bank_accounts_edit = getPermissionByEntity("bank_accounts_edit")
@@ -39,28 +37,20 @@ export function BankAccountsTable() {
   const [id, setId] = useState("")
   const [filteredResults, setFilteredResults] = useState([])
 
-  const refetchBankAccounts = useMutation({
-    mutationFn: getBankAccounts,
-    onSuccess: () => {
-      toast.success("Conta de banco removida com sucesso!")
-      queryClient.invalidateQueries({ queryKey: ["bank-accounts"] })
-    },
-    onError: (error) => {
-      toast.error("Erro ao remover conta de banco: " + error)
-    },
-    onSettled: () => {
-      setOpen(false)
-    },
-  })
-
   const handleEdit = (id: string) => {
     push(`/banks/accounts/edit/${id}`)
   }
 
   const handleConfirmDelete = async () => {
-    await removeBankAccount(id).then(() =>
-      refetchBankAccounts.mutate(account_id)
-    )
+    try {
+      await removeBankAccount(id)
+      toast.success("Conta de banco removida com sucesso!")
+      refetch()
+    } catch (error) {
+      toast.error(error)
+    } finally {
+      setOpen(false)
+    }
   }
 
   const columns = [

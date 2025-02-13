@@ -21,8 +21,11 @@ import { toast } from "sonner"
 export function IncomeSourcesTable() {
   const account_id = getAccountId()
 
-  const { data: incomeSources, isLoading } =
-    useGetIncomeSourcesQuery(account_id)
+  const {
+    data: incomeSources,
+    isLoading,
+    refetch,
+  } = useGetIncomeSourcesQuery(account_id)
 
   const { push } = useRouter()
 
@@ -44,6 +47,7 @@ export function IncomeSourcesTable() {
     try {
       await removeIncomeSource(id)
       toast.success("Fonte de Receita removido com sucesso!")
+      refetch()
     } catch (error) {
       toast.error("Erro ao remover Fonte de Receita: " + error)
     } finally {

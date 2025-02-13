@@ -51,10 +51,10 @@ export function EditBankAccountForm({ id }: { id: string }) {
   async function onSubmit(data: BankAccount.UpdateRequest) {
     try {
       await editBankAccount(id, data)
-      toast.success("Banco editado com sucesso!")
-      setTimeout(() => push("/banks"), 2000)
+      toast.success("Conta de banco editada com sucesso!")
+      setTimeout(() => push("/banks/accounts"), 2000)
     } catch (error) {
-      toast.error("Erro ao editar banco: " + error)
+      toast.error("Erro ao editar conta de banco: " + error)
     }
   }
 

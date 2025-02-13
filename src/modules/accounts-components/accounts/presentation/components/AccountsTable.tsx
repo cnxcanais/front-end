@@ -38,7 +38,7 @@ export function AccountsTable() {
       toast.success("Conta removida com sucesso!")
       refetch()
     } catch (error) {
-      toast.error("Erro ao remover conta: " + error)
+      toast.error(error)
     } finally {
       setOpen(false)
     }

@@ -93,6 +93,8 @@ export function ExpenseDetailsTable({ expense_id }: { expense_id?: string }) {
       refetch()
     } catch (error) {
       toast.error(`Erro ao remover parcela: ${error}`)
+    } finally {
+      setOpen(false)
     }
   }
 
