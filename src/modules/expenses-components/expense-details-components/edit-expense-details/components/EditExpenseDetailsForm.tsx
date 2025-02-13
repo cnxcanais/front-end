@@ -64,7 +64,7 @@ export function EditExpenseDetailsForm({
         observation,
         is_paid,
         expense_details_id,
-      } = expenseDetails.expenseDetails
+      } = expenseDetails
       reset({
         amount: Number(amount),
         bank_account_id: bank_account_id,
@@ -76,7 +76,7 @@ export function EditExpenseDetailsForm({
         expense_details_id: expense_details_id,
       })
     }
-  }, [expenseDetails, reset])
+  }, [expenseDetails])
 
   async function onSubmit(data: ExpenseDetails.UpdateRequest) {
     try {
@@ -85,7 +85,7 @@ export function EditExpenseDetailsForm({
       setTimeout(
         () =>
           push(
-            `/expense-details?expense_id=${expenseDetails.expenseDetails.expense_id ? expenseDetails.expenseDetails.expense_id : ""}`
+            `/expense-details?expense_id=${expenseDetails.expense_id ? expenseDetails.expense_id : ""}`
           ),
         2000
       )
@@ -160,14 +160,9 @@ export function EditExpenseDetailsForm({
 
             <div className="flex max-w-[50px] flex-1 flex-col gap-2">
               <label htmlFor="part">Parte</label>
-              <Input.Root variant="primary">
+              <Input.Root variant={"disabled"}>
                 <Input.Control disabled {...register("part")} type="text" />
               </Input.Root>
-              {errors.part && (
-                <span className="text-xs text-red-500">
-                  {errors.part.message}
-                </span>
-              )}
             </div>
           </div>
         </div>
@@ -216,9 +211,7 @@ export function EditExpenseDetailsForm({
             type="button"
             disabled={isSubmitting}
             onClick={() =>
-              push(
-                `/expense-details?expense_id=${expenseDetails?.expenseDetails.expense_id}`
-              )
+              push(`/expense-details?expense_id=${expenseDetails?.expense_id}`)
             }
             variant="tertiary">
             Voltar

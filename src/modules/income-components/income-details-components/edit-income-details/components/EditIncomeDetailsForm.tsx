@@ -162,14 +162,9 @@ export function EditIncomeDetailsForm({
 
             <div className="flex max-w-[50px] flex-1 flex-col gap-2">
               <label htmlFor="phone">Parte</label>
-              <Input.Root variant="primary">
+              <Input.Root variant="disabled">
                 <Input.Control disabled {...register("part")} type="text" />
               </Input.Root>
-              {errors.part && (
-                <span className="text-xs text-red-500">
-                  {errors.part.message}
-                </span>
-              )}
             </div>
           </div>
         </div>

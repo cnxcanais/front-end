@@ -24,10 +24,7 @@ export function ExpenseDetailsInfo({ index }: ExpenseDetailsInfoProps) {
             className="text-sm">
             Parcela
           </label>
-          <Input.Root
-            variant={
-              errors.expenseDetailsArray?.[index]?.part ? "error" : "primary"
-            }>
+          <Input.Root variant={"disabled"}>
             <Input.Control
               {...register(`expenseDetailsArray.${index}.part`)}
               disabled

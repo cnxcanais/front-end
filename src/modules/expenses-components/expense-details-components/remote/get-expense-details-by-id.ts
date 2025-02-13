@@ -5,5 +5,5 @@ export const getExpenseDetailsById = async (id: string) => {
   const { data } = await api.get<ExpenseDetails.GetbyIdResponse>(
     `/expense-details/${id}`
   )
-  return data
+  return data.expenseDetails
 }
