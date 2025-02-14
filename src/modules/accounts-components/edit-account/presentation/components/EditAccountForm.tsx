@@ -78,7 +78,7 @@ export function EditAccountForm({ id }: { id: string }) {
 
       <div className="mt-6 flex gap-4">
         <Button type="submit" disabled={isSubmitting} variant="secondary">
-          Salvar
+          Editar
         </Button>
         <Button
           type="button"

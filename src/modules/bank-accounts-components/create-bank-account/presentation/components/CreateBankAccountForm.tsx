@@ -45,10 +45,10 @@ export function CreateBankAccountForm() {
   if (isLoading || !banks) return <LoadingScreen />
 
   return (
-    <form onSubmit={handleSubmit(onSubmit)}>
+    <form className="max-w-[800px]" onSubmit={handleSubmit(onSubmit)}>
       <div className="flex gap-8">
-        <div className="flex flex-1 flex-col">
-          <div className="mt-8 flex flex-col gap-2">
+        <div className="flex flex-1 flex-col gap-4">
+          <div className="flex flex-col gap-2">
             <label htmlFor="agency">Agência</label>
             <Input.Root variant={errors.agency ? "error" : "primary"}>
               <Input.Control {...register("agency")} type="text" />
@@ -60,7 +60,7 @@ export function CreateBankAccountForm() {
             )}
           </div>
 
-          <div className="mt-8 flex flex-col gap-2">
+          <div className="flex flex-col gap-2">
             <label htmlFor="account_number">Número</label>
             <Input.Root variant={errors.account_number ? "error" : "primary"}>
               <Input.Control {...register("account_number")} type="text" />
@@ -72,21 +72,23 @@ export function CreateBankAccountForm() {
             )}
           </div>
 
-          <SelectInput
-            options={banks.map((bank) => {
-              return {
-                text: bank.name,
-                value: bank.bank_id,
-              }
-            })}
-            field_name="bank_id"
-            label="Banco"
-            {...register("bank_id")}
-          />
+          <div className="">
+            <SelectInput
+              options={banks.map((bank) => {
+                return {
+                  text: bank.name,
+                  value: bank.bank_id,
+                }
+              })}
+              field_name="bank_id"
+              label="Banco"
+              {...register("bank_id")}
+            />
+          </div>
         </div>
 
         <div className="flex flex-1 flex-col">
-          <div className="mt-8 flex flex-1 flex-col gap-2">
+          <div className="flex flex-1 flex-col gap-2">
             <label htmlFor="observation">Observação</label>
             <Input.Root
               className="flex-1"
@@ -100,7 +102,7 @@ export function CreateBankAccountForm() {
         </div>
       </div>
 
-      <div className="my-2 flex gap-4">
+      <div className="mt-6 flex gap-4">
         <Button type="submit" disabled={isSubmitting} variant="secondary">
           Salvar
         </Button>

@@ -283,7 +283,7 @@ export function EditSupplierForm({ id }: { id: string }) {
 
       <div className="my-2 flex gap-4">
         <Button type="submit" disabled={isSubmitting} variant="primary">
-          Salvar
+          Editar
         </Button>
         <Button
           type="button"

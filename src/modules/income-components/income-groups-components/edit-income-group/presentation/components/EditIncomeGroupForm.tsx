@@ -66,7 +66,7 @@ export function EditIncomeGroupForm({ id }: { id: string }) {
 
       <div className="mt-6 flex gap-4">
         <Button disabled={isSubmitting} type="submit" variant="secondary">
-          Salvar
+          Editar
         </Button>
         <Button
           type="button"

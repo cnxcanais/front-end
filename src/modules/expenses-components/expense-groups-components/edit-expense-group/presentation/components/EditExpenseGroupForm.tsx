@@ -66,7 +66,7 @@ export function EditExpenseGroupForm({ id }: { id: string }) {
 
       <div className="mt-6 flex gap-4">
         <Button disabled={isSubmitting} onClick={() => {}} variant="secondary">
-          Salvar
+          Editar
         </Button>
         <Button
           disabled={isSubmitting}
