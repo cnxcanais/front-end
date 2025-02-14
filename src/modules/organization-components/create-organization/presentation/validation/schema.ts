@@ -1,12 +1,23 @@
+import { validateCNPJ } from "@/core/utils/validadeDocuments"
+
 import { z } from "zod"
 
 export const createOrganizationFormSchema = z.object({
   name: z.string().nonempty({ message: "Obrigatório" }),
   cnpj: z
     .string()
-    .min(14, { message: "CNPJ precisa ter 14 caracteres" })
-    .max(14, { message: "CNPJ precisa ter no máximo 14 caracteres" })
-    .nonempty({ message: "Obrigatório" }),
+    .nonempty({ message: "Obrigatório" })
+    .refine(
+      (value) => {
+        const cleanValue = value.replace(/\D/g, "")
+        if (cleanValue.length === 14) {
+          return validateCNPJ(cleanValue)
+        }
+
+        return false
+      },
+      { message: "CNPJ inválido" }
+    ),
   address: z.string().nonempty({ message: "Obrigatório" }),
   phone: z.string().nonempty({ message: "Obrigatório" }),
   email: z
