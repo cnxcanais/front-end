@@ -3,7 +3,10 @@
 import { Button } from "@/core/components/Button"
 import * as Input from "@/core/components/Input"
 import { LoadingScreen } from "@/core/components/LoadingScreen"
-import { formatDocumentNumber } from "@/core/utils/formatDocumentNumber"
+import {
+  formatDocumentNumber,
+  formatStaticDocument,
+} from "@/core/utils/formatDocumentNumber"
 import { formatPhoneNumber } from "@/core/utils/formatPhoneNumber"
 import { getPermissionByEntity } from "@/core/utils/getPermissionByEntity"
 import {
@@ -55,8 +58,8 @@ export function EditOrganizationForm({ id }: { id: string }) {
       name: organization?.name || "",
       account_id: organization?.account_id || "",
       address: organization?.address || "",
-      cnpj: organization?.cnpj || "",
-      phone: organization?.phone || "",
+      cnpj: formatStaticDocument(organization?.cnpj) || "",
+      phone: formatPhoneNumber(organization?.phone) || "",
       email: organization?.email || "",
     },
   })
