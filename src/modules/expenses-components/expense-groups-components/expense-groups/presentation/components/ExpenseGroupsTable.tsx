@@ -45,7 +45,7 @@ export function ExpenseGroupTable() {
       toast.success("Grupo removido com sucesso!")
       refetch()
     } catch (error) {
-      toast.error("Erro ao remover grupo: " + error)
+      toast.error(error)
     } finally {
       setOpen(false)
     }

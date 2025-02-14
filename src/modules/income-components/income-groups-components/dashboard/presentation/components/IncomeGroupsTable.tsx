@@ -41,7 +41,7 @@ export function IncomeGroupTable() {
 
   const handleConfirmDelete = async () => {
     try {
-      await deleteIncomeGroup({ income_group_id: id })
+      await deleteIncomeGroup(id)
       toast.success("Grupo removido com sucesso!")
       refetch()
     } catch (error) {

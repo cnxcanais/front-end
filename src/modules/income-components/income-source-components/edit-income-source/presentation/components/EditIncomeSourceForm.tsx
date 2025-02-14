@@ -132,7 +132,7 @@ export function EditIncomeSourceForm({
           </div>
 
           <div className="flex flex-1 flex-col gap-2">
-            <label htmlFor="cpf_cnpj">Documento</label>
+            <label htmlFor="cpf_cnpj">CPF/CNPJ</label>
             <Input.Root variant={errors.cpf_cnpj ? "error" : "primary"}>
               <Input.Control
                 disabled={!income_source_input_fields_cpf_cnpj}

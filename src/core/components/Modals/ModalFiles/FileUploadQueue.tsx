@@ -39,6 +39,7 @@ export function FileUploadQueue({
       refetch()
     } catch (error) {
       console.info("Erro ao fazer upload:", error)
+      toast.error(`Erro ao fazer upload de arquivo(s): ${error}`)
     }
   }
 

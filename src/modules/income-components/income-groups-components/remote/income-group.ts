@@ -34,7 +34,7 @@ export const updateIncomeGroup = async (
   return response.data
 }
 
-export const deleteIncomeGroup = async (id: IncomeGroup.DeleteRequest) => {
+export const deleteIncomeGroup = async (id: string) => {
   const response = await api.delete(`/income-groups/${id}`)
   return response.data
 }
