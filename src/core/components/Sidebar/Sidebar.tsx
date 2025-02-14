@@ -3,13 +3,14 @@
 import { SidebarItem } from "@/core/components/Sidebar"
 import { List, X } from "@phosphor-icons/react"
 import Image from "next/image"
-import { usePathname } from "next/navigation"
+import { usePathname, useRouter } from "next/navigation"
 import { Fragment, useState } from "react"
 import { sidebarGroupedByGroups } from "./options"
 
 export function Sidebar() {
   const [isOpen, setIsOpen] = useState(true)
   const pathname = usePathname()
+  const { push } = useRouter()
 
   const toggleSidebar = () => {
     setIsOpen(!isOpen)
@@ -26,9 +27,10 @@ export function Sidebar() {
           height={400}
           alt="Your Company"
           src="/images/light-logo.png"
-          className={`h-24 w-auto transition-opacity ${
+          className={`h-24 w-auto cursor-pointer transition-opacity ${
             isOpen ? "opacity-100" : "opacity-0"
           }`}
+          onClick={() => push("/dashboard")}
         />
         <button onClick={toggleSidebar} className="text-white">
           {isOpen ?

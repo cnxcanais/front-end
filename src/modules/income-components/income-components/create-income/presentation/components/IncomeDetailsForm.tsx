@@ -270,7 +270,7 @@ export function IncomeDetailForm({
           Salvar
         </Button>
       </div>
-      <div className="mt-4">
+      <div className="mt-4 flex flex-col gap-2">
         {detailsInfo.partsQty > 0 && renderDetailsInfo()}
       </div>
     </>

@@ -14,10 +14,22 @@ interface FilterProps {
 }
 
 export function ExpenseBudgetFilters({ account_id }: FilterProps) {
+  const [isFilterFilled, setIsFilterFilled] = useState(false)
   const [collapsed, setCollapsed] = useState(false)
 
-  const { register, handleSubmit, control, getValues, reset } =
-    useForm<Budget.QueryParamsExpense>({})
+  const { register, handleSubmit, control, getValues, reset, watch } =
+    useForm<Budget.QueryParamsExpense>({
+      defaultValues: {
+        description: "",
+        end_date: "",
+        expense_group_id: "",
+        max_amount: 0,
+        min_amount: 0,
+        start_date: "",
+      },
+    })
+
+  const formValues = watch()
 
   const [filters, setFilters] = useState<Budget.QueryParamsExpense>({
     page: 1,
@@ -59,6 +71,14 @@ export function ExpenseBudgetFilters({ account_id }: FilterProps) {
       page: prevState.page,
     }))
   }
+
+  useEffect(() => {
+    const hasValue = Object.values(formValues).some(
+      (value) =>
+        value !== undefined && value !== null && value !== "" && value !== 0
+    )
+    setIsFilterFilled(hasValue)
+  }, [formValues])
 
   useEffect(() => {
     refetch()
@@ -128,6 +148,7 @@ export function ExpenseBudgetFilters({ account_id }: FilterProps) {
             <div className="flex h-12 w-full gap-2">
               {Object.values(filters).length > 0 && (
                 <Button
+                  disabled={!isFilterFilled}
                   onClick={resetFilters}
                   className="w-full"
                   variant="secondary"
@@ -135,7 +156,11 @@ export function ExpenseBudgetFilters({ account_id }: FilterProps) {
                   Limpar
                 </Button>
               )}
-              <Button className="w-full" variant="secondary" type="submit">
+              <Button
+                disabled={!isFilterFilled}
+                className="w-full"
+                variant="secondary"
+                type="submit">
                 Pesquisar
               </Button>
             </div>

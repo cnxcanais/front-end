@@ -14,13 +14,25 @@ interface FilterProps {
 }
 
 export function IncomeBudgetFilters({ account_id }: FilterProps) {
+  const [isFilterFilled, setIsFilterFilled] = useState(false)
   const [collapsed, setCollapsed] = useState(false)
   const [filters, setFilters] = useState<Budget.QueryParamsIncome>({
     page: 1,
   })
 
-  const { register, handleSubmit, control, reset } =
-    useForm<Budget.QueryParamsIncome>()
+  const { register, handleSubmit, control, reset, watch } =
+    useForm<Budget.QueryParamsIncome>({
+      defaultValues: {
+        description: "",
+        end_date: "",
+        income_group_id: "",
+        max_amount: 0,
+        min_amount: 0,
+        start_date: "",
+      },
+    })
+
+  const formValues = watch()
 
   const { data: incomeGroups, isLoading } = useIncomeGroupQuery(account_id)
 
@@ -58,6 +70,14 @@ export function IncomeBudgetFilters({ account_id }: FilterProps) {
       page: prevState.page,
     }))
   }
+
+  useEffect(() => {
+    const hasValue = Object.values(formValues).some(
+      (value) =>
+        value !== undefined && value !== null && value !== "" && value !== 0
+    )
+    setIsFilterFilled(hasValue)
+  }, [formValues])
 
   useEffect(() => {
     refetch()
@@ -127,6 +147,7 @@ export function IncomeBudgetFilters({ account_id }: FilterProps) {
             <div className="flex h-12 w-full gap-2">
               {Object.values(filters).length > 0 && (
                 <Button
+                  disabled={!isFilterFilled}
                   onClick={resetFilters}
                   className="w-full"
                   variant="secondary"
@@ -134,7 +155,11 @@ export function IncomeBudgetFilters({ account_id }: FilterProps) {
                   Limpar
                 </Button>
               )}
-              <Button className="w-full" variant="secondary" type="submit">
+              <Button
+                disabled={!isFilterFilled}
+                className="w-full"
+                variant="secondary"
+                type="submit">
                 Pesquisar
               </Button>
             </div>
