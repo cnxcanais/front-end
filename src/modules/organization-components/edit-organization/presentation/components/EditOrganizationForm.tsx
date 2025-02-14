@@ -7,7 +7,10 @@ import {
   formatDocumentNumber,
   formatStaticDocument,
 } from "@/core/utils/formatDocumentNumber"
-import { formatPhoneNumber } from "@/core/utils/formatPhoneNumber"
+import {
+  formatPhoneNumber,
+  formatStaticPhoneNumber,
+} from "@/core/utils/formatPhoneNumber"
 import { getPermissionByEntity } from "@/core/utils/getPermissionByEntity"
 import {
   editOrganization,
@@ -59,7 +62,7 @@ export function EditOrganizationForm({ id }: { id: string }) {
       account_id: organization?.account_id || "",
       address: organization?.address || "",
       cnpj: formatStaticDocument(organization?.cnpj) || "",
-      phone: formatPhoneNumber(organization?.phone) || "",
+      phone: formatStaticPhoneNumber(organization?.phone) || "",
       email: organization?.email || "",
     },
   })
