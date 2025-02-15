@@ -72,7 +72,7 @@ export function CreateIncomeSourceForm() {
       toast.success(response)
       setTimeout(() => push("/income-sources"), 2000)
     } catch (error) {
-      toast.error("Erro ao criar fonte de receita: " + error)
+      toast.error("Erro ao criar cliente: " + error)
     }
   }
 

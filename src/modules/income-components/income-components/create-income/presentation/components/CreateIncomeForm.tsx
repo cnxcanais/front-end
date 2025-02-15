@@ -65,7 +65,7 @@ export function CreateIncomeForm() {
       toast.success("Receita criada com sucesso!")
       setTimeout(() => push("/incomes"), 2000)
     } catch (error) {
-      toast.error("Erro ao criar fonte de receita: " + error)
+      toast.error("Erro ao criar cliente: " + error)
     }
   }
 

@@ -10,7 +10,7 @@ export default async function EditIncomeSourceRender({
 
   return (
     <>
-      <PageTitle content="Editar Fonte de Receita" />
+      <PageTitle content="Editar Cliente" />
       <EditIncomeSourceForm income_source_id={id} />
     </>
   )

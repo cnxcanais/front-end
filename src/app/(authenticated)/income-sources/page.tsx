@@ -4,7 +4,7 @@ import { IncomeSourcesTable } from "@/modules/income-components/income-source-co
 export default function IncomeSourcesRender() {
   return (
     <main className="flex w-full flex-col">
-      <PageTitle content="Fonte de Receita" />
+      <PageTitle content="Cliente" />
       <IncomeSourcesTable />
     </main>
   )

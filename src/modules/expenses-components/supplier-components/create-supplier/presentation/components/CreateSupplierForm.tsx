@@ -73,7 +73,7 @@ export function CreateSupplierForm() {
       toast.success(response)
       setTimeout(() => push("/suppliers"), 2000)
     } catch (error) {
-      toast.error("Erro ao criar fonte de receita: " + error)
+      toast.error("Erro ao criar cliente: " + error)
     }
   }
 

@@ -4,7 +4,7 @@ import { CreateIncomeSourceForm } from "@/modules/income-components/income-sourc
 export default function CreateIncomeSourceRender() {
   return (
     <>
-      <PageTitle content="Criar Fonte de Receita" />
+      <PageTitle content="Criar Cliente" />
       <CreateIncomeSourceForm />
     </>
   )

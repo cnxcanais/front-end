@@ -27,7 +27,7 @@ export const editIncomeSchema = z.object({
   document: z.string().nonempty("Documento é obrigatório"),
   income_group_id: z.string().nonempty("Grupo é obrigatório"),
   income_percentage: z.coerce.number().min(1, "Porcentagem é obrigatória"),
-  income_source_id: z.string().nonempty("Fonte de receita é obrigatória"),
+  income_source_id: z.string().nonempty("Cliente é obrigatório"),
   organization_id: z.string().nonempty("Organização é obrigatória"),
 })
 
