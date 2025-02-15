@@ -79,7 +79,7 @@ export function IncomeTable() {
     { header: "Documento", accessor: "document" },
     { header: "Descrição", accessor: "description" },
     {
-      header: "Valor",
+      header: "Valor Total",
       accessor: "total_amount",
       render: (value: number) => {
         if (value)
@@ -88,6 +88,15 @@ export function IncomeTable() {
             currency: "BRL",
           })
       },
+    },
+    {
+      header: "Valor Restante",
+      accessor: "income_details",
+      render: (incomeDetails: IncomeDetails.IncomeDetailsType[]) =>
+        incomeDetails
+          .filter((detail) => !detail.is_paid)
+          .reduce((acc, curr) => Number(acc) + Number(curr.amount), 0)
+          .toLocaleString("pt-BR", { style: "currency", currency: "BRL" }),
     },
     {
       header: "Cliente",

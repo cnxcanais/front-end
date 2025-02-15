@@ -88,6 +88,15 @@ export function ExpenseTable() {
       },
     },
     {
+      header: "Valor Restante",
+      accessor: "income_details",
+      render: (expenseDetails: ExpenseDetails.ExpenseDetailsType[]) =>
+        expenseDetails
+          .filter((detail) => !detail.is_paid)
+          .reduce((acc, curr) => acc + curr.amount, 0)
+          .toLocaleString("pt-BR", { style: "currency", currency: "BRL" }),
+    },
+    {
       header: "Cliente",
       accessor: "supplier",
       accessor2: "name",

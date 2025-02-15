@@ -2,7 +2,7 @@ export namespace IncomeDetails {
   export type IncomeDetailsType = {
     income_details_id: string
     observation: string
-    amount: string
+    amount: number
     part: number
     due_date: Date
     is_paid: boolean
