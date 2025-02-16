@@ -1,29 +1,29 @@
 "use client"
 
-import { ExpenseCategory } from "@/@types/expense-category"
+import { IncomeCategory } from "@/@types/income-category"
 import { Button } from "@/core/components/Button"
 import * as Input from "@/core/components/Input"
 import { LoadingScreen } from "@/core/components/LoadingScreen"
 import {
-  editExpenseCategoryFormSchema,
-  EditExpenseCategoryFormSchema,
-} from "@/modules/expenses-components/expense-categories-components/edit-expense-category/presentation/validation/schema"
+  editIncomeCategoryFormSchema,
+  EditIncomeCategoryFormSchema,
+} from "@/modules/income-components/income-categories-components/edit-income-category/presentation/validation/schema"
 import {
-  getExpenseCategoryById,
-  updateExpenseCategory,
-} from "@/modules/expenses-components/expense-categories-components/remote/expense-categories-methods"
+  getIncomeCategoryById,
+  updateIncomeCategory,
+} from "@/modules/income-components/income-categories-components/remote/income-categories-methods"
 import { zodResolver } from "@hookform/resolvers/zod"
 import { useQuery } from "@tanstack/react-query"
 import { useRouter } from "next/navigation"
 import { useForm } from "react-hook-form"
 import { toast } from "sonner"
 
-export function EditExpenseCategoryForm({ id }: { id: string }) {
+export function EditIncomeCategoryForm({ id }: { id: string }) {
   const { push } = useRouter()
 
-  const { data: expenseCategory, isLoading } = useQuery({
-    queryKey: ["expense-category", id],
-    queryFn: () => getExpenseCategoryById(id),
+  const { data: incomeCategory, isLoading } = useQuery({
+    queryKey: ["income-category", id],
+    queryFn: () => getIncomeCategoryById(id),
     enabled: id !== "",
   })
 
@@ -31,24 +31,24 @@ export function EditExpenseCategoryForm({ id }: { id: string }) {
     register,
     handleSubmit,
     formState: { isSubmitting, errors },
-  } = useForm<EditExpenseCategoryFormSchema>({
-    resolver: zodResolver(editExpenseCategoryFormSchema),
+  } = useForm<EditIncomeCategoryFormSchema>({
+    resolver: zodResolver(editIncomeCategoryFormSchema),
     values: {
-      name: expenseCategory?.name,
+      name: incomeCategory?.name,
     },
   })
 
-  async function onSubmit(data: ExpenseCategory.UpdateRequest) {
+  async function onSubmit(data: IncomeCategory.UpdateRequest) {
     try {
-      await updateExpenseCategory(id, data)
+      await updateIncomeCategory(id, data)
       toast.success("Categoria editada com sucesso!")
-      setTimeout(() => push("/expense-categories"), 2000)
+      setTimeout(() => push("/income-categories"), 2000)
     } catch (error) {
       toast.error("Erro ao editar categoria: " + error)
     }
   }
 
-  if (!expenseCategory || isLoading) return <LoadingScreen />
+  if (!incomeCategory || isLoading) return <LoadingScreen />
 
   return (
     <form onSubmit={handleSubmit(onSubmit)}>
@@ -69,7 +69,7 @@ export function EditExpenseCategoryForm({ id }: { id: string }) {
         <Button
           disabled={isSubmitting}
           type="button"
-          onClick={() => push("/expense-categories")}
+          onClick={() => push("/income-categories")}
           variant="tertiary">
           Voltar
         </Button>

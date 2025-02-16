@@ -4,7 +4,7 @@ import { CreateExpenseCategoryForm } from "@/modules/expenses-components/expense
 export default function ExpenseCategoryCreateRender() {
   return (
     <>
-      <PageTitle content="Criar Categoria De Despesa" />
+      <PageTitle content="Criar Categoria de Despesa" />
       <CreateExpenseCategoryForm />
     </>
   )

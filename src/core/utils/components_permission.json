@@ -10,9 +10,13 @@
     "income_groups_create": true,
     "income_groups_edit": true,
     "income_groups_delete": true,
+    "income_group_input_fields_expense_category_id": true,
+    "income_group_input_fields_group_name": true,
     "expense_groups_create": true,
     "expense_groups_edit": true,
     "expense_groups_delete": true,
+    "expense_group_input_fields_expense_category_id": true,
+    "expense_group_input_fields_group_name": true,
     "organizations_input_fields_name": true,
     "organizations_input_fields_cnpj": true,
     "organizations_input_fields_address": true,
@@ -126,10 +130,11 @@
     "expense_details_edit_input_fields_amount": true,
     "expense_details_edit_input_fields_date": true,
     "expense_details_edit_input_fields_description": true,
-    "expense_group_input_fields_expense_category_id": true,
-    "expense_group_input_fields_group_name": true,
     "expense_categories_create": true,
     "expense_categories_edit": true,
-    "expense_categories_delete": true
+    "expense_categories_delete": true,
+    "income_categories_create": true,
+    "income_categories_edit": true,
+    "income_categories_delete": true
   }
 }

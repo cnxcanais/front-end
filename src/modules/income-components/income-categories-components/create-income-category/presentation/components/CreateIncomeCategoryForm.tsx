@@ -1,38 +1,38 @@
 "use client"
 
-import { ExpenseCategory } from "@/@types/expense-category"
+import { IncomeCategory } from "@/@types/income-category"
 import { Button } from "@/core/components/Button"
 import * as Input from "@/core/components/Input"
 import { getAccountId } from "@/core/utils/get-account-id"
 import {
-  CreateExpensecategorieschema,
-  createExpenseCategorieSchema,
-} from "@/modules/expenses-components/expense-categories-components/create-expense-category/presentation/validation/schema"
-import { createExpenseCategory } from "@/modules/expenses-components/expense-categories-components/remote/expense-categories-methods"
+  CreateIncomecategorieschema,
+  createIncomeCategorieschema,
+} from "@/modules/income-components/income-categories-components/create-income-category/presentation/validation/schema"
+import { createIncomeCategory } from "@/modules/income-components/income-categories-components/remote/income-categories-methods"
 import { zodResolver } from "@hookform/resolvers/zod"
 import { useRouter } from "next/navigation"
 import { useForm } from "react-hook-form"
 import { toast } from "sonner"
 
-export function CreateExpenseCategoryForm() {
+export function CreateIncomeCategoryForm() {
   const { push } = useRouter()
 
   const {
     register,
     handleSubmit,
     formState: { isSubmitting },
-  } = useForm<CreateExpensecategorieschema>({
-    resolver: zodResolver(createExpenseCategorieSchema),
+  } = useForm<CreateIncomecategorieschema>({
+    resolver: zodResolver(createIncomeCategorieschema),
     values: {
       account_id: getAccountId(),
     },
   })
 
-  async function onSubmit(data: ExpenseCategory.CreateRequest) {
+  async function onSubmit(data: IncomeCategory.CreateRequest) {
     try {
-      const response = await createExpenseCategory(data)
+      const response = await createIncomeCategory(data)
       toast.success(response)
-      setTimeout(() => push("/expense-categories"), 2000)
+      setTimeout(() => push("/income-categories"), 2000)
     } catch (error) {
       toast.error("Erro ao criar categoria: " + error)
     }
@@ -53,7 +53,7 @@ export function CreateExpenseCategoryForm() {
         <Button
           type="button"
           disabled={isSubmitting}
-          onClick={() => push("/expense-categories")}
+          onClick={() => push("/income-categories")}
           variant="tertiary">
           Voltar
         </Button>

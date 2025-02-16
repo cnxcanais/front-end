@@ -9,19 +9,19 @@ import { formatLocalDate } from "@/core/utils/dateFunctions"
 import { exportToExcel } from "@/core/utils/exportToExcel"
 import { getAccountId } from "@/core/utils/get-account-id"
 import { getPermissionByEntity } from "@/core/utils/getPermissionByEntity"
-import { deleteExpenseCategory } from "@/modules/expenses-components/expense-categories-components/remote/expense-categories-methods"
-import { useExpenseCategoryQuery } from "@/modules/expenses-components/expense-categories-components/remote/use-expense-categories-query"
+import { deleteIncomeCategory } from "@/modules/income-components/income-categories-components/remote/income-categories-methods"
+import { useIncomeCategoryQuery } from "@/modules/income-components/income-categories-components/remote/use-income-categories-query"
 import { FileXls, Pencil, Trash } from "@phosphor-icons/react"
 import { useRouter } from "next/navigation"
 import { useEffect, useState } from "react"
 import { toast } from "sonner"
 
-export function ExpenseCategoriesTable() {
+export function IncomeCategoriesTable() {
   const { push } = useRouter()
 
-  const create = getPermissionByEntity("expense_categories_create")
-  const edit = getPermissionByEntity("expense_categories_edit")
-  const deletePermission = getPermissionByEntity("expense_categories_delete")
+  const create = getPermissionByEntity("income_categories_create")
+  const edit = getPermissionByEntity("income_categories_edit")
+  const deletePermission = getPermissionByEntity("income_categories_delete")
 
   const account_id = getAccountId()
 
@@ -30,18 +30,18 @@ export function ExpenseCategoriesTable() {
   const [filteredResults, setFilteredResults] = useState([])
 
   const {
-    data: expenseCategories,
+    data: incomeCategories,
     isLoading,
     refetch,
-  } = useExpenseCategoryQuery(account_id)
+  } = useIncomeCategoryQuery(account_id)
 
   const handleEdit = (id: string) => {
-    push(`/expense-categories/edit/${id}`)
+    push(`/income-categories/edit/${id}`)
   }
 
   const handleConfirmDelete = async () => {
     try {
-      await deleteExpenseCategory(id)
+      await deleteIncomeCategory(id)
       toast.success("Categoria removida com sucesso!")
       refetch()
     } catch (error) {
@@ -60,7 +60,7 @@ export function ExpenseCategoriesTable() {
     },
     {
       header: "Ações",
-      accessor: "expense_category_id",
+      accessor: "income_category_id",
       render: (value: string, row: unknown) => (
         <div className="flex space-x-4">
           {edit && (
@@ -87,10 +87,10 @@ export function ExpenseCategoriesTable() {
   ]
 
   useEffect(() => {
-    if (expenseCategories) setFilteredResults(expenseCategories)
-  }, [expenseCategories, isLoading])
+    if (incomeCategories) setFilteredResults(incomeCategories)
+  }, [incomeCategories, isLoading])
 
-  if (!expenseCategories || isLoading) return <LoadingScreen />
+  if (!incomeCategories || isLoading) return <LoadingScreen />
 
   return (
     <>
@@ -112,19 +112,19 @@ export function ExpenseCategoriesTable() {
       <div className="mt-8 flex items-center justify-between">
         <div className="flex h-full gap-4">
           <SearchInput
-            data={expenseCategories}
+            data={incomeCategories}
             searchParam="name"
             onSearchResult={setFilteredResults}
           />
           {create && (
             <Button
-              onClick={() => push("/expense-categories/create")}
+              onClick={() => push("/income-categories/create")}
               variant="secondary">
               Cadastrar
             </Button>
           )}
         </div>
-        {expenseCategories.length > 0 && (
+        {incomeCategories.length > 0 && (
           <Button
             className="flex items-center gap-1"
             variant="secondary"
@@ -134,9 +134,9 @@ export function ExpenseCategoriesTable() {
           </Button>
         )}
       </div>
-      {expenseCategories.length == 0 ?
+      {incomeCategories.length == 0 ?
         <h2 className="mt-6 text-xl font-semibold">
-          Nenhuma categoria de despesa cadastrada.
+          Nenhum categoria de receita cadastrada.
         </h2>
       : <Table columns={columns} data={filteredResults} />}
     </>
