@@ -4,7 +4,7 @@ import { useQuery } from "@tanstack/react-query"
 
 export function useExpenseQuery(
   account_id: string,
-  queryParams?: Expense.GetRequest
+  queryParams: Expense.GetRequest
 ) {
   return useQuery({
     queryKey: ["expenses", { queryParams }],

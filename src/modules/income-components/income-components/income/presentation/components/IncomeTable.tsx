@@ -39,6 +39,7 @@ export function IncomeTable() {
       income_group_id: "",
       income_source_id: "",
       organization_id: "",
+      income_category_id: "",
     },
   })
 

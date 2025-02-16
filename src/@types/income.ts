@@ -11,6 +11,7 @@ export namespace Income {
     income_source_id?: string
     income_group_id?: string
     page?: number
+    income_category_id?: string
   }
 
   export type IncomeType = {

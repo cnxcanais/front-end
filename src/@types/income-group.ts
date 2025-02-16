@@ -5,6 +5,7 @@ export namespace IncomeGroup {
     created_at: Date
     updated_at: Date
     account_id: string
+    income_category_id: string
   }
 
   export type GetRequest = {
@@ -15,23 +16,17 @@ export namespace IncomeGroup {
     incomeGroups: Type[]
   }
 
-  export type GetByIdRequest = {
-    income_group_id: string
-  }
-
   export type GetByIdResponse = {
     incomeGroup: Type
   }
 
   export type CreateRequest = {
     group_name: string
-  }
-
-  export type DeleteRequest = {
-    income_group_id: string
+    income_category_id: string
   }
 
   export type UpdateRequest = {
     group_name: string
+    income_category_id: string
   }
 }

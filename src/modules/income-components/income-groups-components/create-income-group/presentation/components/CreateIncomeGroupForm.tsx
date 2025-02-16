@@ -40,9 +40,9 @@ export function CreateIncomeGroupForm() {
   const arrayConfigs: ArrayConfig<any>[] = [
     {
       fetchFn: getAllIncomeCategories,
-      mapFn: (group) => ({
-        label: group.name,
-        value: group.income_category_id,
+      mapFn: (category) => ({
+        label: category.name,
+        value: category.income_category_id,
       }),
       setState: setIncomeCategories,
     },
@@ -56,7 +56,7 @@ export function CreateIncomeGroupForm() {
   } = useForm<CreateIncomeGroupSchema>({
     resolver: zodResolver(createIncomeGroupSchema),
     values: {
-      account_id: getAccountId(),
+      account_id,
     },
   })
 

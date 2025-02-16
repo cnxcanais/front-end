@@ -11,6 +11,7 @@ export namespace Expense {
     supplier_id?: string
     expense_group_id?: string
     page?: number
+    expense_category_id?: string
   }
 
   export type ExpenseType = {

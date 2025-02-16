@@ -41,6 +41,7 @@ export function ExpenseTable() {
       organization_id: "",
       start_date: "",
       supplier_id: "",
+      expense_category_id: "",
     },
   })
 
@@ -92,7 +93,7 @@ export function ExpenseTable() {
       accessor: "income_details",
       render: (expenseDetails: ExpenseDetails.ExpenseDetailsType[]) =>
         expenseDetails
-          .filter((detail) => !detail.is_paid)
+          ?.filter((detail) => !detail.is_paid)
           .reduce((acc, curr) => acc + curr.amount, 0)
           .toLocaleString("pt-BR", { style: "currency", currency: "BRL" }),
     },
@@ -119,10 +120,10 @@ export function ExpenseTable() {
       ) => (
         <p
           onClick={() => {
-            push(`/expense-details?expense_id=${expense.expense_id}`)
+            push(`/expense-details?expense_id=${expense?.expense_id}`)
           }}
           className="cursor-pointer text-blue-500 underline">
-          {expenseDetails.length}
+          {expenseDetails?.length}
         </p>
       ),
     },

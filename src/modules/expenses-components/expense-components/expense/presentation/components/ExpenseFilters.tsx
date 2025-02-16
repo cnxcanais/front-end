@@ -4,13 +4,14 @@ import * as Input from "@/core/components/Input"
 import { LoadingScreen } from "@/core/components/LoadingScreen"
 import { getAccountId } from "@/core/utils/get-account-id"
 import { prepareArrayForSelect } from "@/core/utils/prepare-array-for-select-input"
+import { useExpenseCategoryQuery } from "@/modules/expenses-components/expense-categories-components/remote/use-expense-categories-query"
 import { useExpenseQuery } from "@/modules/expenses-components/expense-components/infra/use-expense-query"
 import { useExpenseGroupQuery } from "@/modules/expenses-components/expense-groups-components/remote/use-expense-groups-query"
 import { useSupplierQuery } from "@/modules/expenses-components/supplier-components/suppliers/infra/hooks/use-supplier-query"
 import { useOrganizationsQuery } from "@/modules/organization-components/organizations/infra/remote/hooks/use-organizations-query"
 import { CaretDown, CaretRight } from "@phosphor-icons/react"
 import { useEffect, useState } from "react"
-import { useFormContext, useWatch } from "react-hook-form"
+import { useFormContext } from "react-hook-form"
 
 interface FilterProps {
   onFilterChange: (filters: Expense.GetRequest) => void
@@ -27,10 +28,11 @@ export function ExpenseFilters({ onFilterChange }: FilterProps) {
     handleSubmit,
     control,
     reset,
+    watch,
     formState: { isSubmitted },
   } = useFormContext<Expense.GetRequest>()
 
-  const formValues = useWatch({ control })
+  const formValues = watch()
 
   const { data: expenses } = useExpenseQuery(account_id)
 
@@ -42,6 +44,9 @@ export function ExpenseFilters({ onFilterChange }: FilterProps) {
 
   const { data: organizations, isLoading: organizationsIsLoading } =
     useOrganizationsQuery(account_id)
+
+  const { data: expenseCategories, isLoading: categoriesIsLoading } =
+    useExpenseCategoryQuery(account_id)
 
   function onSubmit(data: Expense.GetRequest) {
     const adjustMonth = (month: string | undefined, isStart: boolean) => {
@@ -84,7 +89,9 @@ export function ExpenseFilters({ onFilterChange }: FilterProps) {
     !expenseSources ||
     expenseSourcesIsLoading ||
     !organizations ||
-    organizationsIsLoading
+    organizationsIsLoading ||
+    !expenseCategories ||
+    categoriesIsLoading
   )
     return <LoadingScreen fullScreen={false} />
 
@@ -153,10 +160,10 @@ export function ExpenseFilters({ onFilterChange }: FilterProps) {
             </div>
           </div>
 
-          <div className="flex flex-1 flex-col justify-between gap-4">
+          <div className="flex flex-1 flex-col gap-2">
             <div className="flex gap-4">
               <div className="flex flex-1 flex-col gap-2">
-                <label htmlFor="expense_id">NF</label>
+                <label htmlFor="document">NF</label>
                 <Input.Root>
                   <Input.SelectInput
                     name="document"
@@ -188,23 +195,42 @@ export function ExpenseFilters({ onFilterChange }: FilterProps) {
               </div>
             </div>
 
-            <div className="flex h-12 w-full gap-2">
-              <Button
-                onClick={resetFilters}
-                disabled={!isSubmitted}
-                className="w-full"
-                variant="secondary"
-                type="button">
-                Limpar
-              </Button>
+            <div className="flex gap-4">
+              <div className="flex flex-1 flex-col gap-2">
+                <label htmlFor="expense_category_id">
+                  Categoria de Despesa
+                </label>
+                <Input.Root>
+                  <Input.SelectInput
+                    name="expense_category_id"
+                    control={control}
+                    options={prepareArrayForSelect(
+                      expenseCategories,
+                      "name",
+                      "expense_category_id"
+                    )}
+                    placeholder="Digite..."
+                  />
+                </Input.Root>
+              </div>
+              <div className="flex h-12 flex-1 gap-2 self-end">
+                <Button
+                  onClick={resetFilters}
+                  disabled={!isSubmitted}
+                  className="w-full"
+                  variant="secondary"
+                  type="button">
+                  Limpar
+                </Button>
 
-              <Button
-                disabled={!isFilterFilled}
-                className="w-full"
-                variant="secondary"
-                type="submit">
-                Pesquisar
-              </Button>
+                <Button
+                  disabled={!isFilterFilled}
+                  className="w-full"
+                  variant="secondary"
+                  type="submit">
+                  Pesquisar
+                </Button>
+              </div>
             </div>
           </div>
         </div>

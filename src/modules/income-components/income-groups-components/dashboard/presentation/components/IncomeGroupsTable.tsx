@@ -1,11 +1,11 @@
 "use client"
 
+import { IncomeCategory } from "@/@types/income-category"
 import { Button } from "@/core/components/Button"
 import { LoadingScreen } from "@/core/components/LoadingScreen"
 import { Modal } from "@/core/components/Modals/Modal"
 import { SearchInput } from "@/core/components/SearchInput"
 import { Table } from "@/core/components/Table"
-import { formatLocalDate } from "@/core/utils/dateFunctions"
 import { exportToExcel } from "@/core/utils/exportToExcel"
 import { getAccountId } from "@/core/utils/get-account-id"
 import { getPermissionByEntity } from "@/core/utils/getPermissionByEntity"
@@ -54,9 +54,24 @@ export function IncomeGroupTable() {
   const columns = [
     { header: "Nome", accessor: "group_name" },
     {
-      header: "Atualizado Em",
+      header: "Categoria",
+      accessor: "income_category",
+      render: (value: IncomeCategory.Type) => {
+        if (value) {
+          return value.name
+        }
+      },
+    },
+    {
+      header: "Atualizado em",
       accessor: "updated_at",
-      render: (value: string) => formatLocalDate(new Date(value)),
+      render: (value: string) =>
+        new Date(value).toLocaleDateString("pt-BR", {
+          day: "numeric",
+          month: "2-digit",
+          year: "numeric",
+          timeZone: "Europe/Paris",
+        }),
     },
     {
       header: "Ações",

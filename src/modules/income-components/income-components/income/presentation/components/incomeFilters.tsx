@@ -4,13 +4,14 @@ import * as Input from "@/core/components/Input"
 import { LoadingScreen } from "@/core/components/LoadingScreen"
 import { getAccountId } from "@/core/utils/get-account-id"
 import { prepareArrayForSelect } from "@/core/utils/prepare-array-for-select-input"
+import { useIncomeCategoryQuery } from "@/modules/income-components/income-categories-components/remote/use-income-categories-query"
+import { useIncomeQuery } from "@/modules/income-components/income-components/infra/use-income-query"
 import { useIncomeGroupQuery } from "@/modules/income-components/income-groups-components/remote/use-income-group-query"
 import { useIncomeSourceQuery } from "@/modules/income-components/income-source-components/income-sources/infra/hooks/use-income-source-query"
 import { useOrganizationsQuery } from "@/modules/organization-components/organizations/infra/remote/hooks/use-organizations-query"
 import { CaretDown, CaretRight } from "@phosphor-icons/react"
 import { useEffect, useState } from "react"
-import { useFormContext, useWatch } from "react-hook-form"
-import { useIncomeQuery } from "../../../infra/use-income-query"
+import { useFormContext } from "react-hook-form"
 
 interface FilterProps {
   onFilterChange: (filters: Income.GetRequest) => void
@@ -27,9 +28,10 @@ export function IncomeFilters({ onFilterChange }: FilterProps) {
     control,
     reset,
     formState: { isSubmitted },
+    watch,
   } = useFormContext<Income.GetRequest>()
 
-  const formValues = useWatch({ control })
+  const formValues = watch()
 
   const { data: incomes } = useIncomeQuery(account_id)
 
@@ -41,6 +43,9 @@ export function IncomeFilters({ onFilterChange }: FilterProps) {
 
   const { data: organizations, isLoading: organizationsIsLoading } =
     useOrganizationsQuery(account_id)
+
+  const { data: incomeCategories, isLoading: categoriesIsLoading } =
+    useIncomeCategoryQuery(account_id)
 
   function onSubmit(data: Income.GetRequest) {
     const adjustMonth = (month: string | undefined, isStart: boolean) => {
@@ -83,7 +88,9 @@ export function IncomeFilters({ onFilterChange }: FilterProps) {
     !incomeSources ||
     incomeSourcesIsLoading ||
     !organizations ||
-    organizationsIsLoading
+    organizationsIsLoading ||
+    categoriesIsLoading ||
+    !incomeCategories
   )
     return <LoadingScreen fullScreen={false} />
 
@@ -152,7 +159,7 @@ export function IncomeFilters({ onFilterChange }: FilterProps) {
             </div>
           </div>
 
-          <div className="flex flex-1 flex-col justify-between gap-4">
+          <div className="flex flex-1 flex-col gap-2">
             <div className="flex gap-4">
               <div className="flex flex-1 flex-col gap-2">
                 <label htmlFor="income_id">NF</label>
@@ -187,23 +194,40 @@ export function IncomeFilters({ onFilterChange }: FilterProps) {
               </div>
             </div>
 
-            <div className="flex h-12 w-full gap-2">
-              <Button
-                onClick={resetFilters}
-                disabled={!isSubmitted}
-                className="w-full"
-                variant="secondary"
-                type="button">
-                Limpar
-              </Button>
+            <div className="flex gap-4">
+              <div className="flex flex-1 flex-col gap-2">
+                <label htmlFor="income_id">Categoria de Receita</label>
+                <Input.Root>
+                  <Input.SelectInput
+                    name="income_category_id"
+                    control={control}
+                    options={prepareArrayForSelect(
+                      incomeCategories,
+                      "name",
+                      "income_category_id"
+                    )}
+                    placeholder="Digite..."
+                  />
+                </Input.Root>
+              </div>
+              <div className="flex h-12 flex-1 gap-2 self-end">
+                <Button
+                  onClick={resetFilters}
+                  disabled={!isSubmitted}
+                  className="w-full"
+                  variant="secondary"
+                  type="button">
+                  Limpar
+                </Button>
 
-              <Button
-                disabled={!isFilterFilled}
-                className="w-full"
-                variant="secondary"
-                type="submit">
-                Pesquisar
-              </Button>
+                <Button
+                  disabled={!isFilterFilled}
+                  className="w-full"
+                  variant="secondary"
+                  type="submit">
+                  Pesquisar
+                </Button>
+              </div>
             </div>
           </div>
         </div>
