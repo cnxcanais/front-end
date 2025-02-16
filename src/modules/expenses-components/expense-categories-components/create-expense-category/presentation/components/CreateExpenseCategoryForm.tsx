@@ -1,40 +1,40 @@
 "use client"
 
-import { IncomeGroup } from "@/@types/income-group"
+import { ExpenseCategory } from "@/@types/expense-category"
 import { Button } from "@/core/components/Button"
 import * as Input from "@/core/components/Input"
 import { getAccountId } from "@/core/utils/get-account-id"
 import {
-  CreateIncomeGroupSchema,
-  createIncomeGroupSchema,
-} from "@/modules/income-components/income-groups-components/create-income-group/presentation/validation/schema"
-import { createIncomeGroup } from "@/modules/income-components/income-groups-components/remote/income-group"
+  CreateExpensecategorieschema,
+  createExpensecategorieschema,
+} from "@/modules/expenses-components/expense-categories-components/create-expense-category/presentation/validation/schema"
+import { createExpenseCategory } from "@/modules/expenses-components/expense-categories-components/remote/expense-categories-methods"
 import { zodResolver } from "@hookform/resolvers/zod"
 import { useRouter } from "next/navigation"
 import { useForm } from "react-hook-form"
 import { toast } from "sonner"
 
-export function CreateIncomeGroupForm() {
+export function CreateExpenseCategoryForm() {
   const { push } = useRouter()
 
   const {
     register,
     handleSubmit,
     formState: { isSubmitting },
-  } = useForm<CreateIncomeGroupSchema>({
-    resolver: zodResolver(createIncomeGroupSchema),
+  } = useForm<CreateExpensecategorieschema>({
+    resolver: zodResolver(createExpensecategorieschema),
     values: {
       account_id: getAccountId(),
     },
   })
 
-  async function onSubmit(data: IncomeGroup.CreateRequest) {
+  async function onSubmit(data: ExpenseCategory.CreateRequest) {
     try {
-      const response = await createIncomeGroup(data)
+      const response = await createExpenseCategory(data)
       toast.success(response)
-      setTimeout(() => push("/income-groups"), 2000)
+      setTimeout(() => push("/expense-categories"), 2000)
     } catch (error) {
-      toast.error("Erro ao criar grupo de receita: " + error)
+      toast.error("Erro ao criar grupo de despesas: " + error)
     }
   }
 
@@ -43,7 +43,7 @@ export function CreateIncomeGroupForm() {
       <div className="mt-8 flex max-w-96 flex-col gap-2">
         <label htmlFor="name">Nome</label>
         <Input.Root>
-          <Input.Control {...register("group_name")} type="text" />
+          <Input.Control {...register("name")} type="text" />
         </Input.Root>
       </div>
       <div className="mt-6 flex gap-4">
@@ -53,7 +53,7 @@ export function CreateIncomeGroupForm() {
         <Button
           type="button"
           disabled={isSubmitting}
-          onClick={() => push("/income-groups")}
+          onClick={() => push("/expense-categories")}
           variant="tertiary">
           Voltar
         </Button>

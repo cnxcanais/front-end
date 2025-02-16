@@ -125,6 +125,11 @@
     "expense_details_edit_input_fields_bank_account": true,
     "expense_details_edit_input_fields_amount": true,
     "expense_details_edit_input_fields_date": true,
-    "expense_details_edit_input_fields_description": true
+    "expense_details_edit_input_fields_description": true,
+    "expense_group_input_fields_expense_category_id": true,
+    "expense_group_input_fields_group_name": true,
+    "expense_categories_create": true,
+    "expense_categories_edit": true,
+    "expense_categories_delete": true
   }
 }

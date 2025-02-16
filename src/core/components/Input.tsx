@@ -141,6 +141,7 @@ export function SelectInput({
             options={options}
             placeholder={placeholder}
             isDisabled={disabled}
+            noOptionsMessage={() => "Nenhuma opção encontrada"}
             classNames={{
               control: () =>
                 "!border-0 !bg-transparent !shadow-none !ring-0 flex-1",

@@ -1,29 +1,29 @@
 "use client"
 
-import { ExpenseGroup } from "@/@types/expense-group"
+import { ExpenseCategory } from "@/@types/expense-category"
 import { Button } from "@/core/components/Button"
 import * as Input from "@/core/components/Input"
 import { LoadingScreen } from "@/core/components/LoadingScreen"
 import {
-  editExpenseGroupFormSchema,
-  EditExpenseGroupFormSchema,
-} from "@/modules/expenses-components/expense-groups-components/edit-expense-group/presentation/validation/schema"
+  editExpenseCategoryFormSchema,
+  EditExpenseCategoryFormSchema,
+} from "@/modules/expenses-components/expense-categories-components/edit-expense-category/presentation/validation/schema"
 import {
-  getExpenseGroupById,
-  updateExpenseGroup,
-} from "@/modules/expenses-components/expense-groups-components/remote/expense-groups-methods"
+  getExpenseCategoryById,
+  updateExpenseCategory,
+} from "@/modules/expenses-components/expense-categories-components/remote/expense-categories-methods"
 import { zodResolver } from "@hookform/resolvers/zod"
 import { useQuery } from "@tanstack/react-query"
 import { useRouter } from "next/navigation"
 import { useForm } from "react-hook-form"
 import { toast } from "sonner"
 
-export function EditExpenseGroupForm({ id }: { id: string }) {
+export function EditExpenseCategoryForm({ id }: { id: string }) {
   const { push } = useRouter()
 
-  const { data: expenseGroup, isLoading } = useQuery({
-    queryKey: ["expense-group", id],
-    queryFn: () => getExpenseGroupById(id),
+  const { data: expenseCategory, isLoading } = useQuery({
+    queryKey: ["expense-category", id],
+    queryFn: () => getExpenseCategoryById(id),
     enabled: id !== "",
   })
 
@@ -31,36 +31,34 @@ export function EditExpenseGroupForm({ id }: { id: string }) {
     register,
     handleSubmit,
     formState: { isSubmitting, errors },
-  } = useForm<EditExpenseGroupFormSchema>({
-    resolver: zodResolver(editExpenseGroupFormSchema),
+  } = useForm<EditExpenseCategoryFormSchema>({
+    resolver: zodResolver(editExpenseCategoryFormSchema),
     values: {
-      group_name: expenseGroup?.group_name,
+      name: expenseCategory?.name,
     },
   })
 
-  async function onSubmit(data: ExpenseGroup.UpdateRequest) {
+  async function onSubmit(data: ExpenseCategory.UpdateRequest) {
     try {
-      await updateExpenseGroup(id, data)
+      await updateExpenseCategory(id, data)
       toast.success("Grupo de despesa editado com sucesso!")
-      setTimeout(() => push("/expense-groups"), 2000)
+      setTimeout(() => push("/expense-categories"), 2000)
     } catch (error) {
       toast.error("Erro ao editar grupo de despesa: " + error)
     }
   }
 
-  if (!expenseGroup || isLoading) return <LoadingScreen />
+  if (!expenseCategory || isLoading) return <LoadingScreen />
 
   return (
     <form onSubmit={handleSubmit(onSubmit)}>
       <div className="mt-8 flex max-w-96 flex-col gap-2">
         <label htmlFor="name">Nome</label>
         <Input.Root>
-          <Input.Control {...register("group_name")} type="text" />
+          <Input.Control {...register("name")} type="text" />
         </Input.Root>
-        {errors.group_name && (
-          <span className="text-xs text-red-500">
-            {errors.group_name.message}
-          </span>
+        {errors.name && (
+          <span className="text-xs text-red-500">{errors.name.message}</span>
         )}
       </div>
 
@@ -71,7 +69,7 @@ export function EditExpenseGroupForm({ id }: { id: string }) {
         <Button
           disabled={isSubmitting}
           type="button"
-          onClick={() => push("/expense-groups")}
+          onClick={() => push("/expense-categories")}
           variant="tertiary">
           Voltar
         </Button>

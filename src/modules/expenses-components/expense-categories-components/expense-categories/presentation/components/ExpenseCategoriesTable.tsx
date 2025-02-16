@@ -1,6 +1,5 @@
 "use client"
 
-import { ExpenseCategory } from "@/@types/expense-category"
 import { Button } from "@/core/components/Button"
 import { LoadingScreen } from "@/core/components/LoadingScreen"
 import { Modal } from "@/core/components/Modals/Modal"
@@ -10,19 +9,19 @@ import { formatLocalDate } from "@/core/utils/dateFunctions"
 import { exportToExcel } from "@/core/utils/exportToExcel"
 import { getAccountId } from "@/core/utils/get-account-id"
 import { getPermissionByEntity } from "@/core/utils/getPermissionByEntity"
-import { deleteExpenseGroup } from "@/modules/expenses-components/expense-groups-components/remote/expense-groups-methods"
-import { useExpenseGroupQuery } from "@/modules/expenses-components/expense-groups-components/remote/use-expense-groups-query"
+import { deleteExpenseCategory } from "@/modules/expenses-components/expense-categories-components/remote/expense-categories-methods"
+import { useExpenseCategoryQuery } from "@/modules/expenses-components/expense-categories-components/remote/use-expense-categories-query"
 import { FileXls, Pencil, Trash } from "@phosphor-icons/react"
 import { useRouter } from "next/navigation"
 import { useEffect, useState } from "react"
 import { toast } from "sonner"
 
-export function ExpenseGroupTable() {
+export function ExpenseCategoriesTable() {
   const { push } = useRouter()
 
-  const create = getPermissionByEntity("expense_groups_create")
-  const edit = getPermissionByEntity("expense_groups_edit")
-  const deletePermission = getPermissionByEntity("expense_groups_delete")
+  const create = getPermissionByEntity("expense_categories_create")
+  const edit = getPermissionByEntity("expense_categories_edit")
+  const deletePermission = getPermissionByEntity("expense_categories_delete")
 
   const account_id = getAccountId()
 
@@ -31,19 +30,19 @@ export function ExpenseGroupTable() {
   const [filteredResults, setFilteredResults] = useState([])
 
   const {
-    data: expenseGroups,
+    data: expenseCategories,
     isLoading,
     refetch,
-  } = useExpenseGroupQuery(account_id)
+  } = useExpenseCategoryQuery(account_id)
 
   const handleEdit = (id: string) => {
-    push(`/expense-groups/edit/${id}`)
+    push(`/expense-categories/edit/${id}`)
   }
 
   const handleConfirmDelete = async () => {
     try {
-      await deleteExpenseGroup(id)
-      toast.success("Grupo removido com sucesso!")
+      await deleteExpenseCategory(id)
+      toast.success("Categoria removida com sucesso!")
       refetch()
     } catch (error) {
       toast.error(error)
@@ -53,16 +52,7 @@ export function ExpenseGroupTable() {
   }
 
   const columns = [
-    { header: "Nome", accessor: "group_name" },
-    {
-      header: "Categoria",
-      accessor: "expense_category",
-      render: (value: ExpenseCategory.Type) => {
-        if (value) {
-          return value.name
-        }
-      },
-    },
+    { header: "Nome", accessor: "name" },
     {
       header: "Atualizado Em",
       accessor: "updated_at",
@@ -70,7 +60,7 @@ export function ExpenseGroupTable() {
     },
     {
       header: "Ações",
-      accessor: "expense_group_id",
+      accessor: "expense_category_id",
       render: (value: string, row: unknown) => (
         <div className="flex space-x-4">
           {edit && (
@@ -97,16 +87,16 @@ export function ExpenseGroupTable() {
   ]
 
   useEffect(() => {
-    if (expenseGroups) setFilteredResults(expenseGroups)
-  }, [expenseGroups, isLoading])
+    if (expenseCategories) setFilteredResults(expenseCategories)
+  }, [expenseCategories, isLoading])
 
-  if (!expenseGroups || isLoading) return <LoadingScreen />
+  if (!expenseCategories || isLoading) return <LoadingScreen />
 
   return (
     <>
       <Modal
-        title="Remover Grupo"
-        content="Você tem certeza de que deseja remover este grupo?"
+        title="Remover Categoria"
+        content="Você tem certeza de que deseja remover esta categoria?"
         onClose={() => setOpen(false)}
         open={open}>
         <div className="flex items-center justify-center gap-4">
@@ -122,19 +112,19 @@ export function ExpenseGroupTable() {
       <div className="mt-8 flex items-center justify-between">
         <div className="flex h-full gap-4">
           <SearchInput
-            data={expenseGroups}
-            searchParam="group_name"
+            data={expenseCategories}
+            searchParam="categories_name"
             onSearchResult={setFilteredResults}
           />
           {create && (
             <Button
-              onClick={() => push("/expense-groups/create")}
+              onClick={() => push("/expense-categories/create")}
               variant="secondary">
               Cadastrar
             </Button>
           )}
         </div>
-        {expenseGroups.length > 0 && (
+        {expenseCategories.length > 0 && (
           <Button
             className="flex items-center gap-1"
             variant="secondary"
@@ -144,9 +134,9 @@ export function ExpenseGroupTable() {
           </Button>
         )}
       </div>
-      {expenseGroups.length == 0 ?
+      {expenseCategories.length == 0 ?
         <h2 className="mt-6 text-xl font-semibold">
-          Nenhum grupo de despesas cadastrado.
+          Nenhum categoria de despesas cadastrado.
         </h2>
       : <Table columns={columns} data={filteredResults} />}
     </>

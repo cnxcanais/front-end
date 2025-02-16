@@ -66,7 +66,7 @@ export function CreateBankForm() {
         <Button
           type="button"
           disabled={isSubmitting}
-          onClick={() => push("/accounts")}
+          onClick={() => push("/banks")}
           variant="tertiary">
           Voltar
         </Button>

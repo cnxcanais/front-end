@@ -1,31 +1,28 @@
-export namespace ExpenseGroup {
+export namespace ExpenseCategory {
   export type Type = {
-    expense_group_id: string
-    group_name: string
+    expense_category_id: string
+    name: string
     created_at: Date
     updated_at: Date
     account_id: string
-    expense_category_id: string
   }
 
   export type GetResponse = {
-    expenseGroups: Type[]
+    expenseCategories: Type[]
   }
 
   export type GetByIdResponse = {
-    expenseGroup: Type
+    expenseCategory: Type
   }
 
   export type CreateRequest = {
-    group_name: string
+    name: string
     account_id: string
-    expense_category_id: string
   }
 
   export type UpdateRequest = {
-    expense_group_id: string
     expense_category_id: string
-    group_name: string
+    name: string
     account_id: string
   }
 }
