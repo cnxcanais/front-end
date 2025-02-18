@@ -1,22 +1,25 @@
+import { Expense } from "./expense"
+
 export namespace ExpenseDetails {
   export type ExpenseDetailsType = {
     expense_details_id: string
     observation: string
-    amount: number
+    amount: string
     part: number
     due_date: Date
     is_paid: boolean
     bank_account_id: string
     expense_id: string
     account_id: string
+    expense: Expense.ExpenseType
   }
 
-  export type GetRequest = {
+  export type GetRequestParams = {
     start_date?: string | Date
     end_date?: string | Date
     is_paid?: boolean
     bank_account_id?: string
-    page: number
+    page?: number
     expense_id?: string
   }
 
@@ -30,7 +33,7 @@ export namespace ExpenseDetails {
   }
 
   export type CreateRequest = {
-    amount: number
+    amount: string
     bank_account_id: string
     part: number
     due_date: Date
@@ -44,7 +47,7 @@ export namespace ExpenseDetails {
   }
 
   export type UpdateRequest = {
-    amount?: number
+    amount?: string
     bank_account_id?: string
     part?: number
     due_date?: string
@@ -56,13 +59,13 @@ export namespace ExpenseDetails {
 
   export type QueryParams = {
     bank_account_id?: string
+    start_date?: string
     end_date?: string
     is_paid?: boolean
-    start_date?: string
     part?: number
+    min_amount?: number
     max_amount?: number
     expense_id?: string
-    min_amount?: number
     page?: number
   }
 }
