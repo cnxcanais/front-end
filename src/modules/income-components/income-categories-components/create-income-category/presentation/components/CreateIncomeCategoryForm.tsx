@@ -34,7 +34,7 @@ export function CreateIncomeCategoryForm() {
       toast.success(response)
       setTimeout(() => push("/income-categories"), 2000)
     } catch (error) {
-      toast.error("Erro ao criar categoria: " + error)
+      toast.error("Erro ao criar grupo: " + error)
     }
   }
 

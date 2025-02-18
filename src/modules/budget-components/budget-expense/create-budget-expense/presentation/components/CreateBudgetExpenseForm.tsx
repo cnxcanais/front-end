@@ -128,7 +128,7 @@ export function CreateBudgetExpenseForm() {
         <div className="w-full max-w-[350px]">
           <SelectInput
             field_name="expense_group_id"
-            label="Grupo de Despesa"
+            label="Item de Despesa"
             options={expenseGroups.map((expenseGroup) => ({
               text: expenseGroup.group_name,
               value: expenseGroup.expense_group_id,

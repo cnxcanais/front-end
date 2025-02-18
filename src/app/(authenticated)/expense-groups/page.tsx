@@ -4,7 +4,7 @@ import { ExpenseGroupTable } from "@/modules/expenses-components/expense-groups-
 export default function ExpenseGroupRender() {
   return (
     <main className="flex w-full flex-col">
-      <PageTitle content="Grupos de Despesas" />
+      <PageTitle content="Itens de Despesas" />
       <ExpenseGroupTable />
     </main>
   )

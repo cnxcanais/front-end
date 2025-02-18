@@ -129,28 +129,27 @@ export function IncomeFilters({ onFilterChange }: FilterProps) {
                 <label htmlFor="income_id">Grupo de Receita</label>
                 <Input.Root>
                   <Input.SelectInput
+                    name="income_category_id"
+                    control={control}
+                    options={prepareArrayForSelect(
+                      incomeCategories,
+                      "name",
+                      "income_category_id"
+                    )}
+                    placeholder="Digite..."
+                  />
+                </Input.Root>
+              </div>
+              <div className="flex flex-1 flex-col gap-2">
+                <label htmlFor="income_id">Item de Receita</label>
+                <Input.Root>
+                  <Input.SelectInput
                     name="income_group_id"
                     control={control}
                     options={prepareArrayForSelect(
                       incomeGroups,
                       "group_name",
                       "income_group_id"
-                    )}
-                    placeholder="Digite..."
-                  />
-                </Input.Root>
-              </div>
-
-              <div className="flex flex-1 flex-col gap-2">
-                <label htmlFor="income_id">Cliente</label>
-                <Input.Root>
-                  <Input.SelectInput
-                    name="income_source_id"
-                    control={control}
-                    options={prepareArrayForSelect(
-                      incomeSources,
-                      "name",
-                      "income_source_id"
                     )}
                     placeholder="Digite..."
                   />
@@ -196,20 +195,21 @@ export function IncomeFilters({ onFilterChange }: FilterProps) {
 
             <div className="flex gap-4">
               <div className="flex flex-1 flex-col gap-2">
-                <label htmlFor="income_id">Categoria de Receita</label>
+                <label htmlFor="income_id">Cliente</label>
                 <Input.Root>
                   <Input.SelectInput
-                    name="income_category_id"
+                    name="income_source_id"
                     control={control}
                     options={prepareArrayForSelect(
-                      incomeCategories,
+                      incomeSources,
                       "name",
-                      "income_category_id"
+                      "income_source_id"
                     )}
                     placeholder="Digite..."
                   />
                 </Input.Root>
               </div>
+
               <div className="flex h-12 flex-1 gap-2 self-end">
                 <Button
                   onClick={resetFilters}

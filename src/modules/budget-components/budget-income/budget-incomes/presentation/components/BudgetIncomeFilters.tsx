@@ -136,7 +136,7 @@ export function IncomeBudgetFilters({ account_id }: FilterProps) {
             <SelectInput
               className=""
               field_name="income_group_id"
-              label="Grupo de Receita"
+              label="Item de Receita"
               options={incomeGroups.map((group) => ({
                 text: group.group_name,
                 value: group.income_group_id,

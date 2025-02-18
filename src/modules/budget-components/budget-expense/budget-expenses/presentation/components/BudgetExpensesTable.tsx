@@ -59,7 +59,7 @@ export function ExpenseBudgetTable() {
   const columns = [
     { header: "Descrição", accessor: "description" },
     {
-      header: "Grupo de Receita",
+      header: "Item de Receita",
       accessor: "expense_group",
       render: (expense_group: ExpenseGroup.Type) => expense_group.group_name,
     },

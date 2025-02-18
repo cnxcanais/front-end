@@ -4,7 +4,7 @@ import { ExpenseCategoriesTable } from "@/modules/expenses-components/expense-ca
 export default function ExpenseCategoryRender() {
   return (
     <main className="flex w-full flex-col">
-      <PageTitle content="Categorias de Despesa" />
+      <PageTitle content="Grupos de Despesa" />
       <ExpenseCategoriesTable />
     </main>
   )

@@ -110,15 +110,15 @@ export function IncomeTable() {
       accessor: "formatted_date",
     },
     {
-      header: "Categoria",
+      header: "Grupo",
       accessor: "income_group",
       render: (incomeGroup: IncomeGroup.Type) =>
         incomeGroup?.income_category.name,
     },
     {
-      header: "Grupo",
+      header: "Item",
       accessor: "income_group",
-      accessor2: "group_name",
+      render: (incomeGroup: IncomeGroup.Type) => incomeGroup.group_name,
     },
     {
       header: "Parcelas",

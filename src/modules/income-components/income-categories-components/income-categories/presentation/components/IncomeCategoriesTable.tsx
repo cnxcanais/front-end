@@ -41,7 +41,7 @@ export function IncomeCategoriesTable() {
   const handleConfirmDelete = async () => {
     try {
       await deleteIncomeCategory(id)
-      toast.success("Categoria removida com sucesso!")
+      toast.success("Grupo removido com sucesso!")
       refetch()
     } catch (error) {
       toast.error(error)
@@ -100,8 +100,8 @@ export function IncomeCategoriesTable() {
   return (
     <>
       <Modal
-        title="Remover Categoria"
-        content="Você tem certeza de que deseja remover esta categoria?"
+        title="Remover Grupo"
+        content="Você tem certeza de que deseja remover este grupo?"
         onClose={() => setOpen(false)}
         open={open}>
         <div className="flex items-center justify-center gap-4">
@@ -141,7 +141,7 @@ export function IncomeCategoriesTable() {
       </div>
       {incomeCategories.length == 0 ?
         <h2 className="mt-6 text-xl font-semibold">
-          Nenhum categoria de receita cadastrada.
+          Nenhum grupo de receita cadastrada.
         </h2>
       : <Table columns={columns} data={filteredResults} />}
     </>

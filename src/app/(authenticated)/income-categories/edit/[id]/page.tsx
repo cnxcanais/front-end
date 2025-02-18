@@ -10,7 +10,7 @@ export default async function EditIncomeCategoryRender({
 
   return (
     <>
-      <PageTitle content="Editar Categoria de Receita" />
+      <PageTitle content="Editar Grupo de Receita" />
       <EditIncomeCategoryForm id={id} />
     </>
   )

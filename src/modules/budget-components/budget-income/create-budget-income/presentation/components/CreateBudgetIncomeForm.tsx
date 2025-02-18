@@ -128,7 +128,7 @@ export function CreateBudgetIncomeForm() {
         <div className="w-full max-w-[350px]">
           <SelectInput
             field_name="income_group_id"
-            label="Grupo de Receita"
+            label="Item de Receita"
             options={incomeGroups.map((incomeGroup) => ({
               text: incomeGroup.group_name,
               value: incomeGroup.income_group_id,

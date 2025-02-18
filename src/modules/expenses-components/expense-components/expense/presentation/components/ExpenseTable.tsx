@@ -108,15 +108,15 @@ export function ExpenseTable() {
       accessor: "formatted_date",
     },
     {
-      header: "Categoria",
+      header: "Grupo",
       accessor: "expense_group",
       render: (expenseGroup: ExpenseGroup.Type) =>
         expenseGroup?.expense_category.name,
     },
     {
-      header: "Grupo",
+      header: "Item",
       accessor: "expense_group",
-      accessor2: "group_name",
+      render: (expenseGroup: ExpenseGroup.Type) => expenseGroup.group_name,
     },
     {
       header: "Parcelas",

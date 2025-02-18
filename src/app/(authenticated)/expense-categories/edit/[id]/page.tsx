@@ -10,7 +10,7 @@ export default async function EditExpenseCategoryRender({
 
   return (
     <>
-      <PageTitle content="Editar Categoria de Despesa" />
+      <PageTitle content="Editar Grupo de Despesa" />
       <EditExpenseCategoryForm id={id} />
     </>
   )

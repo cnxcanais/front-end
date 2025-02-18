@@ -127,7 +127,23 @@ export function ExpenseFilters({ onFilterChange }: FilterProps) {
 
             <div className="flex items-center gap-4">
               <div className="flex flex-1 flex-col gap-2">
-                <label htmlFor="expense_id">Grupo de Despesa</label>
+                <label htmlFor="expense_category_id">Grupo de Despesa</label>
+                <Input.Root>
+                  <Input.SelectInput
+                    name="expense_category_id"
+                    control={control}
+                    options={prepareArrayForSelect(
+                      expenseCategories,
+                      "name",
+                      "expense_category_id"
+                    )}
+                    placeholder="Digite..."
+                  />
+                </Input.Root>
+              </div>
+
+              <div className="flex flex-1 flex-col gap-2">
+                <label htmlFor="expense_id">Item de Despesa</label>
                 <Input.Root>
                   <Input.SelectInput
                     name="expense_group_id"
@@ -136,22 +152,6 @@ export function ExpenseFilters({ onFilterChange }: FilterProps) {
                       expenseGroups,
                       "group_name",
                       "expense_group_id"
-                    )}
-                    placeholder="Digite..."
-                  />
-                </Input.Root>
-              </div>
-
-              <div className="flex flex-1 flex-col gap-2">
-                <label htmlFor="expense_id">Fornecedor</label>
-                <Input.Root>
-                  <Input.SelectInput
-                    name="supplier_id"
-                    control={control}
-                    options={prepareArrayForSelect(
-                      expenseSources,
-                      "name",
-                      "supplier_id"
                     )}
                     placeholder="Digite..."
                   />
@@ -197,22 +197,21 @@ export function ExpenseFilters({ onFilterChange }: FilterProps) {
 
             <div className="flex gap-4">
               <div className="flex flex-1 flex-col gap-2">
-                <label htmlFor="expense_category_id">
-                  Categoria de Despesa
-                </label>
+                <label htmlFor="expense_id">Fornecedor</label>
                 <Input.Root>
                   <Input.SelectInput
-                    name="expense_category_id"
+                    name="supplier_id"
                     control={control}
                     options={prepareArrayForSelect(
-                      expenseCategories,
+                      expenseSources,
                       "name",
-                      "expense_category_id"
+                      "supplier_id"
                     )}
                     placeholder="Digite..."
                   />
                 </Input.Root>
               </div>
+
               <div className="flex h-12 flex-1 gap-2 self-end">
                 <Button
                   onClick={resetFilters}

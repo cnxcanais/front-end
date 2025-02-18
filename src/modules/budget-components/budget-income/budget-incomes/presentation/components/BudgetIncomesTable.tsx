@@ -59,7 +59,7 @@ export function IncomeBudgetTable() {
   const columns = [
     { header: "Descrição", accessor: "description" },
     {
-      header: "Grupo de Receita",
+      header: "Item de Receita",
       accessor: "income_group",
       render: (income_group: IncomeGroup.Type) => income_group.group_name,
     },
