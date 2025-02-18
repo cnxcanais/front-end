@@ -1,3 +1,5 @@
+import { ExpenseCategory } from "./expense-category"
+
 export namespace ExpenseGroup {
   export type Type = {
     expense_group_id: string
@@ -6,6 +8,7 @@ export namespace ExpenseGroup {
     updated_at: Date
     account_id: string
     expense_category_id: string
+    expense_category: ExpenseCategory.Type
   }
 
   export type GetResponse = {

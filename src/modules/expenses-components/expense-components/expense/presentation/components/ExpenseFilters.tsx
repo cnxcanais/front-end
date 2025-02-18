@@ -143,10 +143,10 @@ export function ExpenseFilters({ onFilterChange }: FilterProps) {
               </div>
 
               <div className="flex flex-1 flex-col gap-2">
-                <label htmlFor="expense_id">Cliente</label>
+                <label htmlFor="expense_id">Fornecedor</label>
                 <Input.Root>
                   <Input.SelectInput
-                    name="expenseSourceId"
+                    name="supplier_id"
                     control={control}
                     options={prepareArrayForSelect(
                       expenseSources,

@@ -2,6 +2,7 @@
 
 import { Expense } from "@/@types/expense"
 import { ExpenseDetails } from "@/@types/expense-details"
+import { ExpenseGroup } from "@/@types/expense-group"
 import { Button } from "@/core/components/Button"
 import { LoadingScreen } from "@/core/components/LoadingScreen"
 import { Modal } from "@/core/components/Modals/Modal"
@@ -98,13 +99,19 @@ export function ExpenseTable() {
           .toLocaleString("pt-BR", { style: "currency", currency: "BRL" }),
     },
     {
-      header: "Cliente",
+      header: "Fornecedor",
       accessor: "supplier",
       accessor2: "name",
     },
     {
       header: "Data",
       accessor: "formatted_date",
+    },
+    {
+      header: "Categoria",
+      accessor: "expense_group",
+      render: (expenseGroup: ExpenseGroup.Type) =>
+        expenseGroup?.expense_category.name,
     },
     {
       header: "Grupo",

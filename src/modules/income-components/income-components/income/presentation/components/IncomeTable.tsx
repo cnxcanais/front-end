@@ -2,6 +2,7 @@
 
 import { Income } from "@/@types/income"
 import { IncomeDetails } from "@/@types/income-details"
+import { IncomeGroup } from "@/@types/income-group"
 import { Button } from "@/core/components/Button"
 import { LoadingScreen } from "@/core/components/LoadingScreen"
 import { Modal } from "@/core/components/Modals/Modal"
@@ -107,6 +108,12 @@ export function IncomeTable() {
     {
       header: "Data",
       accessor: "formatted_date",
+    },
+    {
+      header: "Categoria",
+      accessor: "income_group",
+      render: (incomeGroup: IncomeGroup.Type) =>
+        incomeGroup?.income_category.name,
     },
     {
       header: "Grupo",

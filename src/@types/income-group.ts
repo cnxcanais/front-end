@@ -1,3 +1,5 @@
+import { IncomeCategory } from "./income-category"
+
 export namespace IncomeGroup {
   export type Type = {
     income_group_id: string
@@ -6,6 +8,7 @@ export namespace IncomeGroup {
     updated_at: Date
     account_id: string
     income_category_id: string
+    income_category: IncomeCategory.Type
   }
 
   export type GetRequest = {
