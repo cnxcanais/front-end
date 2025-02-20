@@ -49,22 +49,16 @@ export function ExpenseFilters({ onFilterChange }: FilterProps) {
     useExpenseCategoryQuery(account_id)
 
   function onSubmit(data: Expense.GetRequest) {
-    const adjustMonth = (month: string | undefined, isStart: boolean) => {
-      if (!month) return undefined
-
-      const [year, monthIndex] = month.split("-").map(Number)
-      return isStart ?
-          new Date(year, monthIndex - 1, 1)
-        : new Date(year, monthIndex, 0)
-    }
-
     const cleanedData = {
       ...data,
-      start_date: adjustMonth(data.start_date, true)
-        ?.toISOString()
-        .split("T")[0],
-      end_date: adjustMonth(data.end_date, false)?.toISOString().split("T")[0],
-      page: 1,
+      start_date:
+        data.start_date ?
+          new Date(data.start_date).toISOString().split("T")[0]
+        : "",
+      end_date:
+        data.end_date ?
+          new Date(data.end_date).toISOString().split("T")[0]
+        : "",
     }
 
     onFilterChange(cleanedData)
@@ -113,14 +107,14 @@ export function ExpenseFilters({ onFilterChange }: FilterProps) {
               <div className="flex flex-1 flex-col gap-2">
                 <label htmlFor="start_date">Data Inicial</label>
                 <Input.Root>
-                  <Input.Control {...register("start_date")} type="month" />
+                  <Input.Control {...register("start_date")} type="date" />
                 </Input.Root>
               </div>
 
               <div className="flex flex-1 flex-col gap-2">
                 <label htmlFor="end_date">Data Final</label>
                 <Input.Root>
-                  <Input.Control {...register("end_date")} type="month" />
+                  <Input.Control {...register("end_date")} type="date" />
                 </Input.Root>
               </div>
             </div>
