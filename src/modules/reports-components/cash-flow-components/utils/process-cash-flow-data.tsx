@@ -114,13 +114,23 @@ export function renderCashflowTableRows(
     <>
       {/* row with monthly and year totals */}
       <tr className="bg-gray-100 font-bold text-gray-600">
-        <td className="w-52 px-3 py-1.5">{title}</td>
+        <td className="w-52 px-3 py-2 text-sm uppercase">{title}</td>
         {totalByPeriod.map((total, i) => (
           <td key={i} className="w-20 px-3 py-1.5 text-sm">
-            {total > 0 ? total.toFixed(1) : ""}
+            {total > 0 ?
+              total.toLocaleString("pt-BR", {
+                maximumFractionDigits: 2,
+                minimumFractionDigits: 2,
+              })
+            : ""}
           </td>
         ))}
-        <td className="w-20 px-3 py-1.5 text-sm">{grand_total.toFixed(1)}</td>
+        <td className="w-20 px-3 py-1.5 text-sm">
+          {grand_total.toLocaleString("pt-BR", {
+            maximumFractionDigits: 2,
+            minimumFractionDigits: 2,
+          })}
+        </td>
       </tr>
 
       {/* row with category totals */}
@@ -128,7 +138,7 @@ export function renderCashflowTableRows(
         ([category, { groups, totals, grand_total }]) => (
           <Fragment key={category}>
             <tr>
-              <td className="w-52 px-3 py-2.5 text-sm font-medium">
+              <td className="w-52 whitespace-nowrap px-3 py-2.5 text-sm font-medium">
                 {category}
               </td>
               {totals
@@ -137,17 +147,26 @@ export function renderCashflowTableRows(
                   <td
                     key={i}
                     className="w-20 px-3 py-2.5 text-sm text-gray-500">
-                    {total > 0 ? total.toFixed(1) : ""}
+                    {total > 0 ?
+                      total.toLocaleString("pt-BR", {
+                        maximumFractionDigits: 2,
+                        minimumFractionDigits: 2,
+                      })
+                    : ""}
                   </td>
                 ))}
+              {/* grand total displayed at the end by category */}
               <td className="w-20 px-3 py-2.5 text-sm text-gray-500">
-                {grand_total.toFixed(1)}
+                {grand_total.toLocaleString("pt-BR", {
+                  maximumFractionDigits: 2,
+                  minimumFractionDigits: 2,
+                })}
               </td>
             </tr>
             {/* row with group totals */}
             {Object.entries(groups).map(([group, values]) => (
-              <tr key={group}>
-                <td className="w-52 px-3 py-2.5 pl-6 text-sm text-gray-500">
+              <tr className="overflow-hidden" key={group}>
+                <td className="w-52 whitespace-nowrap px-3 py-2.5 pl-6 text-sm text-gray-500">
                   {group}
                 </td>
                 {/* values are displayed respecting filtered months */}
@@ -157,12 +176,22 @@ export function renderCashflowTableRows(
                     <td
                       key={i}
                       className="w-20 px-3 py-2.5 text-sm text-gray-500">
-                      {value > 0 ? value.toFixed(1) : ""}
+                      {value > 0 ?
+                        value.toLocaleString("pt-BR", {
+                          maximumFractionDigits: 2,
+                          minimumFractionDigits: 2,
+                        })
+                      : ""}
                     </td>
                   ))}
-                {/* grand total displayed at the end */}
+                {/* total displayed at the end by group */}
                 <td className="w-20 px-3 py-2.5 text-sm text-gray-500">
-                  {values.reduce((sum, v) => sum + v, 0).toFixed(1)}
+                  {values
+                    .reduce((sum, v) => sum + v, 0)
+                    .toLocaleString("pt-BR", {
+                      maximumFractionDigits: 2,
+                      minimumFractionDigits: 2,
+                    })}
                 </td>
               </tr>
             ))}
