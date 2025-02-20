@@ -1,167 +1,146 @@
+import { Report } from "@/@types/reports"
 import { Fragment } from "react"
 
 export type ViewMode = "monthly" | "quarterly" | "yearly"
 
 export interface FilterOptions {
-  startMonth: number // 0 para Janeiro, ..., 11 para Dezembro
-  endMonth: number // Mesmo esquema
-}
-
-export interface CashflowGroup {
-  [groupName: string]: number[]
-}
-
-export interface CashflowCategory {
-  groups: CashflowGroup
-  totals: number[]
-  grandTotal: number
+  start_month: number // 0 para Janeiro, ..., 11 para Dezembro
+  end_month: number // Mesmo esquema
 }
 
 export function groupDataForCashflow(
   data: any[],
   isIncome: boolean,
-  viewMode: ViewMode,
   filter: FilterOptions
-): Record<string, CashflowCategory> {
-  const periods =
-    viewMode === "monthly" ? 12
-    : viewMode === "quarterly" ? 4
-    : 1
+): Record<string, Report.Cashflow> {
+  const periods = 12
 
   const getPeriodIndex = (date: Date) => {
     const month = date.getMonth()
-    if (viewMode === "monthly") return month
-    if (viewMode === "quarterly") return Math.floor(month / 3)
-    return 0
+    return month
   }
 
-  return data.reduce<Record<string, CashflowCategory>>((acc, item) => {
+  return data.reduce<Record<string, Report.Cashflow>>((acc, item) => {
     const periodIndex = getPeriodIndex(new Date(item.due_date))
 
-    if (
-      viewMode === "monthly" &&
-      (periodIndex < filter.startMonth || periodIndex > filter.endMonth)
-    ) {
+    if (periodIndex < filter.start_month || periodIndex > filter.end_month) {
       return acc
     }
 
-    const categoryName =
+    const category_name =
       isIncome ?
         item.income?.income_group.income_category.name
       : item.expense?.expense_group.expense_category.name
 
-    const groupName =
+    const group_name =
       isIncome ?
         item.income?.income_group.group_name
       : item.expense?.expense_group.group_name
 
-    if (!categoryName || !groupName) return acc
+    if (!category_name || !group_name) return acc
 
     const amount = parseFloat(item.amount)
 
-    if (!acc[categoryName]) {
-      acc[categoryName] = {
+    if (!acc[category_name]) {
+      acc[category_name] = {
         groups: {},
         totals: Array(periods).fill(0),
-        grandTotal: 0,
+        grand_total: 0,
       }
     }
 
-    if (!acc[categoryName].groups[groupName]) {
-      acc[categoryName].groups[groupName] = Array(periods).fill(0)
+    if (!acc[category_name].groups[group_name]) {
+      acc[category_name].groups[group_name] = Array(periods).fill(0)
     }
 
-    acc[categoryName].groups[groupName][periodIndex] += amount
-    acc[categoryName].totals[periodIndex] += amount
-    acc[categoryName].grandTotal += amount
+    acc[category_name].groups[group_name][periodIndex] += amount
+    acc[category_name].totals[periodIndex] += amount
+    acc[category_name].grand_total += amount
 
     return acc
   }, {})
 }
 
 export function renderCashflowTable(
-  cashflowData: Record<string, CashflowCategory>,
+  cashflowData: Record<string, Report.Cashflow>,
   title: string,
-  viewMode: ViewMode,
   filter: FilterOptions
 ) {
-  const allHeaders =
-    viewMode === "monthly" ?
-      [
-        "Jan",
-        "Fev",
-        "Mar",
-        "Abr",
-        "Mai",
-        "Jun",
-        "Jul",
-        "Ago",
-        "Set",
-        "Out",
-        "Nov",
-        "Dez",
-      ]
-    : viewMode === "quarterly" ? ["T1", "T2", "T3", "T4"]
-    : ["Total"]
-
-  const headers =
-    viewMode === "monthly" ?
-      allHeaders.slice(filter.startMonth, filter.endMonth + 1)
-    : allHeaders
+  const headers = [
+    "Jan",
+    "Fev",
+    "Mar",
+    "Abr",
+    "Mai",
+    "Jun",
+    "Jul",
+    "Ago",
+    "Set",
+    "Out",
+    "Nov",
+    "Dez",
+  ].slice(filter.start_month, filter.end_month + 1)
 
   const totalByPeriod = Array(headers.length).fill(0)
-  let grandTotal = 0
+  let grand_total = 0
 
-  Object.values(cashflowData).forEach(({ totals }) => {
-    totals.slice(filter.startMonth, filter.endMonth + 1).forEach((value, i) => {
-      totalByPeriod[i] += value
-      grandTotal += value
-    })
+  Object.values(cashflowData).forEach(({ totals, grand_total: total }) => {
+    totals
+      .slice(filter.start_month, filter.end_month + 1)
+      .forEach((value, i) => {
+        totalByPeriod[i] += value
+      })
+
+    grand_total += total
   })
 
   return (
     <>
-      <tr className="w-full bg-gray-100 font-bold text-gray-600">
-        <td className="px-3">{title}</td>
+      <tr className="bg-gray-100 font-bold text-gray-600">
+        <td className="w-52 px-3 py-1.5">{title}</td>
         {totalByPeriod.map((total, i) => (
-          <td key={i} className="px-3 text-right text-sm">
+          <td key={i} className="w-20 px-3 py-1.5 text-sm">
             {total > 0 ? total.toFixed(1) : ""}
           </td>
         ))}
-        <td className="px-3 text-right text-sm">{grandTotal.toFixed(1)}</td>
+        <td className="w-20 px-3 py-1.5 text-sm">{grand_total.toFixed(1)}</td>
       </tr>
 
       {Object.entries(cashflowData).map(
-        ([category, { groups, totals, grandTotal }]) => (
+        ([category, { groups, totals, grand_total }]) => (
           <Fragment key={category}>
             <tr>
-              <td className="px-3 py-4 text-sm">{category}</td>
+              <td className="w-52 px-3 py-2.5 text-sm font-medium">
+                {category}
+              </td>
               {totals
-                .slice(filter.startMonth, filter.endMonth + 1)
+                .slice(filter.start_month, filter.end_month + 1)
                 .map((total, i) => (
                   <td
-                    className="px-3 py-4 text-right text-sm text-gray-500"
-                    key={i}>
+                    key={i}
+                    className="w-20 px-3 py-2.5 text-sm text-gray-500">
                     {total > 0 ? total.toFixed(1) : ""}
                   </td>
                 ))}
-              <td className="px-3 py-4 text-right text-sm text-gray-500">
-                {grandTotal.toFixed(1)}
+              <td className="w-20 px-3 py-2.5 text-sm text-gray-500">
+                {grand_total.toFixed(1)}
               </td>
             </tr>
             {Object.entries(groups).map(([group, values]) => (
               <tr key={group}>
-                <td className="pl-6 text-sm text-gray-500">{group}</td>
+                <td className="w-52 px-3 py-2.5 pl-6 text-sm text-gray-500">
+                  {group}
+                </td>
                 {values
-                  .slice(filter.startMonth, filter.endMonth + 1)
+                  .slice(filter.start_month, filter.end_month + 1)
                   .map((value, i) => (
                     <td
-                      className="px-3 py-4 text-right text-sm text-gray-500"
-                      key={i}>
+                      key={i}
+                      className="w-20 px-3 py-2.5 text-sm text-gray-500">
                       {value > 0 ? value.toFixed(1) : ""}
                     </td>
                   ))}
-                <td className="px-3 py-4 text-right text-sm text-gray-500">
+                <td className="w-20 px-3 py-2.5 text-sm text-gray-500">
                   {values.reduce((sum, v) => sum + v, 0).toFixed(1)}
                 </td>
               </tr>

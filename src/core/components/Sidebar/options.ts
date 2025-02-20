@@ -128,7 +128,7 @@ export const sidebar_options: SidebarOptionProps[] = [
   },
   {
     name: "Fluxo de Caixa",
-    href: "/cash-flow",
+    href: "/reports/cash-flow",
     Icon: CashRegister,
     group: "Relatórios",
   },

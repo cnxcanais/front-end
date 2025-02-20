@@ -63,7 +63,6 @@ export function IncomeFilters({ onFilterChange }: FilterProps) {
         ?.toISOString()
         .split("T")[0],
       end_date: adjustMonth(data.end_date, false)?.toISOString().split("T")[0],
-      page: 1,
     }
 
     onFilterChange(cleanedData)

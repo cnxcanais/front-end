@@ -53,7 +53,6 @@ export function ExpenseDetailsFilters({ onFilterChange }: FilterProps) {
       ...(data.max_amount === 0 || !data.max_amount ?
         { max_amount: undefined }
       : {}),
-      page: 1,
     }
 
     onFilterChange(cleanedData)

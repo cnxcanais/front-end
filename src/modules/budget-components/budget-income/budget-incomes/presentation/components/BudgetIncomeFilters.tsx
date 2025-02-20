@@ -16,9 +16,7 @@ interface FilterProps {
 export function IncomeBudgetFilters({ account_id }: FilterProps) {
   const [isFilterFilled, setIsFilterFilled] = useState(false)
   const [collapsed, setCollapsed] = useState(false)
-  const [filters, setFilters] = useState<Budget.QueryParamsIncome>({
-    page: 1,
-  })
+  const [filters, setFilters] = useState<Budget.QueryParamsIncome>({})
 
   const { register, handleSubmit, control, reset, watch } =
     useForm<Budget.QueryParamsIncome>({
