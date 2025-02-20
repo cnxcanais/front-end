@@ -4,10 +4,17 @@ import { Fragment } from "react"
 export type ViewMode = "monthly" | "quarterly" | "yearly"
 
 export interface FilterOptions {
-  start_month: number // 0 para Janeiro, ..., 11 para Dezembro
-  end_month: number // Mesmo esquema
+  start_month: number // 0 Jan, ... 11 Dec
+  end_month: number // same logic
 }
 
+/**
+ * Groups financial data for cash flow analysis based on income or expense categories and groups.
+ *
+ * @param data - An array of financial data items, each containing details about income or expenses.
+ * @param isIncome - A boolean indicating whether the data represents income (true) or expenses (false).
+ * @param filter - An object specifying the start and end months for filtering the data.
+ */
 export function groupDataForCashflow(
   data: any[],
   isIncome: boolean,
@@ -15,13 +22,8 @@ export function groupDataForCashflow(
 ): Record<string, Report.Cashflow> {
   const periods = 12
 
-  const getPeriodIndex = (date: Date) => {
-    const month = date.getMonth()
-    return month
-  }
-
   return data.reduce<Record<string, Report.Cashflow>>((acc, item) => {
-    const periodIndex = getPeriodIndex(new Date(item.due_date))
+    const periodIndex = new Date(item.due_date).getMonth()
 
     if (periodIndex < filter.start_month || periodIndex > filter.end_month) {
       return acc
@@ -29,16 +31,17 @@ export function groupDataForCashflow(
 
     const category_name =
       isIncome ?
-        item.income?.income_group.income_category.name
-      : item.expense?.expense_group.expense_category.name
+        item.income.income_group.income_category.name
+      : item.expense.expense_group.expense_category.name
 
     const group_name =
       isIncome ?
-        item.income?.income_group.group_name
-      : item.expense?.expense_group.group_name
+        item.income.income_group.group_name
+      : item.expense.expense_group.group_name
 
     if (!category_name || !group_name) return acc
 
+    // converting to number since its coming as string from API
     const amount = parseFloat(item.amount)
 
     if (!acc[category_name]) {
@@ -53,15 +56,27 @@ export function groupDataForCashflow(
       acc[category_name].groups[group_name] = Array(periods).fill(0)
     }
 
+    // total value per month for group
     acc[category_name].groups[group_name][periodIndex] += amount
+    // total value per month for category
     acc[category_name].totals[periodIndex] += amount
+    // total value accumulated for each category
     acc[category_name].grand_total += amount
 
     return acc
   }, {})
 }
 
-export function renderCashflowTable(
+/**
+ * Renders table rows displaying cash flow data, including totals by category and group,
+ * for a specified range of months.
+ *
+ * @param cashflowData - A record where each key is a category name, and the value is an object
+ * containing group totals, monthly totals, and a grand total for that category.
+ * @param title - The title to be displayed in a dedicated row that contains the total for each month displayed.
+ * @param filter - An object specifying the start and end months for filtering the data.
+ */
+export function renderCashflowTableRows(
   cashflowData: Record<string, Report.Cashflow>,
   title: string,
   filter: FilterOptions
@@ -79,11 +94,12 @@ export function renderCashflowTable(
     "Out",
     "Nov",
     "Dez",
-  ].slice(filter.start_month, filter.end_month + 1)
+  ].slice(filter.start_month, filter.end_month + 1) // display months according to data filtered
 
   const totalByPeriod = Array(headers.length).fill(0)
   let grand_total = 0
 
+  // calculate total by period for all categories + groups and grand total (all together)
   Object.values(cashflowData).forEach(({ totals, grand_total: total }) => {
     totals
       .slice(filter.start_month, filter.end_month + 1)
@@ -96,6 +112,7 @@ export function renderCashflowTable(
 
   return (
     <>
+      {/* row with monthly and year totals */}
       <tr className="bg-gray-100 font-bold text-gray-600">
         <td className="w-52 px-3 py-1.5">{title}</td>
         {totalByPeriod.map((total, i) => (
@@ -106,6 +123,7 @@ export function renderCashflowTable(
         <td className="w-20 px-3 py-1.5 text-sm">{grand_total.toFixed(1)}</td>
       </tr>
 
+      {/* row with category totals */}
       {Object.entries(cashflowData).map(
         ([category, { groups, totals, grand_total }]) => (
           <Fragment key={category}>
@@ -126,11 +144,13 @@ export function renderCashflowTable(
                 {grand_total.toFixed(1)}
               </td>
             </tr>
+            {/* row with group totals */}
             {Object.entries(groups).map(([group, values]) => (
               <tr key={group}>
                 <td className="w-52 px-3 py-2.5 pl-6 text-sm text-gray-500">
                   {group}
                 </td>
+                {/* values are displayed respecting filtered months */}
                 {values
                   .slice(filter.start_month, filter.end_month + 1)
                   .map((value, i) => (
@@ -140,6 +160,7 @@ export function renderCashflowTable(
                       {value > 0 ? value.toFixed(1) : ""}
                     </td>
                   ))}
+                {/* grand total displayed at the end */}
                 <td className="w-20 px-3 py-2.5 text-sm text-gray-500">
                   {values.reduce((sum, v) => sum + v, 0).toFixed(1)}
                 </td>

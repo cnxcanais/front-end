@@ -6,7 +6,7 @@ import { useExpenseDetailsQuery } from "@/modules/expenses-components/expense-de
 import { useIncomeDetailsQuery } from "@/modules/income-components/income-details-components/infra/hooks/use-income-details-query"
 import {
   groupDataForCashflow,
-  renderCashflowTable,
+  renderCashflowTableRows,
 } from "@/modules/reports-components/cash-flow-components/utils/process-cash-flow-data"
 import { useEffect, useMemo, useState } from "react"
 import { CashflowFilter } from "./CashflowFilter"
@@ -112,11 +112,11 @@ export function CashflowTable() {
                   </tr>
                 </thead>
                 <tbody className="divide-y divide-gray-200 bg-white">
-                  {renderCashflowTable(incomeCashflow, "Receitas", {
+                  {renderCashflowTableRows(incomeCashflow, "Receitas", {
                     start_month,
                     end_month,
                   })}
-                  {renderCashflowTable(expenseCashflow, "Despesas", {
+                  {renderCashflowTableRows(expenseCashflow, "Despesas", {
                     start_month,
                     end_month,
                   })}
