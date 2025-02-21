@@ -3,6 +3,7 @@
 import { Income } from "@/@types/income"
 import { IncomeDetails } from "@/@types/income-details"
 import { Button } from "@/core/components/Button"
+import * as Input from "@/core/components/Input"
 import { LoadingScreen } from "@/core/components/LoadingScreen"
 import { Modal } from "@/core/components/Modals/Modal"
 import { ModalObservationTrigger } from "@/core/components/Modals/ModalObservation"
@@ -11,10 +12,12 @@ import { Table } from "@/core/components/Table"
 import { formatLocalDate } from "@/core/utils/dateFunctions"
 import { exportToExcel } from "@/core/utils/exportToExcel"
 import { getAccountId } from "@/core/utils/get-account-id"
+import { IncomeDetailsFilters } from "@/modules/income-components/income-details-components/income-details/presentation/components/incomeDetailsFilters"
 import {
   deleteIncomeDetails,
   getIncomeDetails,
 } from "@/modules/income-components/income-details-components/remote"
+import { payIcomeDetailsPartially } from "@/modules/income-components/income-details-components/remote/pay-details-partially"
 import { editIncomeDetails } from "@/modules/income-components/income-details-components/remote/update-income-details"
 import { usePermissionQuery } from "@/modules/login-components/login/infra/hooks/use-permissions-query"
 import { FileXls, Money, Pencil, Trash } from "@phosphor-icons/react"
@@ -23,7 +26,6 @@ import { useRouter } from "next/navigation"
 import { useEffect, useState } from "react"
 import { FormProvider, useForm } from "react-hook-form"
 import { toast } from "sonner"
-import { IncomeDetailsFilters } from "./incomeDetailsFilters"
 
 export function IncomeDetailsTable({ income_id }: { income_id?: string }) {
   const { push } = useRouter()
@@ -34,7 +36,11 @@ export function IncomeDetailsTable({ income_id }: { income_id?: string }) {
   const [id, setId] = useState("")
   const [page, setPage] = useState(1)
   const [payOpen, setPayOpen] = useState(false)
-  const [payId, setPayId] = useState("")
+  const [payInfo, setPayInfo] = useState<{
+    id: string
+    paid_amount: number
+    original_amount: number
+  }>(null)
 
   const { data: permissions, isLoading: permissionLoading } =
     usePermissionQuery()
@@ -64,9 +70,19 @@ export function IncomeDetailsTable({ income_id }: { income_id?: string }) {
     setFilters(newFilters)
   }
 
-  const handlePay = async (income_details_id: string) => {
+  const handlePay = async () => {
     try {
-      await editIncomeDetails({ income_details_id, is_paid: true })
+      if (payInfo.paid_amount == payInfo.original_amount) {
+        await editIncomeDetails({
+          income_details_id: payInfo.id,
+          is_paid: true,
+        })
+      } else {
+        await payIcomeDetailsPartially({
+          paid_amount: payInfo.paid_amount,
+          income_details_id: payInfo.id,
+        })
+      }
       refetch()
       toast.success("Parcela paga com sucesso!")
     } catch (error) {
@@ -177,7 +193,11 @@ export function IncomeDetailsTable({ income_id }: { income_id?: string }) {
               className="cursor-pointer duration-300 ease-in-out hover:text-blue-500"
               size={24}
               onClick={() => {
-                setPayId(value)
+                setPayInfo({
+                  id: value,
+                  paid_amount: row["amount"],
+                  original_amount: row["amount"],
+                })
                 setPayOpen(true)
               }}
             />
@@ -212,8 +232,20 @@ export function IncomeDetailsTable({ income_id }: { income_id?: string }) {
         content="Você tem certeza de que deseja quitar esta parcela?"
         onClose={() => setOpen(false)}
         open={payOpen}>
+        <div className="mb-4 flex items-center justify-center gap-1">
+          <p className="text-sm text-blue-300">Valor pago:</p>
+          <Input.Root className="max-w-40 text-sm">
+            <Input.Currency
+              type="text"
+              value={payInfo?.paid_amount}
+              onChange={(value: number) => {
+                setPayInfo({ ...payInfo, paid_amount: value })
+              }}
+            />
+          </Input.Root>
+        </div>
         <div className="flex items-center justify-center gap-4">
-          <Button onClick={() => handlePay(payId)} variant="secondary">
+          <Button onClick={() => handlePay()} variant="secondary">
             Confirmar
           </Button>
           <Button onClick={() => setPayOpen(false)} variant="tertiary">
