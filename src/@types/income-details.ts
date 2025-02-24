@@ -57,6 +57,11 @@ export namespace IncomeDetails {
     income_details_id: string
   }
 
+  export type UpdatePartialPaymentRequest = {
+    paid_amount: number
+    income_details_id: string
+  }
+
   export type QueryParams = {
     bank_account_id?: string
     end_date?: string

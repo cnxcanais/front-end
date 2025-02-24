@@ -4,7 +4,7 @@ import { IncomeCategoriesTable } from "@/modules/income-components/income-catego
 export default function IncomeCategoryRender() {
   return (
     <main className="flex w-full flex-col">
-      <PageTitle content="Categorias de Receita" />
+      <PageTitle content="Grupos de Receita" />
       <IncomeCategoriesTable />
     </main>
   )

@@ -66,7 +66,7 @@ export function CreateExpenseGroupForm() {
       toast.success(response)
       setTimeout(() => push("/expense-groups"), 2000)
     } catch (error) {
-      toast.error("Erro ao criar grupo de despesas: " + error)
+      toast.error("Erro ao criar item de despesas: " + error)
     }
   }
 
@@ -100,7 +100,7 @@ export function CreateExpenseGroupForm() {
         )}
 
         <div className="mt-8 flex max-w-96 flex-col gap-2">
-          <label htmlFor="name">Categoria de Despesa</label>
+          <label htmlFor="name">Grupo de Despesa</label>
           <Input.Root
             variant={errors.expense_category_id ? "error" : "primary"}>
             <Input.SelectInput

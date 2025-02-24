@@ -91,11 +91,11 @@ export function ExpenseTable() {
     },
     {
       header: "Valor Restante",
-      accessor: "income_details",
+      accessor: "expense_details",
       render: (expenseDetails: ExpenseDetails.ExpenseDetailsType[]) =>
         expenseDetails
           ?.filter((detail) => !detail.is_paid)
-          .reduce((acc, curr) => acc + curr.amount, 0)
+          .reduce((acc, curr) => acc + Number(curr.amount), 0)
           .toLocaleString("pt-BR", { style: "currency", currency: "BRL" }),
     },
     {
@@ -108,15 +108,15 @@ export function ExpenseTable() {
       accessor: "formatted_date",
     },
     {
-      header: "Categoria",
+      header: "Grupo",
       accessor: "expense_group",
       render: (expenseGroup: ExpenseGroup.Type) =>
         expenseGroup?.expense_category.name,
     },
     {
-      header: "Grupo",
+      header: "Item",
       accessor: "expense_group",
-      accessor2: "group_name",
+      render: (expenseGroup: ExpenseGroup.Type) => expenseGroup.group_name,
     },
     {
       header: "Parcelas",

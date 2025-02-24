@@ -66,7 +66,7 @@ export function CreateIncomeGroupForm() {
       toast.success(response)
       setTimeout(() => push("/income-groups"), 2000)
     } catch (error) {
-      toast.error("Erro ao criar grupo de receita: " + error)
+      toast.error(error)
     }
   }
 
@@ -100,7 +100,7 @@ export function CreateIncomeGroupForm() {
         )}
 
         <div className="mt-8 flex max-w-96 flex-col gap-2">
-          <label htmlFor="name">Categoria de Receita</label>
+          <label htmlFor="name">Grupo de Receita</label>
           <Input.Root variant={errors.income_category_id ? "error" : "primary"}>
             <Input.SelectInput
               name="income_category_id"

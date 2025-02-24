@@ -4,7 +4,7 @@ import { CreateExpenseGroupForm } from "@/modules/expenses-components/expense-gr
 export default function ExpenseGroupCreateRender() {
   return (
     <>
-      <PageTitle content="Criar Grupo De Despesas" />
+      <PageTitle content="Criar Item de Despesas" />
       <CreateExpenseGroupForm />
     </>
   )

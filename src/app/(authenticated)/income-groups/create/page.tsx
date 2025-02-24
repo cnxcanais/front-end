@@ -4,7 +4,7 @@ import { CreateIncomeGroupForm } from "@/modules/income-components/income-groups
 export default function IncomeGroupCreateRender() {
   return (
     <>
-      <PageTitle content="Criar Grupo De Receita" />
+      <PageTitle content="Criar Item de Receita" />
       <CreateIncomeGroupForm />
     </>
   )

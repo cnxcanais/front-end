@@ -41,10 +41,10 @@ export function EditIncomeCategoryForm({ id }: { id: string }) {
   async function onSubmit(data: IncomeCategory.UpdateRequest) {
     try {
       await updateIncomeCategory(id, data)
-      toast.success("Categoria editada com sucesso!")
+      toast.success("Grupo editado com sucesso!")
       setTimeout(() => push("/income-categories"), 2000)
     } catch (error) {
-      toast.error("Erro ao editar categoria: " + error)
+      toast.error("Erro ao editar grupo: " + error)
     }
   }
 

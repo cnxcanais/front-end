@@ -43,7 +43,7 @@ export function ExpenseGroupTable() {
   const handleConfirmDelete = async () => {
     try {
       await deleteExpenseGroup(id)
-      toast.success("Grupo removido com sucesso!")
+      toast.success("Item removido com sucesso!")
       refetch()
     } catch (error) {
       toast.error(error)
@@ -55,7 +55,7 @@ export function ExpenseGroupTable() {
   const columns = [
     { header: "Nome", accessor: "group_name" },
     {
-      header: "Categoria",
+      header: "Grupo",
       accessor: "expense_category",
       render: (value: ExpenseCategory.Type) => {
         if (value) {
@@ -146,7 +146,7 @@ export function ExpenseGroupTable() {
       </div>
       {expenseGroups.length == 0 ?
         <h2 className="mt-6 text-xl font-semibold">
-          Nenhum grupo de despesas cadastrado.
+          Nenhum item de despesas cadastrado.
         </h2>
       : <Table columns={columns} data={filteredResults} />}
     </>

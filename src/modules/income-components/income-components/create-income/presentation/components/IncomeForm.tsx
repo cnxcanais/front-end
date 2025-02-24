@@ -116,7 +116,7 @@ export function IncomeForm({ account_id, setSecondPage }: Props) {
           </div>
 
           <div className="flex flex-1 flex-col gap-2">
-            <label htmlFor="city">Grupo de Receitas</label>
+            <label htmlFor="city">Item de Receitas</label>
             <Input.Root variant={errors.income_group_id ? "error" : "primary"}>
               <Input.SelectInput
                 name="income_group_id"

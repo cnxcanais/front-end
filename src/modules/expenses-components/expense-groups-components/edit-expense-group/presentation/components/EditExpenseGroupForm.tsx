@@ -74,10 +74,10 @@ export function EditExpenseGroupForm({ id }: { id: string }) {
   async function onSubmit(data: ExpenseGroup.UpdateRequest) {
     try {
       await updateExpenseGroup(id, data)
-      toast.success("Grupo de despesa editado com sucesso!")
+      toast.success("Item de Despesa editado com sucesso!")
       setTimeout(() => push("/expense-groups"), 2000)
     } catch (error) {
-      toast.error("Erro ao editar grupo de despesa: " + error)
+      toast.error("Erro ao editar item de despesa: " + error)
     }
   }
 
@@ -113,7 +113,7 @@ export function EditExpenseGroupForm({ id }: { id: string }) {
         )}
 
         <div className="mt-8 flex max-w-96 flex-col gap-2">
-          <label htmlFor="name">Categoria de Despesa</label>
+          <label htmlFor="name">Grupo de Despesa</label>
           <Input.Root
             variant={errors.expense_category_id ? "error" : "primary"}>
             <Input.SelectInput

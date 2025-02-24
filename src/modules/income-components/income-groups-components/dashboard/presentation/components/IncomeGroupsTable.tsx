@@ -42,7 +42,7 @@ export function IncomeGroupTable() {
   const handleConfirmDelete = async () => {
     try {
       await deleteIncomeGroup(id)
-      toast.success("Grupo removido com sucesso!")
+      toast.success("Item removido com sucesso!")
       refetch()
     } catch (error) {
       toast.error(error)
@@ -54,7 +54,7 @@ export function IncomeGroupTable() {
   const columns = [
     { header: "Nome", accessor: "group_name" },
     {
-      header: "Categoria",
+      header: "Grupo",
       accessor: "income_category",
       render: (value: IncomeCategory.Type) => {
         if (value) {
@@ -151,7 +151,7 @@ export function IncomeGroupTable() {
       </div>
       {incomeGroups.length == 0 ?
         <h2 className="mt-6 text-xl font-semibold">
-          Nenhum grupo de receitas cadastrado.
+          Nenhum item de receitas cadastrado.
         </h2>
       : <Table columns={columns} data={filteredResults} />}
     </>

@@ -135,7 +135,7 @@ export function ExpenseBudgetFilters({ account_id }: FilterProps) {
             <SelectInput
               className=""
               field_name="expense_group_id"
-              label="Grupo de Despesa"
+              label="Item de Despesa"
               options={expenseGroups.map((group) => ({
                 text: group.group_name,
                 value: group.expense_group_id,

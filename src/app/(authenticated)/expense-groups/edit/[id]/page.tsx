@@ -10,7 +10,7 @@ export default async function EditExpenseGroupRender({
 
   return (
     <>
-      <PageTitle content="Editar Grupo de Despesas" />
+      <PageTitle content="Editar Item de Despesas" />
       <EditExpenseGroupForm id={id} />
     </>
   )

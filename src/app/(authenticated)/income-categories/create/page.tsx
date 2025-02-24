@@ -4,7 +4,7 @@ import { CreateIncomeCategoryForm } from "@/modules/income-components/income-cat
 export default function IncomeCategoryCreateRender() {
   return (
     <>
-      <PageTitle content="Criar Categoria de Receita" />
+      <PageTitle content="Criar Grupo de Receita" />
       <CreateIncomeCategoryForm />
     </>
   )

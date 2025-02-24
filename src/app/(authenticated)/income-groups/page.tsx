@@ -4,7 +4,7 @@ import { IncomeGroupTable } from "@/modules/income-components/income-groups-comp
 export default function IncomeGroupRender() {
   return (
     <main className="flex w-full flex-col">
-      <PageTitle content="Grupos de Receitas" />
+      <PageTitle content="Itens de Receitas" />
       <IncomeGroupTable />
     </main>
   )

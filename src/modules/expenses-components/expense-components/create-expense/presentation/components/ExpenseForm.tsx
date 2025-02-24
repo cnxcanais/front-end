@@ -116,7 +116,7 @@ export function ExpenseForm({ account_id, setSecondPage }: Props) {
           </div>
 
           <div className="flex flex-1 flex-col gap-2">
-            <label htmlFor="expense_group_id">Grupo de Despesas</label>
+            <label htmlFor="expense_group_id">Item de Despesas</label>
             <Input.Root variant={errors.expense_group_id ? "error" : "primary"}>
               <Input.SelectInput
                 name="expense_group_id"
