@@ -40,6 +40,9 @@ export function CreateExpenseForm() {
       organization_id: "",
       is_operational: false,
       is_variable: false,
+      execution_date: undefined,
+      is_over_income: false,
+      is_over_profit: false,
       //ExpenseDetails
       expenseDetailsArray: [],
     },
@@ -56,7 +59,12 @@ export function CreateExpenseForm() {
     try {
       const { expenseDetailsArray, ...expenseData } = data
 
-      const response = await createExpense(expenseData)
+      const cleanedData = {
+        ...expenseData,
+        execution_date: expenseData.date,
+      }
+
+      const response = await createExpense(cleanedData)
       const expense_id = response.expense.expense_id
 
       methods.setValue(

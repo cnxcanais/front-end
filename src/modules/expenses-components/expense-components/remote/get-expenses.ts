@@ -3,7 +3,7 @@ import { api } from "@/lib/axios"
 
 export async function getExpenses(
   account_id: string,
-  queryParams?: Expense.GetRequest
+  queryParams?: Expense.GetRequestParams
 ) {
   try {
     const { data } = await api.get<Expense.GetResponse>(
