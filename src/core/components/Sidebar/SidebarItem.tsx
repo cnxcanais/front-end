@@ -12,6 +12,14 @@ function classNames(...classes: string[]) {
 }
 
 export function SidebarItem({ current, href, Icon, name }: SidebarItemProps) {
+  // getting user ID to change href for that route specifically
+  if (name === "Perfil") {
+    if (window && window !== undefined) {
+      const userId = sessionStorage.getItem("userId") ?? "teste"
+      href = `${href}/${userId}`
+    }
+  }
+
   return (
     <li key={name}>
       <a
