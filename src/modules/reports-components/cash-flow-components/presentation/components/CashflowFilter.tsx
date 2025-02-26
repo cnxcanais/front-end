@@ -25,22 +25,12 @@ export function CashflowFilter({ onFilterChange }: FilterProps) {
 
   const formValues = watch()
 
-  function onSubmit(data: Expense.GetRequest) {
-    const adjustMonth = (month: string | undefined, isStart: boolean) => {
-      if (!month) return undefined
-
-      const [year, monthIndex] = month.split("-").map(Number)
-      return isStart ?
-          new Date(year, monthIndex - 1, 1)
-        : new Date(year, monthIndex, 0)
-    }
-
+  function onSubmit(data: Expense.GetRequestParams) {
     const cleanedData = {
       ...data,
-      start_date: adjustMonth(data.start_date, true),
-      end_date: adjustMonth(data.end_date, false),
+      start_date: data.start_date ? new Date(data.start_date) : undefined,
+      end_date: data.end_date ? new Date(data.end_date) : undefined,
     }
-
     onFilterChange(cleanedData)
   }
 
@@ -76,14 +66,14 @@ export function CashflowFilter({ onFilterChange }: FilterProps) {
             <div className="flex flex-1 flex-col gap-2">
               <label htmlFor="start_date">Data Inicial</label>
               <Input.Root>
-                <Input.Control {...register("start_date")} type="month" />
+                <Input.Control {...register("start_date")} type="date" />
               </Input.Root>
             </div>
 
             <div className="flex flex-1 flex-col gap-2">
               <label htmlFor="end_date">Data Final</label>
               <Input.Root>
-                <Input.Control {...register("end_date")} type="month" />
+                <Input.Control {...register("end_date")} type="date" />
               </Input.Root>
             </div>
           </div>

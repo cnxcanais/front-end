@@ -8,7 +8,7 @@ import {
   groupDataForCashflow,
   renderCashflowTableRows,
 } from "@/modules/reports-components/cash-flow-components/utils/process-cash-flow-data"
-import { useEffect, useMemo, useState } from "react"
+import { useEffect, useState } from "react"
 import { CashflowFilter } from "./CashflowFilter"
 
 export function CashflowTable() {
@@ -18,14 +18,6 @@ export function CashflowTable() {
     start_date: new Date(currentYear, 0, 1),
     end_date: new Date(currentYear, 11, 31),
   })
-
-  const start_month = useMemo(() => {
-    return filters.start_date ? new Date(filters.start_date).getMonth() : 0
-  }, [filters])
-
-  const end_month = useMemo(() => {
-    return filters.end_date ? new Date(filters.end_date).getMonth() : 11
-  }, [filters])
 
   const account_id = getAccountId()
 
@@ -57,18 +49,12 @@ export function CashflowTable() {
   const incomeCashflow = groupDataForCashflow(
     incomeDetailsData.incomeDetails,
     true,
-    {
-      start_month,
-      end_month,
-    }
+    filters
   )
   const expenseCashflow = groupDataForCashflow(
     expenseDetailsData.expenseDetails,
     false,
-    {
-      start_month,
-      end_month,
-    }
+    filters
   )
 
   return (
@@ -98,7 +84,10 @@ export function CashflowTable() {
                       "Nov",
                       "Dez",
                     ]
-                      .slice(start_month, end_month + 1)
+                      .slice(
+                        filters.start_date.getMonth(),
+                        filters.end_date.getMonth() + 1
+                      )
                       .map((month, i) => (
                         <th
                           className="px-3 py-3.5 text-left text-sm font-semibold text-gray-900"
@@ -112,14 +101,11 @@ export function CashflowTable() {
                   </tr>
                 </thead>
                 <tbody className="divide-y divide-gray-200 bg-white">
-                  {renderCashflowTableRows(incomeCashflow, "Receitas", {
-                    start_month,
-                    end_month,
-                  })}
-                  {renderCashflowTableRows(expenseCashflow, "Despesas", {
-                    start_month,
-                    end_month,
-                  })}
+                  {renderCashflowTableRows(
+                    incomeCashflow,
+                    expenseCashflow,
+                    filters
+                  )}
                 </tbody>
               </table>
             </div>

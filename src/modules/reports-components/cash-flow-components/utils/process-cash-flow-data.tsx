@@ -4,17 +4,10 @@ import { Fragment } from "react"
 export type ViewMode = "monthly" | "quarterly" | "yearly"
 
 export interface FilterOptions {
-  start_month: number // 0 Jan, ... 11 Dec
-  end_month: number // same logic
+  start_date: Date
+  end_date: Date
 }
 
-/**
- * Groups financial data for cash flow analysis based on income or expense categories and groups.
- *
- * @param data - An array of financial data items, each containing details about income or expenses.
- * @param isIncome - A boolean indicating whether the data represents income (true) or expenses (false).
- * @param filter - An object specifying the start and end months for filtering the data.
- */
 export function groupDataForCashflow(
   data: any[],
   isIncome: boolean,
@@ -23,9 +16,9 @@ export function groupDataForCashflow(
   const periods = 12
 
   return data.reduce<Record<string, Report.Cashflow>>((acc, item) => {
-    const periodIndex = new Date(item.due_date).getMonth()
+    const dueDate = new Date(item.due_date)
 
-    if (periodIndex < filter.start_month || periodIndex > filter.end_month) {
+    if (dueDate < filter.start_date || dueDate > filter.end_date) {
       return acc
     }
 
@@ -41,7 +34,6 @@ export function groupDataForCashflow(
 
     if (!category_name || !group_name) return acc
 
-    // converting to number since its coming as string from API
     const amount = parseFloat(item.amount)
 
     if (!acc[category_name]) {
@@ -56,29 +48,19 @@ export function groupDataForCashflow(
       acc[category_name].groups[group_name] = Array(periods).fill(0)
     }
 
-    // total value per month for group
+    const periodIndex = dueDate.getMonth()
+
     acc[category_name].groups[group_name][periodIndex] += amount
-    // total value per month for category
     acc[category_name].totals[periodIndex] += amount
-    // total value accumulated for each category
     acc[category_name].grand_total += amount
 
     return acc
   }, {})
 }
 
-/**
- * Renders table rows displaying cash flow data, including totals by category and group,
- * for a specified range of months.
- *
- * @param cashflowData - A record where each key is a category name, and the value is an object
- * containing group totals, monthly totals, and a grand total for that category.
- * @param title - The title to be displayed in a dedicated row that contains the total for each month displayed.
- * @param filter - An object specifying the start and end months for filtering the data.
- */
 export function renderCashflowTableRows(
-  cashflowData: Record<string, Report.Cashflow>,
-  title: string,
+  incomeData: Record<string, Report.Cashflow>,
+  expenseData: Record<string, Report.Cashflow>,
   filter: FilterOptions
 ) {
   const headers = [
@@ -94,110 +76,159 @@ export function renderCashflowTableRows(
     "Out",
     "Nov",
     "Dez",
-  ].slice(filter.start_month, filter.end_month + 1) // display months according to data filtered
+  ]
 
-  const totalByPeriod = Array(headers.length).fill(0)
-  let grand_total = 0
+  const startMonth = filter.start_date.getMonth()
+  const endMonth = filter.end_date.getMonth()
+  const displayedMonths = headers.slice(startMonth, endMonth + 1)
 
-  // calculate total by period for all categories + groups and grand total (all together)
-  Object.values(cashflowData).forEach(({ totals, grand_total: total }) => {
-    totals
-      .slice(filter.start_month, filter.end_month + 1)
-      .forEach((value, i) => {
-        totalByPeriod[i] += value
-      })
+  const totalIncomeByPeriod = Array(headers.length).fill(0)
+  const totalExpenseByPeriod = Array(headers.length).fill(0)
+  let totalIncome = 0
+  let totalExpense = 0
 
-    grand_total += total
+  Object.values(incomeData).forEach(({ totals, grand_total }) => {
+    totals.forEach((value, i) => {
+      totalIncomeByPeriod[i] += value
+    })
+    totalIncome += grand_total
   })
+
+  Object.values(expenseData).forEach(({ totals, grand_total }) => {
+    totals.forEach((value, i) => {
+      totalExpenseByPeriod[i] += value
+    })
+    totalExpense += grand_total
+  })
+
+  const balanceByPeriod = totalIncomeByPeriod.map(
+    (income, i) => income - totalExpenseByPeriod[i]
+  )
+
+  const totalBalance = totalIncome - totalExpense
 
   return (
     <>
-      {/* row with monthly and year totals */}
+      {/* Income Section with Categories and Groups */}
       <tr className="bg-gray-100 font-bold text-gray-600">
-        <td className="w-52 px-3 py-2 text-sm uppercase">{title}</td>
-        {totalByPeriod.map((total, i) => (
+        <td className="w-52 px-3 py-2 text-sm uppercase">Receita</td>
+        {displayedMonths.map((_, i) => (
           <td key={i} className="w-20 px-3 py-1.5 text-sm">
-            {total > 0 ?
-              total.toLocaleString("pt-BR", {
-                maximumFractionDigits: 2,
-                minimumFractionDigits: 2,
-              })
-            : ""}
+            {totalIncomeByPeriod[i + startMonth].toLocaleString("pt-BR", {
+              maximumFractionDigits: 2,
+              minimumFractionDigits: 2,
+            })}
           </td>
         ))}
         <td className="w-20 px-3 py-1.5 text-sm">
-          {grand_total.toLocaleString("pt-BR", {
+          {totalIncome.toLocaleString("pt-BR", {
             maximumFractionDigits: 2,
             minimumFractionDigits: 2,
           })}
         </td>
       </tr>
+      {renderCategoryAndGroupDetails(incomeData, startMonth, endMonth)}
 
-      {/* row with category totals */}
-      {Object.entries(cashflowData).map(
-        ([category, { groups, totals, grand_total }]) => (
-          <Fragment key={category}>
-            <tr>
-              <td className="w-52 whitespace-nowrap px-3 py-2.5 text-sm font-medium">
-                {category}
-              </td>
-              {totals
-                .slice(filter.start_month, filter.end_month + 1)
-                .map((total, i) => (
-                  <td
-                    key={i}
-                    className="w-20 px-3 py-2.5 text-sm text-gray-500">
-                    {total > 0 ?
-                      total.toLocaleString("pt-BR", {
-                        maximumFractionDigits: 2,
-                        minimumFractionDigits: 2,
-                      })
-                    : ""}
+      {/* Expense Section with Categories and Groups */}
+      <tr className="bg-gray-100 font-bold text-gray-600">
+        <td className="w-52 px-3 py-2 text-sm uppercase">Despesa</td>
+        {displayedMonths.map((_, i) => (
+          <td key={i} className="w-20 px-3 py-1.5 text-sm">
+            {totalExpenseByPeriod[i + startMonth].toLocaleString("pt-BR", {
+              maximumFractionDigits: 2,
+              minimumFractionDigits: 2,
+            })}
+          </td>
+        ))}
+        <td className="w-20 px-3 py-1.5 text-sm">
+          {totalExpense.toLocaleString("pt-BR", {
+            maximumFractionDigits: 2,
+            minimumFractionDigits: 2,
+          })}
+        </td>
+      </tr>
+      {renderCategoryAndGroupDetails(expenseData, startMonth, endMonth)}
+
+      {/* Balance */}
+      <tr className="bg-blue-400 font-bold text-white">
+        <td className="w-52 px-3 py-2 text-sm uppercase">Saldo</td>
+        {displayedMonths.map((_, i) => (
+          <td key={i} className="w-20 px-3 py-1.5 text-sm">
+            {balanceByPeriod[i + startMonth].toLocaleString("pt-BR", {
+              maximumFractionDigits: 2,
+              minimumFractionDigits: 2,
+            })}
+          </td>
+        ))}
+        <td className="w-20 px-3 py-1.5 text-sm">
+          {totalBalance.toLocaleString("pt-BR", {
+            maximumFractionDigits: 2,
+            minimumFractionDigits: 2,
+          })}
+        </td>
+      </tr>
+    </>
+  )
+}
+
+function renderCategoryAndGroupDetails(
+  cashflowData: Record<string, Report.Cashflow>,
+  startMonth: number,
+  endMonth: number
+) {
+  return (
+    <>
+      {Object.entries(cashflowData).map(([categoryName, categoryData]) => (
+        <Fragment key={categoryName}>
+          {/* Category Row */}
+          <tr>
+            <td className="w-52 px-3 py-2 pl-6 text-sm font-medium">
+              {categoryName}
+            </td>
+            {categoryData.totals
+              .slice(startMonth, endMonth + 1)
+              .map((total, i) => (
+                <td key={i} className="w-20 px-3 py-1.5 text-sm">
+                  {total.toLocaleString("pt-BR", {
+                    maximumFractionDigits: 2,
+                    minimumFractionDigits: 2,
+                  })}
+                </td>
+              ))}
+            <td className="w-20 px-3 py-1.5 text-sm font-medium">
+              {categoryData.grand_total.toLocaleString("pt-BR", {
+                maximumFractionDigits: 2,
+                minimumFractionDigits: 2,
+              })}
+            </td>
+          </tr>
+
+          {/* Group Rows */}
+          {Object.entries(categoryData.groups).map(
+            ([groupName, groupValues]) => (
+              <tr key={groupName} className="text-gray-600 hover:bg-gray-50">
+                <td className="w-52 px-3 py-1.5 pl-10 text-sm">{groupName}</td>
+                {groupValues.slice(startMonth, endMonth + 1).map((value, i) => (
+                  <td key={i} className="w-20 px-3 py-1.5 text-sm">
+                    {value.toLocaleString("pt-BR", {
+                      maximumFractionDigits: 2,
+                      minimumFractionDigits: 2,
+                    })}
                   </td>
                 ))}
-              {/* grand total displayed at the end by category */}
-              <td className="w-20 px-3 py-2.5 text-sm text-gray-500">
-                {grand_total.toLocaleString("pt-BR", {
-                  maximumFractionDigits: 2,
-                  minimumFractionDigits: 2,
-                })}
-              </td>
-            </tr>
-            {/* row with group totals */}
-            {Object.entries(groups).map(([group, values]) => (
-              <tr className="overflow-hidden" key={group}>
-                <td className="w-52 whitespace-nowrap px-3 py-2.5 pl-6 text-sm text-gray-500">
-                  {group}
-                </td>
-                {/* values are displayed respecting filtered months */}
-                {values
-                  .slice(filter.start_month, filter.end_month + 1)
-                  .map((value, i) => (
-                    <td
-                      key={i}
-                      className="w-20 px-3 py-2.5 text-sm text-gray-500">
-                      {value > 0 ?
-                        value.toLocaleString("pt-BR", {
-                          maximumFractionDigits: 2,
-                          minimumFractionDigits: 2,
-                        })
-                      : ""}
-                    </td>
-                  ))}
-                {/* total displayed at the end by group */}
-                <td className="w-20 px-3 py-2.5 text-sm text-gray-500">
-                  {values
-                    .reduce((sum, v) => sum + v, 0)
+                <td className="w-20 px-3 py-1.5 text-sm">
+                  {groupValues
+                    .reduce((sum, value) => sum + value, 0)
                     .toLocaleString("pt-BR", {
                       maximumFractionDigits: 2,
                       minimumFractionDigits: 2,
                     })}
                 </td>
               </tr>
-            ))}
-          </Fragment>
-        )
-      )}
+            )
+          )}
+        </Fragment>
+      ))}
     </>
   )
 }
