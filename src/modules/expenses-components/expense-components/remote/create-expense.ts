@@ -14,7 +14,7 @@ export async function createExpense({
   is_operational,
   is_variable,
   execution_date,
-  is_over_expense,
+  is_over_profit,
   is_over_income,
 }: Expense.CreateRequest) {
   try {
@@ -30,7 +30,7 @@ export async function createExpense({
       is_operational,
       is_variable,
       execution_date,
-      is_over_expense,
+      is_over_profit,
       is_over_income,
     })
 

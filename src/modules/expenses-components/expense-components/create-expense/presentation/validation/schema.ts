@@ -52,6 +52,8 @@ export const createExpenseFormSchema = z.object({
   organization_id: z.string().nonempty("Organização é obrigatória"),
   is_operational: z.boolean().optional(),
   is_variable: z.boolean().optional(),
+  is_over_profit: z.boolean().optional(),
+  is_over_income: z.boolean().optional(),
   expenseDetailsArray: z.array(expenseDetailsSchema),
   execution_date: z
     .string()

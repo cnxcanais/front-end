@@ -1,22 +1,11 @@
 "use client"
 
 import { List, X } from "@phosphor-icons/react"
-import dynamic from "next/dynamic"
 import Image from "next/image"
 import { usePathname, useRouter } from "next/navigation"
 import { Fragment, useState } from "react"
 import { sidebarGroupedByGroups } from "./options"
-
-// removing server side rendering completely from Sidebar Item
-const SidebarItem = dynamic(
-  () =>
-    import("@/core/components/Sidebar/SidebarItem").then(
-      (mod) => mod.SidebarItem
-    ),
-  {
-    ssr: false,
-  }
-)
+import { SidebarItem } from "./SidebarItem"
 
 export function Sidebar() {
   const [isOpen, setIsOpen] = useState(true)

@@ -209,13 +209,6 @@ export function ExpenseTable() {
                 Cadastrar
               </Button>
             )}
-            {expense_create && (
-              <Button
-                onClick={() => push("/expenses/create/tax")}
-                variant="tertiary">
-                Cadastrar Imposto
-              </Button>
-            )}
             <Button
               onClick={() => push("/expense-details")}
               variant="secondary">

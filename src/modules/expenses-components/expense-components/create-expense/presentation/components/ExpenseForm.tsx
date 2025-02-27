@@ -312,9 +312,9 @@ export function ExpenseForm({ account_id, setSecondPage }: Props) {
               </div>
 
               <div className="flex flex-1 flex-col gap-2">
-                <label htmlFor="execution_date">Data Compensação</label>
+                <label htmlFor="execution_date">Mês de Competência</label>
                 <Input.Root variant={"primary"}>
-                  <Input.Control {...register("execution_date")} type="date" />
+                  <Input.Control {...register("execution_date")} type="month" />
                 </Input.Root>
               </div>
             </div>
