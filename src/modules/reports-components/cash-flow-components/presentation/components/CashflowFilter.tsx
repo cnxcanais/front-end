@@ -1,3 +1,5 @@
+"use client"
+
 import { Expense } from "@/@types/expense"
 import { Button } from "@/core/components/Button"
 import * as Input from "@/core/components/Input"

@@ -1,4 +1,7 @@
+"use client"
+
 import { Icon } from "@phosphor-icons/react"
+import { useEffect, useState } from "react"
 
 export type SidebarItemProps = {
   name: string
@@ -12,18 +15,19 @@ function classNames(...classes: string[]) {
 }
 
 export function SidebarItem({ current, href, Icon, name }: SidebarItemProps) {
-  // getting user ID to change href for that route specifically
-  if (name === "Perfil") {
-    if (window && window !== undefined) {
-      const userId = sessionStorage.getItem("userId") ?? "teste"
-      href = `${href}/${userId}`
+  const [clientHref, setClientHref] = useState(href)
+
+  useEffect(() => {
+    if (name === "Perfil") {
+      const userId = sessionStorage?.getItem("userId") ?? "teste"
+      setClientHref(`${href}/${userId}`)
     }
-  }
+  }, [name, href])
 
   return (
     <li key={name}>
       <a
-        href={href}
+        href={clientHref}
         className={classNames(
           current ?
             "bg-gray-50 text-blue-500"

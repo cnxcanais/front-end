@@ -62,15 +62,17 @@ export function ExpenseDetailsFilters({ onFilterChange }: FilterProps) {
     reset()
     setValue("expense_id", "")
     onFilterChange({})
-    window.history.replaceState(
-      {
-        ...window.history.state,
-        as: "/expense-details",
-        url: "/expense-details",
-      },
-      "",
-      "/expense-details"
-    ) // remove query param but without refreshing the page
+    if (window) {
+      window.history.replaceState(
+        {
+          ...window.history.state,
+          as: "/expense-details",
+          url: "/expense-details",
+        },
+        "",
+        "/expense-details"
+      ) // remove query param but without refreshing the page
+    }
   }
 
   useEffect(() => {

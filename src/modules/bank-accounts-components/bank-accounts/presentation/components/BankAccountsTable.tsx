@@ -8,7 +8,7 @@ import { SearchInput } from "@/core/components/SearchInput"
 import { Table } from "@/core/components/Table"
 import { exportToExcel } from "@/core/utils/exportToExcel"
 import { getAccountId } from "@/core/utils/get-account-id"
-import { getPermissionByEntity } from "@/core/utils/getPermissionByEntity"
+import { usePermissions } from "@/core/utils/hooks/use-permission"
 import { useFetchBankAccountsQuery } from "@/modules/bank-accounts-components/bank-accounts/infra/hooks/use-fetch-bank-accounts-query"
 import { removeBankAccount } from "@/modules/bank-accounts-components/bank-accounts/infra/remote"
 import { Pencil, Trash } from "@phosphor-icons/react"
@@ -26,9 +26,14 @@ export function BankAccountsTable() {
     refetch,
   } = useFetchBankAccountsQuery(account_id)
 
-  const bank_accounts_create = getPermissionByEntity("bank_accounts_create")
-  const bank_accounts_edit = getPermissionByEntity("bank_accounts_edit")
-  const bank_accounts_delete = getPermissionByEntity("bank_accounts_delete")
+  const permissions = [
+    "bank_accounts_create",
+    "bank_accounts_edit",
+    "bank_accounts_delete",
+  ]
+
+  const { bank_accounts_create, bank_accounts_edit, bank_accounts_delete } =
+    usePermissions(permissions)
 
   const { push } = useRouter()
 

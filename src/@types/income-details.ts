@@ -4,7 +4,7 @@ export namespace IncomeDetails {
   export type IncomeDetailsType = {
     income_details_id: string
     observation: string
-    amount: string
+    amount: number
     part: number
     due_date: Date
     is_paid: boolean
@@ -33,7 +33,7 @@ export namespace IncomeDetails {
   }
 
   export type CreateRequest = {
-    amount: string
+    amount: number
     bank_account_id: string
     part: number
     due_date: Date
@@ -47,7 +47,7 @@ export namespace IncomeDetails {
   }
 
   export type UpdateRequest = {
-    amount?: string
+    amount?: number
     bank_account_id?: string
     part?: number
     due_date?: string

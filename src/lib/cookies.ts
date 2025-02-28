@@ -5,7 +5,6 @@ export function setCookie(key: string, value: string) {
     secure: true,
     sameSite: "strict",
     expires: 1,
-    path: "/",
   })
 }
 
