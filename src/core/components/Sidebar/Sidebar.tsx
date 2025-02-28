@@ -26,8 +26,8 @@ export function Sidebar() {
           width={400}
           height={400}
           alt="Your Company"
-          src="/images/light-logo.png"
-          className={`h-24 w-auto cursor-pointer transition-opacity ${
+          src="/images/light-logo-new.png"
+          className={`h-20 w-auto cursor-pointer transition-opacity ${
             isOpen ? "opacity-100" : "opacity-0"
           }`}
           onClick={() => push("/dashboard")}
