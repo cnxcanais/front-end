@@ -32,9 +32,9 @@ export function ExpenseTable() {
 
   // filters state
   const [filteredResults, setFilteredResults] = useState([])
-  const [filters, setFilters] = useState<Expense.GetRequest>({})
+  const [filters, setFilters] = useState<Expense.GetRequestParams>({})
 
-  const methods = useForm<Expense.GetRequest>({
+  const methods = useForm<Expense.GetRequestParams>({
     defaultValues: {
       document: "",
       end_date: "",
@@ -55,7 +55,7 @@ export function ExpenseTable() {
     page,
   })
 
-  const handleFilterChange = (newFilters: Expense.GetRequest) => {
+  const handleFilterChange = (newFilters: Expense.GetRequestParams) => {
     setFilters(newFilters)
   }
 

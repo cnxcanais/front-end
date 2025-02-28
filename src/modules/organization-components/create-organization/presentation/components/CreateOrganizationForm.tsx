@@ -5,8 +5,8 @@ import { Button } from "@/core/components/Button"
 import * as Input from "@/core/components/Input"
 import { formatDocumentNumber } from "@/core/utils/formatDocumentNumber"
 import { formatPhoneNumber } from "@/core/utils/formatPhoneNumber"
-import { getPermissionByEntity } from "@/core/utils/getPermissionByEntity"
-import { getCookie } from "@/lib/cookies"
+import { getAccountId } from "@/core/utils/get-account-id"
+import { usePermissions } from "@/core/utils/hooks/use-permission"
 import { createOrganization } from "@/modules/organization-components/create-organization/infra/remote/create-organization"
 import {
   CreateOrganizationSchema,
@@ -20,23 +20,23 @@ import { toast } from "sonner"
 export function CreateOrganizationForm() {
   const { push } = useRouter()
 
-  const accountId = getCookie("accountId")
+  const accountId = getAccountId()
 
-  const organizations_input_fields_name = getPermissionByEntity(
-    "organizations_input_fields_name"
-  )
-  const organizations_input_fields_email = getPermissionByEntity(
-    "organizations_input_fields_email"
-  )
-  const organizations_input_fields_cnpj = getPermissionByEntity(
-    "organizations_input_fields_cnpj"
-  )
-  const organizations_input_fields_address = getPermissionByEntity(
-    "organizations_input_fields_address"
-  )
-  const organizations_input_fields_phone = getPermissionByEntity(
-    "organizations_input_fields_phone"
-  )
+  const permissions = [
+    "organizations_input_fields_name",
+    "organizations_input_fields_email",
+    "organizations_input_fields_cnpj",
+    "organizations_input_fields_address",
+    "organizations_input_fields_phone",
+  ]
+
+  const {
+    organizations_input_fields_name,
+    organizations_input_fields_email,
+    organizations_input_fields_cnpj,
+    organizations_input_fields_address,
+    organizations_input_fields_phone,
+  } = usePermissions(permissions)
 
   const {
     register,

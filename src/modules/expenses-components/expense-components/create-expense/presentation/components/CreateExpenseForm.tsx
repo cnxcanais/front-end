@@ -40,6 +40,9 @@ export function CreateExpenseForm() {
       organization_id: "",
       is_operational: false,
       is_variable: false,
+      execution_date: undefined,
+      is_over_income: false,
+      is_over_profit: false,
       //ExpenseDetails
       expenseDetailsArray: [],
     },

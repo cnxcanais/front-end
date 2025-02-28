@@ -4,7 +4,7 @@ import { Bank } from "@/@types/banks"
 import { Button } from "@/core/components/Button"
 import * as Input from "@/core/components/Input"
 import { LoadingScreen } from "@/core/components/LoadingScreen"
-import { getCookie } from "@/lib/cookies"
+import { getAccountId } from "@/core/utils/get-account-id"
 import {
   editBank,
   getBankById,
@@ -26,7 +26,6 @@ export function EditBankForm({ id }: { id: string }) {
     queryKey: ["bank", id],
     queryFn: () => getBankById(id),
     enabled: id !== "",
-    refetchOnWindowFocus: false,
   })
 
   const {
@@ -36,7 +35,7 @@ export function EditBankForm({ id }: { id: string }) {
   } = useForm<EditBankFormSchema>({
     resolver: zodResolver(editBankSchema),
     values: {
-      account_id: getCookie("accountId"),
+      account_id: getAccountId(),
       name: bank?.name || "",
       bank_number: bank?.bank_number || 0,
     },

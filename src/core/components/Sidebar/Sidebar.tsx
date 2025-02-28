@@ -1,11 +1,11 @@
 "use client"
 
-import { SidebarItem } from "@/core/components/Sidebar"
 import { List, X } from "@phosphor-icons/react"
 import Image from "next/image"
 import { usePathname, useRouter } from "next/navigation"
 import { Fragment, useState } from "react"
 import { sidebarGroupedByGroups } from "./options"
+import { SidebarItem } from "./SidebarItem"
 
 export function Sidebar() {
   const [isOpen, setIsOpen] = useState(true)
@@ -26,8 +26,8 @@ export function Sidebar() {
           width={400}
           height={400}
           alt="Your Company"
-          src="/images/light-logo.png"
-          className={`h-24 w-auto cursor-pointer transition-opacity ${
+          src="/images/light-logo-new.png"
+          className={`h-20 w-auto cursor-pointer transition-opacity ${
             isOpen ? "opacity-100" : "opacity-0"
           }`}
           onClick={() => push("/dashboard")}
