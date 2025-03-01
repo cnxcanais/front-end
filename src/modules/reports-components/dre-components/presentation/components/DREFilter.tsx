@@ -11,7 +11,7 @@ interface FilterProps {
   onFilterChange: (filters: { start_date: Date; end_date: Date }) => void
 }
 
-export function CashflowFilter({ onFilterChange }: FilterProps) {
+export function DREFilter({ onFilterChange }: FilterProps) {
   const [collapsed, setCollapsed] = useState(false)
   const [isFilterFilled, setIsFilterFilled] = useState(false)
 

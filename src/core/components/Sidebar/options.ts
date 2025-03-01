@@ -127,7 +127,7 @@ export const sidebar_options: SidebarOptionProps[] = [
   },
   {
     name: "DRE",
-    href: "#",
+    href: "/reports/dre",
     Icon: NotePencil,
     group: "Relatórios",
   },
