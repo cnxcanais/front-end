@@ -2,7 +2,6 @@ import { z } from "zod"
 
 const expenseDetailsSchema = z.object({
   amount: z.coerce.number().gt(0, "Valor deve ser maior que zero"),
-  amount: z.coerce.number().gt(0, "Valor deve ser maior que zero"),
   bank_account_id: z
     .string({ required_error: "Conta bancária é obrigatória" })
     .nonempty(),
