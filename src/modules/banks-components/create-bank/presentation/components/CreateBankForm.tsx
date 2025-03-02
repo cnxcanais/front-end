@@ -3,7 +3,7 @@
 import { Bank } from "@/@types/banks"
 import { Button } from "@/core/components/Button"
 import * as Input from "@/core/components/Input"
-import { getCookie } from "@/lib/cookies"
+import { getAccountId } from "@/core/utils/get-account-id"
 import { createBank } from "@/modules/banks-components/create-bank/infra/remote/create-bank"
 import {
   CreateBankFormSchema,
@@ -17,6 +17,8 @@ import { toast } from "sonner"
 export function CreateBankForm() {
   const { push } = useRouter()
 
+  const account_id = getAccountId()
+
   const {
     register,
     handleSubmit,
@@ -24,7 +26,7 @@ export function CreateBankForm() {
   } = useForm<CreateBankFormSchema>({
     resolver: zodResolver(createBankSchema),
     values: {
-      account_id: getCookie("accountId"),
+      account_id,
     },
   })
 

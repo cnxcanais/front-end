@@ -1,7 +1,7 @@
 import { z } from "zod"
 
 export const editIncomeDetailsSchema = z.object({
-  amount: z.number().min(1, "Valor é obrigatório"),
+  amount: z.coerce.number().min(1, "Valor é obrigatório"),
   bank_account_id: z.string().nonempty("Conta bancária é obrigatória"),
   due_date: z.union(
     [

@@ -113,7 +113,7 @@ export function ExpenseDetailsTable({ expense_id }: { expense_id?: string }) {
     {
       header: "Valor",
       accessor: "amount",
-      render: (amount: string) =>
+      render: (amount: number) =>
         amount && (
           <p>
             {Number(amount).toLocaleString("pt-br", {

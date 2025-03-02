@@ -3,7 +3,7 @@ import { ExpenseGroup } from "@/@types/expense-group"
 import { Supplier } from "@/@types/suppliers"
 
 export namespace Expense {
-  export type GetRequest = {
+  export type GetRequestParams = {
     document?: string
     start_date?: string
     end_date?: string
@@ -35,6 +35,9 @@ export namespace Expense {
     is_operational: boolean
     is_variable: boolean
     formatted_date: string
+    execution_date: Date
+    is_over_income: boolean
+    is_over_expense: boolean
   }
 
   export type GetResponse = {
@@ -57,6 +60,9 @@ export namespace Expense {
     is_variable: boolean
     supplier_id: string
     organization_id: string
+    execution_date?: Date
+    is_over_income: boolean
+    is_over_profit: boolean
   }
 
   export type UpdateRequest = {
@@ -71,5 +77,8 @@ export namespace Expense {
     organization_id?: string
     is_operational?: boolean
     is_variable?: boolean
+    execution_date?: Date
+    is_over_income?: boolean
+    is_over_expense?: boolean
   }
 }

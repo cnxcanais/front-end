@@ -31,9 +31,7 @@ export function ExpenseBudgetFilters({ account_id }: FilterProps) {
 
   const formValues = watch()
 
-  const [filters, setFilters] = useState<Budget.QueryParamsExpense>({
-    page: 1,
-  })
+  const [filters, setFilters] = useState<Budget.QueryParamsExpense>({})
 
   const { data: expenseGroups, isLoading } = useExpenseGroupQuery(account_id)
 

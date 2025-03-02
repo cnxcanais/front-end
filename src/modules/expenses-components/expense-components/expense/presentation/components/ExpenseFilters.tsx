@@ -14,7 +14,7 @@ import { useEffect, useState } from "react"
 import { useFormContext } from "react-hook-form"
 
 interface FilterProps {
-  onFilterChange: (filters: Expense.GetRequest) => void
+  onFilterChange: (filters: Expense.GetRequestParams) => void
 }
 
 export function ExpenseFilters({ onFilterChange }: FilterProps) {
@@ -30,7 +30,7 @@ export function ExpenseFilters({ onFilterChange }: FilterProps) {
     reset,
     watch,
     formState: { isSubmitted },
-  } = useFormContext<Expense.GetRequest>()
+  } = useFormContext<Expense.GetRequestParams>()
 
   const formValues = watch()
 
@@ -48,7 +48,7 @@ export function ExpenseFilters({ onFilterChange }: FilterProps) {
   const { data: expenseCategories, isLoading: categoriesIsLoading } =
     useExpenseCategoryQuery(account_id)
 
-  function onSubmit(data: Expense.GetRequest) {
+  function onSubmit(data: Expense.GetRequestParams) {
     const cleanedData = {
       ...data,
       start_date:

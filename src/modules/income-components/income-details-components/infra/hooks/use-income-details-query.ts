@@ -4,7 +4,7 @@ import { useQuery } from "@tanstack/react-query"
 
 export function useIncomeDetailsQuery(
   account_id: string,
-  queryParams?: IncomeDetails.GetRequest
+  queryParams?: IncomeDetails.GetRequestParams
 ) {
   return useQuery({
     queryKey: ["income-details"],

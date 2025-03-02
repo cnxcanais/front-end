@@ -16,6 +16,7 @@ import { toast } from "sonner"
 
 export function CreateExpenseCategoryForm() {
   const { push } = useRouter()
+  const account_id = getAccountId()
 
   const {
     register,
@@ -24,7 +25,7 @@ export function CreateExpenseCategoryForm() {
   } = useForm<CreateExpensecategorieschema>({
     resolver: zodResolver(createExpenseCategorieSchema),
     values: {
-      account_id: getAccountId(),
+      account_id,
     },
   })
 

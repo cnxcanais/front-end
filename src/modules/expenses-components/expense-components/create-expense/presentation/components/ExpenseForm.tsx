@@ -30,14 +30,19 @@ export function ExpenseForm({ account_id, setSecondPage }: Props) {
     trigger,
     formState: { errors },
     control,
-    setValue,
     watch,
+    setValue,
   } = useFormContext<FormType>()
 
   const [organizations, setOrganizations] = useState<SearchArray>([])
   const [expenseGroups, setExpenseGroups] = useState<SearchArray>([])
   const [arrayPlaceHolder, setArrayPlaceHolder] = useState("Carregando...")
   const [suppliers, setSuppliers] = useState<SearchArray>([])
+
+  const [isTax, setIsTax] = useState(false)
+
+  const isOverIncome = watch("is_over_income")
+  const isOverProfit = watch("is_over_profit")
   const [accounts, setAccounts] = useState<SearchArray>([])
   const [franchiseOrganizations, setFranchiseOrganizations] =
     useState<SearchArray>([])
@@ -156,6 +161,15 @@ export function ExpenseForm({ account_id, setSecondPage }: Props) {
       }
     )
   }, [])
+
+  // reset properties if isTax is turned to false again
+  useEffect(() => {
+    if (!isTax) {
+      setValue("is_over_income", false)
+      setValue("is_over_profit", false)
+      setValue("execution_date", undefined)
+    }
+  }, [isTax])
 
   const permissions = [
     "expense_input_fields_expense_percentage",
@@ -317,11 +331,6 @@ export function ExpenseForm({ account_id, setSecondPage }: Props) {
             Variável
           </label>
         </div>
-        {errors.is_variable && (
-          <span className="text-xs text-red-500">
-            {errors.is_variable.message}
-          </span>
-        )}
 
         <div className="mt-4 flex items-center gap-4">
           <Input.Control
@@ -335,11 +344,65 @@ export function ExpenseForm({ account_id, setSecondPage }: Props) {
           </label>
         </div>
       </div>
-      {errors.is_operational && (
-        <span className="text-xs text-red-500">
-          {errors.is_operational.message}
-        </span>
-      )}
+
+      <div className="mt-4 flex flex-col gap-2">
+        <div className="mt-4 flex items-center gap-4">
+          <Input.Control
+            className="flex-none"
+            type="checkbox"
+            checked={isTax}
+            onChange={() => setIsTax(!isTax)}
+          />
+
+          <label className="" htmlFor="enabled">
+            É Imposto?
+          </label>
+        </div>
+
+        {isTax ?
+          <div className="flex">
+            <div className="flex gap-4 rounded-lg border border-gray-500 p-2.5">
+              <div className="mt-4 flex items-center gap-4">
+                <Input.Control
+                  {...register("is_over_profit")}
+                  className="flex-none"
+                  type="checkbox"
+                  onChange={() => {
+                    setValue("is_over_profit", !isOverProfit)
+                    if (!isOverProfit) {
+                      setValue("is_over_income", false)
+                    }
+                  }}
+                />
+
+                <label htmlFor="is_over_profit">Sobre Lucro</label>
+              </div>
+              <div className="mt-4 flex items-center gap-4">
+                <Input.Control
+                  {...register("is_over_income")}
+                  className="flex-none"
+                  type="checkbox"
+                  onChange={() => {
+                    setValue("is_over_income", !isOverIncome)
+                    if (!isOverIncome) {
+                      setValue("is_over_profit", false)
+                    }
+                  }}
+                />
+
+                <label htmlFor="is_over_income">Sobre Receita</label>
+              </div>
+
+              <div className="flex flex-1 flex-col gap-2">
+                <label htmlFor="execution_date">Mês de Competência</label>
+                <Input.Root variant={"primary"}>
+                  <Input.Control {...register("execution_date")} type="month" />
+                </Input.Root>
+              </div>
+            </div>
+          </div>
+        : null}
+      </div>
 
       {masterMode && (
         <div className="mt-5 flex max-w-[1000px] gap-4">
