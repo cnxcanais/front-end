@@ -55,10 +55,13 @@ export const createExpenseFormSchema = z.object({
   is_over_profit: z.boolean().optional(),
   is_over_income: z.boolean().optional(),
   expenseDetailsArray: z.array(expenseDetailsSchema),
+  destinyFranchiseBankId: z.string().optional().nullable(),
+  destinyFranchiseId: z.string().optional().nullable(),
+  destinyFranchiseOrganizationId: z.string().optional().nullable(),
   execution_date: z
     .string()
     .transform((str) => new Date(str))
     .optional(),
 })
 
-export type CreateExpenseSchema = z.infer<typeof createExpenseFormSchema>
+export type ExpenseSchema = z.infer<typeof createExpenseFormSchema>
