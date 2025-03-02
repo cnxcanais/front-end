@@ -1,7 +1,7 @@
 import { z } from "zod"
 
 const expenseDetailsSchema = z.object({
-  amount: z.number().gt(0, "Valor deve ser maior que zero"),
+  amount: z.coerce.number().gt(0, "Valor deve ser maior que zero"),
   bank_account_id: z
     .string({ required_error: "Conta bancária é obrigatória" })
     .nonempty(),
@@ -50,9 +50,12 @@ export const createExpenseFormSchema = z.object({
   expense_percentage: z.coerce.number().min(1, "Porcentagem é obrigatória"),
   supplier_id: z.string().nonempty("Fornecedor é obrigatório"),
   organization_id: z.string().nonempty("Organização é obrigatória"),
-  is_operational: z.boolean(),
-  is_variable: z.boolean(),
+  is_operational: z.coerce.boolean(),
+  is_variable: z.coerce.boolean(),
   expenseDetailsArray: z.array(expenseDetailsSchema),
+  destinyFranchiseBankId: z.string().optional().nullable(),
+  destinyFranchiseId: z.string().optional().nullable(),
+  destinyFranchiseOrganizationId: z.string().optional().nullable(),
 })
 
-export type CreateExpenseSchema = z.infer<typeof createExpenseFormSchema>
+export type ExpenseSchema = z.infer<typeof createExpenseFormSchema>
