@@ -68,10 +68,12 @@ export function ExpenseForm({ account_id, setSecondPage }: Props) {
   } = useFetchBankAccountsQuery(destinyFranchiseId)
 
   useEffect(() => {
-    refetch()
-    refetchOrganization()
-    setValue("destinyFranchiseBankId", "")
-    setValue("destinyFranchiseOrganizationId", "")
+    if (destinyFranchiseId) {
+      refetch()
+      refetchOrganization()
+      setValue("destinyFranchiseBankId", "")
+      setValue("destinyFranchiseOrganizationId", "")
+    }
   }, [destinyFranchiseId])
 
   //SET DESTINY FRANCHISE BANK ACCOUNTS TO BE USED WHEN MASTER MODE

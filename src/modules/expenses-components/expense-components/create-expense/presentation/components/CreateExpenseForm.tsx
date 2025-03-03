@@ -104,13 +104,13 @@ export function CreateExpenseForm() {
         const franchiseIncomeGroup = await getAllIncomeGroups(
           destinyFranchiseId,
           {
-            group_name: "REPASSES PIASEG",
+            is_piaseg: true,
           }
         )
         const franchiseIncomeSource = await getIncomeSources(
           destinyFranchiseId,
           {
-            name: "PIASEG",
+            is_piaseg: true,
           }
         )
 

@@ -6,6 +6,7 @@ export namespace IncomeSource {
     state?: string
     contact_name?: string
     address?: string
+    is_piaseg?: boolean
   }
 
   export type Type = {
@@ -24,6 +25,7 @@ export namespace IncomeSource {
     created_at: Date
     updated_at: Date
     account_id: string
+    is_piaseg: boolean
   }
 
   export type GetResponse = {
@@ -51,6 +53,7 @@ export namespace IncomeSource {
     contact_name: string
     email: string
     account_id: string
+    is_piaseg?: boolean
   }
 
   export type DeleteRequest = {
