@@ -47,7 +47,7 @@ export const createExpenseFormSchema = z.object({
   description: z.string().nonempty("Descrição é obrigatória"),
   document: z.string().nonempty("Documento é obrigatório"),
   expense_group_id: z.string().nonempty("Grupo é obrigatório"),
-  expense_percentage: z.coerce.number().min(1, "Porcentagem é obrigatória"),
+  expense_percentage: z.coerce.number().min(0, "Porcentagem é obrigatória"),
   supplier_id: z.string().nonempty("Fornecedor é obrigatório"),
   organization_id: z.string().nonempty("Organização é obrigatória"),
   is_operational: z.boolean().optional(),
