@@ -81,4 +81,23 @@ export namespace Expense {
     is_over_income?: boolean
     is_over_expense?: boolean
   }
+
+  interface Group {
+    group: string
+    expenses: number
+    operationalCosts: number
+    incomeTaxes: number
+    profitTaxes: number
+  }
+
+  export interface ExpenseByCategoryAndGroup {
+    category: string
+    totalExpenses: number
+    totalOperationalCosts: number
+    groups: Group[]
+  }
+
+  export type GetByGroupsResponse = {
+    expenses: ExpenseByCategoryAndGroup[]
+  }
 }

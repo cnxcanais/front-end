@@ -73,4 +73,19 @@ export namespace Income {
     income_source_id?: string
     organization_id?: string
   }
+
+  interface Group {
+    group: string
+    incomes: number
+  }
+
+  export interface IncomeByCategoryAndGroup {
+    category: string
+    total: number
+    groups: Group[]
+  }
+
+  export type GetByGroupsResponse = {
+    incomes: IncomeByCategoryAndGroup[]
+  }
 }
