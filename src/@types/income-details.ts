@@ -1,3 +1,5 @@
+import { Income } from "./income"
+
 export namespace IncomeDetails {
   export type IncomeDetailsType = {
     income_details_id: string
@@ -9,9 +11,10 @@ export namespace IncomeDetails {
     bank_account_id: string
     income_id: string
     account_id: string
+    income: Income.IncomeType
   }
 
-  export type GetRequest = {
+  export type GetRequestParams = {
     start_date?: string | Date
     end_date?: string | Date
     is_paid?: boolean
@@ -21,7 +24,7 @@ export namespace IncomeDetails {
   }
 
   export type GetResponse = {
-    incomeDetails: IncomeDetailsType[] | []
+    incomeDetails: IncomeDetailsType[]
     totalPages: number
   }
 
@@ -66,8 +69,8 @@ export namespace IncomeDetails {
     start_date?: string
     part?: number
     max_amount?: number
-    income_id?: string
     min_amount?: number
     page?: number
+    income_id?: string
   }
 }

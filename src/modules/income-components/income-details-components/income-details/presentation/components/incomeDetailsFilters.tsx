@@ -52,7 +52,6 @@ export function IncomeDetailsFilters({ onFilterChange }: FilterProps) {
       ...(data.max_amount === 0 || !data.max_amount ?
         { max_amount: undefined }
       : {}),
-      page: 1,
     }
 
     onFilterChange(cleanedData)
@@ -62,15 +61,17 @@ export function IncomeDetailsFilters({ onFilterChange }: FilterProps) {
     reset()
     setValue("income_id", "")
     onFilterChange({})
-    window.history.replaceState(
-      {
-        ...window.history.state,
-        as: "/income-details",
-        url: "/income-details",
-      },
-      "",
-      "/income-details"
-    ) // remove query param but without refreshing the page
+    if (window) {
+      window.history.replaceState(
+        {
+          ...window.history.state,
+          as: "/income-details",
+          url: "/income-details",
+        },
+        "",
+        "/income-details"
+      ) // remove query param but without refreshing the page
+    }
   }
 
   useEffect(() => {

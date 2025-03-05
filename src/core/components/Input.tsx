@@ -136,7 +136,7 @@ export function SelectInput({
         control={control}
         render={({ field: { onChange, value } }) => (
           <Select
-            value={options.find((option) => option.value === value) || null}
+            value={options?.find((option) => option.value === value) || null}
             onChange={(option) => onChange(option ? option.value : null)}
             options={options}
             placeholder={placeholder}
@@ -203,7 +203,7 @@ export function SelectInput({
   // For standalone use
   return (
     <Select
-      value={options.find((option) => option.value === externalValue)}
+      value={options?.find((option) => option.value === externalValue)}
       onChange={(option) => externalOnChange?.(option?.value || null)}
       options={options}
       placeholder={placeholder}

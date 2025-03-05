@@ -125,7 +125,7 @@ export function IncomeDetailsTable({ income_id }: { income_id?: string }) {
     {
       header: "Valor",
       accessor: "amount",
-      render: (amount: string) =>
+      render: (amount: number) =>
         amount && (
           <p>
             {Number(amount).toLocaleString("pt-br", {

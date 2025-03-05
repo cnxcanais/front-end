@@ -29,7 +29,12 @@ type SidebarOptionProps = {
 }
 
 export const sidebar_options: SidebarOptionProps[] = [
-  { name: "Perfil", href: "#", Icon: User, group: "Gerenciamento" },
+  {
+    name: "Perfil",
+    href: "/users/profile",
+    Icon: User,
+    group: "Gerenciamento",
+  },
   {
     name: "Contas",
     href: "/accounts",
@@ -122,13 +127,13 @@ export const sidebar_options: SidebarOptionProps[] = [
   },
   {
     name: "DRE",
-    href: "#",
+    href: "/reports/dre",
     Icon: NotePencil,
     group: "Relatórios",
   },
   {
     name: "Fluxo de Caixa",
-    href: "#",
+    href: "/reports/cash-flow",
     Icon: CashRegister,
     group: "Relatórios",
   },

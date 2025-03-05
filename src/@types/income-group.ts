@@ -9,10 +9,12 @@ export namespace IncomeGroup {
     account_id: string
     income_category_id: string
     income_category: IncomeCategory.Type
+    is_piaseg: boolean
   }
 
   export type GetRequest = {
     group_name?: string
+    is_piaseg?: boolean
   }
 
   export type GetResponse = {
@@ -26,6 +28,7 @@ export namespace IncomeGroup {
   export type CreateRequest = {
     group_name: string
     income_category_id: string
+    is_piaseg?: boolean
   }
 
   export type UpdateRequest = {

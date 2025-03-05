@@ -13,6 +13,9 @@ export async function createExpense({
   organization_id,
   is_operational,
   is_variable,
+  execution_date,
+  is_over_profit,
+  is_over_income,
 }: Expense.CreateRequest) {
   try {
     const { data } = await api.post(`/expenses`, {
@@ -26,6 +29,9 @@ export async function createExpense({
       organization_id,
       is_operational,
       is_variable,
+      execution_date,
+      is_over_profit,
+      is_over_income,
     })
 
     return data

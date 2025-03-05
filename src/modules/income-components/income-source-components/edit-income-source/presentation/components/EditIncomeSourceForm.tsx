@@ -40,7 +40,6 @@ export function EditIncomeSourceForm({
     queryKey: ["income-source", income_source_id],
     queryFn: () => getIncomeSourceById({ income_source_id }),
     enabled: income_source_id !== "",
-    refetchOnWindowFocus: false,
   })
 
   const permissions = [

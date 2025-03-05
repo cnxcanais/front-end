@@ -5,9 +5,9 @@ import { SearchArray } from "@/@types/search-array"
 import { Button } from "@/core/components/Button"
 import * as Input from "@/core/components/Input"
 import { LoadingScreen } from "@/core/components/LoadingScreen"
+import { getAccountId } from "@/core/utils/get-account-id"
 import { getPermissionByEntity } from "@/core/utils/getPermissionByEntity"
 import { ArrayConfig, populateArrays } from "@/core/utils/populateArrays"
-import { getCookie } from "@/lib/cookies"
 import { useIncomeByIdQuery } from "@/modules/income-components/income-components/infra/use-income-by-id-query"
 import { editIncome } from "@/modules/income-components/income-components/remote"
 import { getAllIncomeGroups } from "@/modules/income-components/income-groups-components/remote/income-group"
@@ -23,7 +23,7 @@ import { editIncomeSchema } from "../validation/schema"
 export function EditIncomeForm({ income_id }: { income_id: string }) {
   const { push } = useRouter()
 
-  const account_id = getCookie("accountId")
+  const account_id = getAccountId()
 
   const [organizations, setOrganizations] = useState<SearchArray>([])
   const [incomeGroups, setIncomeGroups] = useState<SearchArray>([])

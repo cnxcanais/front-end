@@ -4,7 +4,7 @@ import { IncomeDetails } from "@/@types/income-details"
 import { Button } from "@/core/components/Button"
 import * as Input from "@/core/components/Input"
 import { LoadingScreen } from "@/core/components/LoadingScreen"
-import { getCookie } from "@/lib/cookies"
+import { getAccountId } from "@/core/utils/get-account-id"
 import { useBankAccountsQuery } from "@/modules/bank-accounts-components/bank-accounts/infra/hooks/use-bank-account-query"
 import { editIncomeDetailsSchema } from "@/modules/income-components/income-details-components/edit-income-details/validation/schema"
 import { useIncomeDetailsByIdQuery } from "@/modules/income-components/income-details-components/infra/hooks/use-income-details-by-id-query"
@@ -24,7 +24,7 @@ export function EditIncomeDetailsForm({
 }) {
   const { push } = useRouter()
 
-  const account_id = getCookie("accountId")
+  const account_id = getAccountId()
 
   const { data: incomeDetails, refetch } =
     useIncomeDetailsByIdQuery(income_details_id)
