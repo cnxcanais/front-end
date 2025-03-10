@@ -1,22 +1,32 @@
-// import { api } from "@/lib/axios"
-// import { setCookie } from "@/lib/cookies"
-import componentsPermissions from "@/core/utils/components_permission.json"
+import { Account } from "@/@types/accounts"
+import { User } from "@/@types/users"
 import urlPermissions from "@/core/utils/url_permissions.json"
+import { api } from "@/lib/axios"
 import { setCookie } from "@/lib/cookies"
 import { LoginSchema } from "@/modules/login-components/login/presentation/validation/schema"
+import { AxiosError } from "axios"
+
+type AuthenticateResponseProps = {
+  account: Account.Type
+  user: User.Type
+  token: string
+}
 
 export async function authenticate(formData: LoginSchema) {
   try {
-    // const response = await api.post("/user/authenticate", {
-    //   email: formData.email,
-    //   password: formData.password,
-    // })
-    // setCookie("auth", JSON.stringify(response.data))
+    const { data } = await api.post<AuthenticateResponseProps>(
+      "/user/authenticate",
+      {
+        email: formData.email,
+        password: formData.password,
+      }
+    )
 
-    setCookie("permissions", JSON.stringify(componentsPermissions))
-    setCookie("accountId", process.env.NEXT_PUBLIC_ACCOUNT_ID)
+    setCookie("accountId", data.user.account_id)
+    setCookie("token", data.token)
     setCookie("path_permissions", JSON.stringify(urlPermissions))
   } catch (error) {
-    console.info(error)
+    if (error instanceof AxiosError) throw error.response.data.message
+    throw error
   }
 }

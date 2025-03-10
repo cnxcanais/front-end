@@ -6,6 +6,7 @@ import { ExpenseGroup } from "@/@types/expense-group"
 import { Button } from "@/core/components/Button"
 import { LoadingScreen } from "@/core/components/LoadingScreen"
 import { Modal } from "@/core/components/Modals/Modal"
+import { ModalFilesTrigger } from "@/core/components/Modals/ModalFiles/ModalFilesTrigger"
 import { ModalObservationTrigger } from "@/core/components/Modals/ModalObservation"
 import { SearchInput } from "@/core/components/SearchInput"
 import { Table } from "@/core/components/Table"
@@ -132,6 +133,13 @@ export function ExpenseTable() {
           className="cursor-pointer text-blue-500 underline">
           {expenseDetails?.length}
         </p>
+      ),
+    },
+    {
+      header: "Arquivos",
+      accessor: "expense_id",
+      render: (value: string) => (
+        <ModalFilesTrigger entityId={value} entityType={"expense_id"} />
       ),
     },
     {
