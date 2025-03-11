@@ -2,6 +2,7 @@ import { Icon } from "@phosphor-icons/react"
 import {
   Bank,
   CashRegister,
+  ChartBar,
   ChartBarHorizontal,
   Coin,
   Coins,
@@ -138,9 +139,15 @@ export const sidebar_options: SidebarOptionProps[] = [
     group: "Relatórios",
   },
   {
+    name: "Comparativo",
+    href: "/reports/comparison",
+    Icon: ChartBarHorizontal,
+    group: "Relatórios",
+  },
+  {
     name: "Dashboard",
     href: "#",
-    Icon: ChartBarHorizontal,
+    Icon: ChartBar,
     group: "Relatórios",
   },
 ]

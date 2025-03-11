@@ -8,10 +8,10 @@ export default function LoginComponentsLayout({
   return (
     <div className="flex h-screen flex-col bg-blue-500">
       <nav className="bg-black/60 opacity-90">
-        <div className="p-2.5">
+        <div className="p-3">
           <Image
-            className="h-24 w-auto"
-            src="/images/light-logo.png"
+            className="h-20 w-auto"
+            src="/images/light-logo-new.png"
             alt="Logo"
             width={400}
             height={400}
