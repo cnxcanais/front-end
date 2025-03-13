@@ -4,7 +4,7 @@ import { CreateBudgetExpenseForm } from "@/modules/budget-components/budget-expe
 export default function BudgetExpenseCreateRender() {
   return (
     <main>
-      <PageTitle content="Criar Orçamento de Despesa" />
+      <PageTitle content="Criar Previsão de Despesa" />
       <CreateBudgetExpenseForm />
     </main>
   )

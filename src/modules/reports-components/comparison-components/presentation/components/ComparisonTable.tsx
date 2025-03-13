@@ -1,10 +1,10 @@
 "use client"
 
 import { LoadingScreen } from "@/core/components/LoadingScreen"
+import { formatCurrency } from "@/core/utils/format-currency"
 import { getAccountId } from "@/core/utils/get-account-id"
 import { useComparisonDataQuery } from "@/modules/reports-components/comparison-components/infra/hooks/use-comparison-data-query"
 import { ComparisonFilter } from "@/modules/reports-components/comparison-components/presentation/components/ComparisonFilter"
-import { formatCurrency } from "@/modules/reports-components/dre-components/presentation/utils/dre-process-functions"
 import { Fragment, useEffect, useState } from "react"
 
 export function ComparisonTable() {
@@ -31,32 +31,32 @@ export function ComparisonTable() {
     title: string,
     data: any[],
     budgetData: any[],
-    isIncome = true
+    isIncome: boolean = true
   ) => {
     let totalActual = 0
     let totalBudget = 0
 
     return (
       <>
-        <tr className="bg-gray-600 font-bold text-gray-200">
-          <td className="px-3 py-2" colSpan={3}>
-            {title}
-          </td>
-        </tr>
         {data.map(({ category, total, groups }) => {
           const budgetCategory = budgetData.find(
             (b) => b.category === category
           ) || { total: 0, groups: [] }
           totalActual += total
           totalBudget += budgetCategory.total
+          const delta = total - budgetCategory.total
 
           return (
             <Fragment key={category}>
-              <tr className="bg-gray-100 font-bold">
-                <td className="px-3 py-2">{category}</td>
-                <td className="px-3 py-2">{formatCurrency(total)}</td>
-                <td className="px-3 py-2">
+              <tr className="bg-gray-50 font-medium text-gray-900">
+                <td className="px-3 py-2 text-sm">{category}</td>
+                <td className="px-3 py-2 text-sm">
                   {formatCurrency(budgetCategory.total)}
+                </td>
+                <td className="px-3 py-2 text-sm">{formatCurrency(total)}</td>
+                <td
+                  className={`px-3 py-2 text-sm ${delta >= 0 ? "text-green-600" : "text-red-600"}`}>
+                  {formatCurrency(delta)}
                 </td>
               </tr>
               {groups.map(({ group, incomes, expenses, total }) => {
@@ -68,22 +68,37 @@ export function ComparisonTable() {
                   isIncome ?
                     (budgetGroup.budget_incomes ?? 0)
                   : (budgetGroup.budget_expenses ?? 0)
+                const groupDelta = actualValue - budgetValue
 
                 return (
-                  <tr key={group + category}>
-                    <td className="px-6 py-2 text-gray-700">{group}</td>
-                    <td className="px-3 py-2">{formatCurrency(actualValue)}</td>
-                    <td className="px-3 py-2">{formatCurrency(budgetValue)}</td>
+                  <tr
+                    key={group + category}
+                    className="text-gray-600 hover:bg-gray-50">
+                    <td className="w-52 px-3 py-1.5 pl-10 text-sm">{group}</td>
+                    <td className="w-20 px-3 py-1.5 text-sm">
+                      {formatCurrency(actualValue)}
+                    </td>
+                    <td className="w-20 px-3 py-1.5 text-sm">
+                      {formatCurrency(budgetValue)}
+                    </td>
+                    <td
+                      className={`w-20 px-3 py-1.5 text-sm ${groupDelta >= 0 ? "text-green-600" : "text-red-600"}`}>
+                      {formatCurrency(groupDelta)}
+                    </td>
                   </tr>
                 )
               })}
             </Fragment>
           )
         })}
-        <tr className="bg-gray-300 font-bold">
+        <tr className="bg-gray-200 text-sm font-bold text-gray-700">
           <td className="px-3 py-2">Total {title}</td>
-          <td className="px-3 py-2">{formatCurrency(totalActual)}</td>
           <td className="px-3 py-2">{formatCurrency(totalBudget)}</td>
+          <td className="px-3 py-2">{formatCurrency(totalActual)}</td>
+          <td
+            className={`px-3 py-2 ${totalActual - totalBudget >= 0 ? "text-green-600" : "text-red-600"}`}>
+            {formatCurrency(totalActual - totalBudget)}
+          </td>
         </tr>
       </>
     )
@@ -92,21 +107,24 @@ export function ComparisonTable() {
   return (
     <div>
       <ComparisonFilter onFilterChange={setFilters} />
-      <div className="my-8 flow-root max-w-[50rem]">
-        <div className="overflow-x-auto">
-          <div className="inline-block min-w-full">
-            <div className="overflow-hidden rounded-xl shadow ring-1 ring-black/5">
+      <div className="my-8 flow-root max-w-[40rem]">
+        <div className="-mx-4 -my-2 overflow-x-auto sm:-mx-6 lg:-mx-8">
+          <div className="inline-block min-w-full py-2 align-middle sm:px-6 lg:px-8">
+            <div className="overflow-hidden shadow ring-1 ring-black/5 sm:rounded-lg">
               <table className="w-full divide-y divide-gray-300">
                 <thead className="bg-gray-50">
                   <tr>
-                    <th className="px-3 py-3.5 text-left font-semibold text-gray-900">
+                    <th className="px-3 py-3.5 text-left text-sm font-semibold text-gray-900">
                       Descrição
                     </th>
-                    <th className="px-3 py-3.5 text-left font-semibold text-gray-900">
+                    <th className="px-3 py-3.5 text-left text-sm font-semibold text-gray-900">
+                      Orçado
+                    </th>
+                    <th className="px-3 py-3.5 text-left text-sm font-semibold text-gray-900">
                       Realizado
                     </th>
-                    <th className="px-3 py-3.5 text-left font-semibold text-gray-900">
-                      Orçado
+                    <th className="px-3 py-3.5 text-left text-sm font-semibold text-gray-900">
+                      Diferença
                     </th>
                   </tr>
                 </thead>

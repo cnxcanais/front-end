@@ -97,7 +97,7 @@ export const sidebar_options: SidebarOptionProps[] = [
     group: "Cadastro",
   },
   {
-    name: "Orçamentos",
+    name: "Previsãos",
     href: "/budget",
     Icon: PiggyBank,
     group: "Cadastro",

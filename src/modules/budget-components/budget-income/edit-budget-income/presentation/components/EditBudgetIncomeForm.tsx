@@ -62,10 +62,10 @@ export function EditBudgetIncomeForm({ id }: { id: string }) {
   async function onSubmit(data: Budget.UpdateIncome) {
     try {
       await editBudgetIncome(data)
-      toast.success("Orçamento de receita atualizado com sucesso")
+      toast.success("Previsão de receita atualizado com sucesso")
       setTimeout(() => push("/budget"), 2000)
     } catch (error) {
-      toast.error("Erro ao editar orçamento de receita: " + error)
+      toast.error("Erro ao editar previsão de receita: " + error)
     }
   }
 

@@ -10,7 +10,7 @@ export default async function EditBudgetIncomeRender({
 
   return (
     <main>
-      <PageTitle content="Editar Orçamento de Receita" />
+      <PageTitle content="Editar Previsão de Receita" />
       <EditBudgetIncomeForm id={id} />
     </main>
   )

@@ -1,15 +1,6 @@
 import { Expense } from "@/@types/expense"
 import { Income } from "@/@types/income"
 
-export function formatCurrency(value: number) {
-  if (value)
-    return value.toLocaleString("pt-BR", {
-      maximumFractionDigits: 2,
-      minimumFractionDigits: 2,
-    })
-  else return 0
-}
-
 export function calculateTotals(
   incomes: Income.IncomeByCategoryAndGroup[],
   expenses: Expense.ExpenseByCategoryAndGroup[]
