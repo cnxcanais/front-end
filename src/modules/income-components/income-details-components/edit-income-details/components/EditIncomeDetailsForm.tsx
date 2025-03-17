@@ -42,7 +42,7 @@ export function EditIncomeDetailsForm({
   const income_details_edit_input_fields_description =
     permissions?.["income_details_edit_input_fields_description"]
   const income_details_edit_input_fields_date =
-    permissions?.[" income_details_edit_input_fields_date"]
+    permissions?.["income_details_edit_input_fields_date"]
 
   const {
     register,
