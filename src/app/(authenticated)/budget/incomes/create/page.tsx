@@ -4,7 +4,7 @@ import { CreateBudgetIncomeForm } from "@/modules/budget-components/budget-incom
 export default function BudgetIncomeCreateRender() {
   return (
     <main>
-      <PageTitle content="Criar Orçamento de Receita" />
+      <PageTitle content="Criar Previsão de Receita" />
       <CreateBudgetIncomeForm />
     </main>
   )
