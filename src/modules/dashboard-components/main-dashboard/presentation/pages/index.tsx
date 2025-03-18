@@ -1,16 +1,16 @@
+"use client"
 import { PageTitle } from "@/core/components/PageTitle"
-import Image from "next/image"
+import { DailyResultGraph } from "../components/dailyResultsGraph"
+import { MonthlyIncomeGraph } from "../components/monthlyIncomeGraph"
 
 export function MainDashboard() {
   return (
     <>
       <PageTitle content="Dashboard" />
-      <Image
-        src="/images/dashboardMock.svg"
-        alt="dashboard"
-        width={1000}
-        height={800}
-      />
+      <div className="mb-6 mt-6 flex flex-col gap-6">
+        <DailyResultGraph />
+        <MonthlyIncomeGraph />
+      </div>
     </>
   )
 }

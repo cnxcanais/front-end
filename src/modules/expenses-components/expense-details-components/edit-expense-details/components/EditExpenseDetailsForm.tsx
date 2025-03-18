@@ -41,7 +41,7 @@ export function EditExpenseDetailsForm({
   const expense_details_edit_input_fields_description =
     permissions?.["expense_details_edit_input_fields_description"]
   const expense_details_edit_input_fields_date =
-    permissions?.[" expense_details_edit_input_fields_date"]
+    permissions?.["expense_details_edit_input_fields_date"]
 
   const {
     register,
