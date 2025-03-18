@@ -75,7 +75,7 @@ export function CreateBudgetIncomeForm() {
       toast.success(response)
       setTimeout(() => push("/budget"), 2000)
     } catch (error) {
-      toast.error("Erro ao criar orçamento de receita: " + error)
+      toast.error("Erro ao criar previsão de receita: " + error)
     }
   }
 
