@@ -7,12 +7,12 @@ import { Table } from "@/core/components/Table"
 import { formatLocalDate } from "@/core/utils/dateFunctions"
 import { exportToExcel } from "@/core/utils/exportToExcel"
 import { getAccountId } from "@/core/utils/get-account-id"
+import { getDetailsData } from "@/modules/reports-components/details-summary-components/infra/remote/get-details-data"
+import { SummaryDetailsFilters } from "@/modules/reports-components/details-summary-components/presentation/components/SummaryDetailsFilters"
 import { FileXls } from "@phosphor-icons/react"
 import { useQuery } from "@tanstack/react-query"
-import { useEffect, useState } from "react"
+import { useState } from "react"
 import { FormProvider, useForm } from "react-hook-form"
-import { getDetailsData } from "../../infra/remote/get-details-data"
-import { SummaryDetailsFilters } from "./SummaryDetailsFilters"
 
 export function SummaryDetailsTable() {
   const account_id = getAccountId()
@@ -22,8 +22,6 @@ export function SummaryDetailsTable() {
     start_date: new Date(currentYear, 0, 1),
     end_date: new Date(currentYear, 11, 31),
   })
-
-  const [total, setTotal] = useState(0)
 
   const { data, isLoading } = useQuery({
     queryKey: ["summary-details", { filters }],
@@ -88,13 +86,6 @@ export function SummaryDetailsTable() {
     },
   ]
 
-  useEffect(() => {
-    if (data) {
-      const totalAmount = data.reduce((acc, item) => acc + item.amount, 0)
-      setTotal(totalAmount)
-    }
-  }, [data])
-
   if (!data || isLoading) return <LoadingScreen />
 
   return (
@@ -122,10 +113,10 @@ export function SummaryDetailsTable() {
                 ...data,
                 {
                   source: "TOTAL",
-                  amount: data.reduce(
-                    (acc, item) => acc + Number(item.amount),
-                    0
-                  ),
+                  amount: data.reduce((acc, item) => {
+                    if (item.type === "income") return acc + Number(item.amount)
+                    else return acc - Number(item.amount)
+                  }, 0),
                   part: "",
                   is_paid: "",
                   due_date: "",
