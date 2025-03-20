@@ -7,7 +7,7 @@ import { LoadingScreen } from "@/core/components/LoadingScreen"
 import { SelectInput } from "@/core/components/SelectInput"
 import { getAccountId } from "@/core/utils/get-account-id"
 import { useGetAccountsQuery } from "@/modules/accounts-components/accounts/infra/hooks/use-get-accounts-query"
-import { useGetProfilesQuery } from "@/modules/profiles-components/profiles/remote/hooks/use-get-profiles-query"
+import { useGetProfilesQuery } from "@/modules/profiles-components/profiles/infra/hooks/use-get-profiles-query"
 import { createUser } from "@/modules/user-components/create-user/infra/remote/create-user"
 import {
   CreateUserSchema,
