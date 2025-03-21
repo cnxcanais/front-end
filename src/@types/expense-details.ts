@@ -32,6 +32,10 @@ export namespace ExpenseDetails {
     expenseDetails: ExpenseDetailsType
   }
 
+  export type GetByMonthResponse = {
+    totalPerMonth: { month: number; value: number }[]
+  }
+
   export type CreateRequest = {
     amount: number
     bank_account_id: string
