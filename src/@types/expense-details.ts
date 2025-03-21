@@ -24,7 +24,7 @@ export namespace ExpenseDetails {
   }
 
   export type GetResponse = {
-    expenseDetails: ExpenseDetailsType[] | []
+    expenseDetails: ExpenseDetailsType[]
     totalPages: number
   }
 

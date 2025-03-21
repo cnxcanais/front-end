@@ -4,7 +4,7 @@ import { ExpenseBudgetTable } from "@/modules/budget-components/budget-expense/b
 export function ExpenseBudgetPage() {
   return (
     <main className="flex w-full flex-col">
-      <PageTitle content="Orçamentos de Despesas" />
+      <PageTitle content="Previsãos de Despesas" />
       <ExpenseBudgetTable />
     </main>
   )
