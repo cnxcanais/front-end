@@ -1,6 +1,8 @@
 "use client"
+
 import { getAccountId } from "@/core/utils/get-account-id"
 import { useIncomeDetailsByMonthQuery } from "@/modules/income-components/income-details-components/infra/hooks/use-income-details-by-month-query"
+import { ChartOptions } from "chart.js"
 import { useEffect, useState } from "react"
 import { BarGraph } from "./barGraph"
 
@@ -21,6 +23,9 @@ export function MonthlyIncomeGraph() {
     account_id,
     new Date().getFullYear() - 1
   )
+
+  console.log(currentYear)
+
   useEffect(() => {
     if (currentYear && lastYear) {
       const months = currentYear.totalPerMonth.map((item) => {
@@ -62,8 +67,9 @@ export function MonthlyIncomeGraph() {
         0
       )
 
-      const options = {
+      const options: ChartOptions = {
         responsive: true,
+        maintainAspectRatio: false,
         plugins: {
           title: {
             display: true,

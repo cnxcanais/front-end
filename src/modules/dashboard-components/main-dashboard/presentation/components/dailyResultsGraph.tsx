@@ -1,4 +1,5 @@
 "use client"
+
 import { BarGraphData } from "@/@types/bar-graph-data"
 import { ExpenseDetails } from "@/@types/expense-details"
 import { getAccountId } from "@/core/utils/get-account-id"
@@ -31,7 +32,6 @@ export function DailyResultGraph() {
   )
 
   const trimmedFirstDay = `${firstDayOfMonth.getFullYear()}-${firstDayOfMonth.getMonth() + 1}-${firstDayOfMonth.getDate()}`
-
   const trimmedLastDay = `${lastDayOfMonth.getFullYear()}-${lastDayOfMonth.getMonth() + 1}-${lastDayOfMonth.getDate()}`
 
   const { data: incomeData } = useIncomeDetailsQuery(account_id, {
@@ -45,7 +45,6 @@ export function DailyResultGraph() {
 
   useEffect(() => {
     if (incomeData) {
-      console.log(incomeData)
       const sumedArray = []
       incomeData.incomeDetails.forEach((income) => {
         if (income.is_paid) {
@@ -125,6 +124,7 @@ export function DailyResultGraph() {
 
       const options = {
         responsive: true,
+        maintainAspectRatio: false,
         plugins: {
           title: {
             display: true,
