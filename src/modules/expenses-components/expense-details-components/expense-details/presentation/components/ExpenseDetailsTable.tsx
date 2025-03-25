@@ -48,12 +48,6 @@ export function ExpenseDetailsTable({ expense_id }: { expense_id?: string }) {
   const methods = useForm<ExpenseDetails.QueryParams>({
     values: {
       expense_id,
-      bank_account_id: "",
-      start_date: "",
-      end_date: "",
-      is_paid: null,
-      max_amount: null,
-      min_amount: null,
     },
   })
 

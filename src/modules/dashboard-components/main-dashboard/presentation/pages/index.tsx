@@ -11,7 +11,7 @@ export function MainDashboard() {
     <>
       <PageTitle content="Dashboard" />
       <div className="mb-6 mt-6 flex flex-col gap-6">
-        <div className="grid w-full max-w-[1500px] grid-cols-1 gap-6 md:grid-cols-2">
+        <div className="grid w-full max-w-[1800px] grid-cols-1 gap-6 md:grid-cols-2">
           <div className="h-[400px] w-full">
             <MonthlyIncomeGraph />
           </div>
@@ -19,7 +19,7 @@ export function MainDashboard() {
             <MonthlyExpenseGraph />
           </div>
         </div>
-        <div className="h-[400px] w-full max-w-[1500px]">
+        <div className="h-[400px] w-full max-w-[1800px]">
           <DailyResultGraph />
         </div>
 

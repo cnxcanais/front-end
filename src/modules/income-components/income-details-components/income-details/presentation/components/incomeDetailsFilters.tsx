@@ -138,12 +138,10 @@ export function IncomeDetailsFilters({ onFilterChange }: FilterProps) {
                 className="max-w-[200px]"
                 field_name="income_group_id"
                 label="Conta Bancária"
-                options={[{ text: "", value: "" }].concat(
-                  bankAccounts.map((account) => ({
-                    text: `AG: ${account.agency} CC: ${account.account_number}`,
-                    value: account.bank_account_id,
-                  }))
-                )}
+                options={bankAccounts.map((account) => ({
+                  text: `AG: ${account.agency} CC: ${account.account_number}`,
+                  value: account.bank_account_id,
+                }))}
                 {...register("bank_account_id")}
               />
 
