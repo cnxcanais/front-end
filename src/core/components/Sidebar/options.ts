@@ -153,7 +153,7 @@ export const sidebar_options: SidebarOptionProps[] = [
   },
   {
     name: "Dashboard",
-    href: "#",
+    href: "/dashboard",
     Icon: ChartBar,
     group: "Relatórios",
   },

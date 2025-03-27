@@ -3,12 +3,10 @@ export const prepareArrayForSelect = (
   label: string,
   value: string
 ) => {
-  return [{ label: "", value: "" }].concat(
-    array.map((item) => {
-      return {
-        label: item?.[label],
-        value: item?.[value],
-      }
-    })
-  )
+  return array.map((item) => {
+    return {
+      label: item?.[label],
+      value: item?.[value],
+    }
+  })
 }
