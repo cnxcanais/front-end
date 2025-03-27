@@ -1,11 +1,11 @@
 import { Permission } from "@/@types/permissions"
 import { api } from "@/lib/axios"
 
-export async function editPermissions(
+export async function clonePermissions(
   permissions: Permission.UpdatePermissionRequest
 ) {
   try {
-    const { data } = await api.put<Permission.UpdatePermissionResponse>(
+    const { data } = await api.post<Permission.UpdatePermissionResponse>(
       `/permissions`,
       permissions
     )

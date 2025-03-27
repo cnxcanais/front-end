@@ -2,16 +2,17 @@
 
 import { Permission } from "@/@types/permissions"
 import { Button } from "@/core/components/Button"
+import * as Input from "@/core/components/Input"
 import { LoadingScreen } from "@/core/components/LoadingScreen"
 import { getAccountId } from "@/core/utils/get-account-id"
 import { useParams, useRouter } from "next/navigation"
 import { useEffect, useState } from "react"
 import { toast } from "sonner"
 import { useGetPermissionsQuery } from "../../infra/hooks/use-get-permissions-query"
-import { editPermissions } from "../../infra/remote/edit-permissions"
+import { clonePermissions } from "../../infra/remote/clone-permissions"
 import { PermissionCard } from "./PermissionCard"
 
-export function EditPermissions() {
+export function ClonePermissions() {
   const [updatedPermissons, setUpdatedPermissions] = useState<Permission.Type>()
   const [cardsDisplay, setCardsDisplay] = useState({
     accounts: false,
@@ -39,11 +40,18 @@ export function EditPermissions() {
   const { push } = useRouter()
 
   const handleSubmit = async () => {
+    if (!updatedPermissons.name) {
+      toast.error("Nome do perfil não pode ser vazio!")
+      setTimeout(() => {
+        push("/permissions")
+      }, 2000)
+      return
+    }
     const refinedData = {
       account_id,
       permissions: updatedPermissons,
     }
-    const response = await editPermissions(refinedData)
+    const response = await clonePermissions(refinedData)
 
     if (response) {
       toast.success("Permissões atualizadas com sucesso!")
@@ -58,13 +66,25 @@ export function EditPermissions() {
 
   useEffect(() => {
     if (data) {
-      setUpdatedPermissions(data)
+      setUpdatedPermissions({ ...data, name: "" })
     }
   }, [data])
   if (!data || isLoading) return <LoadingScreen />
 
   return (
     <section className="mb-2">
+      <div>
+        <label htmlFor="profileName">Nome do Perfil de Permissões</label>
+        <Input.Control
+          name="profileName"
+          onChange={(e) =>
+            setUpdatedPermissions({
+              ...updatedPermissons,
+              name: e.target.value,
+            })
+          }
+        />
+      </div>
       <div className="flex w-[1000px] justify-between p-0">
         <div>
           <h2>Permissão</h2>
