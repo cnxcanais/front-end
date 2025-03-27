@@ -1,6 +1,7 @@
 "use client"
 
 import { Account } from "@/@types/accounts"
+import { Profile } from "@/@types/profiles"
 import { Button } from "@/core/components/Button"
 import { LoadingScreen } from "@/core/components/LoadingScreen"
 import { Modal } from "@/core/components/Modals/Modal"
@@ -15,6 +16,7 @@ import {
 } from "@/modules/user-components/users/infra/remote"
 import { FileXls, Pencil, Trash } from "@phosphor-icons/react"
 import { useQuery } from "@tanstack/react-query"
+import Link from "next/link"
 import { useRouter } from "next/navigation"
 import { useEffect, useState } from "react"
 import { toast } from "sonner"
@@ -68,6 +70,19 @@ export function UsersTable() {
       header: "Conta",
       accessor: "account",
       render: (account: Account.Type) => account.name,
+    },
+    {
+      header: "Perfil",
+      accessor: "profile",
+      render: (profile: Profile.Type) => {
+        return (
+          <Link
+            className="transition-colors duration-300 ease-in-out hover:text-yellow-200 hover:underline"
+            href={`/permissions/edit/${profile.profile_id}`}>
+            {profile.name}
+          </Link>
+        )
+      },
     },
     {
       header: "Atualizado em",
