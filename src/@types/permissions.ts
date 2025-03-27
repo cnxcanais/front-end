@@ -46,7 +46,7 @@ export namespace Permission {
   }
 
   export type GetResponse = {
-    permissions: Type[]
+    permissions: Type
   }
 
   export type GetPathsResponse = {

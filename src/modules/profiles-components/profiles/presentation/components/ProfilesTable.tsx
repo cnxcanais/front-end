@@ -21,8 +21,8 @@ export function ProfilesTable() {
 
   const { data, isLoading, refetch } = useGetProfilesQuery(accountId)
 
-  function handleEdit(profile_id: string) {
-    push(`/permissions/edit/${profile_id}`)
+  function handleEdit(profile_name: string) {
+    push(`/permissions/edit/${profile_name}`)
   }
 
   async function handleConfirmDelete() {
@@ -50,21 +50,21 @@ export function ProfilesTable() {
     },
     {
       header: "Ações",
-      accessor: "profile_id",
-      render: (profile_id: string, row: unknown) => {
+      accessor: "name",
+      render: (name: string, row: unknown) => {
         return (
           <div className="flex space-x-4">
             <Pencil
               className="cursor-pointer duration-300 ease-in-out hover:text-blue-500"
               size={24}
-              onClick={() => handleEdit(profile_id)}
+              onClick={() => handleEdit(name)}
             />
 
             <Trash
               className="cursor-pointer duration-300 ease-in-out hover:text-blue-500"
               size={24}
               onClick={() => {
-                setId(profile_id)
+                setId(name)
                 setOpen(true)
               }}
             />
