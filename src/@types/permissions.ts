@@ -7,6 +7,15 @@ export namespace Permission {
     componentAccess: Record<string, boolean>
   }
 
+  export type UpdatePermissionRequest = {
+    account_id: string
+    permissions: Type
+  }
+
+  export type UpdatePermissionResponse = {
+    permissionData: Type
+  }
+
   export type PathsAccess = {
     path_access_id: string
     profile_id: string

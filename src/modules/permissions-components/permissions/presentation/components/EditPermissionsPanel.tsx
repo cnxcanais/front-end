@@ -1,6 +1,7 @@
 "use client"
 
 import { Permission } from "@/@types/permissions"
+import { Button } from "@/core/components/Button"
 import { LoadingScreen } from "@/core/components/LoadingScreen"
 import { getAccountId } from "@/core/utils/get-account-id"
 import { useParams } from "next/navigation"
@@ -21,7 +22,7 @@ export function EditPermissions() {
     income_groups: false,
     expense_categories: false,
     expense_groups: false,
-    budget: false,
+    budget_incomes: false,
     incomes: false,
     expenses: false,
     banks: false,
@@ -42,7 +43,7 @@ export function EditPermissions() {
   if (!data || isLoading) return <LoadingScreen />
 
   return (
-    <section>
+    <section className="mb-2">
       <div className="flex w-[1000px] justify-between p-0">
         <div>
           <h2>Permissão</h2>
@@ -505,25 +506,25 @@ export function EditPermissions() {
         )}
 
         <PermissionCard
-          name="Previsões Orçamentárias"
+          name="Previsões Orçamentárias Receitas"
           type="Página"
           length={10}
-          associatedURL="/budget"
+          associatedURL="/budget/incomes"
           setUpdatedPermissions={setUpdatedPermissions}
           updatedPermissions={updatedPermissons}
-          childCardsName="budget"
+          childCardsName="budget_incomes"
           setCardsDisplay={setCardsDisplay}
           cardsDisplay={cardsDisplay}
         />
 
-        {cardsDisplay.budget && (
+        {cardsDisplay.budget_incomes && (
           <div className="flex flex-col items-end">
             <PermissionCard
               name="Cadastrar"
               type="Botão"
               length={9}
-              componentAccess="budget_create"
-              associatedURL="/budget/create"
+              componentAccess="budget_incomes_create"
+              associatedURL="/budget/incomes/create"
               setUpdatedPermissions={setUpdatedPermissions}
               updatedPermissions={updatedPermissons}
             />
@@ -532,8 +533,8 @@ export function EditPermissions() {
               name="Editar"
               type="Botão"
               length={9}
-              componentAccess="budget_edit"
-              associatedURL="/budget/edit"
+              componentAccess="budget_incomes_edit"
+              associatedURL="/budget/incomes/edit"
               setUpdatedPermissions={setUpdatedPermissions}
               updatedPermissions={updatedPermissons}
             />
@@ -542,7 +543,7 @@ export function EditPermissions() {
               name="Deletar"
               type="Botão"
               length={9}
-              componentAccess="budget_delete"
+              componentAccess="budget_incomes_delete"
               setUpdatedPermissions={setUpdatedPermissions}
               updatedPermissions={updatedPermissons}
             />
@@ -567,7 +568,7 @@ export function EditPermissions() {
               name="Cadastrar"
               type="Botão"
               length={9}
-              componentAccess="incomes_create"
+              componentAccess="income_create"
               associatedURL="/incomes/create"
               setUpdatedPermissions={setUpdatedPermissions}
               updatedPermissions={updatedPermissons}
@@ -577,7 +578,7 @@ export function EditPermissions() {
               name="Editar"
               type="Botão"
               length={9}
-              componentAccess="incomes_edit"
+              componentAccess="income_edit"
               associatedURL="/incomes/edit"
               setUpdatedPermissions={setUpdatedPermissions}
               updatedPermissions={updatedPermissons}
@@ -587,7 +588,7 @@ export function EditPermissions() {
               name="Deletar"
               type="Botão"
               length={9}
-              componentAccess="incomes_delete"
+              componentAccess="income_delete"
               setUpdatedPermissions={setUpdatedPermissions}
               updatedPermissions={updatedPermissons}
             />
@@ -612,7 +613,7 @@ export function EditPermissions() {
               name="Cadastrar"
               type="Botão"
               length={9}
-              componentAccess="expenses_create"
+              componentAccess="expense_create"
               associatedURL="/expenses/create"
               setUpdatedPermissions={setUpdatedPermissions}
               updatedPermissions={updatedPermissons}
@@ -622,7 +623,7 @@ export function EditPermissions() {
               name="Editar"
               type="Botão"
               length={9}
-              componentAccess="expenses_edit"
+              componentAccess="expense_edit"
               associatedURL="/expenses/edit"
               setUpdatedPermissions={setUpdatedPermissions}
               updatedPermissions={updatedPermissons}
@@ -632,7 +633,7 @@ export function EditPermissions() {
               name="Deletar"
               type="Botão"
               length={9}
-              componentAccess="expenses_delete"
+              componentAccess="expense_delete"
               setUpdatedPermissions={setUpdatedPermissions}
               updatedPermissions={updatedPermissons}
             />
@@ -733,7 +734,7 @@ export function EditPermissions() {
           name="Resumo de Contas Realizado"
           type="Página"
           length={10}
-          associatedURL="/summary-details"
+          associatedURL="/reports/summary-details"
           setUpdatedPermissions={setUpdatedPermissions}
           updatedPermissions={updatedPermissons}
         />
@@ -742,7 +743,7 @@ export function EditPermissions() {
           name="DRE"
           type="Página"
           length={10}
-          associatedURL="/repors/dre"
+          associatedURL="/reports/dre"
           setUpdatedPermissions={setUpdatedPermissions}
           updatedPermissions={updatedPermissons}
         />
@@ -751,7 +752,7 @@ export function EditPermissions() {
           name="Fluxo de Caixa"
           type="Página"
           length={10}
-          associatedURL="/repors/cash-flow"
+          associatedURL="/reports/cash-flow"
           setUpdatedPermissions={setUpdatedPermissions}
           updatedPermissions={updatedPermissons}
         />
@@ -760,10 +761,14 @@ export function EditPermissions() {
           name="Comparativo"
           type="Página"
           length={10}
-          associatedURL="/repors/comparison"
+          associatedURL="/reports/comparison"
           setUpdatedPermissions={setUpdatedPermissions}
           updatedPermissions={updatedPermissons}
         />
+      </div>
+
+      <div className="mt-2 flex w-[1000px] justify-end">
+        <Button>Editar</Button>
       </div>
     </section>
   )

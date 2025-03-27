@@ -115,7 +115,7 @@ export const PermissionCard = ({
 
   return (
     <div
-      className={`flex items-center justify-between ${lengthClass} mt-3 rounded-md border-2 border-yellow-200 bg-yellow-100 p-2 text-blue-400`}>
+      className={`flex items-center justify-between ${lengthClass} mt-3 rounded-md border-2 border-yellow-200 ${length === 10 ? "bg-yellow-100" : "bg-blue-100"} p-2 text-blue-400`}>
       <h2>{name}</h2>
       <div className="m-0 flex items-center gap-4 p-0">
         <p>{type}</p>
