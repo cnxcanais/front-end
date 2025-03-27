@@ -1,71 +1,44 @@
-"use client"
-
 import { Expense } from "@/@types/expense"
-import { ExpenseDetails } from "@/@types/expense-details"
 import { Button } from "@/core/components/Button"
-import { LoadingScreen } from "@/core/components/LoadingScreen"
 import { Modal } from "@/core/components/Modals/Modal"
-import { ModalObservationTrigger } from "@/core/components/Modals/ModalObservation"
 import { PageSelector } from "@/core/components/PageSelector"
 import { Table } from "@/core/components/Table"
 import { formatLocalDate } from "@/core/utils/dateFunctions"
-import { exportToExcel } from "@/core/utils/exportToExcel"
-import { getCookie } from "@/lib/cookies"
-import { ExpenseDetailsFilters } from "@/modules/expenses-components/expense-details-components/expense-details/presentation/components/ExpenseDetailsFilters"
-import {
-  deleteExpenseDetails,
-  getExpenseDetails,
-} from "@/modules/expenses-components/expense-details-components/remote"
+import { formatCurrency } from "@/core/utils/format-currency"
+import { getAccountId } from "@/core/utils/get-account-id"
+import { useExpenseDetailsQuery } from "@/modules/expenses-components/expense-details-components/infra/hooks/use-expense-details-query"
+import { deleteExpenseDetails } from "@/modules/expenses-components/expense-details-components/remote"
 import { editExpenseDetails } from "@/modules/expenses-components/expense-details-components/remote/update-expense-details"
 import { usePermissionQuery } from "@/modules/login-components/login/infra/hooks/use-permissions-query"
-import { FileXls, Money, Pencil, Trash } from "@phosphor-icons/react"
-import { useQuery } from "@tanstack/react-query"
+import { Money, Pencil, Trash } from "@phosphor-icons/react/dist/ssr"
 import { useRouter } from "next/navigation"
-import { useState } from "react"
-import { FormProvider, useForm } from "react-hook-form"
+import { useMemo, useState } from "react"
 import { toast } from "sonner"
 
-export function ExpenseDetailsTable({ expense_id }: { expense_id?: string }) {
-  const { push } = useRouter()
-
-  const account_id = getCookie("accountId")
+export function OverdueTable() {
+  const accountId = getAccountId()
 
   const [open, setOpen] = useState(false)
-  const [id, setId] = useState("")
-  const [page, setPage] = useState(1)
   const [payOpen, setPayOpen] = useState(false)
   const [payId, setPayId] = useState("")
+  const [page, setPage] = useState(1)
+  const [id, setId] = useState("")
+
+  const { push } = useRouter()
 
   // check permissions
   const { data: permissions, isLoading: permissionLoading } =
     usePermissionQuery()
 
-  const create = permissions?.["expense_details_create"]
   const pay = permissions?.["expense_details_pay"]
   const edit = permissions?.["expense_details_edit"]
   const deletePermission = permissions?.["expense_details_delete"]
 
-  const methods = useForm<ExpenseDetails.QueryParams>({
-    values: {
-      expense_id,
-    },
+  const { data, isLoading, refetch } = useExpenseDetailsQuery(accountId, {
+    page,
   })
 
-  const [filters, setFilters] = useState<ExpenseDetails.QueryParams>({
-    expense_id,
-  })
-
-  const { data, isLoading, refetch } = useQuery({
-    queryKey: ["expense-details", { filters }],
-    queryFn: () => getExpenseDetails(account_id, { page, ...filters }),
-  })
-
-  // HANDLERS
-  const handleFilterChange = (newFilters: ExpenseDetails.QueryParams) => {
-    setFilters(newFilters)
-  }
-
-  const handlePay = async (expense_details_id: string) => {
+  async function handlePay(expense_details_id: string) {
     try {
       await editExpenseDetails({ expense_details_id, is_paid: true })
       toast.success("Parcela paga com sucesso!")
@@ -76,11 +49,11 @@ export function ExpenseDetailsTable({ expense_id }: { expense_id?: string }) {
     }
   }
 
-  const handleEdit = (id: string) => {
+  function handleEdit(id: string) {
     push(`/expense-details/edit/${id}`)
   }
 
-  const handleConfirmDelete = async () => {
+  async function handleConfirmDelete() {
     try {
       await deleteExpenseDetails(id)
       toast.success("Parcela removida com sucesso!")
@@ -92,52 +65,40 @@ export function ExpenseDetailsTable({ expense_id }: { expense_id?: string }) {
     }
   }
 
+  const filteredData = useMemo(() => {
+    return data?.expenseDetails?.filter((expenseDetail) => {
+      return (
+        expenseDetail.is_paid === false && expenseDetail.due_date < new Date()
+      )
+    })
+  }, [data])
+
+  // column structure for table
   const columns = [
     {
       header: "Documento",
       accessor: "expense",
-      render: (expense: Expense.ExpenseType) => <p>{expense.document}</p>,
+      render: (value: Expense.ExpenseType) => value.document,
     },
     {
       header: "Cliente",
       accessor: "expense",
-      render: (expense: Expense.ExpenseType) => <p>{expense.supplier.name}</p>,
+      render: (value: Expense.ExpenseType) => value.supplier.name,
     },
-
     {
       header: "Valor",
       accessor: "amount",
-      render: (amount: number) =>
-        amount && (
-          <p>
-            {Number(amount).toLocaleString("pt-br", {
-              style: "currency",
-              currency: "BRL",
-            })}
-          </p>
-        ),
+      render: (value: string) => formatCurrency(Number(value)),
     },
     {
-      header: "Parc.",
+      header: "Parcela",
       accessor: "part",
-      render: (part: number) => <p>{part}</p>,
-    },
-    {
-      header: "Pgto",
-      accessor: "is_paid",
-      render: (is_paid: boolean) => <p>{is_paid ? "Pago" : "Em Aberto"}</p>,
+      render: (value: number) => value,
     },
     {
       header: "Vencimento",
       accessor: "due_date",
       render: (due_date: Date) => <p>{formatLocalDate(new Date(due_date))}</p>,
-    },
-    {
-      header: "Obs.",
-      accessor: "observation",
-      render: (value: string) => {
-        if (value) return <ModalObservationTrigger content={value} />
-      },
     },
     {
       header: "Ações",
@@ -185,8 +146,7 @@ export function ExpenseDetailsTable({ expense_id }: { expense_id?: string }) {
     },
   ]
 
-  if (!data?.expenseDetails || isLoading || permissionLoading)
-    return <LoadingScreen />
+  if (!data || isLoading || permissionLoading || !permissions) return null
 
   return (
     <>
@@ -204,7 +164,6 @@ export function ExpenseDetailsTable({ expense_id }: { expense_id?: string }) {
           </Button>
         </div>
       </Modal>
-
       <Modal
         title="Quitar Parcela"
         content="Você tem certeza de que deseja quitar esta parcela?"
@@ -219,48 +178,19 @@ export function ExpenseDetailsTable({ expense_id }: { expense_id?: string }) {
           </Button>
         </div>
       </Modal>
-
-      <FormProvider {...methods}>
-        <ExpenseDetailsFilters onFilterChange={handleFilterChange} />
-
-        <div className="mt-8 flex items-center justify-between">
-          <div className="flex gap-4">
-            <Button onClick={() => push("/expenses")} variant="secondary">
-              Voltar
-            </Button>
-
-            {expense_id && (
-              <Button
-                variant="secondary"
-                onClick={() => push(`/expense-details/create/${expense_id}`)}
-                disabled={!create}>
-                Adicionar Parcela
-              </Button>
-            )}
-          </div>
-
-          <Button
-            className="flex items-center gap-1"
-            variant="secondary"
-            onClick={exportToExcel}>
-            <FileXls size={22} />
-            Exportar
-          </Button>
-        </div>
-        {data.expenseDetails.length == 0 ?
-          <h2 className="mt-6 text-xl font-semibold">
-            Nenhuma parcela cadastrada.
-          </h2>
-        : <div>
-            <Table columns={columns} data={data.expenseDetails} />
-            <PageSelector
-              page={page}
-              setPage={setPage}
-              totalPages={data.totalPages}
-            />
-          </div>
-        }
-      </FormProvider>
+      {filteredData.length === 0 ?
+        <h2 className="mt-6 text-xl font-semibold">
+          Nenhuma despesa atrasada.
+        </h2>
+      : <>
+          <Table columns={columns} data={filteredData} />
+          <PageSelector
+            page={page}
+            setPage={setPage}
+            totalPages={data.totalPages}
+          />
+        </>
+      }
     </>
   )
 }

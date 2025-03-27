@@ -253,7 +253,7 @@ export function IncomeDetailForm({
           </Input.Root>
           {errors.incomeDetailsArray && (
             <span className="mt-1 text-xs text-red-500">
-              {errors.incomeDetailsArray[0]?.bank_account_id.message}
+              {errors.incomeDetailsArray[0]?.bank_account_id?.message}
             </span>
           )}
         </div>

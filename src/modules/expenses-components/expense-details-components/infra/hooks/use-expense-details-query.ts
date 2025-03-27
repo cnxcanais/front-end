@@ -7,7 +7,7 @@ export function useExpenseDetailsQuery(
   queryParams?: ExpenseDetails.GetRequestParams
 ) {
   return useQuery({
-    queryKey: ["expense-details"],
+    queryKey: ["expense-details", { queryParams }],
     queryFn: () => getExpenseDetails(account_id, queryParams),
     enabled: !!account_id,
   })

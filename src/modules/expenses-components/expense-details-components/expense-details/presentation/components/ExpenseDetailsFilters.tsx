@@ -16,8 +16,9 @@ interface FilterProps {
 }
 
 export function ExpenseDetailsFilters({ onFilterChange }: FilterProps) {
-  const [collapsed, setCollapsed] = useState(true)
+  const [collapsed, setCollapsed] = useState(false)
   const [isFilterFilled, setIsFilterFilled] = useState(false)
+  const [isOverdue, setIsOverdue] = useState(false)
 
   const account_id = getAccountId()
 
@@ -43,10 +44,16 @@ export function ExpenseDetailsFilters({ onFilterChange }: FilterProps) {
 
     const cleanedData = {
       ...data,
-      start_date: adjustMonth(data.start_date, true)
-        ?.toISOString()
-        .split("T")[0],
-      end_date: adjustMonth(data.end_date, false)?.toISOString().split("T")[0],
+      bank_account_id:
+        data.bank_account_id !== "" ? data.bank_account_id : undefined,
+      start_date:
+        isOverdue ? undefined : (
+          adjustMonth(data.start_date, true)?.toISOString().split("T")[0]
+        ),
+      end_date:
+        isOverdue ?
+          new Date().toISOString().split("T")[0]
+        : adjustMonth(data.end_date, false)?.toISOString().split("T")[0],
       ...(data.min_amount === 0 || !data.min_amount ?
         { min_amount: undefined }
       : {}),
@@ -76,12 +83,13 @@ export function ExpenseDetailsFilters({ onFilterChange }: FilterProps) {
   }
 
   useEffect(() => {
-    const hasValue = Object.values(formValues).some(
-      (value) => value !== undefined && value !== null && value !== ""
-    )
+    const hasValue =
+      Object.values(formValues).some(
+        (value) => value !== undefined && value !== null && value !== ""
+      ) || isOverdue
 
     setIsFilterFilled(hasValue)
-  }, [formValues])
+  }, [formValues, isOverdue])
 
   if (!expenses || expensesIsLoading || !bankAccounts || bankAccountIsLoading)
     return <LoadingScreen fullScreen={false} />
@@ -137,14 +145,12 @@ export function ExpenseDetailsFilters({ onFilterChange }: FilterProps) {
             <div className="flex gap-4">
               <SelectInput
                 className="max-w-[200px]"
-                field_name="expense_group_id"
+                field_name="bank_account_id"
                 label="Conta Bancária"
-                options={[{ text: "", value: "" }].concat(
-                  bankAccounts.map((account) => ({
-                    text: `AG: ${account.agency} CC: ${account.account_number}`,
-                    value: account.bank_account_id,
-                  }))
-                )}
+                options={bankAccounts.map((account) => ({
+                  text: `AG: ${account.agency} CC: ${account.account_number}`,
+                  value: account.bank_account_id,
+                }))}
                 {...register("bank_account_id")}
               />
 
@@ -165,16 +171,28 @@ export function ExpenseDetailsFilters({ onFilterChange }: FilterProps) {
               </div>
 
               <SelectInput
-                className="max-w-[100px]"
+                className="max-w-[150px]"
                 field_name="expense_group_id"
                 label="Pagamento"
                 options={[
-                  { text: "", value: "" },
                   { text: "Pago", value: "true" },
                   { text: "Em Aberto", value: "false" },
                 ]}
                 {...register("is_paid")}
               />
+
+              <div className="mt-4 flex items-center gap-4">
+                <Input.Control
+                  className="flex-none"
+                  type="checkbox"
+                  checked={isOverdue}
+                  onChange={() => setIsOverdue(!isOverdue)}
+                />
+
+                <label className="" htmlFor="enabled">
+                  Atrasados
+                </label>
+              </div>
             </div>
 
             <div className="flex h-12 w-full gap-2">
