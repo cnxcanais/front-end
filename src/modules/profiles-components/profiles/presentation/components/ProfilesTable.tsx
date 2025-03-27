@@ -7,7 +7,7 @@ import { Table } from "@/core/components/Table"
 import { formatLocalDate } from "@/core/utils/dateFunctions"
 import { getAccountId } from "@/core/utils/get-account-id"
 import { useGetProfilesQuery } from "@/modules/profiles-components/profiles/infra/hooks/use-get-profiles-query"
-import { Pencil, Trash } from "@phosphor-icons/react"
+import { Copy, Pencil, Trash } from "@phosphor-icons/react"
 import { useRouter } from "next/navigation"
 import { useState } from "react"
 import { toast } from "sonner"
@@ -23,6 +23,10 @@ export function ProfilesTable() {
 
   function handleEdit(profile_name: string) {
     push(`/permissions/edit/${profile_name}`)
+  }
+
+  function handleClone(profile_name: string) {
+    push(`/permissions/clone/${profile_name}`)
   }
 
   async function handleConfirmDelete() {
@@ -67,6 +71,12 @@ export function ProfilesTable() {
                 setId(name)
                 setOpen(true)
               }}
+            />
+
+            <Copy
+              className="cursor-pointer duration-300 ease-in-out hover:text-blue-500"
+              size={24}
+              onClick={() => handleClone(name)}
             />
           </div>
         )

@@ -9,6 +9,6 @@ export async function getPermissions(account_id: string, profile_name: string) {
 
     return data.permissions
   } catch (error) {
-    console.info(error)
+    console.error(error)
   }
 }

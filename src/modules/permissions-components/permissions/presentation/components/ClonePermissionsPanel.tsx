@@ -42,9 +42,6 @@ export function ClonePermissions() {
   const handleSubmit = async () => {
     if (!updatedPermissons.name) {
       toast.error("Nome do perfil não pode ser vazio!")
-      setTimeout(() => {
-        push("/permissions")
-      }, 2000)
       return
     }
     const refinedData = {
@@ -54,9 +51,9 @@ export function ClonePermissions() {
     const response = await clonePermissions(refinedData)
 
     if (response) {
-      toast.success("Permissões atualizadas com sucesso!")
+      toast.success("Perfil criado com sucesso!")
     } else {
-      toast.error("Erro ao atualizar permissões!")
+      toast.error("Erro ao criar perfil!")
     }
 
     setTimeout(() => {
@@ -75,15 +72,17 @@ export function ClonePermissions() {
     <section className="mb-2">
       <div>
         <label htmlFor="profileName">Nome do Perfil de Permissões</label>
-        <Input.Control
-          name="profileName"
-          onChange={(e) =>
-            setUpdatedPermissions({
-              ...updatedPermissons,
-              name: e.target.value,
-            })
-          }
-        />
+        <Input.Root className="mb-3 w-[600px]">
+          <Input.Control
+            name="profileName"
+            onChange={(e) =>
+              setUpdatedPermissions({
+                ...updatedPermissons,
+                name: e.target.value,
+              })
+            }
+          />
+        </Input.Root>
       </div>
       <div className="flex w-[1000px] justify-between p-0">
         <div>
@@ -809,7 +808,7 @@ export function ClonePermissions() {
       </div>
 
       <div className="mt-2 flex w-[1000px] justify-end">
-        <Button onClick={handleSubmit}>Editar</Button>
+        <Button onClick={handleSubmit}>Salvar</Button>
       </div>
     </section>
   )

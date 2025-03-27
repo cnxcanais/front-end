@@ -13,15 +13,16 @@ export function EntityPermissionsTable({
   const accountId = getAccountId()
 
   const { data, isLoading } = useGetPermissionsQuery(accountId, profile_name)
-  console.log(data)
 
   if (!data || isLoading) return <LoadingScreen />
 
   const columns = [{ header: "Perfil", accessor: "name" }]
 
+  const tableData = Array.isArray(data) ? data : [data]
+
   return (
     <>
-      <Table columns={columns} data={data} />
+      <Table columns={columns} data={tableData} />
     </>
   )
 }

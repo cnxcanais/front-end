@@ -14,6 +14,6 @@ export async function getPathsAccess(profile_id: string) {
 
     return data.pathAccess
   } catch (error) {
-    console.info(error)
+    console.error(error)
   }
 }

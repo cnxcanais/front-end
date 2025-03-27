@@ -14,6 +14,6 @@ export async function getEntitiesAccess(profile_id: string) {
 
     return data.entityAccess
   } catch (error) {
-    console.info(error)
+    console.error(error)
   }
 }

@@ -4,7 +4,7 @@ import { ClonePermissions } from "@/modules/permissions-components/permissions/p
 export default async function EditPermissionsRender() {
   return (
     <>
-      <PageTitle content="Editar Permissões" />
+      <PageTitle content="Clonar Permissões" />
       <ClonePermissions />
     </>
   )
