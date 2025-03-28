@@ -79,14 +79,13 @@ export function ExpenseForm({ account_id, setSecondPage }: Props) {
   //SET DESTINY FRANCHISE BANK ACCOUNTS TO BE USED WHEN MASTER MODE
   useEffect(() => {
     if (bankAccountList) {
-      const bankAccountSearchArray: SearchArray = [
-        { label: "", value: "" },
-      ].concat(
-        bankAccountList.map((account) => ({
+      const bankAccountSearchArray: SearchArray = bankAccountList.map(
+        (account) => ({
           label: `AG: ${account.agency} | CC: ${account.account_number}`,
           value: account.bank_account_id,
-        }))
+        })
       )
+
       setDestinyFranchiseBankAccounts(bankAccountSearchArray)
     }
   }, [bankAccountList])
@@ -112,14 +111,13 @@ export function ExpenseForm({ account_id, setSecondPage }: Props) {
   //SET DESTINY FRANCHISE ORGANIZATIONS TO BE USED WHEN MASTER MODE
   useEffect(() => {
     if (organizationList) {
-      const organizationSearchArray: SearchArray = [
-        { label: "", value: "" },
-      ].concat(
-        organizationList.map((organization) => ({
+      const organizationSearchArray: SearchArray = organizationList.map(
+        (organization) => ({
           label: organization.name,
           value: organization.organization_id,
-        }))
+        })
       )
+
       if (organizationSearchArray)
         setFranchiseOrganizations(organizationSearchArray)
     }

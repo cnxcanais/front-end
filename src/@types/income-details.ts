@@ -32,6 +32,10 @@ export namespace IncomeDetails {
     incomeDetails: IncomeDetailsType
   }
 
+  export type GetByMonthResponse = {
+    totalPerMonth: { month: number; value: number }[]
+  }
+
   export type CreateRequest = {
     amount: number
     bank_account_id: string

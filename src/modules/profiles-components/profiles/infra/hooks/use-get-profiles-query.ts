@@ -1,4 +1,4 @@
-import { getProfiles } from "@/modules/profiles-components/profiles/remote/infra/get-profiles"
+import { getProfiles } from "@/modules/profiles-components/profiles/infra/remote/get-profiles"
 import { useQuery } from "@tanstack/react-query"
 
 export function useGetProfilesQuery(account_id: string) {

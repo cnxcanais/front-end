@@ -42,7 +42,7 @@ export function EditIncomeDetailsForm({
   const income_details_edit_input_fields_description =
     permissions?.["income_details_edit_input_fields_description"]
   const income_details_edit_input_fields_date =
-    permissions?.[" income_details_edit_input_fields_date"]
+    permissions?.["income_details_edit_input_fields_date"]
 
   const {
     register,
@@ -113,14 +113,12 @@ export function EditIncomeDetailsForm({
                   name="bank_account_id"
                   control={control}
                   disabled={!income_details_edit_input_fields_bank_account}
-                  options={[{ label: "", value: "" }].concat(
-                    bankAccounts.map((account) => {
-                      return {
-                        label: `Ag: ${account.agency} | Cc: ${account.account_number}`,
-                        value: account.bank_account_id,
-                      }
-                    })
-                  )}
+                  options={bankAccounts.map((account) => {
+                    return {
+                      label: `Ag: ${account.agency} | Cc: ${account.account_number}`,
+                      value: account.bank_account_id,
+                    }
+                  })}
                   placeholder="Digite..."
                 />
               </Input.Root>

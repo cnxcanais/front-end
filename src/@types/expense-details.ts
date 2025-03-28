@@ -24,12 +24,16 @@ export namespace ExpenseDetails {
   }
 
   export type GetResponse = {
-    expenseDetails: ExpenseDetailsType[] | []
+    expenseDetails: ExpenseDetailsType[]
     totalPages: number
   }
 
   export type GetbyIdResponse = {
     expenseDetails: ExpenseDetailsType
+  }
+
+  export type GetByMonthResponse = {
+    totalPerMonth: { month: number; value: number }[]
   }
 
   export type CreateRequest = {

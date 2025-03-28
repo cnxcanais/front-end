@@ -46,10 +46,10 @@ export function ExpenseBudgetTable() {
   const handleConfirmDelete = async () => {
     try {
       await removeBudgetExpense(id)
-      toast.success("Orçamento de receita removido com sucesso!")
+      toast.success("Previsão de receita removido com sucesso!")
       refetch()
     } catch (error) {
-      toast.error("Erro ao remover orçamento de receita: " + error)
+      toast.error("Erro ao remover previsão de receita: " + error)
     } finally {
       setOpen(false)
     }
@@ -125,7 +125,7 @@ export function ExpenseBudgetTable() {
     <>
       <Modal
         title="Remover Receita Orçada"
-        content="Você tem certeza de que deseja remover esta receita do orçamento?"
+        content="Você tem certeza de que deseja remover esta receita do previsão?"
         onClose={() => setOpen(false)}
         open={open}>
         <div className="flex items-center justify-center gap-4">
@@ -167,7 +167,7 @@ export function ExpenseBudgetTable() {
       </div>
       {budgetExpenses.length == 0 ?
         <h2 className="mt-6 text-xl font-semibold">
-          Nenhum orçamento de despesa cadastrado.
+          Nenhum previsão de despesa cadastrado.
         </h2>
       : <Table columns={columns} data={filteredResults} />}
     </>
