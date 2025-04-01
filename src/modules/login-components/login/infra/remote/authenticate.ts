@@ -1,13 +1,10 @@
-import { Account } from "@/@types/accounts"
 import { User } from "@/@types/users"
-import urlPermissions from "@/core/utils/url_permissions.json"
 import { api } from "@/lib/axios"
 import { setCookie } from "@/lib/cookies"
 import { LoginSchema } from "@/modules/login-components/login/presentation/validation/schema"
 import { AxiosError } from "axios"
 
 type AuthenticateResponseProps = {
-  account: Account.Type
   user: User.Type
   token: string
 }
@@ -22,9 +19,16 @@ export async function authenticate(formData: LoginSchema) {
       }
     )
 
+    const { data: permissionsData } = await api.get(
+      `/permissions/${data.user.account_id}/${data.user.profile.name}`
+    )
+
     setCookie("accountId", data.user.account_id)
     setCookie("token", data.token)
-    setCookie("path_permissions", JSON.stringify(urlPermissions))
+    setCookie(
+      "path_permissions",
+      JSON.stringify(permissionsData.permissions.urlAccess)
+    )
   } catch (error) {
     if (error instanceof AxiosError) throw error.response.data.message
     throw error

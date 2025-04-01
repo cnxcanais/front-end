@@ -1,33 +1,21 @@
 import { NextResponse, type NextRequest } from "next/server"
 
 export async function middleware(request: NextRequest) {
-  // const permissionsCookie = JSON.stringify({
-  //   id: "a3e1e4a3-9f7e-4e6b-9e1c-9f7e4e6b9e1c",
-  //   name: "ADMIN",
-  //   urlAccess: {
-  //     "/dashboard": true,
-  //     "/accounts": true,
-  //     "/accounts/create": true,
-  //     "/accounts/edit": true,
-  //   },
-  //   componentAccess: {
-  //     "dashboard-button": true,
-  //   },
-  // })
+  const permissionsCookie = request.cookies.get("path_permissions")
 
-  // if (!permissionsCookie) {
-  //   return NextResponse.redirect(new URL("/login", request.url))
-  // }
+  if (!permissionsCookie) {
+    return NextResponse.redirect(new URL("/", request.url))
+  }
 
-  // const permissions = JSON.parse(permissionsCookie)
+  const requestedUrl = new URL(request.url).pathname
 
-  // const requestedUrl = new URL(request.url).pathname
+  const parsedUrlValues = JSON.parse(permissionsCookie.value)
 
-  // const hasAccess = permissions.urlAccess[requestedUrl]
+  const hasAccess = parsedUrlValues[requestedUrl]
 
-  // if (!hasAccess) {
-  //   return NextResponse.redirect(new URL("/unauthorized", request.url))
-  // }
+  if (!hasAccess) {
+    return NextResponse.redirect(new URL("/unauthorized", request.url))
+  }
 
   const cookieMaxAge = 60 * 60 * 24
 
@@ -42,6 +30,27 @@ export async function middleware(request: NextRequest) {
   return response
 }
 
-// export const config = {
-//   matcher: ["/dashboard/:path*"],
-// }
+export const config = {
+  matcher: [
+    "/dashboard/:path*",
+    "/accounts/:path*",
+    "/income-groups/:path*",
+    "/income-sources/:path*",
+    "/incomes/:path*",
+    "/banks/:path*",
+    "/banks/accounts/:path*",
+    "/budget/incomes/:path*",
+    "/budget/expenses/:path*",
+    "/expense-categories/:path*",
+    "/expense-details/:path*",
+    "/expense-groups/:path*",
+    "/income-categories/:path*",
+    "/income-details/:path*",
+    "/suppliers/:path*",
+    "/users/:path*",
+    "/permissions/:path*",
+    "/reports/:path*",
+    "/organizations/:path*",
+    "/expenses/:path*",
+  ],
+}
