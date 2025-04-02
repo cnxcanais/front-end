@@ -9,9 +9,9 @@ import { Table } from "@/core/components/Table"
 import { formatLocalDate } from "@/core/utils/dateFunctions"
 import { exportToExcel } from "@/core/utils/exportToExcel"
 import { getAccountId } from "@/core/utils/get-account-id"
-import { getPermissionByEntity } from "@/core/utils/getPermissionByEntity"
 import { deleteExpenseGroup } from "@/modules/expenses-components/expense-groups-components/remote/expense-groups-methods"
 import { useExpenseGroupQuery } from "@/modules/expenses-components/expense-groups-components/remote/use-expense-groups-query"
+import { usePermissionQuery } from "@/modules/login-components/login/infra/hooks/use-permissions-query"
 import { FileXls, Pencil, Trash } from "@phosphor-icons/react"
 import { useRouter } from "next/navigation"
 import { useEffect, useState } from "react"
@@ -19,10 +19,12 @@ import { toast } from "sonner"
 
 export function ExpenseGroupTable() {
   const { push } = useRouter()
+  const { data: permissions, isLoading: permissionLoading } =
+    usePermissionQuery()
 
-  const create = getPermissionByEntity("expense_groups_create")
-  const edit = getPermissionByEntity("expense_groups_edit")
-  const deletePermission = getPermissionByEntity("expense_groups_delete")
+  const create = permissions?.["expense_groups_create"]
+  const edit = permissions?.["expense_groups_edit"]
+  const deletePermission = permissions?.["expense_groups_delete"]
 
   const account_id = getAccountId()
 
@@ -100,7 +102,7 @@ export function ExpenseGroupTable() {
     if (expenseGroups) setFilteredResults(expenseGroups)
   }, [expenseGroups, isLoading])
 
-  if (!expenseGroups || isLoading) return <LoadingScreen />
+  if (!expenseGroups || isLoading || permissionLoading) return <LoadingScreen />
 
   return (
     <>

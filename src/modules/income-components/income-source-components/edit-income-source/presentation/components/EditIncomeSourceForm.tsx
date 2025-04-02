@@ -13,7 +13,6 @@ import {
   formatPhoneNumber,
   formatStaticPhoneNumber,
 } from "@/core/utils/formatPhoneNumber"
-import { usePermissions } from "@/core/utils/hooks/use-permission"
 import {
   editIncomeSource,
   getIncomeSourceById,
@@ -22,6 +21,7 @@ import {
   EditIncomeSourceSchema,
   editIncomeSourceFormSchema,
 } from "@/modules/income-components/income-source-components/edit-income-source/presentation/validation/schema"
+import { usePermissionQuery } from "@/modules/login-components/login/infra/hooks/use-permissions-query"
 import { zodResolver } from "@hookform/resolvers/zod"
 import { MagnifyingGlass } from "@phosphor-icons/react"
 import { useQuery } from "@tanstack/react-query"
@@ -36,37 +36,31 @@ export function EditIncomeSourceForm({
 }) {
   const { push } = useRouter()
 
+  const { data: permissions, isLoading: permissionLoading } =
+    usePermissionQuery()
+
   const { data: incomeSource, isLoading } = useQuery({
     queryKey: ["income-source", income_source_id],
     queryFn: () => getIncomeSourceById({ income_source_id }),
     enabled: income_source_id !== "",
   })
 
-  const permissions = [
-    "income_source_input_fields_name",
-    "income_source_input_fields_email",
-    "income_source_input_fields_cpf_cnpj",
-    "income_source_input_fields_phone",
-    "income_source_input_fields_contact_name",
-    "income_source_input_fields_address_1",
-    "income_source_input_fields_address_2",
-    "income_source_input_fields_address_3",
-    "income_source_input_fields_state",
-    "income_source_input_fields_cep",
-    "income_source_input_fields_city",
-  ]
-
-  const {
-    income_source_input_fields_name,
-    income_source_input_fields_email,
-    income_source_input_fields_cpf_cnpj,
-    income_source_input_fields_phone,
-    income_source_input_fields_contact_name,
-    income_source_input_fields_address_2,
-    income_source_input_fields_address_3,
-
-    income_source_input_fields_cep,
-  } = usePermissions(permissions)
+  const income_source_input_fields_name =
+    permissions?.["income_source_input_fields_name"]
+  const income_source_input_fields_email =
+    permissions?.["income_source_input_fields_email"]
+  const income_source_input_fields_cpf_cnpj =
+    permissions?.["income_source_input_fields_cpf_cnpj"]
+  const income_source_input_fields_phone =
+    permissions?.["income_source_input_fields_phone"]
+  const income_source_input_fields_contact_name =
+    permissions?.["income_source_input_fields_contact_name"]
+  const income_source_input_fields_address_2 =
+    permissions?.["income_source_input_fields_address_2"]
+  const income_source_input_fields_address_3 =
+    permissions?.["income_source_input_fields_address_3"]
+  const income_source_input_fields_cep =
+    permissions?.["income_source_input_fields_cep"]
 
   const {
     register,

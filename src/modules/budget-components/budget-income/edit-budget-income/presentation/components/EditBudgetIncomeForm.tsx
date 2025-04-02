@@ -6,7 +6,6 @@ import * as Input from "@/core/components/Input"
 import { LoadingScreen } from "@/core/components/LoadingScreen"
 import { SelectInput } from "@/core/components/SelectInput"
 import { getAccountId } from "@/core/utils/get-account-id"
-import { getPermissionByEntity } from "@/core/utils/getPermissionByEntity"
 import { useGetBudgetIncomeByIdQuery } from "@/modules/budget-components/budget-income/edit-budget-income/infra/hooks/use-get-budget-income-by-id-query"
 import { editBudgetIncome } from "@/modules/budget-components/budget-income/edit-budget-income/infra/remote/edit-budget-income"
 import {
@@ -14,6 +13,7 @@ import {
   EditBudgetIncomeSchema,
 } from "@/modules/budget-components/budget-income/edit-budget-income/presentation/validation/schema"
 import { useIncomeGroupQuery } from "@/modules/income-components/income-groups-components/remote/use-income-group-query"
+import { usePermissionQuery } from "@/modules/login-components/login/infra/hooks/use-permissions-query"
 import { zodResolver } from "@hookform/resolvers/zod"
 import { useRouter } from "next/navigation"
 import { useForm } from "react-hook-form"
@@ -24,18 +24,18 @@ export function EditBudgetIncomeForm({ id }: { id: string }) {
 
   const account_id = getAccountId()
 
-  const budget_income_input_fields_description = getPermissionByEntity(
-    "budget_income_input_fields_description"
-  )
-  const budget_income_input_fields_amount = getPermissionByEntity(
-    "budget_income_input_fields_amount"
-  )
-  const budget_income_input_fields_date = getPermissionByEntity(
-    "budget_income_input_fields_date"
-  )
-  const budget_income_input_fields_income_group_id = getPermissionByEntity(
-    "budget_income_input_fields_income_group_id"
-  )
+  const { data: permissions, isLoading: permissionLoading } =
+    usePermissionQuery()
+
+  const budget_income_input_fields_description =
+    permissions?.["budget_income_input_fields_description"]
+  const budget_income_input_fields_amount =
+    permissions?.["budget_income_input_fields_amount"]
+  const budget_income_input_fields_date =
+    permissions?.["budget_income_input_fields_date"]
+  const budget_income_input_fields_income_group_id =
+    permissions?.["budget_income_input_fields_income_group_id"]
+
   const { data: incomeGroups, isLoading } = useIncomeGroupQuery(account_id)
   const { data: budgetIncome } = useGetBudgetIncomeByIdQuery(id)
 

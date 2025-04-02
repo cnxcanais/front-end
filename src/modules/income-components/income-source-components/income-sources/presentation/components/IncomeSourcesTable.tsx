@@ -10,9 +10,9 @@ import { exportToExcel } from "@/core/utils/exportToExcel"
 import { formatStaticDocument } from "@/core/utils/formatDocumentNumber"
 import { formatStaticPhoneNumber } from "@/core/utils/formatPhoneNumber"
 import { getAccountId } from "@/core/utils/get-account-id"
-import { getPermissionByEntity } from "@/core/utils/getPermissionByEntity"
 import { useGetIncomeSourcesQuery } from "@/modules/income-components/income-source-components/income-sources/infra/hooks/use-get-income-sources-query"
 import { removeIncomeSource } from "@/modules/income-components/income-source-components/income-sources/infra/remote"
+import { usePermissionQuery } from "@/modules/login-components/login/infra/hooks/use-permissions-query"
 import { FileXls, Pencil, Trash } from "@phosphor-icons/react"
 import { useRouter } from "next/navigation"
 import { useEffect, useState } from "react"
@@ -27,14 +27,17 @@ export function IncomeSourcesTable() {
     refetch,
   } = useGetIncomeSourcesQuery(account_id)
 
+  const { data: permissions, isLoading: permissionLoading } =
+    usePermissionQuery()
+
   const { push } = useRouter()
 
   const [open, setOpen] = useState(false)
   const [id, setId] = useState("")
 
-  const income_sources_create = getPermissionByEntity("income_sources_create")
-  const income_sources_edit = getPermissionByEntity("income_sources_edit")
-  const income_sources_delete = getPermissionByEntity("income_sources_delete")
+  const income_sources_create = permissions?.["income_sources_create"]
+  const income_sources_edit = permissions?.["income_sources_edit"]
+  const income_sources_delete = permissions?.["income_sources_delete"]
 
   const [filteredResults, setFilteredResults] = useState([])
 

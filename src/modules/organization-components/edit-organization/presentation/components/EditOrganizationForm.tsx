@@ -11,7 +11,7 @@ import {
   formatPhoneNumber,
   formatStaticPhoneNumber,
 } from "@/core/utils/formatPhoneNumber"
-import { getPermissionByEntity } from "@/core/utils/getPermissionByEntity"
+import { usePermissionQuery } from "@/modules/login-components/login/infra/hooks/use-permissions-query"
 import {
   editOrganization,
   getOrganizationById,
@@ -29,27 +29,25 @@ import { toast } from "sonner"
 export function EditOrganizationForm({ id }: { id: string }) {
   const { push } = useRouter()
 
+  const { data: permissions, isLoading: permissionLoading } =
+    usePermissionQuery()
+
   const { data: organization, isLoading } = useQuery({
     queryKey: ["organization", id],
     queryFn: () => getOrganizationById(id),
     enabled: id !== "",
   })
 
-  const organizations_input_fields_name = getPermissionByEntity(
-    "organizations_input_fields_name"
-  )
-  const organizations_input_fields_email = getPermissionByEntity(
-    "organizations_input_fields_email"
-  )
-  const organizations_input_fields_cnpj = getPermissionByEntity(
-    "organizations_input_fields_cnpj"
-  )
-  const organizations_input_fields_address = getPermissionByEntity(
-    "organizations_input_fields_address"
-  )
-  const organizations_input_fields_phone = getPermissionByEntity(
-    "organizations_input_fields_phone"
-  )
+  const organizations_input_fields_name =
+    permissions?.["organizations_input_fields_name"]
+  const organizations_input_fields_email =
+    permissions?.["organizations_input_fields_email"]
+  const organizations_input_fields_cnpj =
+    permissions?.["organizations_input_fields_cnpj"]
+  const organizations_input_fields_address =
+    permissions?.["organizations_input_fields_address"]
+  const organizations_input_fields_phone =
+    permissions?.["organizations_input_fields_phone"]
 
   const {
     register,

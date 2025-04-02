@@ -8,10 +8,10 @@ import { SearchInput } from "@/core/components/SearchInput"
 import { Table } from "@/core/components/Table"
 import { exportToExcel } from "@/core/utils/exportToExcel"
 import { getAccountId } from "@/core/utils/get-account-id"
-import { getPermissionByEntity } from "@/core/utils/getPermissionByEntity"
 import { useBudgetIncomesQuery } from "@/modules/budget-components/budget-income/budget-incomes/infra/hooks/use-budget-incomes-query"
 import { removeBudgetIncome } from "@/modules/budget-components/budget-income/budget-incomes/infra/remote"
 import { IncomeBudgetFilters } from "@/modules/budget-components/budget-income/budget-incomes/presentation/components/BudgetIncomeFilters"
+import { usePermissionQuery } from "@/modules/login-components/login/infra/hooks/use-permissions-query"
 import { FileXls, Pencil, Trash } from "@phosphor-icons/react"
 import { useRouter } from "next/navigation"
 import { useEffect, useState } from "react"
@@ -29,12 +29,15 @@ export function IncomeBudgetTable() {
 
   const { push } = useRouter()
 
+  const { data: permissions, isLoading: permissionLoading } =
+    usePermissionQuery()
+
   const [open, setOpen] = useState(false)
   const [id, setId] = useState("")
 
-  const budget_incomes_create = getPermissionByEntity("budget_incomes_create")
-  const budget_incomes_edit = getPermissionByEntity("budget_incomes_edit")
-  const budget_incomes_delete = getPermissionByEntity("budget_incomes_delete")
+  const budget_incomes_create = permissions?.["budget_incomes_create"]
+  const budget_incomes_edit = permissions?.["budget_incomes_edit"]
+  const budget_incomes_delete = permissions?.["budget_incomes_delete"]
 
   const [filteredResults, setFilteredResults] = useState([])
 
@@ -119,7 +122,7 @@ export function IncomeBudgetTable() {
     if (budgetIncomes) setFilteredResults(budgetIncomes)
   }, [budgetIncomes, isLoading])
 
-  if (!budgetIncomes || isLoading) return <LoadingScreen />
+  if (!budgetIncomes || isLoading || permissionLoading) return <LoadingScreen />
 
   return (
     <>

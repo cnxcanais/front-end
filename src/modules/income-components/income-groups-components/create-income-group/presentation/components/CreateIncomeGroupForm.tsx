@@ -5,7 +5,6 @@ import { SearchArray } from "@/@types/search-array"
 import { Button } from "@/core/components/Button"
 import * as Input from "@/core/components/Input"
 import { getAccountId } from "@/core/utils/get-account-id"
-import { usePermissions } from "@/core/utils/hooks/use-permission"
 import { ArrayConfig, populateArrays } from "@/core/utils/populateArrays"
 import { getAllIncomeCategories } from "@/modules/income-components/income-categories-components/remote/income-categories-methods"
 import {
@@ -13,6 +12,7 @@ import {
   createIncomeGroupSchema,
 } from "@/modules/income-components/income-groups-components/create-income-group/presentation/validation/schema"
 import { createIncomeGroup } from "@/modules/income-components/income-groups-components/remote/income-group"
+import { usePermissionQuery } from "@/modules/login-components/login/infra/hooks/use-permissions-query"
 import { zodResolver } from "@hookform/resolvers/zod"
 import { useRouter } from "next/navigation"
 import { useEffect, useState } from "react"
@@ -23,16 +23,13 @@ export function CreateIncomeGroupForm() {
   const { push } = useRouter()
 
   const account_id = getAccountId()
+  const { data: permissions, isLoading: permissionLoading } =
+    usePermissionQuery()
 
-  const permissions = [
-    "income_group_input_fields_group_name",
-    "income_group_input_fields_income_category_id",
-  ]
-
-  const {
-    income_group_input_fields_group_name,
-    income_group_input_fields_income_category_id,
-  } = usePermissions(permissions)
+  const income_group_input_fields_group_name =
+    permissions?.["income_group_input_fields_group_name"]
+  const income_group_input_fields_income_category_id =
+    permissions?.["income_group_input_fields_income_category_id"]
 
   const [incomeCategories, setIncomeCategories] = useState<SearchArray>([])
   const [arrayPlaceHolder, setArrayPlaceHolder] = useState("Carregando...")
