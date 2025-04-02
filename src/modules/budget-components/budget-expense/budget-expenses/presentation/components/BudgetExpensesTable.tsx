@@ -8,10 +8,10 @@ import { SearchInput } from "@/core/components/SearchInput"
 import { Table } from "@/core/components/Table"
 import { exportToExcel } from "@/core/utils/exportToExcel"
 import { getAccountId } from "@/core/utils/get-account-id"
-import { getPermissionByEntity } from "@/core/utils/getPermissionByEntity"
 import { useBudgetExpensesQuery } from "@/modules/budget-components/budget-expense/budget-expenses/infra/hooks/use-budget-expenses-query"
 import { removeBudgetExpense } from "@/modules/budget-components/budget-expense/budget-expenses/infra/remote"
 import { ExpenseBudgetFilters } from "@/modules/budget-components/budget-expense/budget-expenses/presentation/components/BudgetExpenseFilters"
+import { usePermissionQuery } from "@/modules/login-components/login/infra/hooks/use-permissions-query"
 import { FileXls, Pencil, Trash } from "@phosphor-icons/react"
 import { useRouter } from "next/navigation"
 import { useEffect, useState } from "react"
@@ -27,14 +27,17 @@ export function ExpenseBudgetTable() {
     refetch,
   } = useBudgetExpensesQuery(account_id, { page })
 
+  const { data: permissions, isLoading: permissionLoading } =
+    usePermissionQuery()
+
   const { push } = useRouter()
 
   const [open, setOpen] = useState(false)
   const [id, setId] = useState("")
 
-  const budget_expenses_create = getPermissionByEntity("budget_expenses_create")
-  const budget_expenses_edit = getPermissionByEntity("budget_expenses_edit")
-  const budget_expenses_delete = getPermissionByEntity("budget_expenses_delete")
+  const budget_expenses_create = permissions?.["budget_expenses_create"]
+  const budget_expenses_edit = permissions?.["budget_expenses_edit"]
+  const budget_expenses_delete = permissions?.["budget_expenses_delete"]
 
   const [filteredResults, setFilteredResults] = useState([])
 
@@ -119,7 +122,8 @@ export function ExpenseBudgetTable() {
     if (budgetExpenses) setFilteredResults(budgetExpenses)
   }, [budgetExpenses, isLoading])
 
-  if (!budgetExpenses || isLoading) return <LoadingScreen />
+  if (!budgetExpenses || isLoading || permissionLoading)
+    return <LoadingScreen />
 
   return (
     <>

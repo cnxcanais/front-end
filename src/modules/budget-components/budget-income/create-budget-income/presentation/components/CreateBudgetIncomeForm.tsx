@@ -6,13 +6,13 @@ import * as Input from "@/core/components/Input"
 import { LoadingScreen } from "@/core/components/LoadingScreen"
 import { SelectInput } from "@/core/components/SelectInput"
 import { getAccountId } from "@/core/utils/get-account-id"
-import { getPermissionByEntity } from "@/core/utils/getPermissionByEntity"
 import { createBudgetIncome } from "@/modules/budget-components/budget-income/create-budget-income/infra/remote/create-budget-income"
 import {
   createBudgetIncomeFormSchema,
   CreateBudgetIncomeSchema,
 } from "@/modules/budget-components/budget-income/create-budget-income/presentation/validation/schema"
 import { useIncomeGroupQuery } from "@/modules/income-components/income-groups-components/remote/use-income-group-query"
+import { usePermissionQuery } from "@/modules/login-components/login/infra/hooks/use-permissions-query"
 import { zodResolver } from "@hookform/resolvers/zod"
 import { useRouter } from "next/navigation"
 import { useEffect } from "react"
@@ -22,20 +22,19 @@ import { toast } from "sonner"
 export function CreateBudgetIncomeForm() {
   const { push } = useRouter()
 
+  const { data: permissions, isLoading: permissionLoading } =
+    usePermissionQuery()
+
   const account_id = getAccountId()
 
-  const budget_income_input_fields_description = getPermissionByEntity(
-    "budget_income_input_fields_description"
-  )
-  const budget_income_input_fields_amount = getPermissionByEntity(
-    "budget_income_input_fields_amount"
-  )
-  const budget_income_input_fields_date = getPermissionByEntity(
-    "budget_income_input_fields_date"
-  )
-  const budget_income_input_fields_income_group_id = getPermissionByEntity(
-    "budget_income_input_fields_income_group_id"
-  )
+  const budget_income_input_fields_description =
+    permissions?.["budget_income_input_fields_description"]
+  const budget_income_input_fields_amount =
+    permissions?.["budget_income_input_fields_amount"]
+  const budget_income_input_fields_date =
+    permissions?.["budget_income_input_fields_date"]
+  const budget_income_input_fields_income_group_id =
+    permissions?.["budget_income_input_fields_income_group_id"]
 
   const { data: incomeGroups, isLoading } = useIncomeGroupQuery(account_id)
 
@@ -107,7 +106,7 @@ export function CreateBudgetIncomeForm() {
     }
   }, [watcherParts, account_id])
 
-  if (!incomeGroups || isLoading) return <LoadingScreen />
+  if (!incomeGroups || isLoading || permissionLoading) return <LoadingScreen />
 
   return (
     <form

@@ -3,16 +3,17 @@
 import { IncomeSource } from "@/@types/income-sources"
 import { Button } from "@/core/components/Button"
 import * as Input from "@/core/components/Input"
+import { LoadingScreen } from "@/core/components/LoadingScreen"
 import { fetchCep } from "@/core/utils/findCep"
 import { formatDocumentNumber } from "@/core/utils/formatDocumentNumber"
 import { formatPhoneNumber } from "@/core/utils/formatPhoneNumber"
 import { getAccountId } from "@/core/utils/get-account-id"
-import { usePermissions } from "@/core/utils/hooks/use-permission"
 import { createIncomeSource } from "@/modules/income-components/income-source-components/create-income-source/infra/remote/create-income-source"
 import {
   CreateIncomeSourceSchema,
   createIncomeSourceFormSchema,
 } from "@/modules/income-components/income-source-components/create-income-source/presentation/validation/schema"
+import { usePermissionQuery } from "@/modules/login-components/login/infra/hooks/use-permissions-query"
 import { zodResolver } from "@hookform/resolvers/zod"
 import { MagnifyingGlass } from "@phosphor-icons/react"
 import { useRouter } from "next/navigation"
@@ -23,31 +24,25 @@ export function CreateIncomeSourceForm() {
   const { push } = useRouter()
 
   const account_id = getAccountId()
+  const { data: permissions, isLoading: permissionLoading } =
+    usePermissionQuery()
 
-  const permissions = [
-    "income_source_input_fields_name",
-    "income_source_input_fields_email",
-    "income_source_input_fields_cpf_cnpj",
-    "income_source_input_fields_phone",
-    "income_source_input_fields_contact_name",
-    "income_source_input_fields_address_1",
-    "income_source_input_fields_address_2",
-    "income_source_input_fields_address_3",
-    "income_source_input_fields_state",
-    "income_source_input_fields_cep",
-    "income_source_input_fields_city",
-  ]
-
-  const {
-    income_source_input_fields_name,
-    income_source_input_fields_email,
-    income_source_input_fields_cpf_cnpj,
-    income_source_input_fields_phone,
-    income_source_input_fields_contact_name,
-    income_source_input_fields_address_2,
-    income_source_input_fields_address_3,
-    income_source_input_fields_cep,
-  } = usePermissions(permissions)
+  const income_source_input_fields_name =
+    permissions?.["income_source_input_fields_name"]
+  const income_source_input_fields_email =
+    permissions?.["income_source_input_fields_email"]
+  const income_source_input_fields_cpf_cnpj =
+    permissions?.["income_source_input_fields_cpf_cnpj"]
+  const income_source_input_fields_phone =
+    permissions?.["income_source_input_fields_phone"]
+  const income_source_input_fields_contact_name =
+    permissions?.["income_source_input_fields_contact_name"]
+  const income_source_input_fields_address_2 =
+    permissions?.["income_source_input_fields_address_2"]
+  const income_source_input_fields_address_3 =
+    permissions?.["income_source_input_fields_address_3"]
+  const income_source_input_fields_cep =
+    permissions?.["income_source_input_fields_cep"]
 
   const {
     register,
@@ -75,6 +70,8 @@ export function CreateIncomeSourceForm() {
       toast.error("Erro ao criar cliente: " + error)
     }
   }
+
+  if (permissionLoading) return <LoadingScreen />
 
   return (
     <form

@@ -6,7 +6,6 @@ import * as Input from "@/core/components/Input"
 import { LoadingScreen } from "@/core/components/LoadingScreen"
 import { SelectInput } from "@/core/components/SelectInput"
 import { getAccountId } from "@/core/utils/get-account-id"
-import { getPermissionByEntity } from "@/core/utils/getPermissionByEntity"
 import { useGetBudgetExpenseByIdQuery } from "@/modules/budget-components/budget-expense/edit-budget-expense/infra/hooks/use-get-budget-expense-by-id-query"
 import { editBudgetExpense } from "@/modules/budget-components/budget-expense/edit-budget-expense/infra/remote/edit-budget-expense"
 import {
@@ -14,6 +13,7 @@ import {
   EditBudgetExpenseSchema,
 } from "@/modules/budget-components/budget-expense/edit-budget-expense/presentation/validation/schema"
 import { useExpenseGroupQuery } from "@/modules/expenses-components/expense-groups-components/remote/use-expense-groups-query"
+import { usePermissionQuery } from "@/modules/login-components/login/infra/hooks/use-permissions-query"
 import { zodResolver } from "@hookform/resolvers/zod"
 import { useRouter } from "next/navigation"
 import { useForm } from "react-hook-form"
@@ -22,20 +22,19 @@ import { toast } from "sonner"
 export function EditBudgetExpenseForm({ id }: { id: string }) {
   const { push } = useRouter()
 
+  const { data: permissions, isLoading: permissionLoading } =
+    usePermissionQuery()
+
   const account_id = getAccountId()
 
-  const budget_expense_input_fields_description = getPermissionByEntity(
-    "budget_expense_input_fields_description"
-  )
-  const budget_expense_input_fields_amount = getPermissionByEntity(
-    "budget_expense_input_fields_amount"
-  )
-  const budget_expense_input_fields_date = getPermissionByEntity(
-    "budget_expense_input_fields_date"
-  )
-  const budget_expense_input_fields_expense_group_id = getPermissionByEntity(
-    "budget_expense_input_fields_expense_group_id"
-  )
+  const budget_expense_input_fields_description =
+    permissions?.["budget_expense_input_fields_description"]
+  const budget_expense_input_fields_amount =
+    permissions?.["budget_expense_input_fields_amount"]
+  const budget_expense_input_fields_date =
+    permissions?.["budget_expense_input_fields_date"]
+  const budget_expense_input_fields_expense_group_id =
+    permissions?.["budget_expense_input_fields_expense_group_id"]
 
   const { data: expenseGroups, isLoading } = useExpenseGroupQuery(account_id)
   const { data: budgetExpense } = useGetBudgetExpenseByIdQuery(id)
@@ -70,7 +69,8 @@ export function EditBudgetExpenseForm({ id }: { id: string }) {
     }
   }
 
-  if (!expenseGroups || !budgetExpense || isLoading) return <LoadingScreen />
+  if (!expenseGroups || !budgetExpense || isLoading || permissionLoading)
+    return <LoadingScreen />
 
   return (
     <form

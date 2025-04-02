@@ -5,7 +5,6 @@ import { SearchArray } from "@/@types/search-array"
 import { Button } from "@/core/components/Button"
 import * as Input from "@/core/components/Input"
 import { getAccountId } from "@/core/utils/get-account-id"
-import { usePermissions } from "@/core/utils/hooks/use-permission"
 import { ArrayConfig, populateArrays } from "@/core/utils/populateArrays"
 import { getAllExpenseCategories } from "@/modules/expenses-components/expense-categories-components/remote/expense-categories-methods"
 import {
@@ -13,6 +12,7 @@ import {
   createExpenseGroupSchema,
 } from "@/modules/expenses-components/expense-groups-components/create-expense-group/presentation/validation/schema"
 import { createExpenseGroup } from "@/modules/expenses-components/expense-groups-components/remote/expense-groups-methods"
+import { usePermissionQuery } from "@/modules/login-components/login/infra/hooks/use-permissions-query"
 import { zodResolver } from "@hookform/resolvers/zod"
 import { useRouter } from "next/navigation"
 import { useEffect, useState } from "react"
@@ -22,17 +22,15 @@ import { toast } from "sonner"
 export function CreateExpenseGroupForm() {
   const { push } = useRouter()
 
+  const { data: permissions, isLoading: permissionLoading } =
+    usePermissionQuery()
+
   const account_id = getAccountId()
 
-  const permissions = [
-    "expense_group_input_fields_group_name",
-    "expense_group_input_fields_expense_category_id",
-  ]
-
-  const {
-    expense_group_input_fields_group_name,
-    expense_group_input_fields_expense_category_id,
-  } = usePermissions(permissions)
+  const expense_group_input_fields_group_name =
+    permissions?.["expense_group_input_fields_group_name"]
+  const expense_group_input_fields_expense_category_id =
+    permissions?.["expense_group_input_fields_expense_category_id"]
 
   const [expenseCategories, setExpenseCategories] = useState<SearchArray>([])
   const [arrayPlaceHolder, setArrayPlaceHolder] = useState("Carregando...")

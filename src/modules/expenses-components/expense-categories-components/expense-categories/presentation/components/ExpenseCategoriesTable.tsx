@@ -7,9 +7,9 @@ import { SearchInput } from "@/core/components/SearchInput"
 import { Table } from "@/core/components/Table"
 import { exportToExcel } from "@/core/utils/exportToExcel"
 import { getAccountId } from "@/core/utils/get-account-id"
-import { getPermissionByEntity } from "@/core/utils/getPermissionByEntity"
 import { deleteExpenseCategory } from "@/modules/expenses-components/expense-categories-components/remote/expense-categories-methods"
 import { useExpenseCategoryQuery } from "@/modules/expenses-components/expense-categories-components/remote/use-expense-categories-query"
+import { usePermissionQuery } from "@/modules/login-components/login/infra/hooks/use-permissions-query"
 import { FileXls, Pencil, Trash } from "@phosphor-icons/react"
 import { useRouter } from "next/navigation"
 import { useEffect, useState } from "react"
@@ -18,9 +18,12 @@ import { toast } from "sonner"
 export function ExpenseCategoriesTable() {
   const { push } = useRouter()
 
-  const create = getPermissionByEntity("expense_categories_create")
-  const edit = getPermissionByEntity("expense_categories_edit")
-  const deletePermission = getPermissionByEntity("expense_categories_delete")
+  const { data: permissions, isLoading: permissionLoading } =
+    usePermissionQuery()
+
+  const create = permissions?.["expense_categories_create"]
+  const edit = permissions?.["expense_categories_edit"]
+  const deletePermission = permissions?.["expense_categories_delete"]
 
   const account_id = getAccountId()
 

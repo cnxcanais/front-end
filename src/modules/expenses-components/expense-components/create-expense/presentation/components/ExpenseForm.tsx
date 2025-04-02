@@ -3,13 +3,13 @@
 import { SearchArray } from "@/@types/search-array"
 import { Button } from "@/core/components/Button"
 import * as Input from "@/core/components/Input"
-import { usePermissions } from "@/core/utils/hooks/use-permission"
 import { ArrayConfig, populateArrays } from "@/core/utils/populateArrays"
 import { useGetAccountsQuery } from "@/modules/accounts-components/accounts/infra/hooks/use-get-accounts-query"
 import { useFetchBankAccountsQuery } from "@/modules/bank-accounts-components/bank-accounts/infra/hooks/use-fetch-bank-accounts-query"
 import { FormType } from "@/modules/expenses-components/expense-components/create-expense/presentation/components/CreateExpenseForm"
 import { getAllExpenseGroups } from "@/modules/expenses-components/expense-groups-components/remote/expense-groups-methods"
 import { getSuppliers } from "@/modules/expenses-components/supplier-components/suppliers/infra/remote"
+import { usePermissionQuery } from "@/modules/login-components/login/infra/hooks/use-permissions-query"
 import { useGetOrganizationsQuery } from "@/modules/organization-components/organizations/infra/hooks/use-get-organizations-query"
 import { getOrganizations } from "@/modules/organization-components/organizations/infra/remote"
 import { useRouter } from "next/navigation"
@@ -33,6 +33,9 @@ export function ExpenseForm({ account_id, setSecondPage }: Props) {
     watch,
     setValue,
   } = useFormContext<FormType>()
+
+  const { data: permissions, isLoading: permissionLoading } =
+    usePermissionQuery()
 
   const [organizations, setOrganizations] = useState<SearchArray>([])
   const [expenseGroups, setExpenseGroups] = useState<SearchArray>([])
@@ -171,25 +174,19 @@ export function ExpenseForm({ account_id, setSecondPage }: Props) {
     }
   }, [isTax])
 
-  const permissions = [
-    "expense_input_fields_expense_percentage",
-    "expense_input_fields_date",
-    "expense_input_fields_document",
-    "expense_input_fields_description",
-    "expense_input_fields_supplier_id",
-    "expense_input_fields_organization_id",
-    "expense_input_fields_expense_group_id",
-  ]
-
-  const {
-    expense_input_fields_expense_percentage,
-    expense_input_fields_date,
-    expense_input_fields_document,
-    expense_input_fields_description,
-    expense_input_fields_supplier_id,
-    expense_input_fields_organization_id,
-    expense_input_fields_expense_group_id,
-  } = usePermissions(permissions)
+  const expense_input_fields_expense_percentage =
+    permissions?.["expense_input_fields_expense_percentage"]
+  const expense_input_fields_date = permissions?.["expense_input_fields_date"]
+  const expense_input_fields_document =
+    permissions?.["expense_input_fields_document"]
+  const expense_input_fields_description =
+    permissions?.["expense_input_fields_description"]
+  const expense_input_fields_supplier_id =
+    permissions?.["expense_input_fields_supplier_id"]
+  const expense_input_fields_organization_id =
+    permissions?.["expense_input_fields_organization_id"]
+  const expense_input_fields_expense_group_id =
+    permissions?.["expense_input_fields_expense_group_id"]
 
   return (
     <>

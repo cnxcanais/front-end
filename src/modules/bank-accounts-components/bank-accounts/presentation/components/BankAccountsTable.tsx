@@ -8,9 +8,9 @@ import { SearchInput } from "@/core/components/SearchInput"
 import { Table } from "@/core/components/Table"
 import { exportToExcel } from "@/core/utils/exportToExcel"
 import { getAccountId } from "@/core/utils/get-account-id"
-import { usePermissions } from "@/core/utils/hooks/use-permission"
 import { useFetchBankAccountsQuery } from "@/modules/bank-accounts-components/bank-accounts/infra/hooks/use-fetch-bank-accounts-query"
 import { removeBankAccount } from "@/modules/bank-accounts-components/bank-accounts/infra/remote"
+import { usePermissionQuery } from "@/modules/login-components/login/infra/hooks/use-permissions-query"
 import { Pencil, Trash } from "@phosphor-icons/react"
 import { FileXls } from "@phosphor-icons/react/dist/ssr"
 import { useRouter } from "next/navigation"
@@ -20,20 +20,18 @@ import { toast } from "sonner"
 export function BankAccountsTable() {
   const account_id = getAccountId()
 
+  const { data: permissions, isLoading: permissionLoading } =
+    usePermissionQuery()
+
   const {
     data: bankAccounts,
     isLoading,
     refetch,
   } = useFetchBankAccountsQuery(account_id)
 
-  const permissions = [
-    "bank_accounts_create",
-    "bank_accounts_edit",
-    "bank_accounts_delete",
-  ]
-
-  const { bank_accounts_create, bank_accounts_edit, bank_accounts_delete } =
-    usePermissions(permissions)
+  const bank_accounts_create = permissions?.["bank_accounts_create"]
+  const bank_accounts_edit = permissions?.["bank_accounts_edit"]
+  const bank_accounts_delete = permissions?.["bank_accounts_delete"]
 
   const { push } = useRouter()
 
@@ -122,7 +120,7 @@ export function BankAccountsTable() {
     if (bankAccounts) setFilteredResults(bankAccounts)
   }, [bankAccounts, isLoading])
 
-  if (!bankAccounts || isLoading) return <LoadingScreen />
+  if (!bankAccounts || isLoading || permissionLoading) return <LoadingScreen />
 
   return (
     <>

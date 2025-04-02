@@ -4,11 +4,11 @@ import { SearchArray } from "@/@types/search-array"
 import { Button } from "@/core/components/Button"
 import * as Input from "@/core/components/Input"
 import { addMonthsToDate } from "@/core/utils/dateFunctions"
-import { usePermissions } from "@/core/utils/hooks/use-permission"
 import { ArrayConfig, populateArrays } from "@/core/utils/populateArrays"
 import { getBankAccounts } from "@/modules/bank-accounts-components/bank-accounts/infra/remote"
 import { FormType } from "@/modules/expenses-components/expense-components/create-expense/presentation/components/CreateExpenseForm"
 import { ExpenseDetailsInfo } from "@/modules/expenses-components/expense-components/create-expense/presentation/components/ExpenseDetailsInfo"
+import { usePermissionQuery } from "@/modules/login-components/login/infra/hooks/use-permissions-query"
 import { Dispatch, SetStateAction, useEffect, useRef, useState } from "react"
 import { useFormContext } from "react-hook-form"
 
@@ -43,9 +43,11 @@ export function ExpenseDetailForm({
     getValues,
   } = useFormContext<FormType>()
 
-  const permissions = ["expense_input_fields_bank_account_id "]
+  const { data: permissions, isLoading: permissionLoading } =
+    usePermissionQuery()
 
-  const { expense_input_fields_bank_account_id } = usePermissions(permissions)
+  const expense_input_fields_bank_account_id =
+    permissions?.["expense_input_fields_bank_account_id"]
 
   const [bankAccounts, setBankAccounts] = useState<SearchArray>([])
   const [initialIndividualValue, setInitialIndividualValue] = useState<

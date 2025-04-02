@@ -3,10 +3,11 @@
 import { Organization } from "@/@types/organizations"
 import { Button } from "@/core/components/Button"
 import * as Input from "@/core/components/Input"
+import { LoadingScreen } from "@/core/components/LoadingScreen"
 import { formatDocumentNumber } from "@/core/utils/formatDocumentNumber"
 import { formatPhoneNumber } from "@/core/utils/formatPhoneNumber"
 import { getAccountId } from "@/core/utils/get-account-id"
-import { usePermissions } from "@/core/utils/hooks/use-permission"
+import { usePermissionQuery } from "@/modules/login-components/login/infra/hooks/use-permissions-query"
 import { createOrganization } from "@/modules/organization-components/create-organization/infra/remote/create-organization"
 import {
   CreateOrganizationSchema,
@@ -22,21 +23,19 @@ export function CreateOrganizationForm() {
 
   const accountId = getAccountId()
 
-  const permissions = [
-    "organizations_input_fields_name",
-    "organizations_input_fields_email",
-    "organizations_input_fields_cnpj",
-    "organizations_input_fields_address",
-    "organizations_input_fields_phone",
-  ]
+  const { data: permissions, isLoading: permissionLoading } =
+    usePermissionQuery()
 
-  const {
-    organizations_input_fields_name,
-    organizations_input_fields_email,
-    organizations_input_fields_cnpj,
-    organizations_input_fields_address,
-    organizations_input_fields_phone,
-  } = usePermissions(permissions)
+  const organizations_input_fields_name =
+    permissions?.["organizations_input_fields_name"]
+  const organizations_input_fields_email =
+    permissions?.["organizations_input_fields_email"]
+  const organizations_input_fields_cnpj =
+    permissions?.["organizations_input_fields_cnpj"]
+  const organizations_input_fields_address =
+    permissions?.["organizations_input_fields_address"]
+  const organizations_input_fields_phone =
+    permissions?.["organizations_input_fields_phone"]
 
   const {
     register,
@@ -58,6 +57,8 @@ export function CreateOrganizationForm() {
       toast.error("Erro ao criar organização: " + error)
     }
   }
+
+  if (permissionLoading) return <LoadingScreen />
 
   return (
     <form

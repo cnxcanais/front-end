@@ -6,12 +6,12 @@ import { Button } from "@/core/components/Button"
 import * as Input from "@/core/components/Input"
 import { LoadingScreen } from "@/core/components/LoadingScreen"
 import { getAccountId } from "@/core/utils/get-account-id"
-import { getPermissionByEntity } from "@/core/utils/getPermissionByEntity"
 import { ArrayConfig, populateArrays } from "@/core/utils/populateArrays"
 import { useIncomeByIdQuery } from "@/modules/income-components/income-components/infra/use-income-by-id-query"
 import { editIncome } from "@/modules/income-components/income-components/remote"
 import { getAllIncomeGroups } from "@/modules/income-components/income-groups-components/remote/income-group"
 import { getIncomeSources } from "@/modules/income-components/income-source-components/income-sources/infra/remote"
+import { usePermissionQuery } from "@/modules/login-components/login/infra/hooks/use-permissions-query"
 import { getOrganizations } from "@/modules/organization-components/organizations/infra/remote"
 import { zodResolver } from "@hookform/resolvers/zod"
 import { useRouter } from "next/navigation"
@@ -22,6 +22,9 @@ import { editIncomeSchema } from "../validation/schema"
 
 export function EditIncomeForm({ income_id }: { income_id: string }) {
   const { push } = useRouter()
+
+  const { data: permissions, isLoading: permissionLoading } =
+    usePermissionQuery()
 
   const account_id = getAccountId()
 
@@ -76,33 +79,22 @@ export function EditIncomeForm({ income_id }: { income_id: string }) {
     )
   }, [arrayConfigs, account_id])
 
-  const income_input_fields_amount = getPermissionByEntity(
-    "income_input_fields_amount"
-  )
-  const income_input_fields_income_qty = getPermissionByEntity(
-    "income_input_fields_income_qty"
-  )
-  const income_input_fields_income_percentage = getPermissionByEntity(
-    "income_input_fields_income_percentage"
-  )
-  const income_input_fields_date = getPermissionByEntity(
-    "income_input_fields_date"
-  )
-  const income_input_fields_document = getPermissionByEntity(
-    "income_input_fields_document"
-  )
-  const income_input_fields_description = getPermissionByEntity(
-    "income_input_fields_description"
-  )
-  const income_input_fields_income_source_id = getPermissionByEntity(
-    "income_input_fields_income_source_id"
-  )
-  const income_input_fields_organization_id = getPermissionByEntity(
-    "income_input_fields_organization_id"
-  )
-  const income_input_fields_income_group_id = getPermissionByEntity(
-    "income_input_fields_income_group_id"
-  )
+  const income_input_fields_amount = permissions?.["income_input_fields_amount"]
+  const income_input_fields_income_qty =
+    permissions?.["income_input_fields_income_qty"]
+  const income_input_fields_income_percentage =
+    permissions?.["income_input_fields_income_percentage"]
+  const income_input_fields_date = permissions?.["income_input_fields_date"]
+  const income_input_fields_document =
+    permissions?.["income_input_fields_document"]
+  const income_input_fields_description =
+    permissions?.["income_input_fields_description"]
+  const income_input_fields_income_source_id =
+    permissions?.["income_input_fields_income_source_id"]
+  const income_input_fields_organization_id =
+    permissions?.["income_input_fields_organization_id"]
+  const income_input_fields_income_group_id =
+    permissions?.["income_input_fields_income_group_id"]
 
   const {
     register,
@@ -133,7 +125,7 @@ export function EditIncomeForm({ income_id }: { income_id: string }) {
     }
   }
 
-  if (!income || isLoading) return <LoadingScreen />
+  if (!income || isLoading || permissionLoading) return <LoadingScreen />
 
   return (
     <>

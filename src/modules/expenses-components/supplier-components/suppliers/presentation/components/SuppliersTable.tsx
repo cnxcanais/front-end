@@ -10,9 +10,9 @@ import { exportToExcel } from "@/core/utils/exportToExcel"
 import { formatStaticDocument } from "@/core/utils/formatDocumentNumber"
 import { formatStaticPhoneNumber } from "@/core/utils/formatPhoneNumber"
 import { getAccountId } from "@/core/utils/get-account-id"
-import { getPermissionByEntity } from "@/core/utils/getPermissionByEntity"
 import { useSupplierQuery } from "@/modules/expenses-components/supplier-components/suppliers/infra/hooks/use-supplier-query"
 import { removeSupplier } from "@/modules/expenses-components/supplier-components/suppliers/infra/remote"
+import { usePermissionQuery } from "@/modules/login-components/login/infra/hooks/use-permissions-query"
 import { FileXls, Pencil, Trash } from "@phosphor-icons/react"
 import { useRouter } from "next/navigation"
 import { useEffect, useState } from "react"
@@ -21,15 +21,18 @@ import { toast } from "sonner"
 export function SuppliersTable() {
   const account_id = getAccountId()
 
+  const { data: permissions, isLoading: permissionLoading } =
+    usePermissionQuery()
+
   const { data: suppliers, isLoading, refetch } = useSupplierQuery(account_id)
   const { push } = useRouter()
 
   const [open, setOpen] = useState(false)
   const [id, setId] = useState("")
 
-  const suppliers_create = getPermissionByEntity("suppliers_create")
-  const suppliers_edit = getPermissionByEntity("suppliers_edit")
-  const suppliers_delete = getPermissionByEntity("suppliers_delete")
+  const suppliers_create = permissions?.["suppliers_create"]
+  const suppliers_edit = permissions?.["suppliers_edit"]
+  const suppliers_delete = permissions?.["suppliers_delete"]
 
   const [filteredResults, setFilteredResults] = useState([])
 
