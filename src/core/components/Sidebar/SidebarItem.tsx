@@ -1,5 +1,7 @@
 "use client"
 
+import { classNames } from "@/core/utils/classnames"
+import { getCookie } from "@/lib/cookies"
 import { Icon } from "@phosphor-icons/react"
 import { useEffect, useState } from "react"
 
@@ -10,16 +12,12 @@ export type SidebarItemProps = {
   current: boolean
 }
 
-function classNames(...classes: string[]) {
-  return classes.filter(Boolean).join(" ")
-}
-
 export function SidebarItem({ current, href, Icon, name }: SidebarItemProps) {
   const [clientHref, setClientHref] = useState(href)
 
   useEffect(() => {
     if (name === "Perfil") {
-      const userId = sessionStorage?.getItem("userId") ?? "teste"
+      const userId = getCookie("userId")
       setClientHref(`${href}/${userId}`)
     }
   }, [name, href])

@@ -25,6 +25,7 @@ export async function authenticate(formData: LoginSchema) {
 
     setCookie("profile_name", data.user.profile.name)
     setCookie("accountId", data.user.account_id)
+    setCookie("userId", data.user.user_id)
     setCookie("token", data.token)
     setCookie(
       "path_permissions",

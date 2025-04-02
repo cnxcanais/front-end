@@ -21,9 +21,9 @@ export function IncomeGroupTable() {
   const { data: permissions, isLoading: permissionLoading } =
     usePermissionQuery()
 
-  const create = permissions["income_groups_create"]
-  const edit = permissions["income_groups_edit"]
-  const deletePermission = permissions["income_groups_delete"]
+  const create = permissions?.["income_groups_create"]
+  const edit = permissions?.["income_groups_edit"]
+  const deletePermission = permissions?.["income_groups_delete"]
 
   const account_id = getAccountId()
 

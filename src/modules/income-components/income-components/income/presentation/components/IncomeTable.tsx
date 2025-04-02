@@ -62,8 +62,8 @@ export function IncomeTable() {
   }
 
   const income_create = permissions?.["income_create"]
-  const income_edit = permissions["income_edit"]
-  const income_delete = permissions["income_delete"]
+  const income_edit = permissions?.["income_edit"]
+  const income_delete = permissions?.["income_delete"]
 
   const handleEdit = (id: string) => {
     push(`/incomes/edit/${id}`)

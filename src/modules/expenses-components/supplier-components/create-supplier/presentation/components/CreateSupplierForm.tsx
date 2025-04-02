@@ -28,19 +28,21 @@ export function CreateSupplierForm() {
 
   const account_id = getAccountId()
 
-  const supplier_input_fields_name = permissions["supplier_input_fields_name"]
-  const supplier_input_fields_email = permissions["supplier_input_fields_email"]
+  const supplier_input_fields_name = permissions?.["supplier_input_fields_name"]
+  const supplier_input_fields_email =
+    permissions?.["supplier_input_fields_email"]
   const supplier_input_fields_cpf_cnpj =
-    permissions["supplier_input_fields_cpf_cnpj"]
-  const supplier_input_fields_phone = permissions["supplier_input_fields_phone"]
+    permissions?.["supplier_input_fields_cpf_cnpj"]
+  const supplier_input_fields_phone =
+    permissions?.["supplier_input_fields_phone"]
   const supplier_input_fields_contact_name =
-    permissions["supplier_input_fields_contact_name"]
+    permissions?.["supplier_input_fields_contact_name"]
   const supplier_input_fields_address_2 =
-    permissions["supplier_input_fields_address_2"]
+    permissions?.["supplier_input_fields_address_2"]
   const supplier_input_fields_address_3 =
-    permissions["supplier_input_fields_address_3"]
+    permissions?.["supplier_input_fields_address_3"]
 
-  const supplier_input_fields_cep = permissions["supplier_input_fields_cep"]
+  const supplier_input_fields_cep = permissions?.["supplier_input_fields_cep"]
 
   const {
     register,

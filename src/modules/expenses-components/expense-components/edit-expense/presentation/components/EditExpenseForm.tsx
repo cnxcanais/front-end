@@ -79,22 +79,23 @@ export function EditExpenseForm({ expense_id }: { expense_id: string }) {
     )
   }, [arrayConfigs, account_id])
 
-  const expense_input_fields_amount = permissions["expense_input_fields_amount"]
+  const expense_input_fields_amount =
+    permissions?.["expense_input_fields_amount"]
   const expense_input_fields_expense_qty =
-    permissions["expense_input_fields_expense_qty"]
+    permissions?.["expense_input_fields_expense_qty"]
   const expense_input_fields_expense_percentage =
-    permissions["expense_input_fields_expense_percentage"]
-  const expense_input_fields_date = permissions["expense_input_fields_date"]
+    permissions?.["expense_input_fields_expense_percentage"]
+  const expense_input_fields_date = permissions?.["expense_input_fields_date"]
   const expense_input_fields_document =
-    permissions["expense_input_fields_document"]
+    permissions?.["expense_input_fields_document"]
   const expense_input_fields_description =
-    permissions["expense_input_fields_description"]
+    permissions?.["expense_input_fields_description"]
   const expense_input_fields_supplier_id =
-    permissions["expense_input_fields_supplier_id"]
+    permissions?.["expense_input_fields_supplier_id"]
   const expense_input_fields_organization_id =
-    permissions["expense_input_fields_organization_id"]
+    permissions?.["expense_input_fields_organization_id"]
   const expense_input_fields_expense_group_id =
-    permissions["expense_input_fields_expense_group_id"]
+    permissions?.["expense_input_fields_expense_group_id"]
 
   const {
     register,

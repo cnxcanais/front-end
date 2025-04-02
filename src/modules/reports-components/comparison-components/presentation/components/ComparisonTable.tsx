@@ -78,11 +78,12 @@ export function ComparisonTable() {
                     key={group + category}
                     className="text-gray-600 hover:bg-gray-50">
                     <td className="w-52 px-3 py-1.5 pl-10 text-sm">{group}</td>
-                    <td className="w-20 px-3 py-1.5 text-sm">
-                      {formatCurrency(actualValue)}
-                    </td>
+
                     <td className="w-20 px-3 py-1.5 text-sm">
                       {formatCurrency(budgetValue)}
+                    </td>
+                    <td className="w-20 px-3 py-1.5 text-sm">
+                      {formatCurrency(actualValue)}
                     </td>
                     <td
                       className={`w-20 px-3 py-1.5 text-sm ${groupDelta >= 0 ? "text-green-600" : "text-red-600"}`}>

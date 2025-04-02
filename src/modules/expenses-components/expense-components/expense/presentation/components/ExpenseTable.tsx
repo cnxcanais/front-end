@@ -50,9 +50,9 @@ export function ExpenseTable() {
     },
   })
 
-  const expense_create = permissions["expense_create"]
-  const expense_edit = permissions["expense_edit"]
-  const expense_delete = permissions["expense_delete"]
+  const expense_create = permissions?.["expense_create"]
+  const expense_edit = permissions?.["expense_edit"]
+  const expense_delete = permissions?.["expense_delete"]
 
   const { data, isLoading, refetch } = useExpenseQuery(accountId, {
     ...filters,
