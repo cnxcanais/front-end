@@ -6,7 +6,7 @@ export function useExpenseDetailsByMonthQuery(
   year: number
 ) {
   return useQuery({
-    queryKey: [`expense-details-by-month-${year}`],
+    queryKey: [`expense-details-by-month`, { year }],
     queryFn: () => getExpenseDetailsByMonth(account_id, year),
     enabled: !!account_id,
   })
