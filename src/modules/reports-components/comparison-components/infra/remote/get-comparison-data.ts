@@ -16,8 +16,6 @@ export async function getComparisonData(
       }
     )
 
-    console.dir(data)
-
     return {
       incomes: data.incomes,
       expenses: data.expenses,

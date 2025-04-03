@@ -1,3 +1,6 @@
+import { Account } from "./accounts"
+import { Profile } from "./profiles"
+
 export namespace User {
   export type Type = {
     user_id: string
@@ -8,6 +11,8 @@ export namespace User {
     created_at: Date
     updated_at: Date
     account_id: string
+    account: Account.Type
+    profile: Profile.Type
   }
 
   export type GetResponse = {

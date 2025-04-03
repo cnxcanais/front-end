@@ -11,7 +11,7 @@ export default function NotFound() {
         <div className="max-w-lg">
           <p className="text-xl font-semibold text-white">404</p>
           <h1 className="mt-4 text-pretty text-5xl font-semibold tracking-tight text-white sm:text-6xl">
-            Ooops...
+            Oops...
           </h1>
           <p className="mt-6 text-pretty text-lg font-medium text-white sm:text-xl/8">
             Não encontramos o recurso requisitado.

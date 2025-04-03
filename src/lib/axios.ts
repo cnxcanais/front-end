@@ -12,18 +12,18 @@ const api = axios.create({
   },
 })
 
-// api.interceptors.request.use(
-//   (config) => {
-//     config.headers["Authorization"] = `Bearer ${getUpdatedToken()}`
-//     return config
-//   },
-//   (error) => {
-//     return Promise.reject(error)
-//   }
-// )
+api.interceptors.request.use(
+  (config) => {
+    config.headers["Authorization"] = `Bearer ${getUpdatedToken()}`
+    return config
+  },
+  (error) => {
+    return Promise.reject(error)
+  }
+)
 
-export const cepApi = axios.create({
+const cepApi = axios.create({
   baseURL: "https://viacep.com.br/ws",
 })
 
-export { api }
+export { api, cepApi }

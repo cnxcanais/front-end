@@ -8,9 +8,9 @@ import { SearchInput } from "@/core/components/SearchInput"
 import { Table } from "@/core/components/Table"
 import { exportToExcel } from "@/core/utils/exportToExcel"
 import { getAccountId } from "@/core/utils/get-account-id"
-import { getPermissionByEntity } from "@/core/utils/getPermissionByEntity"
 import { deleteIncomeGroup } from "@/modules/income-components/income-groups-components/remote/income-group"
 import { useIncomeGroupQuery } from "@/modules/income-components/income-groups-components/remote/use-income-group-query"
+import { usePermissionQuery } from "@/modules/login-components/login/infra/hooks/use-permissions-query"
 import { FileXls, Pencil, Trash } from "@phosphor-icons/react"
 import { useRouter } from "next/navigation"
 import { useEffect, useState } from "react"
@@ -18,10 +18,12 @@ import { toast } from "sonner"
 
 export function IncomeGroupTable() {
   const { push } = useRouter()
+  const { data: permissions, isLoading: permissionLoading } =
+    usePermissionQuery()
 
-  const create = getPermissionByEntity("income_groups_create")
-  const edit = getPermissionByEntity("income_groups_edit")
-  const deletePermission = getPermissionByEntity("income_groups_delete")
+  const create = permissions?.["income_groups_create"]
+  const edit = permissions?.["income_groups_edit"]
+  const deletePermission = permissions?.["income_groups_delete"]
 
   const account_id = getAccountId()
 
@@ -105,7 +107,7 @@ export function IncomeGroupTable() {
     if (incomeGroups) setFilteredResults(incomeGroups)
   }, [incomeGroups, isLoading])
 
-  if (!incomeGroups || isLoading) return <LoadingScreen />
+  if (!incomeGroups || isLoading || permissionLoading) return <LoadingScreen />
 
   return (
     <>

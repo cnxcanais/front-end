@@ -7,9 +7,9 @@ import { SearchInput } from "@/core/components/SearchInput"
 import { Table } from "@/core/components/Table"
 import { exportToExcel } from "@/core/utils/exportToExcel"
 import { getAccountId } from "@/core/utils/get-account-id"
-import { getPermissionByEntity } from "@/core/utils/getPermissionByEntity"
 import { deleteIncomeCategory } from "@/modules/income-components/income-categories-components/remote/income-categories-methods"
 import { useIncomeCategoryQuery } from "@/modules/income-components/income-categories-components/remote/use-income-categories-query"
+import { usePermissionQuery } from "@/modules/login-components/login/infra/hooks/use-permissions-query"
 import { FileXls, Pencil, Trash } from "@phosphor-icons/react"
 import { useRouter } from "next/navigation"
 import { useEffect, useState } from "react"
@@ -18,9 +18,12 @@ import { toast } from "sonner"
 export function IncomeCategoriesTable() {
   const { push } = useRouter()
 
-  const create = getPermissionByEntity("income_categories_create")
-  const edit = getPermissionByEntity("income_categories_edit")
-  const deletePermission = getPermissionByEntity("income_categories_delete")
+  const { data: permissions, isLoading: permissionLoading } =
+    usePermissionQuery()
+
+  const create = permissions?.["income_categories_create"]
+  const edit = permissions?.["income_categories_edit"]
+  const deletePermission = permissions?.["income_categories_delete"]
 
   const account_id = getAccountId()
 
@@ -95,7 +98,8 @@ export function IncomeCategoriesTable() {
     if (incomeCategories) setFilteredResults(incomeCategories)
   }, [incomeCategories, isLoading])
 
-  if (!incomeCategories || isLoading) return <LoadingScreen />
+  if (!incomeCategories || isLoading || permissionLoading)
+    return <LoadingScreen />
 
   return (
     <>

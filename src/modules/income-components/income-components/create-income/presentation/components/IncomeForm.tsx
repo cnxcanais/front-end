@@ -3,11 +3,11 @@
 import { SearchArray } from "@/@types/search-array"
 import { Button } from "@/core/components/Button"
 import * as Input from "@/core/components/Input"
-import { usePermissions } from "@/core/utils/hooks/use-permission"
 import { ArrayConfig, populateArrays } from "@/core/utils/populateArrays"
 import { FormType } from "@/modules/income-components/income-components/create-income/presentation/components/CreateIncomeForm"
 import { getAllIncomeGroups } from "@/modules/income-components/income-groups-components/remote/income-group"
 import { getIncomeSources } from "@/modules/income-components/income-source-components/income-sources/infra/remote"
+import { usePermissionQuery } from "@/modules/login-components/login/infra/hooks/use-permissions-query"
 import { getOrganizations } from "@/modules/organization-components/organizations/infra/remote"
 import { useRouter } from "next/navigation"
 import { Dispatch, SetStateAction, useEffect, useState } from "react"
@@ -21,6 +21,9 @@ type Props = {
 
 export function IncomeForm({ account_id, setSecondPage }: Props) {
   const { push } = useRouter()
+
+  const { data: permissions, isLoading: permissionLoading } =
+    usePermissionQuery()
 
   const {
     register,
@@ -73,25 +76,19 @@ export function IncomeForm({ account_id, setSecondPage }: Props) {
     )
   }, [])
 
-  const permissions = [
-    "income_input_fields_income_percentage",
-    "income_input_fields_date",
-    "income_input_fields_document",
-    "income_input_fields_description",
-    "income_input_fields_income_source_id",
-    "income_input_fields_organization_id",
-    "income_input_fields_income_group_id",
-  ]
-
-  const {
-    income_input_fields_income_percentage,
-    income_input_fields_date,
-    income_input_fields_document,
-    income_input_fields_description,
-    income_input_fields_income_source_id,
-    income_input_fields_organization_id,
-    income_input_fields_income_group_id,
-  } = usePermissions(permissions)
+  const income_input_fields_income_percentage =
+    permissions?.["income_input_fields_income_percentage"]
+  const income_input_fields_date = permissions?.["income_input_fields_date"]
+  const income_input_fields_document =
+    permissions?.["income_input_fields_document"]
+  const income_input_fields_description =
+    permissions?.["income_input_fields_description"]
+  const income_input_fields_income_source_id =
+    permissions?.["income_input_fields_income_source_id"]
+  const income_input_fields_organization_id =
+    permissions?.["income_input_fields_organization_id"]
+  const income_input_fields_income_group_id =
+    permissions?.["income_input_fields_income_group_id"]
 
   return (
     <>

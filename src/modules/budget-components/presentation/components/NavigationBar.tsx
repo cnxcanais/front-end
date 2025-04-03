@@ -1,13 +1,11 @@
+import { classNames } from "@/core/utils/classnames"
+
 export enum TabName {
   RECEITAS = "Receitas",
   DESPESAS = "Despesas",
 }
 
 const initialTabs = [{ name: TabName.RECEITAS }, { name: TabName.DESPESAS }]
-
-function classNames(...classes: string[]): string {
-  return classes.filter(Boolean).join(" ")
-}
 
 export type NavigationBarProps = {
   setTab: (tab: TabName) => void

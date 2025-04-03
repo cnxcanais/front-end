@@ -9,7 +9,7 @@ import { SearchInput } from "@/core/components/SearchInput"
 import { Table } from "@/core/components/Table"
 import { exportToExcel } from "@/core/utils/exportToExcel"
 import { getAccountId } from "@/core/utils/get-account-id"
-import { getPermissionByEntity } from "@/core/utils/getPermissionByEntity"
+import { usePermissionQuery } from "@/modules/login-components/login/infra/hooks/use-permissions-query"
 import {
   getUsers,
   removeUser,
@@ -23,6 +23,8 @@ import { toast } from "sonner"
 
 export function UsersTable() {
   const account_id = getAccountId()
+  const { data: permissions, isLoading: permissionLoading } =
+    usePermissionQuery()
 
   const {
     data: users,
@@ -40,9 +42,9 @@ export function UsersTable() {
   const [id, setId] = useState("")
   const [filteredResults, setFilteredResults] = useState([])
 
-  const users_create = getPermissionByEntity("users_create")
-  const users_edit = getPermissionByEntity("users_edit")
-  const users_delete = getPermissionByEntity("users_delete")
+  const users_create = permissions?.["users_create"]
+  const users_edit = permissions?.["users_edit"]
+  const users_delete = permissions?.["users_delete"]
 
   const handleEdit = (id: string) => {
     push(`/users/edit/${id}`)

@@ -30,14 +30,14 @@ export function LoginForm() {
   })
 
   async function onSubmit(data: LoginSchema) {
+    setIsLoading(true)
     try {
       await authenticate(data)
-      setIsLoading(true)
       toast.success("Login realizado com sucesso!")
-      setIsLoading(false)
       setTimeout(() => push("/dashboard"), 2000)
     } catch (error) {
       toast.error("Erro ao efetuar login: " + error)
+    } finally {
       setIsLoading(false)
     }
   }

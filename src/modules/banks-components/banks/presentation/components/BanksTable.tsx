@@ -7,9 +7,9 @@ import { SearchInput } from "@/core/components/SearchInput"
 import { Table } from "@/core/components/Table"
 import { exportToExcel } from "@/core/utils/exportToExcel"
 import { getAccountId } from "@/core/utils/get-account-id"
-import { getPermissionByEntity } from "@/core/utils/getPermissionByEntity"
 import { useGetBanksQuery } from "@/modules/banks-components/banks/infra/hooks/use-get-banks-query"
 import { removeBank } from "@/modules/banks-components/banks/infra/remote"
+import { usePermissionQuery } from "@/modules/login-components/login/infra/hooks/use-permissions-query"
 import { Pencil, Trash } from "@phosphor-icons/react"
 import { FileXls } from "@phosphor-icons/react/dist/ssr"
 import { useRouter } from "next/navigation"
@@ -21,9 +21,12 @@ export function BanksTable() {
 
   const { data: banks, isLoading, refetch } = useGetBanksQuery(account_id)
 
-  const banks_create = getPermissionByEntity("banks_create")
-  const banks_edit = getPermissionByEntity("banks_edit")
-  const banks_delete = getPermissionByEntity("banks_delete")
+  const { data: permissions, isLoading: permissionLoading } =
+    usePermissionQuery()
+
+  const banks_create = permissions?.["banks_create"]
+  const banks_edit = permissions?.["banks_edit"]
+  const banks_delete = permissions?.["banks_delete"]
 
   const { push } = useRouter()
 
@@ -95,7 +98,7 @@ export function BanksTable() {
     if (banks) setFilteredResults(banks)
   }, [banks, isLoading])
 
-  if (!banks || isLoading) return <LoadingScreen />
+  if (!banks || isLoading || permissionLoading) return <LoadingScreen />
 
   return (
     <>

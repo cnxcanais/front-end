@@ -6,15 +6,16 @@ import { ExpenseGroup } from "@/@types/expense-group"
 import { Button } from "@/core/components/Button"
 import { LoadingScreen } from "@/core/components/LoadingScreen"
 import { Modal } from "@/core/components/Modals/Modal"
+import { ModalFilesTrigger } from "@/core/components/Modals/ModalFiles/ModalFilesTrigger"
 import { ModalObservationTrigger } from "@/core/components/Modals/ModalObservation"
 import { SearchInput } from "@/core/components/SearchInput"
 import { Table } from "@/core/components/Table"
 import { exportToExcel } from "@/core/utils/exportToExcel"
 import { getAccountId } from "@/core/utils/get-account-id"
-import { getPermissionByEntity } from "@/core/utils/getPermissionByEntity"
 import { ExpenseFilters } from "@/modules/expenses-components/expense-components/expense/presentation/components/ExpenseFilters"
 import { useExpenseQuery } from "@/modules/expenses-components/expense-components/infra/use-expense-query"
 import { removeExpense } from "@/modules/expenses-components/expense-components/remote"
+import { usePermissionQuery } from "@/modules/login-components/login/infra/hooks/use-permissions-query"
 import { FileXls, Pencil, Trash } from "@phosphor-icons/react"
 import { useRouter } from "next/navigation"
 import { useEffect, useState } from "react"
@@ -25,6 +26,9 @@ export function ExpenseTable() {
   const accountId = getAccountId()
 
   const { push } = useRouter()
+
+  const { data: permissions, isLoading: permissionLoading } =
+    usePermissionQuery()
 
   const [open, setOpen] = useState(false)
   const [id, setId] = useState("")
@@ -46,9 +50,9 @@ export function ExpenseTable() {
     },
   })
 
-  const expense_create = getPermissionByEntity("expense_create")
-  const expense_edit = getPermissionByEntity("expense_edit")
-  const expense_delete = getPermissionByEntity("expense_delete")
+  const expense_create = permissions?.["expense_create"]
+  const expense_edit = permissions?.["expense_edit"]
+  const expense_delete = permissions?.["expense_delete"]
 
   const { data, isLoading, refetch } = useExpenseQuery(accountId, {
     ...filters,
@@ -135,6 +139,13 @@ export function ExpenseTable() {
       ),
     },
     {
+      header: "Arquivos",
+      accessor: "expense_id",
+      render: (value: string) => (
+        <ModalFilesTrigger entityId={value} entityType={"expense_id"} />
+      ),
+    },
+    {
       header: "Obs.",
       accessor: "observation",
       render: (value: string) => {
@@ -174,7 +185,7 @@ export function ExpenseTable() {
     }
   }, [data, isLoading])
 
-  if (!data || isLoading) return <LoadingScreen />
+  if (!data || isLoading || permissionLoading) return <LoadingScreen />
 
   return (
     <>

@@ -2,12 +2,11 @@ import Cookies from "js-cookie"
 
 export function setCookie(key: string, value: string) {
   Cookies.set(key, value, {
-    secure: true,
-    sameSite: "strict",
-    expires: 1,
+    expires: 1, // 1 dia
+    path: "/", // Importante para o cookie ser acessível em toda a aplicação
+    sameSite: "lax",
   })
 }
-
 export function getCookie(key: string) {
   return Cookies.get(key)
 }

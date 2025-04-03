@@ -6,15 +6,16 @@ import { IncomeGroup } from "@/@types/income-group"
 import { Button } from "@/core/components/Button"
 import { LoadingScreen } from "@/core/components/LoadingScreen"
 import { Modal } from "@/core/components/Modals/Modal"
+import { ModalFilesTrigger } from "@/core/components/Modals/ModalFiles/ModalFilesTrigger"
 import { ModalObservationTrigger } from "@/core/components/Modals/ModalObservation"
 import { SearchInput } from "@/core/components/SearchInput"
 import { Table } from "@/core/components/Table"
 import { exportToExcel } from "@/core/utils/exportToExcel"
 import { getAccountId } from "@/core/utils/get-account-id"
-import { getPermissionByEntity } from "@/core/utils/getPermissionByEntity"
 import { IncomeFilters } from "@/modules/income-components/income-components/income/presentation/components/incomeFilters"
 import { useIncomeQuery } from "@/modules/income-components/income-components/infra/use-income-query"
 import { removeIncome } from "@/modules/income-components/income-components/remote"
+import { usePermissionQuery } from "@/modules/login-components/login/infra/hooks/use-permissions-query"
 import { FileXls, Pencil, Trash } from "@phosphor-icons/react"
 import { useRouter } from "next/navigation"
 import { useEffect, useState } from "react"
@@ -53,13 +54,16 @@ export function IncomeTable() {
     page,
   })
 
+  const { data: permissions, isLoading: permissionLoading } =
+    usePermissionQuery()
+
   const handleFilterChange = (newFilters: Income.GetRequest) => {
     setFilters(newFilters)
   }
 
-  const income_create = getPermissionByEntity("income_create")
-  const income_edit = getPermissionByEntity("income_edit")
-  const income_delete = getPermissionByEntity("income_delete")
+  const income_create = permissions?.["income_create"]
+  const income_edit = permissions?.["income_edit"]
+  const income_delete = permissions?.["income_delete"]
 
   const handleEdit = (id: string) => {
     push(`/incomes/edit/${id}`)
@@ -137,6 +141,13 @@ export function IncomeTable() {
       ),
     },
     {
+      header: "Arquivos",
+      accessor: "income_id",
+      render: (value: string) => (
+        <ModalFilesTrigger entityId={value} entityType={"income_id"} />
+      ),
+    },
+    {
       header: "Obs.",
       accessor: "observation",
       render: (value: string) => {
@@ -176,7 +187,7 @@ export function IncomeTable() {
     }
   }, [incomes, isLoading])
 
-  if (!incomes || isLoading) return <LoadingScreen />
+  if (!incomes || isLoading || permissionLoading) return <LoadingScreen />
 
   return (
     <>

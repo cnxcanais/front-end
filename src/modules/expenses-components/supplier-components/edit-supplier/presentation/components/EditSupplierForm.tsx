@@ -13,7 +13,6 @@ import {
   formatPhoneNumber,
   formatStaticPhoneNumber,
 } from "@/core/utils/formatPhoneNumber"
-import { usePermissions } from "@/core/utils/hooks/use-permission"
 import {
   editSupplier,
   getSupplierById,
@@ -22,6 +21,7 @@ import {
   EditSupplierSchema,
   editSupplierFormSchema,
 } from "@/modules/expenses-components/supplier-components/edit-supplier/presentation/validation/schema"
+import { usePermissionQuery } from "@/modules/login-components/login/infra/hooks/use-permissions-query"
 import { zodResolver } from "@hookform/resolvers/zod"
 import { MagnifyingGlass } from "@phosphor-icons/react"
 import { useQuery } from "@tanstack/react-query"
@@ -32,33 +32,29 @@ import { toast } from "sonner"
 export function EditSupplierForm({ id }: { id: string }) {
   const { push } = useRouter()
 
+  const { data: permissions, isLoading: permissionLoading } =
+    usePermissionQuery()
+
   const { data: supplier, isLoading } = useQuery({
     queryKey: ["supplier", id],
     queryFn: () => getSupplierById(id),
     enabled: id !== "",
   })
 
-  const permissions = [
-    "supplier_input_fields_name",
-    "supplier_input_fields_email",
-    "supplier_input_fields_cpf_cnpj",
-    "supplier_input_fields_phone",
-    "supplier_input_fields_contact_name",
-    "supplier_input_fields_address_2",
-    "supplier_input_fields_address_3",
-    "supplier_input_fields_cep",
-  ]
-
-  const {
-    supplier_input_fields_name,
-    supplier_input_fields_email,
-    supplier_input_fields_cpf_cnpj,
-    supplier_input_fields_phone,
-    supplier_input_fields_contact_name,
-    supplier_input_fields_address_2,
-    supplier_input_fields_address_3,
-    supplier_input_fields_cep,
-  } = usePermissions(permissions)
+  const supplier_input_fields_name = permissions?.["supplier_input_fields_name"]
+  const supplier_input_fields_email =
+    permissions?.["supplier_input_fields_email"]
+  const supplier_input_fields_cpf_cnpj =
+    permissions?.["supplier_input_fields_cpf_cnpj"]
+  const supplier_input_fields_phone =
+    permissions?.["supplier_input_fields_phone"]
+  const supplier_input_fields_contact_name =
+    permissions?.["supplier_input_fields_contact_name"]
+  const supplier_input_fields_address_2 =
+    permissions?.["supplier_input_fields_address_2"]
+  const supplier_input_fields_address_3 =
+    permissions?.["supplier_input_fields_address_3"]
+  const supplier_input_fields_cep = permissions?.["supplier_input_fields_cep"]
 
   const {
     register,

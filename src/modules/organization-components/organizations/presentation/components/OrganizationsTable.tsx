@@ -9,7 +9,7 @@ import { exportToExcel } from "@/core/utils/exportToExcel"
 import { formatStaticDocument } from "@/core/utils/formatDocumentNumber"
 import { formatStaticPhoneNumber } from "@/core/utils/formatPhoneNumber"
 import { getAccountId } from "@/core/utils/get-account-id"
-import { getPermissionByEntity } from "@/core/utils/getPermissionByEntity"
+import { usePermissionQuery } from "@/modules/login-components/login/infra/hooks/use-permissions-query"
 import { useGetOrganizationsQuery } from "@/modules/organization-components/organizations/infra/hooks/use-get-organizations-query"
 import { removeOrganization } from "@/modules/organization-components/organizations/infra/remote"
 import { FileXls, Pencil, Trash } from "@phosphor-icons/react"
@@ -26,15 +26,18 @@ export function OrganizationsTable() {
     refetch,
   } = useGetOrganizationsQuery(account_id)
 
+  const { data: permissions, isLoading: permissionLoading } =
+    usePermissionQuery()
+
   const { push } = useRouter()
 
   const [open, setOpen] = useState(false)
   const [id, setId] = useState("")
   const [filteredResults, setFilteredResults] = useState([])
 
-  const organizations_create = getPermissionByEntity("organizations_create")
-  const organizations_edit = getPermissionByEntity("organizations_edit")
-  const organizations_delete = getPermissionByEntity("organizations_delete")
+  const organizations_create = permissions?.["organizations_create"]
+  const organizations_edit = permissions?.["organizations_edit"]
+  const organizations_delete = permissions?.["organizations_delete"]
 
   const handleEdit = (id: string) => {
     push(`/organizations/edit/${id}`)

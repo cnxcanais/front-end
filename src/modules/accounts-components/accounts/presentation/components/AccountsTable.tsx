@@ -6,9 +6,9 @@ import { Modal } from "@/core/components/Modals/Modal"
 import { SearchInput } from "@/core/components/SearchInput"
 import { Table } from "@/core/components/Table"
 import { exportToExcel } from "@/core/utils/exportToExcel"
-import { getPermissionByEntity } from "@/core/utils/getPermissionByEntity"
 import { useGetAccountsQuery } from "@/modules/accounts-components/accounts/infra/hooks/use-get-accounts-query"
 import { removeAccount } from "@/modules/accounts-components/accounts/infra/remote"
+import { usePermissionQuery } from "@/modules/login-components/login/infra/hooks/use-permissions-query"
 import { Pencil, Trash } from "@phosphor-icons/react"
 import { FileXls } from "@phosphor-icons/react/dist/ssr"
 import { useRouter } from "next/navigation"
@@ -17,10 +17,12 @@ import { toast } from "sonner"
 
 export function AccountsTable() {
   const { data: accounts, isLoading, refetch } = useGetAccountsQuery()
+  const { data: permissions, isLoading: permissionLoading } =
+    usePermissionQuery()
 
-  const accounts_create = getPermissionByEntity("accounts_create")
-  const accounts_edit = getPermissionByEntity("accounts_edit")
-  const accounts_delete = getPermissionByEntity("accounts_delete")
+  const accounts_create = permissions?.["accounts_create"]
+  const accounts_edit = permissions?.["accounts_edit"]
+  const accounts_delete = permissions?.["accounts_delete"]
 
   const { push } = useRouter()
 
@@ -94,7 +96,7 @@ export function AccountsTable() {
     if (accounts) setFilteredResults(accounts)
   }, [accounts, isLoading])
 
-  if (!accounts || isLoading) return <LoadingScreen />
+  if (!accounts || isLoading || permissionLoading) return <LoadingScreen />
 
   return (
     <>

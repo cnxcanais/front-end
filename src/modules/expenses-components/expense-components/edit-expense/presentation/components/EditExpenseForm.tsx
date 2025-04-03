@@ -6,13 +6,13 @@ import { Button } from "@/core/components/Button"
 import * as Input from "@/core/components/Input"
 import { LoadingScreen } from "@/core/components/LoadingScreen"
 import { getAccountId } from "@/core/utils/get-account-id"
-import { getPermissionByEntity } from "@/core/utils/getPermissionByEntity"
 import { ArrayConfig, populateArrays } from "@/core/utils/populateArrays"
 import { editExpenseSchema } from "@/modules/expenses-components/expense-components/edit-expense/presentation/validation/schema"
 import { useExpenseByIdQuery } from "@/modules/expenses-components/expense-components/infra/use-expense-by-id-query"
 import { editExpense } from "@/modules/expenses-components/expense-components/remote"
 import { getAllExpenseGroups } from "@/modules/expenses-components/expense-groups-components/remote/expense-groups-methods"
 import { getSuppliers } from "@/modules/expenses-components/supplier-components/suppliers/infra/remote"
+import { usePermissionQuery } from "@/modules/login-components/login/infra/hooks/use-permissions-query"
 import { getOrganizations } from "@/modules/organization-components/organizations/infra/remote"
 import { zodResolver } from "@hookform/resolvers/zod"
 import { useRouter } from "next/navigation"
@@ -22,6 +22,9 @@ import { toast } from "sonner"
 
 export function EditExpenseForm({ expense_id }: { expense_id: string }) {
   const { push } = useRouter()
+
+  const { data: permissions, isLoading: permissionLoading } =
+    usePermissionQuery()
 
   const account_id = getAccountId()
 
@@ -76,33 +79,23 @@ export function EditExpenseForm({ expense_id }: { expense_id: string }) {
     )
   }, [arrayConfigs, account_id])
 
-  const expense_input_fields_amount = getPermissionByEntity(
-    "expense_input_fields_amount"
-  )
-  const expense_input_fields_expense_qty = getPermissionByEntity(
-    "expense_input_fields_expense_qty"
-  )
-  const expense_input_fields_expense_percentage = getPermissionByEntity(
-    "expense_input_fields_expense_percentage"
-  )
-  const expense_input_fields_date = getPermissionByEntity(
-    "expense_input_fields_date"
-  )
-  const expense_input_fields_document = getPermissionByEntity(
-    "expense_input_fields_document"
-  )
-  const expense_input_fields_description = getPermissionByEntity(
-    "expense_input_fields_description"
-  )
-  const expense_input_fields_supplier_id = getPermissionByEntity(
-    "expense_input_fields_supplier_id"
-  )
-  const expense_input_fields_organization_id = getPermissionByEntity(
-    "expense_input_fields_organization_id"
-  )
-  const expense_input_fields_expense_group_id = getPermissionByEntity(
-    "expense_input_fields_expense_group_id"
-  )
+  const expense_input_fields_amount =
+    permissions?.["expense_input_fields_amount"]
+  const expense_input_fields_expense_qty =
+    permissions?.["expense_input_fields_expense_qty"]
+  const expense_input_fields_expense_percentage =
+    permissions?.["expense_input_fields_expense_percentage"]
+  const expense_input_fields_date = permissions?.["expense_input_fields_date"]
+  const expense_input_fields_document =
+    permissions?.["expense_input_fields_document"]
+  const expense_input_fields_description =
+    permissions?.["expense_input_fields_description"]
+  const expense_input_fields_supplier_id =
+    permissions?.["expense_input_fields_supplier_id"]
+  const expense_input_fields_organization_id =
+    permissions?.["expense_input_fields_organization_id"]
+  const expense_input_fields_expense_group_id =
+    permissions?.["expense_input_fields_expense_group_id"]
 
   const {
     register,

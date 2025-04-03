@@ -24,8 +24,6 @@ export function MonthlyIncomeGraph() {
     new Date().getFullYear() - 1
   )
 
-  console.log(currentYear)
-
   useEffect(() => {
     if (currentYear && lastYear) {
       const months = currentYear.totalPerMonth.map((item) => {
