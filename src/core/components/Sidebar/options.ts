@@ -12,6 +12,7 @@ import {
   HandCoins,
   Key,
   MoneyWavy,
+  Notebook,
   NotePencil,
   PiggyBank,
   Suitcase,
@@ -59,6 +60,12 @@ export const sidebar_options: SidebarOptionProps[] = [
     name: "Permissões",
     href: "/permissions",
     Icon: Key,
+    group: "Gerenciamento",
+  },
+  {
+    name: "Registros",
+    href: "/logs",
+    Icon: Notebook,
     group: "Gerenciamento",
   },
   {
