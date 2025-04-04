@@ -15,7 +15,7 @@ import { useRouter } from "next/navigation"
 import { useMemo, useState } from "react"
 import { toast } from "sonner"
 
-export function OverdueTable() {
+export function OverdueExpensesTable() {
   const accountId = getAccountId()
 
   const [open, setOpen] = useState(false)
