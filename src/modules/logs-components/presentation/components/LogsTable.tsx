@@ -3,6 +3,7 @@
 import { User } from "@/@types/users"
 import { LoadingScreen } from "@/core/components/LoadingScreen"
 import { Modal } from "@/core/components/Modals/Modal"
+import { PageSelector } from "@/core/components/PageSelector"
 import { Table } from "@/core/components/Table"
 import { formatLocalDate } from "@/core/utils/dateFunctions"
 import { getAccountId } from "@/core/utils/get-account-id"
@@ -17,6 +18,7 @@ export function LogsTable() {
 
   const [modalOpen, setModalOpen] = useState(false)
   const [modalData, setModalData] = useState<any>(null)
+  const [page, setPage] = useState(1)
 
   const [filters, setFilters] = useState<{
     start_date?: string
@@ -38,6 +40,15 @@ export function LogsTable() {
       return userMatch && startMatch && endMatch
     })
   }, [data, filters])
+
+  const itemsPerPage = 20
+  const totalPages = Math.ceil((filteredData?.length || 0) / itemsPerPage)
+
+  const paginatedData = useMemo(() => {
+    const start = (page - 1) * itemsPerPage
+    const end = start + itemsPerPage
+    return filteredData?.slice(start, end)
+  }, [filteredData, page])
 
   if (!data || isLoading) return <LoadingScreen />
 
@@ -99,7 +110,10 @@ export function LogsTable() {
         </pre>
       </Modal>
       <LogsFilters onFilterChange={setFilters} />
-      <Table columns={columns} data={filteredData} />
+      <div>
+        <Table columns={columns} data={paginatedData} />
+        <PageSelector page={page} setPage={setPage} totalPages={totalPages} />
+      </div>
     </>
   )
 }
