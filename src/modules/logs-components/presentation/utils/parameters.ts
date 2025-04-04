@@ -1,0 +1,31 @@
+export const tableNames: Record<string, string> = {
+  account: "Contas",
+  user: "Usuários",
+  organization: "Organizações",
+  supplier: "Fornecedores",
+  "income-source": "Fontes de Receita",
+  file: "Arquivos",
+  expenses: "Despesas",
+  "expenses-categories": "Categorias de Despesas",
+  "expenses-groups": "Grupos de Despesas",
+  "expense-details": "Detalhes de Despesas",
+  income: "Receitas",
+  "incomes-category": "Categorias de Receitas",
+  "income-groups": "Grupos de Receitas",
+  "income-details": "Detalhes de Receitas",
+  "budget-income": "Orçamentos de Receita",
+  "budget-expense": "Orçamentos de Despesa",
+  bank: "Bancos",
+  "bank-account": "Contas Bancárias",
+  profile: "Perfis",
+  path: "Caminhos",
+  "paths-access": "Acessos a Caminhos",
+  entity: "Entidades",
+  "entities-access": "Acessos a Entidades",
+}
+
+export const operationTypes: Record<string, string> = {
+  REGISTER: "Cadastro",
+  UPDATE: "Atualização",
+  DELETE: "Exclusão",
+}
