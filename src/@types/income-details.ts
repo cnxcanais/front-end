@@ -6,7 +6,7 @@ export namespace IncomeDetails {
     observation: string
     amount: number
     part: number
-    due_date: Date
+    due_date: string | Date
     is_paid: boolean
     bank_account_id: string
     income_id: string

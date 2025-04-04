@@ -19,14 +19,15 @@ export async function authenticate(formData: LoginSchema) {
       }
     )
 
-    const { data: permissionsData } = await api.get(
-      `/permissions/${data.user.account_id}/${data.user.profile.name}`
-    )
-
     setCookie("profile_name", data.user.profile.name)
     setCookie("accountId", data.user.account_id)
     setCookie("userId", data.user.user_id)
     setCookie("token", data.token)
+
+    const { data: permissionsData } = await api.get(
+      `/permissions/${data.user.account_id}/${data.user.profile.name}`
+    )
+
     setCookie(
       "path_permissions",
       JSON.stringify(permissionsData.permissions.urlAccess)
