@@ -23,7 +23,7 @@ import { usePermissionQuery } from "@/modules/login-components/login/infra/hooks
 import { FileXls, Money, Pencil, Trash } from "@phosphor-icons/react"
 import { useQuery } from "@tanstack/react-query"
 import { useRouter } from "next/navigation"
-import { useEffect, useState } from "react"
+import { useState } from "react"
 import { FormProvider, useForm } from "react-hook-form"
 import { toast } from "sonner"
 
@@ -55,7 +55,7 @@ export function IncomeDetailsTable({ income_id }: { income_id?: string }) {
   })
 
   const { data, isLoading, refetch } = useQuery({
-    queryKey: ["income-details", { filters }],
+    queryKey: ["income-details", { filters, page }],
     queryFn: () => getIncomeDetails(account_id, { ...filters, page }),
   })
 
@@ -107,10 +107,6 @@ export function IncomeDetailsTable({ income_id }: { income_id?: string }) {
       setOpen(false)
     }
   }
-
-  useEffect(() => {
-    if (page) refetch()
-  }, [page])
 
   const columns = [
     {

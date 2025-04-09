@@ -56,7 +56,7 @@ export function ExpenseDetailsTable({ expense_id }: { expense_id?: string }) {
   })
 
   const { data, isLoading, refetch } = useQuery({
-    queryKey: ["expense-details", { filters }],
+    queryKey: ["expense-details", { filters, page }],
     queryFn: () => getExpenseDetails(account_id, { page, ...filters }),
   })
 
@@ -91,6 +91,10 @@ export function ExpenseDetailsTable({ expense_id }: { expense_id?: string }) {
       setOpen(false)
     }
   }
+
+  // useEffect(() => {
+  //   refetch()
+  // }, [page])
 
   const columns = [
     {
