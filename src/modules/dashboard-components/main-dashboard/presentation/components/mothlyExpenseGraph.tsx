@@ -65,7 +65,6 @@ export function MonthlyExpenseGraph() {
       const options = {
         responsive: true,
         maintainAspectRatio: false,
-        outerWidth: 400,
         plugins: {
           title: {
             display: true,

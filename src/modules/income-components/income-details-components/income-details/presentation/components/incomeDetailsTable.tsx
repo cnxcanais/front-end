@@ -98,11 +98,13 @@ export function IncomeDetailsTable({ income_id }: { income_id?: string }) {
 
   const handleConfirmDelete = async () => {
     try {
-      await deleteIncomeDetails({ income_details_id: id })
+      await deleteIncomeDetails(id)
       toast.success("Parcela removida com sucesso!")
       refetch()
     } catch (error) {
       toast.error("Erro ao remover parcela: " + error)
+    } finally {
+      setOpen(false)
     }
   }
 

@@ -16,10 +16,10 @@ export function MainDashboard() {
     <>
       <PageTitle content="Dashboard" />
       <div className="mb-6 mt-6 flex flex-col gap-6">
-        <div className="h-[400px] w-full">
+        <div className="h-[400px] w-full max-w-[1800px]">
           <MonthlyIncomeGraph />
         </div>
-        <div className="h-[400px] w-full">
+        <div className="h-[400px] w-full max-w-[1800px]">
           <MonthlyExpenseGraph />
         </div>
         <div className="h-[400px] w-full max-w-[1800px]">
