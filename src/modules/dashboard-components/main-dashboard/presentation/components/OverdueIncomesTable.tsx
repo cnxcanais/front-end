@@ -55,7 +55,7 @@ export function OverdueIncomesTable() {
 
   async function handleConfirmDelete() {
     try {
-      await deleteIncomeDetails({ income_details_id: id })
+      await deleteIncomeDetails(id)
       toast.success("Parcela removida com sucesso!")
       refetch()
     } catch (error) {
