@@ -26,8 +26,6 @@ export function CreateUserForm() {
 
   const account_id = getAccountId()
 
-  const { data: profiles, isLoading: isProfilesLoading } =
-    useGetProfilesQuery(account_id)
   const { data: accounts, isLoading: isAccountsLoading } = useGetAccountsQuery()
 
   const {
@@ -41,6 +39,11 @@ export function CreateUserForm() {
       account_id,
     },
   })
+
+  const accountId = watch("account_id")
+
+  const { data: profiles, isLoading: isProfilesLoading } =
+    useGetProfilesQuery(accountId)
 
   async function onSubmit(data: User.CreateRequest) {
     try {
