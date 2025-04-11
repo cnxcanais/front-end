@@ -5,6 +5,7 @@ import { Button } from "@/core/components/Button"
 import * as Input from "@/core/components/Input"
 import { LoadingScreen } from "@/core/components/LoadingScreen"
 import { getAccountId } from "@/core/utils/get-account-id"
+import { useGetAccountById } from "@/modules/accounts-components/accounts/infra/hooks/use-get-account-by-id-query"
 import { useParams, useRouter } from "next/navigation"
 import { useEffect, useState } from "react"
 import { toast } from "sonner"
@@ -14,6 +15,7 @@ import { PermissionCard } from "./PermissionCard"
 
 export function ClonePermissions() {
   const [updatedPermissons, setUpdatedPermissions] = useState<Permission.Type>()
+  const [isMasterMode, setIsMasterMode] = useState<boolean>(false)
   const [cardsDisplay, setCardsDisplay] = useState({
     accounts: false,
     organizations: false,
@@ -38,6 +40,14 @@ export function ClonePermissions() {
   const account_id = getAccountId()
   const { data, isLoading } = useGetPermissionsQuery(account_id, name)
   const { push } = useRouter()
+  const { data: accounts, isLoading: isAccountsLoading } =
+    useGetAccountById(account_id)
+
+  useEffect(() => {
+    if (accounts) {
+      setIsMasterMode(accounts[0].master_mode)
+    }
+  }, [accounts])
 
   const handleSubmit = async () => {
     if (!updatedPermissons.name) {
@@ -66,7 +76,7 @@ export function ClonePermissions() {
       setUpdatedPermissions({ ...data, name: "" })
     }
   }, [data])
-  if (!data || isLoading) return <LoadingScreen />
+  if (!data || isLoading || isAccountsLoading) return <LoadingScreen />
 
   return (
     <section className="mb-2">
@@ -95,49 +105,53 @@ export function ClonePermissions() {
       </div>
 
       <div className="flex w-[1000px] flex-col">
-        <PermissionCard
-          name="Contas"
-          type="Página"
-          length={10}
-          associatedURL="/accounts"
-          setUpdatedPermissions={setUpdatedPermissions}
-          updatedPermissions={updatedPermissons}
-          childCardsName="accounts"
-          setCardsDisplay={setCardsDisplay}
-          cardsDisplay={cardsDisplay}
-        />
-
-        {cardsDisplay.accounts && (
-          <div className="flex flex-col items-end">
+        {isMasterMode && (
+          <>
             <PermissionCard
-              name="Cadastrar"
-              type="Botão"
-              length={9}
-              componentAccess="accounts_create"
-              associatedURL="/accounts/create"
+              name="Contas"
+              type="Página"
+              length={10}
+              associatedURL="/accounts"
               setUpdatedPermissions={setUpdatedPermissions}
               updatedPermissions={updatedPermissons}
+              childCardsName="accounts"
+              setCardsDisplay={setCardsDisplay}
+              cardsDisplay={cardsDisplay}
             />
 
-            <PermissionCard
-              name="Editar"
-              type="Botão"
-              length={9}
-              componentAccess="accounts_edit"
-              associatedURL="/accounts/edit"
-              setUpdatedPermissions={setUpdatedPermissions}
-              updatedPermissions={updatedPermissons}
-            />
+            {cardsDisplay.accounts && (
+              <div className="flex flex-col items-end">
+                <PermissionCard
+                  name="Cadastrar"
+                  type="Botão"
+                  length={9}
+                  componentAccess="accounts_create"
+                  associatedURL="/accounts/create"
+                  setUpdatedPermissions={setUpdatedPermissions}
+                  updatedPermissions={updatedPermissons}
+                />
 
-            <PermissionCard
-              name="Deletar"
-              type="Botão"
-              length={9}
-              componentAccess="accounts_delete"
-              setUpdatedPermissions={setUpdatedPermissions}
-              updatedPermissions={updatedPermissons}
-            />
-          </div>
+                <PermissionCard
+                  name="Editar"
+                  type="Botão"
+                  length={9}
+                  componentAccess="accounts_edit"
+                  associatedURL="/accounts/edit"
+                  setUpdatedPermissions={setUpdatedPermissions}
+                  updatedPermissions={updatedPermissons}
+                />
+
+                <PermissionCard
+                  name="Deletar"
+                  type="Botão"
+                  length={9}
+                  componentAccess="accounts_delete"
+                  setUpdatedPermissions={setUpdatedPermissions}
+                  updatedPermissions={updatedPermissons}
+                />
+              </div>
+            )}
+          </>
         )}
 
         <PermissionCard
