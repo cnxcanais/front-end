@@ -16,17 +16,28 @@ import {
 import { zodResolver } from "@hookform/resolvers/zod"
 import { Eye, EyeSlash } from "@phosphor-icons/react"
 import { useRouter } from "next/navigation"
-import { useState } from "react"
+import { useEffect, useState } from "react"
 import { useForm } from "react-hook-form"
 import { toast } from "sonner"
 
 export function CreateUserForm() {
   const { push } = useRouter()
   const [showPassword, setShowPassword] = useState(false)
+  const [masterMode, setMasterMode] = useState(false)
 
   const account_id = getAccountId()
 
   const { data: accounts, isLoading: isAccountsLoading } = useGetAccountsQuery()
+
+  useEffect(() => {
+    if (accounts) {
+      const masterMode = accounts.find(
+        (account) => account.account_id === account_id
+      )?.master_mode
+
+      setMasterMode(masterMode)
+    }
+  })
 
   const {
     register,
@@ -126,6 +137,7 @@ export function CreateUserForm() {
               value: account.account_id,
             }
           })}
+          disabled={!masterMode}
           {...register("account_id")}
         />
       </div>

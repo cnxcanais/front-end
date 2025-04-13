@@ -40,14 +40,14 @@ export function EditPermissions() {
   const { data, isLoading } = useGetPermissionsQuery(account_id, name)
   const { push } = useRouter()
 
-  const { data: accounts, isLoading: isAccountsLoading } =
+  const { data: account, isLoading: isAccountsLoading } =
     useGetAccountById(account_id)
 
   useEffect(() => {
-    if (accounts) {
-      setIsMasterMode(accounts[0].master_mode)
+    if (account) {
+      setIsMasterMode(account.master_mode)
     }
-  }, [accounts])
+  }, [account])
 
   const handleSubmit = async () => {
     const refinedData = {
