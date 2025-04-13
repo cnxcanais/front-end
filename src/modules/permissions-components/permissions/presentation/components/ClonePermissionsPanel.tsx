@@ -45,7 +45,6 @@ export function ClonePermissions() {
 
   useEffect(() => {
     if (account) {
-      console.log(account.master_mode)
       setIsMasterMode(account.master_mode)
     }
   }, [account])
