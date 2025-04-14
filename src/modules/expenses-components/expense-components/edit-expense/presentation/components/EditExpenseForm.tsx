@@ -79,10 +79,6 @@ export function EditExpenseForm({ expense_id }: { expense_id: string }) {
     )
   }, [arrayConfigs, account_id])
 
-  const expense_input_fields_amount =
-    permissions?.["expense_input_fields_amount"]
-  const expense_input_fields_expense_qty =
-    permissions?.["expense_input_fields_expense_qty"]
   const expense_input_fields_expense_percentage =
     permissions?.["expense_input_fields_expense_percentage"]
   const expense_input_fields_date = permissions?.["expense_input_fields_date"]
@@ -101,7 +97,7 @@ export function EditExpenseForm({ expense_id }: { expense_id: string }) {
     register,
     handleSubmit,
     formState: { isSubmitting, errors },
-    reset,
+    getValues,
     control,
   } = useForm<Expense.UpdateRequest>({
     resolver: zodResolver(editExpenseSchema),
@@ -116,11 +112,13 @@ export function EditExpenseForm({ expense_id }: { expense_id: string }) {
       expense_id: expense?.expense_id,
       is_operational: expense?.is_operational,
       is_variable: expense?.is_variable,
+      account_id,
     },
   })
 
   async function onSubmit(data: Expense.UpdateRequest) {
     try {
+      console.log("Altering expense", data)
       await editExpense(data)
       toast.success("Despesa editada com sucesso!")
       setTimeout(() => push("/expenses"), 2000)
@@ -128,6 +126,9 @@ export function EditExpenseForm({ expense_id }: { expense_id: string }) {
       toast.error("Erro ao editar despesa: " + error)
     }
   }
+
+  console.log(errors)
+  console.log(getValues())
 
   if (isLoading || !expense) return <LoadingScreen />
 

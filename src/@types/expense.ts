@@ -80,6 +80,7 @@ export namespace Expense {
     execution_date?: Date
     is_over_income?: boolean
     is_over_expense?: boolean
+    account_id: string
   }
 
   interface Group {
