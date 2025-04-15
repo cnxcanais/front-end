@@ -25,6 +25,7 @@ export function DRETable() {
     isLoading: isIncomesLoading,
     refetch: refetchIncomes,
   } = useIncomeByGroupQuery(account_id, filters)
+
   const {
     data: expenses,
     isLoading: isExpensesLoading,
