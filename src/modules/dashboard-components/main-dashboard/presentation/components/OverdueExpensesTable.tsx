@@ -15,6 +15,8 @@ import { useRouter } from "next/navigation"
 import { useMemo, useState } from "react"
 import { toast } from "sonner"
 
+const ITEMS_PER_PAGE = 20
+
 export function OverdueExpensesTable() {
   const accountId = getAccountId()
 
@@ -22,6 +24,7 @@ export function OverdueExpensesTable() {
   const [payOpen, setPayOpen] = useState(false)
   const [payId, setPayId] = useState("")
   const [page, setPage] = useState(1)
+  const [totalPages, setTotalPages] = useState(1)
   const [id, setId] = useState("")
 
   const { push } = useRouter()
@@ -65,13 +68,25 @@ export function OverdueExpensesTable() {
     }
   }
 
-  const filteredData = useMemo(() => {
-    return data?.expenseDetails?.filter((expenseDetail) => {
-      return (
-        expenseDetail.is_paid === false && expenseDetail.due_date < new Date()
-      )
-    })
-  }, [data])
+  const paginatedData = useMemo(() => {
+    const overdue =
+      data?.expenseDetails?.filter((expenseDetail) => {
+        return (
+          expenseDetail.is_paid === false &&
+          new Date(expenseDetail.due_date) < new Date()
+        )
+      }) ?? []
+
+    const start = (page - 1) * ITEMS_PER_PAGE
+    const end = start + ITEMS_PER_PAGE
+
+    const total = Math.ceil(overdue.length / ITEMS_PER_PAGE)
+    if (total !== totalPages) {
+      setTotalPages(total)
+    }
+
+    return overdue.slice(start, end)
+  }, [data, page, totalPages])
 
   // column structure for table
   const columns = [
@@ -178,17 +193,13 @@ export function OverdueExpensesTable() {
           </Button>
         </div>
       </Modal>
-      {filteredData.length === 0 ?
+      {paginatedData.length === 0 ?
         <h2 className="mt-6 text-xl font-semibold">
           Nenhuma despesa atrasada.
         </h2>
       : <>
-          <Table columns={columns} data={filteredData} />
-          <PageSelector
-            page={page}
-            setPage={setPage}
-            totalPages={data.totalPages}
-          />
+          <Table columns={columns} data={paginatedData} />
+          <PageSelector page={page} setPage={setPage} totalPages={totalPages} />
         </>
       }
     </>

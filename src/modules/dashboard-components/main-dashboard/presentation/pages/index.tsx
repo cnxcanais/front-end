@@ -26,10 +26,14 @@ export function MainDashboard() {
           <DailyResultGraph />
         </div>
 
-        <PageTitle content="Receitas Atrasadas" />
-        <OverdueIncomesTable />
-        <PageTitle content="Despesas Atrasadas" />
-        <OverdueExpensesTable />
+        <div>
+          <PageTitle content="Receitas Atrasadas" />
+          <OverdueIncomesTable />
+        </div>
+        <div>
+          <PageTitle content="Despesas Atrasadas" />
+          <OverdueExpensesTable />
+        </div>
       </div>
     </>
   )

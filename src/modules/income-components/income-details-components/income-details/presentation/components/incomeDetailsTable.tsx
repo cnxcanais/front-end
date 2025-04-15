@@ -216,6 +216,8 @@ export function IncomeDetailsTable({ income_id }: { income_id?: string }) {
   ]
 
   const tableData = useMemo(() => {
+    if (!data || !data.incomeDetails) return []
+
     const totalAmount = data.incomeDetails.reduce(
       (acc, item) => acc + Number(item.amount || 0),
       0
@@ -231,7 +233,7 @@ export function IncomeDetailsTable({ income_id }: { income_id?: string }) {
       observation: "",
     }
 
-    return [...data.incomeDetails, totalRow]
+    return [...data?.incomeDetails, totalRow]
   }, [data])
 
   if (!data || isLoading || permissionLoading || !permissions)

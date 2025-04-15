@@ -199,6 +199,8 @@ export function ExpenseDetailsTable({ expense_id }: { expense_id?: string }) {
   ]
 
   const tableData = useMemo(() => {
+    if (!data || !data.expenseDetails) return []
+
     const totalAmount = data.expenseDetails.reduce(
       (acc, item) => acc + Number(item.amount || 0),
       0
