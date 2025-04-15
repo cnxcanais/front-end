@@ -9,7 +9,7 @@ import { ArrayConfig, populateArrays } from "@/core/utils/populateArrays"
 import { getOrganizations } from "@/modules/organization-components/organizations/infra/remote"
 import { CaretDown, CaretRight } from "@phosphor-icons/react"
 import { useEffect, useMemo, useState } from "react"
-import { useForm } from "react-hook-form"
+import { useFormContext } from "react-hook-form"
 import { toast } from "sonner"
 
 interface FilterProps {
@@ -52,10 +52,10 @@ export function DREFilter({ onFilterChange }: FilterProps) {
     watch,
     control,
     formState: { isSubmitted },
-  } = useForm<{
-    start_date: string
-    end_date: string
-    organization_id: string
+  } = useFormContext<{
+    start_date?: string
+    end_date?: string
+    organization_id?: string
   }>()
 
   const formValues = watch()
@@ -75,7 +75,7 @@ export function DREFilter({ onFilterChange }: FilterProps) {
     onFilterChange({
       start_date: new Date(currentYear, 0, 1),
       end_date: new Date(currentYear, 11, 31),
-      organization_id: undefined,
+      organization_id: "",
     })
   }
 
@@ -134,7 +134,7 @@ export function DREFilter({ onFilterChange }: FilterProps) {
                 <Input.SelectInput
                   name="organization_id"
                   control={control}
-                  options={organizations}
+                  options={[{ label: "", value: "" }].concat(organizations)}
                   placeholder={arrayPlaceHolder}
                 />
               </Input.Root>
