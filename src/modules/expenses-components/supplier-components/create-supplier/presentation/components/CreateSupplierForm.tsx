@@ -17,6 +17,7 @@ import { usePermissionQuery } from "@/modules/login-components/login/infra/hooks
 import { zodResolver } from "@hookform/resolvers/zod"
 import { MagnifyingGlass } from "@phosphor-icons/react"
 import { useRouter } from "next/navigation"
+import { useState } from "react"
 import { useForm } from "react-hook-form"
 import { toast } from "sonner"
 
@@ -25,6 +26,8 @@ export function CreateSupplierForm() {
 
   const { data: permissions, isLoading: permissionLoading } =
     usePermissionQuery()
+
+  const [isCepSearched, setIsCepSearched] = useState(false)
 
   const account_id = getAccountId()
 
@@ -185,7 +188,10 @@ export function CreateSupplierForm() {
                 disabled={!supplier_input_fields_cep}
                 {...register("cep")}
                 type="text"
-                onBlur={(e) => fetchCep(e.target.value, setValue)}
+                onBlur={(e) => {
+                  fetchCep(e.target.value, setValue)
+                  setIsCepSearched(true)
+                }}
               />
             </Input.Root>
             {errors.cep && (
@@ -195,8 +201,12 @@ export function CreateSupplierForm() {
 
           <div className="flex flex-1 flex-col gap-2">
             <label htmlFor="city">Cidade</label>
-            <Input.Root variant={errors.city ? "error" : "disabled"}>
-              <Input.Control disabled {...register("city")} type="text" />
+            <Input.Root variant={isCepSearched ? "primary" : "disabled"}>
+              <Input.Control
+                disabled={!isCepSearched}
+                {...register("city")}
+                type="text"
+              />
             </Input.Root>
             {errors.city && (
               <span className="text-xs text-red-500">
@@ -207,8 +217,12 @@ export function CreateSupplierForm() {
 
           <div className="flex flex-col gap-2">
             <label htmlFor="state">Estado</label>
-            <Input.Root variant={errors.state ? "error" : "disabled"}>
-              <Input.Control disabled {...register("state")} type="state" />
+            <Input.Root variant={isCepSearched ? "primary" : "disabled"}>
+              <Input.Control
+                disabled={!isCepSearched}
+                {...register("state")}
+                type="state"
+              />
             </Input.Root>
             {errors.state && (
               <span className="text-xs text-red-500">
@@ -221,8 +235,12 @@ export function CreateSupplierForm() {
         <div className="flex gap-4">
           <div className="flex flex-1 flex-col gap-2">
             <label htmlFor="address_1">Endereço</label>
-            <Input.Root variant={errors.address_1 ? "error" : "disabled"}>
-              <Input.Control disabled {...register("address_1")} type="text" />
+            <Input.Root variant={isCepSearched ? "primary" : "disabled"}>
+              <Input.Control
+                disabled={!isCepSearched}
+                {...register("address_1")}
+                type="text"
+              />
             </Input.Root>
             {errors.address_1 && (
               <span className="text-xs text-red-500">

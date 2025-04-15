@@ -227,7 +227,7 @@ export function EditIncomeSourceForm({
             <div className="flex flex-1 flex-col gap-2">
               <label htmlFor="city">Cidade</label>
               <Input.Root variant={errors.city ? "error" : "disabled"}>
-                <Input.Control disabled {...register("city")} type="text" />
+                <Input.Control {...register("city")} type="text" />
               </Input.Root>
               {errors.city && (
                 <span className="text-xs text-red-500">
@@ -239,7 +239,7 @@ export function EditIncomeSourceForm({
             <div className="flex flex-col gap-2">
               <label htmlFor="state">Estado</label>
               <Input.Root variant={errors.state ? "error" : "disabled"}>
-                <Input.Control disabled {...register("state")} type="state" />
+                <Input.Control {...register("state")} type="state" />
               </Input.Root>
               {errors.state && (
                 <span className="text-xs text-red-500">
@@ -253,11 +253,7 @@ export function EditIncomeSourceForm({
             <div className="flex flex-1 flex-col gap-2">
               <label htmlFor="address_1">Endereço</label>
               <Input.Root variant={errors.address_1 ? "error" : "disabled"}>
-                <Input.Control
-                  disabled
-                  {...register("address_1")}
-                  type="text"
-                />
+                <Input.Control {...register("address_1")} type="text" />
               </Input.Root>
               {errors.address_1 && (
                 <span className="text-xs text-red-500">
