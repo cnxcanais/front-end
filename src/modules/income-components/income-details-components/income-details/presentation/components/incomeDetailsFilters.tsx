@@ -28,7 +28,7 @@ export function IncomeDetailsFilters({ onFilterChange }: FilterProps) {
   const { data: bankAccounts, isLoading: bankAccountIsLoading } =
     useBankAccountsQuery(account_id)
 
-  const { data: incomes, isLoading: incomesIsLoading } =
+  const { data: incomesData, isLoading: incomesIsLoading } =
     useIncomeQuery(account_id)
 
   function onSubmit(data: IncomeDetails.QueryParams) {
@@ -82,7 +82,7 @@ export function IncomeDetailsFilters({ onFilterChange }: FilterProps) {
     setIsFilterFilled(hasValue)
   }, [formValues])
 
-  if (!incomes || incomesIsLoading || !bankAccounts || bankAccountIsLoading)
+  if (!incomesData || incomesIsLoading || !bankAccounts || bankAccountIsLoading)
     return <LoadingScreen fullScreen={false} />
 
   return (
@@ -152,7 +152,7 @@ export function IncomeDetailsFilters({ onFilterChange }: FilterProps) {
                     name="income_id"
                     control={control}
                     options={prepareArrayForSelect(
-                      incomes,
+                      incomesData.incomes,
                       "document",
                       "income_id"
                     )}

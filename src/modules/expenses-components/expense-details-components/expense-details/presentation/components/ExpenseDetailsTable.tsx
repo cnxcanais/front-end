@@ -21,7 +21,7 @@ import { usePermissionQuery } from "@/modules/login-components/login/infra/hooks
 import { FileXls, Money, Pencil, Trash } from "@phosphor-icons/react"
 import { useQuery } from "@tanstack/react-query"
 import { useRouter } from "next/navigation"
-import { useState } from "react"
+import { useMemo, useState } from "react"
 import { FormProvider, useForm } from "react-hook-form"
 import { toast } from "sonner"
 
@@ -129,7 +129,10 @@ export function ExpenseDetailsTable({ expense_id }: { expense_id?: string }) {
     {
       header: "Pgto",
       accessor: "is_paid",
-      render: (is_paid: boolean) => <p>{is_paid ? "Pago" : "Em Aberto"}</p>,
+      render: (is_paid: boolean) => {
+        if (is_paid === null) return ""
+        else return <p>{is_paid ? "Pago" : "Em Aberto"}</p>
+      },
     },
     {
       header: "Vencimento",
@@ -146,48 +149,73 @@ export function ExpenseDetailsTable({ expense_id }: { expense_id?: string }) {
     {
       header: "Ações",
       accessor: "expense_details_id",
-      render: (value: string, row: unknown) => (
-        <div className="flex space-x-4">
-          {edit && (
-            <Pencil
-              className="cursor-pointer duration-300 ease-in-out hover:text-blue-500"
-              size={24}
-              onClick={() => handleEdit(value)}
-            />
-          )}
+      render: (value: string, row: unknown) => {
+        if (value === "total") return ""
+        return (
+          <div className="flex space-x-4">
+            {edit && (
+              <Pencil
+                className="cursor-pointer duration-300 ease-in-out hover:text-blue-500"
+                size={24}
+                onClick={() => handleEdit(value)}
+              />
+            )}
 
-          {deletePermission && (
-            <Trash
-              className="cursor-pointer duration-300 ease-in-out hover:text-blue-500"
-              size={24}
-              onClick={() => {
-                setId(value)
-                setOpen(true)
-              }}
-            />
-          )}
-        </div>
-      ),
+            {deletePermission && (
+              <Trash
+                className="cursor-pointer duration-300 ease-in-out hover:text-blue-500"
+                size={24}
+                onClick={() => {
+                  setId(value)
+                  setOpen(true)
+                }}
+              />
+            )}
+          </div>
+        )
+      },
     },
     {
       header: "Quitar",
       accessor: "expense_details_id",
-      render: (value: string, row: unknown) => (
-        <div className="flex space-x-4">
-          {pay && (
-            <Money
-              className="cursor-pointer duration-300 ease-in-out hover:text-blue-500"
-              size={24}
-              onClick={() => {
-                setPayId(value)
-                setPayOpen(true)
-              }}
-            />
-          )}
-        </div>
-      ),
+      render: (value: string, row: unknown) => {
+        if (value === "total") return ""
+        return (
+          <div className="flex space-x-4">
+            {pay && (
+              <Money
+                className="cursor-pointer duration-300 ease-in-out hover:text-blue-500"
+                size={24}
+                onClick={() => {
+                  setPayId(value)
+                  setPayOpen(true)
+                }}
+              />
+            )}
+          </div>
+        )
+      },
     },
   ]
+
+  const tableData = useMemo(() => {
+    const totalAmount = data.expenseDetails.reduce(
+      (acc, item) => acc + Number(item.amount || 0),
+      0
+    )
+
+    const totalRow = {
+      expense_details_id: "total",
+      expense: { document: "TOTAL", supplier: { name: "" } },
+      amount: totalAmount,
+      part: "",
+      is_paid: null,
+      due_date: "",
+      observation: "",
+    }
+
+    return [...data.expenseDetails, totalRow]
+  }, [data])
 
   if (!data?.expenseDetails || isLoading || permissionLoading)
     return <LoadingScreen />
@@ -256,7 +284,7 @@ export function ExpenseDetailsTable({ expense_id }: { expense_id?: string }) {
             Nenhuma parcela cadastrada.
           </h2>
         : <div>
-            <Table columns={columns} data={data.expenseDetails} />
+            <Table columns={columns} data={tableData} />
             <PageSelector
               page={page}
               setPage={setPage}

@@ -8,6 +8,7 @@ import { LoadingScreen } from "@/core/components/LoadingScreen"
 import { Modal } from "@/core/components/Modals/Modal"
 import { ModalFilesTrigger } from "@/core/components/Modals/ModalFiles/ModalFilesTrigger"
 import { ModalObservationTrigger } from "@/core/components/Modals/ModalObservation"
+import { PageSelector } from "@/core/components/PageSelector"
 import { SearchInput } from "@/core/components/SearchInput"
 import { Table } from "@/core/components/Table"
 import { exportToExcel } from "@/core/utils/exportToExcel"
@@ -18,7 +19,7 @@ import { removeIncome } from "@/modules/income-components/income-components/remo
 import { usePermissionQuery } from "@/modules/login-components/login/infra/hooks/use-permissions-query"
 import { FileXls, Pencil, Trash } from "@phosphor-icons/react"
 import { useRouter } from "next/navigation"
-import { useEffect, useState } from "react"
+import { useEffect, useMemo, useState } from "react"
 import { FormProvider, useForm } from "react-hook-form"
 import { toast } from "sonner"
 
@@ -45,11 +46,7 @@ export function IncomeTable() {
     },
   })
 
-  const {
-    data: incomes,
-    isLoading,
-    refetch,
-  } = useIncomeQuery(accountId, {
+  const { data, isLoading, refetch } = useIncomeQuery(accountId, {
     ...filters,
     page,
   })
@@ -130,22 +127,26 @@ export function IncomeTable() {
       render: (
         incomeDetails: Array<IncomeDetails.IncomeDetailsType>,
         income: IncomeDetails.IncomeDetailsType
-      ) => (
-        <p
-          onClick={() => {
-            push(`/income-details?income_id=${income.income_id}`)
-          }}
-          className="cursor-pointer text-blue-500 underline">
-          {incomeDetails.length}
-        </p>
-      ),
+      ) => {
+        if (income.income_id === "total") return ""
+        return (
+          <p
+            onClick={() => {
+              push(`/income-details?income_id=${income.income_id}`)
+            }}
+            className="cursor-pointer text-blue-500 underline">
+            {incomeDetails.length}
+          </p>
+        )
+      },
     },
     {
       header: "Arquivos",
       accessor: "income_id",
-      render: (value: string) => (
-        <ModalFilesTrigger entityId={value} entityType={"income_id"} />
-      ),
+      render: (value: string) => {
+        if (value === "total") return ""
+        return <ModalFilesTrigger entityId={value} entityType={"income_id"} />
+      },
     },
     {
       header: "Obs.",
@@ -157,37 +158,68 @@ export function IncomeTable() {
     {
       header: "Ações",
       accessor: "income_id",
-      render: (value: string, row: unknown) => (
-        <div className="flex space-x-4">
-          {income_edit && (
-            <Pencil
-              className="cursor-pointer duration-300 ease-in-out hover:text-blue-500"
-              size={24}
-              onClick={() => handleEdit(value)}
-            />
-          )}
-          {income_delete && (
-            <Trash
-              className="cursor-pointer duration-300 ease-in-out hover:text-blue-500"
-              size={24}
-              onClick={() => {
-                setId(value)
-                setOpen(true)
-              }}
-            />
-          )}
-        </div>
-      ),
+      render: (value: string, row: unknown) => {
+        if (value === "total") return ""
+        return (
+          <div className="flex space-x-4">
+            {income_edit && (
+              <Pencil
+                className="cursor-pointer duration-300 ease-in-out hover:text-blue-500"
+                size={24}
+                onClick={() => handleEdit(value)}
+              />
+            )}
+            {income_delete && (
+              <Trash
+                className="cursor-pointer duration-300 ease-in-out hover:text-blue-500"
+                size={24}
+                onClick={() => {
+                  setId(value)
+                  setOpen(true)
+                }}
+              />
+            )}
+          </div>
+        )
+      },
     },
   ]
 
   useEffect(() => {
-    if (incomes) {
-      setFilteredResults(incomes)
+    if (data) {
+      setFilteredResults(data.incomes)
     }
-  }, [incomes, isLoading])
+  }, [data])
 
-  if (!incomes || isLoading || permissionLoading) return <LoadingScreen />
+  const tableData = useMemo(() => {
+    const totalAmount = filteredResults.reduce(
+      (acc, income) => acc + (income.total_amount || 0),
+      0
+    )
+
+    const totalRemaining = filteredResults.reduce((acc, income) => {
+      const unpaid =
+        income.income_details
+          ?.filter((d) => !d.is_paid)
+          .reduce((sum, d) => sum + Number(d.amount), 0) || 0
+      return acc + unpaid
+    }, 0)
+
+    const summaryRow = {
+      income_id: "total",
+      document: "TOTAL",
+      description: "",
+      total_amount: totalAmount,
+      income_details: [{ amount: totalRemaining, is_paid: false }],
+      formatted_date: "",
+      income_group: { income_category: { name: "" }, group_name: "" },
+      income_source: { name: "" },
+    }
+
+    return [...filteredResults, summaryRow]
+  }, [filteredResults])
+
+  if (!data || isLoading || permissionLoading) return <LoadingScreen />
 
   return (
     <>
@@ -210,7 +242,7 @@ export function IncomeTable() {
         <div className="mt-8 flex items-center justify-between">
           <div className="flex h-full gap-4">
             <SearchInput
-              data={incomes}
+              data={data.incomes}
               searchParam="description"
               onSearchResult={(results) => setFilteredResults(results)}
             />
@@ -233,11 +265,19 @@ export function IncomeTable() {
             Exportar
           </Button>
         </div>
-        {incomes.length === 0 ?
+        {data.incomes.length === 0 ?
           <h2 className="mt-6 text-xl font-semibold">
             Nenhuma receita cadastrada.
           </h2>
-        : <Table columns={columns} data={filteredResults} />}
+        : <div>
+            <Table columns={columns} data={tableData} />
+            <PageSelector
+              page={page}
+              setPage={setPage}
+              totalPages={data.totalPages}
+            />
+          </div>
+        }
       </FormProvider>
     </>
   )

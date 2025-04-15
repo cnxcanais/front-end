@@ -1,10 +1,6 @@
 import { IncomeDetails } from "@/@types/income-details"
 import { Button } from "@/core/components/Button"
 import * as Input from "@/core/components/Input"
-import { LoadingScreen } from "@/core/components/LoadingScreen"
-import { getAccountId } from "@/core/utils/get-account-id"
-import { useBankAccountsQuery } from "@/modules/bank-accounts-components/bank-accounts/infra/hooks/use-bank-account-query"
-import { useIncomeQuery } from "@/modules/income-components/income-components/infra/use-income-query"
 import { CaretDown, CaretRight } from "@phosphor-icons/react"
 import { useEffect, useState } from "react"
 import { useFormContext, useWatch } from "react-hook-form"
@@ -16,18 +12,11 @@ interface FilterProps {
 export function SummaryDetailsFilters({ onFilterChange }: FilterProps) {
   const [collapsed, setCollapsed] = useState(false)
   const [isFilterFilled, setIsFilterFilled] = useState(false)
-  const account_id = getAccountId()
 
-  const { register, handleSubmit, control, reset, setValue } =
+  const { register, handleSubmit, control, reset } =
     useFormContext<IncomeDetails.QueryParams>()
 
   const formValues = useWatch({ control })
-
-  const { data: bankAccounts, isLoading: bankAccountIsLoading } =
-    useBankAccountsQuery(account_id)
-
-  const { data: incomes, isLoading: incomesIsLoading } =
-    useIncomeQuery(account_id)
 
   function onSubmit(data: IncomeDetails.QueryParams) {
     const adjustMonth = (month: string | undefined, isStart: boolean) => {
@@ -61,9 +50,6 @@ export function SummaryDetailsFilters({ onFilterChange }: FilterProps) {
 
     setIsFilterFilled(hasValue)
   }, [formValues])
-
-  if (!incomes || incomesIsLoading || !bankAccounts || bankAccountIsLoading)
-    return <LoadingScreen fullScreen={false} />
 
   return (
     <div className="max-w-[40rem]">
@@ -113,7 +99,6 @@ export function SummaryDetailsFilters({ onFilterChange }: FilterProps) {
               </Button>
             </div>
           </div>
-
         </div>
       </form>
     </div>

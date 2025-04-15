@@ -161,7 +161,7 @@ export function IncomeFilters({ onFilterChange }: FilterProps) {
                     name="document"
                     control={control}
                     options={prepareArrayForSelect(
-                      incomes,
+                      incomes.incomes,
                       "document",
                       "document"
                     )}

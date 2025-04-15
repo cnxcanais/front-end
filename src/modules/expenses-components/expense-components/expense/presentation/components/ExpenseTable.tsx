@@ -8,6 +8,7 @@ import { LoadingScreen } from "@/core/components/LoadingScreen"
 import { Modal } from "@/core/components/Modals/Modal"
 import { ModalFilesTrigger } from "@/core/components/Modals/ModalFiles/ModalFilesTrigger"
 import { ModalObservationTrigger } from "@/core/components/Modals/ModalObservation"
+import { PageSelector } from "@/core/components/PageSelector"
 import { SearchInput } from "@/core/components/SearchInput"
 import { Table } from "@/core/components/Table"
 import { exportToExcel } from "@/core/utils/exportToExcel"
@@ -18,7 +19,7 @@ import { removeExpense } from "@/modules/expenses-components/expense-components/
 import { usePermissionQuery } from "@/modules/login-components/login/infra/hooks/use-permissions-query"
 import { FileXls, Pencil, Trash } from "@phosphor-icons/react"
 import { useRouter } from "next/navigation"
-import { useEffect, useState } from "react"
+import { useEffect, useMemo, useState } from "react"
 import { FormProvider, useForm } from "react-hook-form"
 import { toast } from "sonner"
 
@@ -36,7 +37,7 @@ export function ExpenseTable() {
 
   // filters state
   const [filteredResults, setFilteredResults] = useState([])
-  const [filters, setFilters] = useState<Expense.GetRequestParams>({})
+  const [filters, setFilters] = useState<Expense.GetRequestParams>({ page })
 
   const methods = useForm<Expense.GetRequestParams>({
     defaultValues: {
@@ -128,22 +129,26 @@ export function ExpenseTable() {
       render: (
         expenseDetails: Array<ExpenseDetails.ExpenseDetailsType>,
         expense: ExpenseDetails.ExpenseDetailsType
-      ) => (
-        <p
-          onClick={() => {
-            push(`/expense-details?expense_id=${expense?.expense_id}`)
-          }}
-          className="cursor-pointer text-blue-500 underline">
-          {expenseDetails?.length}
-        </p>
-      ),
+      ) => {
+        if (expense.expense_id === "total") return ""
+        return (
+          <p
+            onClick={() => {
+              push(`/expense-details?expense_id=${expense?.expense_id}`)
+            }}
+            className="cursor-pointer text-blue-500 underline">
+            {expenseDetails?.length}
+          </p>
+        )
+      },
     },
     {
       header: "Arquivos",
       accessor: "expense_id",
-      render: (value: string) => (
-        <ModalFilesTrigger entityId={value} entityType={"expense_id"} />
-      ),
+      render: (value: string) => {
+        if (value === "total") return ""
+        return <ModalFilesTrigger entityId={value} entityType={"expense_id"} />
+      },
     },
     {
       header: "Obs.",
@@ -155,27 +160,30 @@ export function ExpenseTable() {
     {
       header: "Ações",
       accessor: "expense_id",
-      render: (value: string, row: unknown) => (
-        <div className="flex space-x-4">
-          {expense_edit && (
-            <Pencil
-              className="cursor-pointer duration-300 ease-in-out hover:text-blue-500"
-              size={24}
-              onClick={() => handleEdit(value)}
-            />
-          )}
-          {expense_delete && (
-            <Trash
-              className="cursor-pointer duration-300 ease-in-out hover:text-blue-500"
-              size={24}
-              onClick={() => {
-                setId(value)
-                setOpen(true)
-              }}
-            />
-          )}
-        </div>
-      ),
+      render: (value: string, row: unknown) => {
+        if (value === "total") return ""
+        return (
+          <div className="flex space-x-4">
+            {expense_edit && (
+              <Pencil
+                className="cursor-pointer duration-300 ease-in-out hover:text-blue-500"
+                size={24}
+                onClick={() => handleEdit(value)}
+              />
+            )}
+            {expense_delete && (
+              <Trash
+                className="cursor-pointer duration-300 ease-in-out hover:text-blue-500"
+                size={24}
+                onClick={() => {
+                  setId(value)
+                  setOpen(true)
+                }}
+              />
+            )}
+          </div>
+        )
+      },
     },
   ]
 
@@ -184,6 +192,34 @@ export function ExpenseTable() {
       setFilteredResults(data.expenses)
     }
   }, [data, isLoading])
+
+  const tableData = useMemo(() => {
+    const totalAmount = filteredResults.reduce(
+      (acc, expense) => acc + (expense.total_amount || 0),
+      0
+    )
+
+    const totalRemaining = filteredResults.reduce((acc, expense) => {
+      const unpaid =
+        expense.expense_details
+          ?.filter((d) => !d.is_paid)
+          .reduce((sum, d) => sum + Number(d.amount), 0) || 0
+      return acc + unpaid
+    }, 0)
+
+    const summaryRow = {
+      expense_id: "total",
+      document: "TOTAL",
+      description: "",
+      total_amount: totalAmount,
+      expense_details: [{ amount: totalRemaining, is_paid: false }],
+      formatted_date: "",
+      expense_group: { expense_category: { name: "" }, group_name: "" },
+      supplier: { name: "" },
+    }
+
+    return [...filteredResults, summaryRow]
+  }, [filteredResults])
 
   if (!data || isLoading || permissionLoading) return <LoadingScreen />
 
@@ -238,7 +274,15 @@ export function ExpenseTable() {
           <h2 className="mt-6 text-xl font-semibold">
             Nenhuma despesa cadastrada.
           </h2>
-        : <Table columns={columns} data={filteredResults} />}
+        : <div>
+            <Table columns={columns} data={tableData} />
+            <PageSelector
+              page={page}
+              setPage={setPage}
+              totalPages={data.totalPages}
+            />
+          </div>
+        }
       </FormProvider>
     </>
   )

@@ -37,6 +37,7 @@ export namespace Income {
 
   export type GetResponse = {
     incomes: IncomeType[]
+    totalPages: number
   }
 
   export type GetByIdRequest = {

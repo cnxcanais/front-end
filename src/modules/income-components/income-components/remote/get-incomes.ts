@@ -13,7 +13,7 @@ export async function getIncomes(
       }
     )
 
-    return data.incomes
+    return data
   } catch (error) {
     console.info(error)
   }
