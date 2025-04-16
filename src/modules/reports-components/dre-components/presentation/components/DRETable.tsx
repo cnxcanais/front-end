@@ -72,6 +72,9 @@ export function DRETable() {
                       <th className="px-3 py-3.5 text-left text-sm font-semibold text-gray-900">
                         Total
                       </th>
+                      <th className="px-3 py-3.5 text-left text-sm font-semibold text-gray-900">
+                        %
+                      </th>
                     </tr>
                   </thead>
                   <tbody className="divide-y divide-gray-200 bg-white">
@@ -81,6 +84,11 @@ export function DRETable() {
                           label={category}
                           value={total}
                           className="font-medium"
+                          percentage={
+                            totals.totalIncome !== 0 ?
+                              (total / totals.totalIncome) * 100
+                            : null
+                          }
                         />
                         {groups.map(({ group, incomes }) => (
                           <tr
@@ -92,29 +100,80 @@ export function DRETable() {
                             <td className="w-20 px-3 py-1.5 text-sm">
                               {formatCurrency(incomes)}
                             </td>
+                            <td className="w-20 px-3 py-1.5 text-sm">—</td>
                           </tr>
                         ))}
                       </Fragment>
                     ))}
+
                     <TableRow
                       label="TOTAL RECEITAS"
                       value={totals.totalIncome}
+                      percentage={totals.totalIncome !== 0 ? 100 : null}
                     />
+
                     <TableRow
                       label="IMPOSTOS SOBRE VENDA"
                       value={totals.totalIncomeTaxes}
+                      percentage={
+                        totals.totalIncome !== 0 ?
+                          (totals.totalIncomeTaxes / totals.totalIncome) * 100
+                        : null
+                      }
                     />
+
                     <TableRow
                       label="CUSTOS OPERACIONAIS"
                       value={totals.totalOperationalCosts}
+                      percentage={
+                        totals.totalIncome !== 0 ?
+                          (totals.totalOperationalCosts / totals.totalIncome) *
+                          100
+                        : null
+                      }
                     />
-                    <TableRow label="LUCRO BRUTO" value={totals.profit} />
+
+                    {expenses
+                      .filter((e) => e.totalOperationalCosts > 0)
+                      .map(({ category, totalOperationalCosts }) => (
+                        <tr
+                          className="text-gray-600 hover:bg-gray-50"
+                          key={category}>
+                          <td className="w-52 px-3 py-1.5 pl-10 text-sm">
+                            {category}
+                          </td>
+                          <td className="w-20 px-3 py-1.5 text-sm">
+                            {formatCurrency(totalOperationalCosts)}
+                          </td>
+                          <td className="w-20 px-3 py-1.5 text-sm">
+                            {totals.totalIncome !== 0 ?
+                              `${((totalOperationalCosts / totals.totalIncome) * 100).toFixed(1)}%`
+                            : "—"}
+                          </td>
+                        </tr>
+                      ))}
+
+                    <TableRow
+                      label="LUCRO BRUTO"
+                      value={totals.profit}
+                      percentage={
+                        totals.totalIncome !== 0 ?
+                          (totals.profit / totals.totalIncome) * 100
+                        : null
+                      }
+                    />
+
                     {expenses.map(({ category, totalExpenses, groups }) => (
                       <Fragment key={category}>
                         <TableRow
                           label={category}
                           value={totalExpenses}
                           className="font-medium"
+                          percentage={
+                            totals.totalIncome !== 0 ?
+                              (totalExpenses / totals.totalIncome) * 100
+                            : null
+                          }
                         />
                         {groups.map(({ group, expenses }) => (
                           <tr
@@ -126,21 +185,52 @@ export function DRETable() {
                             <td className="w-20 px-3 py-1.5 text-sm">
                               {formatCurrency(expenses)}
                             </td>
+                            <td className="w-20 px-3 py-1.5 text-sm">—</td>
                           </tr>
                         ))}
                       </Fragment>
                     ))}
+
                     <TableRow
                       label="TOTAL DESPESAS"
                       value={totals.totalExpense}
+                      percentage={
+                        totals.totalIncome !== 0 ?
+                          (totals.totalExpense / totals.totalIncome) * 100
+                        : null
+                      }
                     />
+
+                    <TableRow
+                      label="EBTDA"
+                      value={totals.profit - totals.totalExpense}
+                      percentage={
+                        totals.totalIncome !== 0 ?
+                          ((totals.profit - totals.totalExpense) /
+                            totals.totalIncome) *
+                          100
+                        : null
+                      }
+                    />
+
                     <TableRow
                       label="OUTROS IMPOSTOS"
                       value={totals.totalProfitTaxes}
+                      percentage={
+                        totals.totalIncome !== 0 ?
+                          (totals.totalProfitTaxes / totals.totalIncome) * 100
+                        : null
+                      }
                     />
+
                     <TableRow
                       label="LUCRO LIQUIDO"
                       value={totals.liquidProfit}
+                      percentage={
+                        totals.totalIncome !== 0 ?
+                          (totals.liquidProfit / totals.totalIncome) * 100
+                        : null
+                      }
                     />
                   </tbody>
                 </table>
@@ -153,11 +243,24 @@ export function DRETable() {
   )
 }
 
-function TableRow({ label, value, className = "" }) {
+function TableRow({
+  label,
+  value,
+  percentage,
+  className = "",
+}: {
+  label: string
+  value: number
+  percentage?: number
+  className?: string
+}) {
   return (
     <tr className={`bg-gray-100 font-bold text-gray-600 ${className}`}>
       <td className="w-52 px-3 py-2 text-sm">{label}</td>
       <td className="w-20 px-3 py-1.5 text-sm">{formatCurrency(value)}</td>
+      <td className="w-20 px-3 py-1.5 text-sm">
+        {percentage != null ? `${percentage.toFixed(1)}%` : "—"}
+      </td>
     </tr>
   )
 }
