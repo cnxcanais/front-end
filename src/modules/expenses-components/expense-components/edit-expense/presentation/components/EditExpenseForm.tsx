@@ -118,7 +118,6 @@ export function EditExpenseForm({ expense_id }: { expense_id: string }) {
 
   async function onSubmit(data: Expense.UpdateRequest) {
     try {
-      console.log("Altering expense", data)
       await editExpense(data)
       toast.success("Despesa editada com sucesso!")
       setTimeout(() => push("/expenses"), 2000)
@@ -126,9 +125,6 @@ export function EditExpenseForm({ expense_id }: { expense_id: string }) {
       toast.error("Erro ao editar despesa: " + error)
     }
   }
-
-  console.log(errors)
-  console.log(getValues())
 
   if (isLoading || !expense) return <LoadingScreen />
 

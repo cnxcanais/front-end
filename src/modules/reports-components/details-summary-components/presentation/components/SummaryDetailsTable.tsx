@@ -52,6 +52,19 @@ export function SummaryDetailsTable() {
       render: (data: any) => <p>{data?.description}</p>,
     },
     {
+      header: "Tipo",
+      accessor: "type",
+      render: (type: any) => (
+        <p>
+          {type === "income" ?
+            "RECEITA"
+          : type === "expense" ?
+            "DESPESA"
+          : ""}
+        </p>
+      ),
+    },
+    {
       header: "Cliente",
       accessor: "source",
       render: (source: any) => {

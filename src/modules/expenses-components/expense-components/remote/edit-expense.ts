@@ -13,6 +13,8 @@ export async function editExpense({
   supplier_id,
   organization_id,
   account_id,
+  is_operational,
+  is_variable,
 }: Expense.UpdateRequest) {
   try {
     const { data } = await api.put(`/expenses/${expense_id}`, {
@@ -25,6 +27,8 @@ export async function editExpense({
       supplier_id,
       organization_id,
       account_id,
+      is_operational,
+      is_variable,
     })
 
     return data.message
