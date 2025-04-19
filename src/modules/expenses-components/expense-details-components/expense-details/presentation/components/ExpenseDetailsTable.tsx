@@ -21,7 +21,7 @@ import { usePermissionQuery } from "@/modules/login-components/login/infra/hooks
 import { FileXls, Money, Pencil, Trash } from "@phosphor-icons/react"
 import { useQuery } from "@tanstack/react-query"
 import { useRouter } from "next/navigation"
-import { useMemo, useState } from "react"
+import { useEffect, useMemo, useState } from "react"
 import { FormProvider, useForm } from "react-hook-form"
 import { toast } from "sonner"
 
@@ -35,6 +35,9 @@ export function ExpenseDetailsTable({ expense_id }: { expense_id?: string }) {
   const [page, setPage] = useState(1)
   const [payOpen, setPayOpen] = useState(false)
   const [payId, setPayId] = useState("")
+  const [paginatedData, setPaginatedData] = useState<
+    ExpenseDetails.ExpenseDetailsType[] | undefined
+  >([])
 
   // check permissions
   const { data: permissions, isLoading: permissionLoading } =
@@ -56,9 +59,16 @@ export function ExpenseDetailsTable({ expense_id }: { expense_id?: string }) {
   })
 
   const { data, isLoading, refetch } = useQuery({
-    queryKey: ["expense-details", { filters, page }],
-    queryFn: () => getExpenseDetails(account_id, { page, ...filters }),
+    queryKey: ["expense-details", { filters }],
+    queryFn: () => getExpenseDetails(account_id, { ...filters }),
   })
+
+  useEffect(() => {
+    if (data) {
+      const slicedData = data.expenseDetails.slice((page - 1) * 20, page * 20)
+      setPaginatedData(slicedData)
+    }
+  }, [page, data])
 
   // HANDLERS
   const handleFilterChange = (newFilters: ExpenseDetails.QueryParams) => {
@@ -91,10 +101,6 @@ export function ExpenseDetailsTable({ expense_id }: { expense_id?: string }) {
       setOpen(false)
     }
   }
-
-  // useEffect(() => {
-  //   refetch()
-  // }, [page])
 
   const columns = [
     {
@@ -199,7 +205,7 @@ export function ExpenseDetailsTable({ expense_id }: { expense_id?: string }) {
   ]
 
   const tableData = useMemo(() => {
-    if (!data || !data.expenseDetails) return []
+    if (!data || !data.expenseDetails || !paginatedData) return []
 
     const totalAmount = data.expenseDetails.reduce(
       (acc, item) => acc + Number(item.amount || 0),
@@ -216,8 +222,8 @@ export function ExpenseDetailsTable({ expense_id }: { expense_id?: string }) {
       observation: "",
     }
 
-    return [...data.expenseDetails, totalRow]
-  }, [data])
+    return [...paginatedData, totalRow]
+  }, [data, paginatedData])
 
   if (!data?.expenseDetails || isLoading || permissionLoading)
     return <LoadingScreen />
