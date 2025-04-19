@@ -39,7 +39,6 @@ export function ExpenseTable() {
   >([])
 
   // filters state
-  const [filteredResults, setFilteredResults] = useState([])
   const [filters, setFilters] = useState<Expense.GetRequestParams>({ page })
 
   const methods = useForm<Expense.GetRequestParams>({
@@ -196,23 +195,15 @@ export function ExpenseTable() {
     },
   ]
 
-  useEffect(() => {
-    if (paginatedData) {
-      setFilteredResults(paginatedData)
-    }
-  }, [data, isLoading, page])
-
   const tableData = useMemo(() => {
     if (!data || !data.expenses || !paginatedData) return []
 
-    if (!filteredResults) return []
-
-    const totalAmount = filteredResults.reduce(
+    const totalAmount = data.expenses.reduce(
       (acc, expense) => acc + (expense.total_amount || 0),
       0
     )
 
-    const totalRemaining = filteredResults.reduce((acc, expense) => {
+    const totalRemaining = data.expenses.reduce((acc, expense) => {
       const unpaid =
         expense.expense_details
           ?.filter((d) => !d.is_paid)
@@ -232,7 +223,7 @@ export function ExpenseTable() {
     }
 
     return [...paginatedData, summaryRow]
-  }, [paginatedData, filteredResults, page, data])
+  }, [paginatedData, page, data])
 
   if (!data || isLoading || permissionLoading) return <LoadingScreen />
 
@@ -257,11 +248,7 @@ export function ExpenseTable() {
         <ExpenseFilters onFilterChange={handleFilterChange} />
         <div className="mt-8 flex items-center justify-between">
           <div className="flex h-full gap-4">
-            <SearchInput
-              data={data.expenses}
-              searchParam="description"
-              onSearchResult={(results) => setFilteredResults(results)}
-            />
+            <SearchInput data={data.expenses} searchParam="description" />
             {expense_create && (
               <Button
                 onClick={() => push("/expenses/create")}

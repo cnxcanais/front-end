@@ -1,9 +1,11 @@
 "use client"
 
+import { Budget } from "@/@types/budgets"
 import { ExpenseGroup } from "@/@types/expense-group"
 import { Button } from "@/core/components/Button"
 import { LoadingScreen } from "@/core/components/LoadingScreen"
 import { Modal } from "@/core/components/Modals/Modal"
+import { PageSelector } from "@/core/components/PageSelector"
 import { SearchInput } from "@/core/components/SearchInput"
 import { Table } from "@/core/components/Table"
 import { exportToExcel } from "@/core/utils/exportToExcel"
@@ -20,20 +22,29 @@ import { toast } from "sonner"
 export function ExpenseBudgetTable() {
   const account_id = getAccountId()
   const [page, setPage] = useState(1)
+  const [open, setOpen] = useState(false)
+  const [id, setId] = useState("")
+  const [paginatedData, setPaginatedData] = useState<
+    Budget.Expense[] | undefined
+  >([])
 
   const {
     data: budgetExpenses,
     isLoading,
     refetch,
-  } = useBudgetExpensesQuery(account_id, { page })
+  } = useBudgetExpensesQuery(account_id)
+
+  useEffect(() => {
+    if (budgetExpenses) {
+      const slicedData = budgetExpenses.slice((page - 1) * 20, page * 20)
+      setPaginatedData(slicedData)
+    }
+  }, [page, budgetExpenses])
 
   const { data: permissions, isLoading: permissionLoading } =
     usePermissionQuery()
 
   const { push } = useRouter()
-
-  const [open, setOpen] = useState(false)
-  const [id, setId] = useState("")
 
   const budget_expenses_create = permissions?.["budget_expenses_create"]
   const budget_expenses_edit = permissions?.["budget_expenses_edit"]
@@ -117,12 +128,7 @@ export function ExpenseBudgetTable() {
     },
   ]
 
-  // updates filteredResults when budgetExpenses changes
-  useEffect(() => {
-    if (budgetExpenses) setFilteredResults(budgetExpenses)
-  }, [budgetExpenses, isLoading])
-
-  if (!budgetExpenses || isLoading || permissionLoading)
+  if (!budgetExpenses || isLoading || permissionLoading || !paginatedData)
     return <LoadingScreen />
 
   return (
@@ -173,7 +179,15 @@ export function ExpenseBudgetTable() {
         <h2 className="mt-6 text-xl font-semibold">
           Nenhum previsão de despesa cadastrado.
         </h2>
-      : <Table columns={columns} data={filteredResults} />}
+      : <div>
+          <Table columns={columns} data={paginatedData} />
+          <PageSelector
+            page={page}
+            setPage={setPage}
+            totalPages={Math.ceil(budgetExpenses.length / 20)}
+          />
+        </div>
+      }
     </>
   )
 }
