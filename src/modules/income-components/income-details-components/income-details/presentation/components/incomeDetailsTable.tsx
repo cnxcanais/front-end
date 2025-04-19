@@ -23,7 +23,7 @@ import { usePermissionQuery } from "@/modules/login-components/login/infra/hooks
 import { FileXls, Money, Pencil, Trash } from "@phosphor-icons/react"
 import { useQuery } from "@tanstack/react-query"
 import { useRouter } from "next/navigation"
-import { useMemo, useState } from "react"
+import { useEffect, useMemo, useState } from "react"
 import { FormProvider, useForm } from "react-hook-form"
 import { toast } from "sonner"
 
@@ -41,6 +41,9 @@ export function IncomeDetailsTable({ income_id }: { income_id?: string }) {
     paid_amount: number
     original_amount: number
   }>(null)
+  const [paginatedData, setPaginatedData] = useState<
+    IncomeDetails.IncomeDetailsType[] | undefined
+  >([])
 
   const { data: permissions, isLoading: permissionLoading } =
     usePermissionQuery()
@@ -55,9 +58,16 @@ export function IncomeDetailsTable({ income_id }: { income_id?: string }) {
   })
 
   const { data, isLoading, refetch } = useQuery({
-    queryKey: ["income-details", { filters, page }],
-    queryFn: () => getIncomeDetails(account_id, { ...filters, page }),
+    queryKey: ["income-details", { filters }],
+    queryFn: () => getIncomeDetails(account_id, { ...filters }),
   })
+
+  useEffect(() => {
+    if (data) {
+      const slicedData = data.incomeDetails.slice((page - 1) * 20, page * 20)
+      setPaginatedData(slicedData)
+    }
+  }, [page, data])
 
   const methods = useForm<IncomeDetails.QueryParams>({
     values: {
@@ -216,7 +226,7 @@ export function IncomeDetailsTable({ income_id }: { income_id?: string }) {
   ]
 
   const tableData = useMemo(() => {
-    if (!data || !data.incomeDetails) return []
+    if (!data || !data.incomeDetails || !paginatedData) return []
 
     const totalAmount = data.incomeDetails.reduce(
       (acc, item) => acc + Number(item.amount || 0),
@@ -233,8 +243,8 @@ export function IncomeDetailsTable({ income_id }: { income_id?: string }) {
       observation: "",
     }
 
-    return [...data?.incomeDetails, totalRow]
-  }, [data])
+    return [...paginatedData, totalRow]
+  }, [data, paginatedData])
 
   if (!data || isLoading || permissionLoading || !permissions)
     return <LoadingScreen />
