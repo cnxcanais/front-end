@@ -7,14 +7,12 @@ export async function getIncomeDetails(
 ) {
   try {
     if (queryParams?.start_date) {
-      console.info(queryParams.start_date)
       const startDate = new Date(queryParams.start_date)
       startDate.setUTCHours(0, 0, 0, 0)
       queryParams.start_date = startDate
     }
 
     if (queryParams?.end_date) {
-      console.info(queryParams.end_date)
       const endDate = new Date(queryParams.end_date)
       endDate.setUTCHours(0, 0, 0, 0)
       queryParams.end_date = endDate
