@@ -34,6 +34,9 @@ export function ExpenseTable() {
   const [open, setOpen] = useState(false)
   const [id, setId] = useState("")
   const [page, setPage] = useState(1)
+  const [paginatedData, setPaginatedData] = useState<
+    Expense.ExpenseType[] | undefined
+  >([])
 
   // filters state
   const [filteredResults, setFilteredResults] = useState([])
@@ -57,8 +60,14 @@ export function ExpenseTable() {
 
   const { data, isLoading, refetch } = useExpenseQuery(accountId, {
     ...filters,
-    page,
   })
+
+  useEffect(() => {
+    if (data) {
+      const slicedData = data.expenses.slice((page - 1) * 20, page * 20)
+      setPaginatedData(slicedData)
+    }
+  }, [page, data])
 
   const handleFilterChange = (newFilters: Expense.GetRequestParams) => {
     setFilters(newFilters)
@@ -188,12 +197,14 @@ export function ExpenseTable() {
   ]
 
   useEffect(() => {
-    if (data) {
-      setFilteredResults(data.expenses)
+    if (paginatedData) {
+      setFilteredResults(paginatedData)
     }
-  }, [data, isLoading])
+  }, [data, isLoading, page])
 
   const tableData = useMemo(() => {
+    if (!data || !data.expenses || !paginatedData) return []
+
     if (!filteredResults) return []
 
     const totalAmount = filteredResults.reduce(
@@ -220,8 +231,8 @@ export function ExpenseTable() {
       supplier: { name: "" },
     }
 
-    return [...filteredResults, summaryRow]
-  }, [filteredResults])
+    return [...paginatedData, summaryRow]
+  }, [paginatedData, filteredResults, page, data])
 
   if (!data || isLoading || permissionLoading) return <LoadingScreen />
 
