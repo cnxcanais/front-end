@@ -32,7 +32,6 @@ export function IncomeDetailsFilters({ onFilterChange }: FilterProps) {
     useIncomeQuery(account_id)
 
   function onSubmit(data: IncomeDetails.QueryParams) {
-    console.log(data)
     const adjustMonth = (month: string | undefined) => {
       if (!month) return undefined
       const [year, monthIndex, day] = month.split("-").map(Number)
