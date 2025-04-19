@@ -32,20 +32,17 @@ export function IncomeDetailsFilters({ onFilterChange }: FilterProps) {
     useIncomeQuery(account_id)
 
   function onSubmit(data: IncomeDetails.QueryParams) {
-    const adjustMonth = (month: string | undefined, isStart: boolean) => {
+    console.log(data)
+    const adjustMonth = (month: string | undefined) => {
       if (!month) return undefined
-      const [year, monthIndex] = month.split("-").map(Number)
-      return isStart ?
-          new Date(year, monthIndex - 1, 1)
-        : new Date(year, monthIndex, 0)
+      const [year, monthIndex, day] = month.split("-").map(Number)
+      return new Date(year, monthIndex - 1, day)
     }
 
     const cleanedData = {
       ...data,
-      start_date: adjustMonth(data.start_date, true)
-        ?.toISOString()
-        .split("T")[0],
-      end_date: adjustMonth(data.end_date, false)?.toISOString().split("T")[0],
+      start_date: adjustMonth(data.start_date)?.toISOString().split("T")[0],
+      end_date: adjustMonth(data.end_date)?.toISOString().split("T")[0],
       ...(data.min_amount === 0 || !data.min_amount ?
         { min_amount: undefined }
       : {}),
@@ -103,14 +100,14 @@ export function IncomeDetailsFilters({ onFilterChange }: FilterProps) {
               <div className="flex flex-1 flex-col gap-2">
                 <label htmlFor="start_date">Data Inicial</label>
                 <Input.Root>
-                  <Input.Control {...register("start_date")} type="month" />
+                  <Input.Control {...register("start_date")} type="date" />
                 </Input.Root>
               </div>
 
               <div className="flex flex-1 flex-col gap-2">
                 <label htmlFor="end_date">Data Final</label>
                 <Input.Root>
-                  <Input.Control {...register("end_date")} type="month" />
+                  <Input.Control {...register("end_date")} type="date" />
                 </Input.Root>
               </div>
             </div>
@@ -166,7 +163,7 @@ export function IncomeDetailsFilters({ onFilterChange }: FilterProps) {
                 field_name="income_group_id"
                 label="Pagamento"
                 options={[
-                  { text: "", value: "" },
+                  { text: "", value: undefined },
                   { text: "Pago", value: "true" },
                   { text: "Em Aberto", value: "false" },
                 ]}
