@@ -1,9 +1,11 @@
 "use client"
 
+import { Budget } from "@/@types/budgets"
 import { IncomeGroup } from "@/@types/income-group"
 import { Button } from "@/core/components/Button"
 import { LoadingScreen } from "@/core/components/LoadingScreen"
 import { Modal } from "@/core/components/Modals/Modal"
+import { PageSelector } from "@/core/components/PageSelector"
 import { SearchInput } from "@/core/components/SearchInput"
 import { Table } from "@/core/components/Table"
 import { exportToExcel } from "@/core/utils/exportToExcel"
@@ -20,26 +22,33 @@ import { toast } from "sonner"
 export function IncomeBudgetTable() {
   const account_id = getAccountId()
   const [page, setPage] = useState(1)
+  const [paginatedData, setPaginatedData] = useState<
+    Budget.Income[] | undefined
+  >([])
+  const [open, setOpen] = useState(false)
+  const [id, setId] = useState("")
 
   const {
     data: budgetIncomes,
     isLoading,
     refetch,
-  } = useBudgetIncomesQuery(account_id, { page })
+  } = useBudgetIncomesQuery(account_id)
+
+  useEffect(() => {
+    if (budgetIncomes) {
+      const slicedData = budgetIncomes.slice((page - 1) * 20, page * 20)
+      setPaginatedData(slicedData)
+    }
+  }, [page, budgetIncomes])
 
   const { push } = useRouter()
 
   const { data: permissions, isLoading: permissionLoading } =
     usePermissionQuery()
 
-  const [open, setOpen] = useState(false)
-  const [id, setId] = useState("")
-
   const budget_incomes_create = permissions?.["budget_incomes_create"]
   const budget_incomes_edit = permissions?.["budget_incomes_edit"]
   const budget_incomes_delete = permissions?.["budget_incomes_delete"]
-
-  const [filteredResults, setFilteredResults] = useState([])
 
   // handlers for Delete and Edit
   const handleEdit = (id: string) => {
@@ -117,12 +126,8 @@ export function IncomeBudgetTable() {
     },
   ]
 
-  // updates filteredResults when budgetIncomes changes
-  useEffect(() => {
-    if (budgetIncomes) setFilteredResults(budgetIncomes)
-  }, [budgetIncomes, isLoading])
-
-  if (!budgetIncomes || isLoading || permissionLoading) return <LoadingScreen />
+  if (!budgetIncomes || isLoading || permissionLoading || !paginatedData)
+    return <LoadingScreen />
 
   return (
     <>
@@ -145,11 +150,7 @@ export function IncomeBudgetTable() {
 
       <div className="mt-4 flex items-center justify-between">
         <div className="flex h-full gap-4">
-          <SearchInput
-            data={budgetIncomes}
-            searchParam="description"
-            onSearchResult={setFilteredResults}
-          />
+          <SearchInput data={budgetIncomes} searchParam="description" />
           {budget_incomes_create && (
             <Button
               onClick={() => push("/budget/incomes/create")}
@@ -172,7 +173,15 @@ export function IncomeBudgetTable() {
         <h2 className="mt-6 text-xl font-semibold">
           Nenhum previsão de receita cadastrado.
         </h2>
-      : <Table columns={columns} data={filteredResults} />}
+      : <div>
+          <Table columns={columns} data={paginatedData} />
+          <PageSelector
+            page={page}
+            setPage={setPage}
+            totalPages={Math.ceil(budgetIncomes.length / 20)}
+          />
+        </div>
+      }
     </>
   )
 }
