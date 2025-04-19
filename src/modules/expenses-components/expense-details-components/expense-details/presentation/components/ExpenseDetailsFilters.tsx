@@ -34,12 +34,10 @@ export function ExpenseDetailsFilters({ onFilterChange }: FilterProps) {
     useExpenseQuery(account_id)
 
   function onSubmit(data: ExpenseDetails.QueryParams) {
-    const adjustMonth = (month: string | undefined, isStart: boolean) => {
+    const adjustMonth = (month: string | undefined) => {
       if (!month) return undefined
-      const [year, monthIndex] = month.split("-").map(Number)
-      return isStart ?
-          new Date(year, monthIndex - 1, 1)
-        : new Date(year, monthIndex, 0)
+      const [year, monthIndex, day] = month.split("-").map(Number)
+      return new Date(year, monthIndex - 1, day)
     }
 
     const cleanedData = {
@@ -48,12 +46,12 @@ export function ExpenseDetailsFilters({ onFilterChange }: FilterProps) {
         data.bank_account_id !== "" ? data.bank_account_id : undefined,
       start_date:
         isOverdue ? undefined : (
-          adjustMonth(data.start_date, true)?.toISOString().split("T")[0]
+          adjustMonth(data.start_date)?.toISOString().split("T")[0]
         ),
       end_date:
         isOverdue ?
           new Date().toISOString().split("T")[0]
-        : adjustMonth(data.end_date, false)?.toISOString().split("T")[0],
+        : adjustMonth(data.end_date)?.toISOString().split("T")[0],
       ...(data.min_amount === 0 || !data.min_amount ?
         { min_amount: undefined }
       : {}),
@@ -112,14 +110,14 @@ export function ExpenseDetailsFilters({ onFilterChange }: FilterProps) {
               <div className="flex flex-1 flex-col gap-2">
                 <label htmlFor="start_date">Data Inicial</label>
                 <Input.Root>
-                  <Input.Control {...register("start_date")} type="month" />
+                  <Input.Control {...register("start_date")} type="date" />
                 </Input.Root>
               </div>
 
               <div className="flex flex-1 flex-col gap-2">
                 <label htmlFor="end_date">Data Final</label>
                 <Input.Root>
-                  <Input.Control {...register("end_date")} type="month" />
+                  <Input.Control {...register("end_date")} type="date" />
                 </Input.Root>
               </div>
             </div>
