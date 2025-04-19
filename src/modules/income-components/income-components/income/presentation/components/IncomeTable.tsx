@@ -31,6 +31,9 @@ export function IncomeTable() {
   const [page, setPage] = useState(1)
   const [filteredResults, setFilteredResults] = useState([])
   const [filters, setFilters] = useState<Income.GetRequest>({})
+  const [paginatedData, setPaginatedData] = useState<
+    Income.IncomeType[] | undefined
+  >([])
 
   const accountId = getAccountId()
 
@@ -48,8 +51,14 @@ export function IncomeTable() {
 
   const { data, isLoading, refetch } = useIncomeQuery(accountId, {
     ...filters,
-    page,
   })
+
+  useEffect(() => {
+    if (data) {
+      const slicedData = data.incomes.slice((page - 1) * 20, page * 20)
+      setPaginatedData(slicedData)
+    }
+  }, [page, data])
 
   const { data: permissions, isLoading: permissionLoading } =
     usePermissionQuery()
@@ -185,19 +194,15 @@ export function IncomeTable() {
     },
   ]
 
-  useEffect(() => {
-    if (data) {
-      setFilteredResults(data.incomes)
-    }
-  }, [data])
-
   const tableData = useMemo(() => {
-    const totalAmount = filteredResults.reduce(
+    if (!data || !paginatedData || !data.incomes) return []
+
+    const totalAmount = data?.incomes.reduce(
       (acc, income) => acc + (income.total_amount || 0),
       0
     )
 
-    const totalRemaining = filteredResults.reduce((acc, income) => {
+    const totalRemaining = data?.incomes.reduce((acc, income) => {
       const unpaid =
         income.income_details
           ?.filter((d) => !d.is_paid)
@@ -216,8 +221,8 @@ export function IncomeTable() {
       income_source: { name: "" },
     }
 
-    return [...filteredResults, summaryRow]
-  }, [filteredResults])
+    return [...paginatedData, summaryRow]
+  }, [data, paginatedData])
 
   if (!data || isLoading || permissionLoading) return <LoadingScreen />
 
