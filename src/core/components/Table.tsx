@@ -11,10 +11,12 @@ export function Table<T>({
   columns,
   data,
   className,
+  ref,
 }: {
   columns: Column[]
   data: T[]
   className?: string
+  ref?: React.Ref<HTMLTableElement>
 }) {
   return (
     <div className="">
@@ -24,7 +26,8 @@ export function Table<T>({
             <div className="overflow-hidden shadow ring-1 ring-black/5 sm:rounded-lg">
               <table
                 className={`${className} min-w-full divide-y divide-gray-300`}
-                id="table">
+                id="table"
+                ref={ref}>
                 <thead className="bg-gray-50">
                   <tr>
                     {columns.map((column, columnIndex) => (
