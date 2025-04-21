@@ -1,9 +1,12 @@
 "use client"
 
+import { removeCookie } from "@/lib/cookies"
 import { List, X } from "@phosphor-icons/react"
+import { SignOut } from "@phosphor-icons/react/dist/ssr"
 import Image from "next/image"
 import { usePathname, useRouter } from "next/navigation"
 import { Fragment, useState } from "react"
+import { Button } from "../Button"
 import { sidebarGroupedByGroups } from "./options"
 import { SidebarItem } from "./SidebarItem"
 
@@ -14,6 +17,16 @@ export function Sidebar() {
 
   const toggleSidebar = () => {
     setIsOpen(!isOpen)
+  }
+
+  function handleLogout() {
+    removeCookie("profile_name")
+    removeCookie("accountId")
+    removeCookie("userId")
+    removeCookie("token")
+    removeCookie("path_permissions")
+
+    push("/")
   }
 
   return (
@@ -39,30 +52,37 @@ export function Sidebar() {
         </button>
       </div>
       {isOpen && (
-        <nav className="flex flex-1 flex-col px-6">
-          <ul role="list" className="flex flex-1 flex-col gap-y-7">
-            <ul role="list" className="-mx-2 space-y-1">
-              {Object.keys(sidebarGroupedByGroups).map((group) => (
-                <Fragment key={group}>
-                  <h3 className="!my-3 border-b-2 pb-0.5 text-lg font-semibold text-white">
-                    {group}
-                  </h3>
-                  <div className="space-y-1">
-                    {sidebarGroupedByGroups[group].map((item) => (
-                      <SidebarItem
-                        key={item.name}
-                        href={item.href}
-                        Icon={item.Icon}
-                        name={item.name}
-                        current={pathname === item.href}
-                      />
-                    ))}
-                  </div>
-                </Fragment>
-              ))}
+        <div className="flex flex-col">
+          <Button
+            onClick={handleLogout}
+            className="mx-auto mt-2 flex w-[90%] items-center justify-center gap-2">
+            Logout <SignOut className="h-4 w-4" />
+          </Button>
+          <nav className="flex flex-1 flex-col px-6">
+            <ul role="list" className="flex flex-1 flex-col gap-y-7">
+              <ul role="list" className="-mx-2 space-y-1">
+                {Object.keys(sidebarGroupedByGroups).map((group) => (
+                  <Fragment key={group}>
+                    <h3 className="!my-3 border-b-2 pb-0.5 text-lg font-semibold text-white">
+                      {group}
+                    </h3>
+                    <div className="space-y-1">
+                      {sidebarGroupedByGroups[group].map((item) => (
+                        <SidebarItem
+                          key={item.name}
+                          href={item.href}
+                          Icon={item.Icon}
+                          name={item.name}
+                          current={pathname === item.href}
+                        />
+                      ))}
+                    </div>
+                  </Fragment>
+                ))}
+              </ul>
             </ul>
-          </ul>
-        </nav>
+          </nav>
+        </div>
       )}
       {!isOpen && (
         <button
