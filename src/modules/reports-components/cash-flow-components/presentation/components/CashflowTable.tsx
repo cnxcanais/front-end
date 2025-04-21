@@ -2,7 +2,7 @@
 
 import { Button } from "@/core/components/Button"
 import { LoadingScreen } from "@/core/components/LoadingScreen"
-import { exportToExcel } from "@/core/utils/exportToExcel"
+import { exportNoPagination } from "@/core/utils/exportToExcel/exportNoPagination"
 import { getAccountId } from "@/core/utils/get-account-id"
 import { useExpenseDetailsQuery } from "@/modules/expenses-components/expense-details-components/infra/hooks/use-expense-details-query"
 import { useIncomeDetailsQuery } from "@/modules/income-components/income-details-components/infra/hooks/use-income-details-query"
@@ -67,7 +67,7 @@ export function CashflowTable() {
         <Button
           className="mb-2 flex items-center gap-1"
           variant="secondary"
-          onClick={exportToExcel}>
+          onClick={exportNoPagination}>
           <FileXls size={22} />
           Exportar
         </Button>

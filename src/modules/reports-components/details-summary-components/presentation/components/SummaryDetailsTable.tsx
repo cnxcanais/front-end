@@ -5,7 +5,7 @@ import { Button } from "@/core/components/Button"
 import { LoadingScreen } from "@/core/components/LoadingScreen"
 import { Table } from "@/core/components/Table"
 import { formatLocalDate } from "@/core/utils/dateFunctions"
-import { exportToExcel } from "@/core/utils/exportToExcel"
+import { exportNoPagination } from "@/core/utils/exportToExcel/exportNoPagination"
 import { getAccountId } from "@/core/utils/get-account-id"
 import { getDetailsData } from "@/modules/reports-components/details-summary-components/infra/remote/get-details-data"
 import { SummaryDetailsFilters } from "@/modules/reports-components/details-summary-components/presentation/components/SummaryDetailsFilters"
@@ -110,7 +110,7 @@ export function SummaryDetailsTable() {
           <Button
             className="flex items-center gap-1"
             variant="secondary"
-            onClick={exportToExcel}>
+            onClick={exportNoPagination}>
             <FileXls size={22} />
             Exportar
           </Button>

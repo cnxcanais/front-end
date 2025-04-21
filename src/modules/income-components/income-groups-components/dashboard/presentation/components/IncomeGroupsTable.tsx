@@ -6,7 +6,7 @@ import { LoadingScreen } from "@/core/components/LoadingScreen"
 import { Modal } from "@/core/components/Modals/Modal"
 import { SearchInput } from "@/core/components/SearchInput"
 import { Table } from "@/core/components/Table"
-import { exportToExcel } from "@/core/utils/exportToExcel"
+import { exportNoPagination } from "@/core/utils/exportToExcel/exportNoPagination"
 import { getAccountId } from "@/core/utils/get-account-id"
 import { deleteIncomeGroup } from "@/modules/income-components/income-groups-components/remote/income-group"
 import { useIncomeGroupQuery } from "@/modules/income-components/income-groups-components/remote/use-income-group-query"
@@ -145,7 +145,7 @@ export function IncomeGroupTable() {
           <Button
             className="flex items-center gap-1"
             variant="secondary"
-            onClick={exportToExcel}>
+            onClick={exportNoPagination}>
             <FileXls size={22} />
             Exportar
           </Button>

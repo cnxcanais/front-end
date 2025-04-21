@@ -5,7 +5,7 @@ import { LoadingScreen } from "@/core/components/LoadingScreen"
 import { Modal } from "@/core/components/Modals/Modal"
 import { SearchInput } from "@/core/components/SearchInput"
 import { Table } from "@/core/components/Table"
-import { exportToExcel } from "@/core/utils/exportToExcel"
+import { exportNoPagination } from "@/core/utils/exportToExcel/exportNoPagination"
 import { formatStaticDocument } from "@/core/utils/formatDocumentNumber"
 import { formatStaticPhoneNumber } from "@/core/utils/formatPhoneNumber"
 import { getAccountId } from "@/core/utils/get-account-id"
@@ -147,7 +147,7 @@ export function OrganizationsTable() {
           <Button
             className="flex items-center gap-1"
             variant="secondary"
-            onClick={exportToExcel}>
+            onClick={exportNoPagination}>
             <FileXls size={22} />
             Exportar
           </Button>

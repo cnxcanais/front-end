@@ -225,6 +225,27 @@ export function ExpenseDetailsTable({ expense_id }: { expense_id?: string }) {
     return [...paginatedData, totalRow]
   }, [data, paginatedData])
 
+  const exportTableData = useMemo(() => {
+    if (!data || !data.expenseDetails) return []
+
+    const totalAmount = data.expenseDetails.reduce(
+      (acc, item) => acc + Number(item.amount || 0),
+      0
+    )
+
+    const totalRow = {
+      expense_details_id: "total",
+      expense: { document: "TOTAL", supplier: { name: "" } },
+      amount: totalAmount,
+      part: "",
+      is_paid: null,
+      due_date: "",
+      observation: "",
+    }
+
+    return [...data.expenseDetails, totalRow]
+  }, [data])
+
   if (!data?.expenseDetails || isLoading || permissionLoading)
     return <LoadingScreen />
 
@@ -282,7 +303,7 @@ export function ExpenseDetailsTable({ expense_id }: { expense_id?: string }) {
           <Button
             className="flex items-center gap-1"
             variant="secondary"
-            onClick={exportToExcel}>
+            onClick={async () => await exportToExcel(exportTableData, columns)}>
             <FileXls size={22} />
             Exportar
           </Button>

@@ -7,7 +7,7 @@ import { Modal } from "@/core/components/Modals/Modal"
 import { SearchInput } from "@/core/components/SearchInput"
 import { Table } from "@/core/components/Table"
 import { formatLocalDate } from "@/core/utils/dateFunctions"
-import { exportToExcel } from "@/core/utils/exportToExcel"
+import { exportNoPagination } from "@/core/utils/exportToExcel/exportNoPagination"
 import { getAccountId } from "@/core/utils/get-account-id"
 import { deleteExpenseGroup } from "@/modules/expenses-components/expense-groups-components/remote/expense-groups-methods"
 import { useExpenseGroupQuery } from "@/modules/expenses-components/expense-groups-components/remote/use-expense-groups-query"
@@ -140,7 +140,7 @@ export function ExpenseGroupTable() {
           <Button
             className="flex items-center gap-1"
             variant="secondary"
-            onClick={exportToExcel}>
+            onClick={exportNoPagination}>
             <FileXls size={22} />
             Exportar
           </Button>

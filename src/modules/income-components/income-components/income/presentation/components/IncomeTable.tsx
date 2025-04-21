@@ -224,6 +224,36 @@ export function IncomeTable() {
     return [...paginatedData, summaryRow]
   }, [data, paginatedData])
 
+  const exportTableData = useMemo(() => {
+    if (!data || !paginatedData || !data.incomes) return []
+
+    const totalAmount = data?.incomes.reduce(
+      (acc, income) => acc + (income.total_amount || 0),
+      0
+    )
+
+    const totalRemaining = data?.incomes.reduce((acc, income) => {
+      const unpaid =
+        income.income_details
+          ?.filter((d) => !d.is_paid)
+          .reduce((sum, d) => sum + Number(d.amount), 0) || 0
+      return acc + unpaid
+    }, 0)
+
+    const summaryRow = {
+      income_id: "total",
+      document: "TOTAL",
+      description: "",
+      total_amount: totalAmount,
+      income_details: [{ amount: totalRemaining, is_paid: false }],
+      formatted_date: "",
+      income_group: { income_category: { name: "" }, group_name: "" },
+      income_source: { name: "" },
+    }
+
+    return [...data.incomes, summaryRow]
+  }, [data])
+
   if (!data || isLoading || permissionLoading) return <LoadingScreen />
 
   return (
@@ -265,7 +295,7 @@ export function IncomeTable() {
           <Button
             className="flex items-center gap-1"
             variant="secondary"
-            onClick={exportToExcel}>
+            onClick={async () => await exportToExcel(exportTableData, columns)}>
             <FileXls size={22} />
             Exportar
           </Button>

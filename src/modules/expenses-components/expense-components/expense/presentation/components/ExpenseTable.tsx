@@ -253,7 +253,7 @@ export function ExpenseTable() {
     }
 
     return [...data.expenses, summaryRow]
-  }, [data, data.expenses])
+  }, [data])
 
   if (!data || isLoading || permissionLoading) return <LoadingScreen />
 

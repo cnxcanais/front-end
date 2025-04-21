@@ -246,6 +246,27 @@ export function IncomeDetailsTable({ income_id }: { income_id?: string }) {
     return [...paginatedData, totalRow]
   }, [data, paginatedData])
 
+  const exportTableData = useMemo(() => {
+    if (!data || !data.incomeDetails) return []
+
+    const totalAmount = data.incomeDetails.reduce(
+      (acc, item) => acc + Number(item.amount || 0),
+      0
+    )
+
+    const totalRow = {
+      income_details_id: "total",
+      income: { document: "TOTAL", income_source: { name: "" } },
+      amount: totalAmount,
+      part: "",
+      is_paid: null,
+      due_date: "",
+      observation: "",
+    }
+
+    return [...data.incomeDetails, totalRow]
+  }, [data])
+
   if (!data || isLoading || permissionLoading || !permissions)
     return <LoadingScreen />
 
@@ -315,7 +336,7 @@ export function IncomeDetailsTable({ income_id }: { income_id?: string }) {
           <Button
             className="flex items-center gap-1"
             variant="secondary"
-            onClick={exportToExcel}>
+            onClick={() => exportToExcel(exportTableData, columns)}>
             <FileXls size={22} />
             Exportar
           </Button>

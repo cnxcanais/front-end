@@ -6,7 +6,7 @@ import { Modal } from "@/core/components/Modals/Modal"
 import { ModalObservationTrigger } from "@/core/components/Modals/ModalObservation"
 import { SearchInput } from "@/core/components/SearchInput"
 import { Table } from "@/core/components/Table"
-import { exportToExcel } from "@/core/utils/exportToExcel"
+import { exportNoPagination } from "@/core/utils/exportToExcel/exportNoPagination"
 import { getAccountId } from "@/core/utils/get-account-id"
 import { useFetchBankAccountsQuery } from "@/modules/bank-accounts-components/bank-accounts/infra/hooks/use-fetch-bank-accounts-query"
 import { removeBankAccount } from "@/modules/bank-accounts-components/bank-accounts/infra/remote"
@@ -157,7 +157,7 @@ export function BankAccountsTable() {
           <Button
             className="flex items-center gap-1"
             variant="secondary"
-            onClick={exportToExcel}>
+            onClick={exportNoPagination}>
             <FileXls size={22} />
             Exportar
           </Button>

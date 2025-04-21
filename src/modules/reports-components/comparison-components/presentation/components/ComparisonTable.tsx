@@ -2,7 +2,7 @@
 
 import { Button } from "@/core/components/Button"
 import { LoadingScreen } from "@/core/components/LoadingScreen"
-import { exportToExcel } from "@/core/utils/exportToExcel"
+import { exportNoPagination } from "@/core/utils/exportToExcel/exportNoPagination"
 import { formatCurrency } from "@/core/utils/format-currency"
 import { getAccountId } from "@/core/utils/get-account-id"
 import { useComparisonDataQuery } from "@/modules/reports-components/comparison-components/infra/hooks/use-comparison-data-query"
@@ -115,7 +115,7 @@ export function ComparisonTable() {
         <Button
           className="mb-2 flex items-center gap-1"
           variant="secondary"
-          onClick={exportToExcel}>
+          onClick={exportNoPagination}>
           <FileXls size={22} />
           Exportar
         </Button>

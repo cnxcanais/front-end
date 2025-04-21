@@ -5,7 +5,7 @@ import { LoadingScreen } from "@/core/components/LoadingScreen"
 import { Modal } from "@/core/components/Modals/Modal"
 import { SearchInput } from "@/core/components/SearchInput"
 import { Table } from "@/core/components/Table"
-import { exportToExcel } from "@/core/utils/exportToExcel"
+import { exportNoPagination } from "@/core/utils/exportToExcel/exportNoPagination"
 import { useGetAccountsQuery } from "@/modules/accounts-components/accounts/infra/hooks/use-get-accounts-query"
 import { removeAccount } from "@/modules/accounts-components/accounts/infra/remote"
 import { usePermissionQuery } from "@/modules/login-components/login/infra/hooks/use-permissions-query"
@@ -133,7 +133,7 @@ export function AccountsTable() {
           <Button
             className="flex items-center gap-1"
             variant="secondary"
-            onClick={exportToExcel}>
+            onClick={exportNoPagination}>
             <FileXls size={22} />
             Exportar
           </Button>

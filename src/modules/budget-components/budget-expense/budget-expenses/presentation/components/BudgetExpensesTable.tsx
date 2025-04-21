@@ -169,7 +169,7 @@ export function ExpenseBudgetTable() {
           <Button
             className="flex items-center gap-1"
             variant="secondary"
-            onClick={exportToExcel}>
+            onClick={async () => await exportToExcel(budgetExpenses, columns)}>
             <FileXls size={22} />
             Exportar
           </Button>

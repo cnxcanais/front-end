@@ -5,7 +5,7 @@ import { LoadingScreen } from "@/core/components/LoadingScreen"
 import { Modal } from "@/core/components/Modals/Modal"
 import { SearchInput } from "@/core/components/SearchInput"
 import { Table } from "@/core/components/Table"
-import { exportToExcel } from "@/core/utils/exportToExcel"
+import { exportNoPagination } from "@/core/utils/exportToExcel/exportNoPagination"
 import { getAccountId } from "@/core/utils/get-account-id"
 import { deleteIncomeCategory } from "@/modules/income-components/income-categories-components/remote/income-categories-methods"
 import { useIncomeCategoryQuery } from "@/modules/income-components/income-categories-components/remote/use-income-categories-query"
@@ -137,7 +137,7 @@ export function IncomeCategoriesTable() {
           <Button
             className="flex items-center gap-1"
             variant="secondary"
-            onClick={exportToExcel}>
+            onClick={exportNoPagination}>
             <FileXls size={22} />
             Exportar
           </Button>

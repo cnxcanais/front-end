@@ -48,11 +48,23 @@ export const exportToExcel = (tableData: any, columns: any) => {
             tableObject["Data"][index] = ""
             return
           }
-          const [day, month, year] = date.split("/")
-          const formattedDate = `${year}-${month}-${day}`
-          tableObject["Data"][index] = new Date(
-            formattedDate + "T08:00:00.000Z"
-          )
+          const dateArray = date.split("/")
+
+          if (dateArray.length === 3) {
+            const [day, month, year] = dateArray
+            const formattedDate = `${year}-${month}-${day}`
+            tableObject["Data"][index] = new Date(
+              formattedDate + "T08:00:00.000Z"
+            )
+          }
+
+          if (dateArray.length === 2) {
+            const [month, year] = dateArray
+            const formattedDate = `${year}-${month}-01`
+            tableObject["Data"][index] = new Date(
+              formattedDate + "T08:00:00.000Z"
+            )
+          }
         })
 
         // Date formatting for "Vencimento" field
