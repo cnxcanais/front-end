@@ -6,17 +6,6 @@ export async function getIncomeDetails(
   queryParams?: IncomeDetails.GetRequestParams
 ) {
   try {
-    if (queryParams?.start_date) {
-      const startDate = new Date(queryParams.start_date)
-      startDate.setUTCHours(0, 0, 0, 0)
-      queryParams.start_date = startDate
-    }
-
-    if (queryParams?.end_date) {
-      const endDate = new Date(queryParams.end_date)
-      endDate.setUTCHours(0, 0, 0, 0)
-      queryParams.end_date = endDate
-    }
     const { data } = await api.get<IncomeDetails.GetResponse>(
       `/income-details/account/${account_id}`,
       {

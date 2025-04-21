@@ -11,11 +11,11 @@ import {
   renderCashflowTableRows,
 } from "@/modules/reports-components/cash-flow-components/utils/process-cash-flow-data"
 import { FileXls } from "@phosphor-icons/react"
-import { useEffect, useState } from "react"
+import { useEffect, useMemo, useState } from "react"
 import { CashflowFilter } from "./CashflowFilter"
 
 export function CashflowTable() {
-  const currentYear = new Date().getFullYear()
+  const currentYear = useMemo(() => new Date().getFullYear(), [])
 
   const [filters, setFilters] = useState({
     start_date: new Date(currentYear, 0, 1),
