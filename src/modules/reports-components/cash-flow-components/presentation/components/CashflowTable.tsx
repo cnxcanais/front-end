@@ -12,6 +12,7 @@ import {
 } from "@/modules/reports-components/cash-flow-components/utils/process-cash-flow-data"
 import { FileXls } from "@phosphor-icons/react"
 import { useEffect, useMemo, useState } from "react"
+import { FormProvider, useForm } from "react-hook-form"
 import { CashflowFilter } from "./CashflowFilter"
 
 export function CashflowTable() {
@@ -20,7 +21,14 @@ export function CashflowTable() {
   const [filters, setFilters] = useState({
     start_date: new Date(currentYear, 0, 1),
     end_date: new Date(currentYear, 11, 31),
+    organization_id: "",
   })
+
+  const methods = useForm<{
+    start_date: string
+    end_date: string
+    organization_id: string
+  }>()
 
   const account_id = getAccountId()
 
@@ -62,66 +70,68 @@ export function CashflowTable() {
 
   return (
     <div className="">
-      <CashflowFilter onFilterChange={(filters) => setFilters(filters)} />
-      <div className="my-8 flow-root">
-        <Button
-          className="mb-2 flex items-center gap-1"
-          variant="secondary"
-          onClick={exportNoPagination}>
-          <FileXls size={22} />
-          Exportar
-        </Button>
-        <div className="-mx-4 -my-2 overflow-x-auto sm:-mx-6 lg:-mx-8">
-          <div className="inline-block min-w-full py-2 align-middle sm:px-6 lg:px-8">
-            <div className="overflow-hidden shadow ring-1 ring-black/5 sm:rounded-lg">
-              <table className="w-full divide-y divide-gray-300" id="table">
-                <thead className="bg-gray-50">
-                  <tr>
-                    <th className="px-3 py-3.5 text-left text-sm font-semibold text-gray-900">
-                      Categoria / Grupo
-                    </th>
-                    {[
-                      "Jan",
-                      "Fev",
-                      "Mar",
-                      "Abr",
-                      "Mai",
-                      "Jun",
-                      "Jul",
-                      "Ago",
-                      "Set",
-                      "Out",
-                      "Nov",
-                      "Dez",
-                    ]
-                      .slice(
-                        filters.start_date.getMonth(),
-                        filters.end_date.getMonth() + 1
-                      )
-                      .map((month, i) => (
-                        <th
-                          className="px-3 py-3.5 text-left text-sm font-semibold text-gray-900"
-                          key={i}>
-                          {month}
-                        </th>
-                      ))}
-                    <th className="px-3 py-3.5 text-left text-sm font-semibold text-gray-900">
-                      Total
-                    </th>
-                  </tr>
-                </thead>
-                <tbody className="divide-y divide-gray-200 bg-white">
-                  {renderCashflowTableRows(
-                    incomeCashflow,
-                    expenseCashflow,
-                    filters
-                  )}
-                </tbody>
-              </table>
+      <FormProvider {...methods}>
+        <CashflowFilter onFilterChange={(filters) => setFilters(filters)} />
+        <div className="my-8 flow-root">
+          <Button
+            className="mb-2 flex items-center gap-1"
+            variant="secondary"
+            onClick={exportNoPagination}>
+            <FileXls size={22} />
+            Exportar
+          </Button>
+          <div className="-mx-4 -my-2 overflow-x-auto sm:-mx-6 lg:-mx-8">
+            <div className="inline-block min-w-full py-2 align-middle sm:px-6 lg:px-8">
+              <div className="overflow-hidden shadow ring-1 ring-black/5 sm:rounded-lg">
+                <table className="w-full divide-y divide-gray-300" id="table">
+                  <thead className="bg-gray-50">
+                    <tr>
+                      <th className="px-3 py-3.5 text-left text-sm font-semibold text-gray-900">
+                        Categoria / Grupo
+                      </th>
+                      {[
+                        "Jan",
+                        "Fev",
+                        "Mar",
+                        "Abr",
+                        "Mai",
+                        "Jun",
+                        "Jul",
+                        "Ago",
+                        "Set",
+                        "Out",
+                        "Nov",
+                        "Dez",
+                      ]
+                        .slice(
+                          filters.start_date?.getMonth(),
+                          filters.end_date?.getMonth() + 1
+                        )
+                        .map((month, i) => (
+                          <th
+                            className="px-3 py-3.5 text-left text-sm font-semibold text-gray-900"
+                            key={i}>
+                            {month}
+                          </th>
+                        ))}
+                      <th className="px-3 py-3.5 text-left text-sm font-semibold text-gray-900">
+                        Total
+                      </th>
+                    </tr>
+                  </thead>
+                  <tbody className="divide-y divide-gray-200 bg-white">
+                    {renderCashflowTableRows(
+                      incomeCashflow,
+                      expenseCashflow,
+                      filters
+                    )}
+                  </tbody>
+                </table>
+              </div>
             </div>
           </div>
         </div>
-      </div>
+      </FormProvider>
     </div>
   )
 }

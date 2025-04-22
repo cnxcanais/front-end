@@ -15,47 +15,49 @@ export function groupDataForCashflow(
 ): Record<string, Report.Cashflow> {
   const periods = 12
 
-  return data.reduce<Record<string, Report.Cashflow>>((acc, item) => {
-    const dueDate = new Date(item.due_date)
+  return data
+    .filter((item) => item.is_paid)
+    .reduce<Record<string, Report.Cashflow>>((acc, item) => {
+      const dueDate = new Date(item.due_date)
 
-    if (dueDate < filter.start_date || dueDate > filter.end_date) {
-      return acc
-    }
-
-    const category_name =
-      isIncome ?
-        item.income.income_group.income_category.name
-      : item.expense.expense_group.expense_category.name
-
-    const group_name =
-      isIncome ?
-        item.income.income_group.group_name
-      : item.expense.expense_group.group_name
-
-    if (!category_name || !group_name) return acc
-
-    const amount = parseFloat(item.amount)
-
-    if (!acc[category_name]) {
-      acc[category_name] = {
-        groups: {},
-        totals: Array(periods).fill(0),
-        grand_total: 0,
+      if (dueDate < filter.start_date || dueDate > filter.end_date) {
+        return acc
       }
-    }
 
-    if (!acc[category_name].groups[group_name]) {
-      acc[category_name].groups[group_name] = Array(periods).fill(0)
-    }
+      const category_name =
+        isIncome ?
+          item.income.income_group.income_category.name
+        : item.expense.expense_group.expense_category.name
 
-    const periodIndex = dueDate.getMonth()
+      const group_name =
+        isIncome ?
+          item.income.income_group.group_name
+        : item.expense.expense_group.group_name
 
-    acc[category_name].groups[group_name][periodIndex] += amount
-    acc[category_name].totals[periodIndex] += amount
-    acc[category_name].grand_total += amount
+      if (!category_name || !group_name) return acc
 
-    return acc
-  }, {})
+      const amount = parseFloat(item.amount)
+
+      if (!acc[category_name]) {
+        acc[category_name] = {
+          groups: {},
+          totals: Array(periods).fill(0),
+          grand_total: 0,
+        }
+      }
+
+      if (!acc[category_name].groups[group_name]) {
+        acc[category_name].groups[group_name] = Array(periods).fill(0)
+      }
+
+      const periodIndex = dueDate.getMonth()
+
+      acc[category_name].groups[group_name][periodIndex] += amount
+      acc[category_name].totals[periodIndex] += amount
+      acc[category_name].grand_total += amount
+
+      return acc
+    }, {})
 }
 
 export function renderCashflowTableRows(
