@@ -109,7 +109,7 @@ export function ExpenseDetailsTable({ expense_id }: { expense_id?: string }) {
       render: (expense: Expense.ExpenseType) => <p>{expense.document}</p>,
     },
     {
-      header: "Cliente",
+      header: "Fornecedor",
       accessor: "expense",
       render: (expense: Expense.ExpenseType) => <p>{expense.supplier.name}</p>,
     },
