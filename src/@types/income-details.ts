@@ -76,5 +76,6 @@ export namespace IncomeDetails {
     min_amount?: number
     page?: number
     income_id?: string
+    organization_id?: string
   }
 }
