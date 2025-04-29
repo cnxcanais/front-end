@@ -1,38 +1,58 @@
 import { IncomeDetails } from "@/@types/income-details"
+import { SearchArray } from "@/@types/search-array"
 import { Button } from "@/core/components/Button"
 import * as Input from "@/core/components/Input"
+import { getAccountId } from "@/core/utils/get-account-id"
+import { ArrayConfig, populateArrays } from "@/core/utils/populateArrays"
+import { getOrganizations } from "@/modules/organization-components/organizations/infra/remote"
 import { CaretDown, CaretRight } from "@phosphor-icons/react"
-import { useEffect, useState } from "react"
+import { useEffect, useMemo, useState } from "react"
 import { useFormContext, useWatch } from "react-hook-form"
+import { toast } from "sonner"
 
 interface FilterProps {
-  onFilterChange: (filters: any) => void
+  onFilterChange: (filters: {
+    start_date: Date
+    end_date: Date
+    organization_id: string
+  }) => void
 }
 
 export function SummaryDetailsFilters({ onFilterChange }: FilterProps) {
+  const account_id = getAccountId()
+
   const [collapsed, setCollapsed] = useState(false)
   const [isFilterFilled, setIsFilterFilled] = useState(false)
+  const currentYear = new Date().getFullYear()
 
   const { register, handleSubmit, control, reset } =
     useFormContext<IncomeDetails.QueryParams>()
 
+  const [arrayPlaceHolder, setArrayPlaceHolder] = useState("Carregando...")
+  const [organizations, setOrganizations] = useState<SearchArray>([])
+
+  const arrayConfigs: ArrayConfig<any>[] = useMemo(
+    () => [
+      {
+        fetchFn: getOrganizations,
+        mapFn: (organization) => ({
+          label: organization.name,
+          value: organization.organization_id,
+        }),
+        setState: setOrganizations,
+      },
+    ],
+    []
+  )
+
   const formValues = useWatch({ control })
 
   function onSubmit(data: IncomeDetails.QueryParams) {
-    const adjustMonth = (month: string | undefined, isStart: boolean) => {
-      if (!month) return undefined
-      const [year, monthIndex] = month.split("-").map(Number)
-      return isStart ?
-          new Date(year, monthIndex - 1, 1)
-        : new Date(year, monthIndex, 0)
-    }
-
     const cleanedData = {
       ...data,
-      start_date: adjustMonth(data.start_date, true)
-        ?.toISOString()
-        .split("T")[0],
-      end_date: adjustMonth(data.end_date, false)?.toISOString().split("T")[0],
+      start_date: data.start_date ? new Date(data.start_date) : undefined,
+      end_date: data.end_date ? new Date(data.end_date) : undefined,
+      organization_id: data.organization_id ?? undefined,
     }
 
     onFilterChange(cleanedData)
@@ -40,7 +60,11 @@ export function SummaryDetailsFilters({ onFilterChange }: FilterProps) {
 
   function resetFilters() {
     reset()
-    onFilterChange({})
+    onFilterChange({
+      start_date: new Date(currentYear, 0, 1),
+      end_date: new Date(currentYear, 11, 31),
+      organization_id: "",
+    })
   }
 
   useEffect(() => {
@@ -50,6 +74,20 @@ export function SummaryDetailsFilters({ onFilterChange }: FilterProps) {
 
     setIsFilterFilled(hasValue)
   }, [formValues])
+
+  useEffect(() => {
+    if (!account_id) return
+
+    populateArrays(
+      arrayConfigs,
+      account_id,
+      () => setArrayPlaceHolder("Digite..."),
+      (error) => {
+        toast.error("Erro ao buscar dados: " + error.message)
+        setArrayPlaceHolder("Erro ao carregar...")
+      }
+    )
+  }, [arrayConfigs, account_id])
 
   return (
     <div className="max-w-[40rem]">
@@ -69,14 +107,26 @@ export function SummaryDetailsFilters({ onFilterChange }: FilterProps) {
               <div className="flex flex-1 flex-col gap-2">
                 <label htmlFor="start_date">Data Inicial</label>
                 <Input.Root>
-                  <Input.Control {...register("start_date")} type="month" />
+                  <Input.Control {...register("start_date")} type="date" />
                 </Input.Root>
               </div>
 
               <div className="flex flex-1 flex-col gap-2">
                 <label htmlFor="end_date">Data Final</label>
                 <Input.Root>
-                  <Input.Control {...register("end_date")} type="month" />
+                  <Input.Control {...register("end_date")} type="date" />
+                </Input.Root>
+              </div>
+
+              <div className="flex flex-1 flex-col gap-2">
+                <label htmlFor="organization_id">Organização</label>
+                <Input.Root>
+                  <Input.SelectInput
+                    name="organization_id"
+                    control={control}
+                    options={[{ label: "", value: "" }].concat(organizations)}
+                    placeholder={arrayPlaceHolder}
+                  />
                 </Input.Root>
               </div>
             </div>

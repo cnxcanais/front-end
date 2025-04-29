@@ -21,6 +21,7 @@ export function SummaryDetailsTable() {
   const [filters, setFilters] = useState({
     start_date: new Date(currentYear, 0, 1),
     end_date: new Date(currentYear, 11, 31),
+    organization_id: undefined,
   })
 
   const { data, isLoading } = useQuery({
@@ -32,6 +33,7 @@ export function SummaryDetailsTable() {
     values: {
       start_date: undefined,
       end_date: undefined,
+      organization_id: "",
     },
   })
 
