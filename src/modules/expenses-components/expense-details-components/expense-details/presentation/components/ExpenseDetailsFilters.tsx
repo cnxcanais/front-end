@@ -1,15 +1,19 @@
 import { ExpenseDetails } from "@/@types/expense-details"
+import { SearchArray } from "@/@types/search-array"
 import { Button } from "@/core/components/Button"
 import * as Input from "@/core/components/Input"
 import { LoadingScreen } from "@/core/components/LoadingScreen"
 import { SelectInput } from "@/core/components/SelectInput"
 import { getAccountId } from "@/core/utils/get-account-id"
+import { ArrayConfig, populateArrays } from "@/core/utils/populateArrays"
 import { prepareArrayForSelect } from "@/core/utils/prepare-array-for-select-input"
 import { useBankAccountsQuery } from "@/modules/bank-accounts-components/bank-accounts/infra/hooks/use-bank-account-query"
 import { useExpenseQuery } from "@/modules/expenses-components/expense-components/infra/use-expense-query"
+import { getSuppliers } from "@/modules/expenses-components/supplier-components/suppliers/infra/remote"
 import { CaretDown, CaretRight } from "@phosphor-icons/react"
-import { useEffect, useState } from "react"
+import { useEffect, useMemo, useState } from "react"
 import { useFormContext, useWatch } from "react-hook-form"
+import { toast } from "sonner"
 
 interface FilterProps {
   onFilterChange: (filters: ExpenseDetails.QueryParams) => void
@@ -33,6 +37,23 @@ export function ExpenseDetailsFilters({ onFilterChange }: FilterProps) {
   const { data: expenses, isLoading: expensesIsLoading } =
     useExpenseQuery(account_id)
 
+  const [arrayPlaceHolder, setArrayPlaceHolder] = useState("Carregando...")
+  const [suppliers, setSuppliers] = useState<SearchArray>([])
+
+  const arrayConfigs: ArrayConfig<any>[] = useMemo(
+    () => [
+      {
+        fetchFn: getSuppliers,
+        mapFn: (supplier) => ({
+          label: supplier.name,
+          value: supplier.supplier_id,
+        }),
+        setState: setSuppliers,
+      },
+    ],
+    []
+  )
+
   function onSubmit(data: ExpenseDetails.QueryParams) {
     const adjustMonth = (month: string | undefined) => {
       if (!month) return undefined
@@ -55,9 +76,7 @@ export function ExpenseDetailsFilters({ onFilterChange }: FilterProps) {
       ...(data.min_amount === 0 || !data.min_amount ?
         { min_amount: undefined }
       : {}),
-      ...(data.max_amount === 0 || !data.max_amount ?
-        { max_amount: undefined }
-      : {}),
+      ...(data.supplier_id ? { supplier_id: data.supplier_id } : {}),
     }
 
     onFilterChange(cleanedData)
@@ -88,6 +107,20 @@ export function ExpenseDetailsFilters({ onFilterChange }: FilterProps) {
 
     setIsFilterFilled(hasValue)
   }, [formValues, isOverdue])
+
+  useEffect(() => {
+    if (!account_id) return
+
+    populateArrays(
+      arrayConfigs,
+      account_id,
+      () => setArrayPlaceHolder("Digite..."),
+      (error) => {
+        toast.error("Erro ao buscar dados: " + error.message)
+        setArrayPlaceHolder("Erro ao carregar...")
+      }
+    )
+  }, [arrayConfigs, account_id])
 
   if (!expenses || expensesIsLoading || !bankAccounts || bankAccountIsLoading)
     return <LoadingScreen fullScreen={false} />
@@ -122,7 +155,7 @@ export function ExpenseDetailsFilters({ onFilterChange }: FilterProps) {
               </div>
             </div>
 
-            <div className="flex items-center gap-4">
+            {/* <div className="flex items-center gap-4">
               <div className="flex flex-1 flex-col gap-2">
                 <label htmlFor="min_amount">Valor Inicial</label>
                 <Input.Root>
@@ -136,6 +169,18 @@ export function ExpenseDetailsFilters({ onFilterChange }: FilterProps) {
                   <Input.Currency name="max_amount" control={control} />
                 </Input.Root>
               </div>
+            </div> */}
+
+            <div className="flex flex-1 flex-col gap-2">
+              <label htmlFor="supplier_id">Fornecedor</label>
+              <Input.Root>
+                <Input.SelectInput
+                  name="supplier_id"
+                  control={control}
+                  options={[{ label: "", value: "" }].concat(suppliers)}
+                  placeholder={arrayPlaceHolder}
+                />
+              </Input.Root>
             </div>
           </div>
 

@@ -1,15 +1,19 @@
 import { IncomeDetails } from "@/@types/income-details"
+import { SearchArray } from "@/@types/search-array"
 import { Button } from "@/core/components/Button"
 import * as Input from "@/core/components/Input"
 import { LoadingScreen } from "@/core/components/LoadingScreen"
 import { SelectInput } from "@/core/components/SelectInput"
 import { getAccountId } from "@/core/utils/get-account-id"
+import { ArrayConfig, populateArrays } from "@/core/utils/populateArrays"
 import { prepareArrayForSelect } from "@/core/utils/prepare-array-for-select-input"
 import { useBankAccountsQuery } from "@/modules/bank-accounts-components/bank-accounts/infra/hooks/use-bank-account-query"
 import { useIncomeQuery } from "@/modules/income-components/income-components/infra/use-income-query"
+import { getIncomeSources } from "@/modules/income-components/income-source-components/income-sources/infra/remote"
 import { CaretDown, CaretRight } from "@phosphor-icons/react"
-import { useEffect, useState } from "react"
+import { useEffect, useMemo, useState } from "react"
 import { useFormContext, useWatch } from "react-hook-form"
+import { toast } from "sonner"
 
 interface FilterProps {
   onFilterChange: (filters: IncomeDetails.QueryParams) => void
@@ -22,6 +26,23 @@ export function IncomeDetailsFilters({ onFilterChange }: FilterProps) {
 
   const { register, handleSubmit, control, reset, setValue } =
     useFormContext<IncomeDetails.QueryParams>()
+
+  const [arrayPlaceHolder, setArrayPlaceHolder] = useState("Carregando...")
+  const [incomeSources, setIncomeSources] = useState<SearchArray>([])
+
+  const arrayConfigs: ArrayConfig<any>[] = useMemo(
+    () => [
+      {
+        fetchFn: getIncomeSources,
+        mapFn: (income_source) => ({
+          label: income_source.group_name,
+          value: income_source.income_source_id,
+        }),
+        setState: setIncomeSources,
+      },
+    ],
+    []
+  )
 
   const formValues = useWatch({ control })
 
@@ -42,11 +63,8 @@ export function IncomeDetailsFilters({ onFilterChange }: FilterProps) {
       ...data,
       start_date: adjustMonth(data.start_date)?.toISOString().split("T")[0],
       end_date: adjustMonth(data.end_date)?.toISOString().split("T")[0],
-      ...(data.min_amount === 0 || !data.min_amount ?
-        { min_amount: undefined }
-      : {}),
-      ...(data.max_amount === 0 || !data.max_amount ?
-        { max_amount: undefined }
+      ...(data.income_source_id ?
+        { income_source_id: data.income_source_id }
       : {}),
     }
 
@@ -77,6 +95,20 @@ export function IncomeDetailsFilters({ onFilterChange }: FilterProps) {
 
     setIsFilterFilled(hasValue)
   }, [formValues])
+
+  useEffect(() => {
+    if (!account_id) return
+
+    populateArrays(
+      arrayConfigs,
+      account_id,
+      () => setArrayPlaceHolder("Digite..."),
+      (error) => {
+        toast.error("Erro ao buscar dados: " + error.message)
+        setArrayPlaceHolder("Erro ao carregar...")
+      }
+    )
+  }, [arrayConfigs, account_id])
 
   if (!incomesData || incomesIsLoading || !bankAccounts || bankAccountIsLoading)
     return <LoadingScreen fullScreen={false} />
@@ -111,7 +143,7 @@ export function IncomeDetailsFilters({ onFilterChange }: FilterProps) {
               </div>
             </div>
 
-            <div className="flex items-center gap-4">
+            {/* <div className="flex items-center gap-4">
               <div className="flex flex-1 flex-col gap-2">
                 <label htmlFor="min_amount">Valor Inicial</label>
                 <Input.Root>
@@ -125,6 +157,18 @@ export function IncomeDetailsFilters({ onFilterChange }: FilterProps) {
                   <Input.Currency name="max_amount" control={control} />
                 </Input.Root>
               </div>
+            </div> */}
+
+            <div className="flex flex-1 flex-col gap-2">
+              <label htmlFor="income_source_id">Cliente</label>
+              <Input.Root>
+                <Input.SelectInput
+                  name="income_source_id"
+                  control={control}
+                  options={[{ label: "", value: "" }].concat(incomeSources)}
+                  placeholder={arrayPlaceHolder}
+                />
+              </Input.Root>
             </div>
           </div>
 

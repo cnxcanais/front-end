@@ -77,5 +77,6 @@ export namespace IncomeDetails {
     page?: number
     income_id?: string
     organization_id?: string
+    income_source_id?: string
   }
 }

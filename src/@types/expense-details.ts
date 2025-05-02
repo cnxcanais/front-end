@@ -71,5 +71,6 @@ export namespace ExpenseDetails {
     max_amount?: number
     expense_id?: string
     page?: number
+    supplier_id?: string
   }
 }
