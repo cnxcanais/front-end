@@ -126,5 +126,6 @@ export const config = {
     "/reports/:path*",
     "/organizations/:path*",
     "/expenses/:path*",
+    "/logs/:path*",
   ],
 }
