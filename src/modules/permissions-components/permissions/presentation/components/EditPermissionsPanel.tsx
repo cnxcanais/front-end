@@ -32,6 +32,7 @@ export function EditPermissions() {
     banks: false,
     bank_accounts: false,
     summary_details: false,
+    logs: false,
   })
 
   const params = useParams()
@@ -135,6 +136,15 @@ export function EditPermissions() {
             )}
           </>
         )}
+
+        <PermissionCard
+          name="Registros"
+          type="Página"
+          length={10}
+          associatedURL="/logs"
+          setUpdatedPermissions={setUpdatedPermissions}
+          updatedPermissions={updatedPermissons}
+        />
 
         <PermissionCard
           name="Organizações"

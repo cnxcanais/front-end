@@ -33,6 +33,7 @@ export function ClonePermissions() {
     banks: false,
     bank_accounts: false,
     summary_details: false,
+    logs: false,
   })
 
   const params = useParams()
@@ -153,6 +154,15 @@ export function ClonePermissions() {
             )}
           </>
         )}
+
+        <PermissionCard
+          name="Registros"
+          type="Página"
+          length={10}
+          associatedURL="/logs"
+          setUpdatedPermissions={setUpdatedPermissions}
+          updatedPermissions={updatedPermissons}
+        />
 
         <PermissionCard
           name="Organizações"
