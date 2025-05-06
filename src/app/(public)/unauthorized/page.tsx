@@ -26,24 +26,6 @@ export default function Unauthorized() {
           </div>
         </div>
       </div>
-      <footer className="self-end lg:col-span-2 lg:col-start-1 lg:row-start-3">
-        <div className="py-10">
-          <nav className="mx-auto flex w-full max-w-7xl items-center gap-x-4 px-6 text-sm/7 text-white lg:px-8">
-            <a className="hover:underline" href="#">
-              Suporte
-            </a>
-            <svg
-              viewBox="0 0 2 2"
-              aria-hidden="true"
-              className="size-0.5 fill-gray-300">
-              <circle r={1} cx={1} cy={1} />
-            </svg>
-            <a className="hover:underline" href="#">
-              Status
-            </a>
-          </nav>
-        </div>
-      </footer>
     </main>
   )
 }
