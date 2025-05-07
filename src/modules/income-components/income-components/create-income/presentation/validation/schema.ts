@@ -47,7 +47,7 @@ export const createIncomeFormSchema = z.object({
   description: z.string().nonempty("Descrição é obrigatória"),
   document: z.string().nonempty("Documento é obrigatório"),
   income_group_id: z.string().nonempty("Grupo é obrigatório"),
-  income_percentage: z.coerce.number().min(1, "Porcentagem é obrigatória"),
+  income_percentage: z.coerce.number().min(0, "Porcentagem é obrigatória"),
   income_source_id: z.string().nonempty("Cliente é obrigatório"),
   organization_id: z.string().nonempty("Organização é obrigatória"),
   incomeDetailsArray: z.array(incomeDetailsSchema),
