@@ -3,12 +3,13 @@
 import { Budget } from "@/@types/budgets"
 import { IncomeGroup } from "@/@types/income-group"
 import { Button } from "@/core/components/Button"
+import { ExportTableToPDFButton } from "@/core/components/ExportPDFButton"
 import { LoadingScreen } from "@/core/components/LoadingScreen"
 import { Modal } from "@/core/components/Modals/Modal"
 import { PageSelector } from "@/core/components/PageSelector"
 import { SearchInput } from "@/core/components/SearchInput"
 import { Table } from "@/core/components/Table"
-import { exportToExcel } from "@/core/utils/exportToExcel"
+import { exportNoPagination } from "@/core/utils/exportToExcel/exportNoPagination"
 import { getAccountId } from "@/core/utils/get-account-id"
 import { useBudgetIncomesQuery } from "@/modules/budget-components/budget-income/budget-incomes/infra/hooks/use-budget-incomes-query"
 import { removeBudgetIncome } from "@/modules/budget-components/budget-income/budget-incomes/infra/remote"
@@ -160,13 +161,21 @@ export function IncomeBudgetTable() {
           )}
         </div>
         {budgetIncomes.length > 0 && (
-          <Button
-            className="flex items-center gap-1"
-            variant="secondary"
-            onClick={async () => await exportToExcel(budgetIncomes, columns)}>
-            <FileXls size={22} />
-            Exportar
-          </Button>
+          <div className="flex items-center gap-2">
+            <ExportTableToPDFButton
+              filename="meu-relatorio"
+              options={{ orientation: "portrait" }}
+              className="bg-red-500">
+              Exportar PDF
+            </ExportTableToPDFButton>
+            <Button
+              className="flex items-center gap-1"
+              variant="secondary"
+              onClick={exportNoPagination}>
+              <FileXls size={22} />
+              Exportar
+            </Button>
+          </div>
         )}
       </div>
       {budgetIncomes.length == 0 ?

@@ -3,13 +3,14 @@
 import { Expense } from "@/@types/expense"
 import { ExpenseDetails } from "@/@types/expense-details"
 import { Button } from "@/core/components/Button"
+import { ExportTableToPDFButton } from "@/core/components/ExportPDFButton"
 import { LoadingScreen } from "@/core/components/LoadingScreen"
 import { Modal } from "@/core/components/Modals/Modal"
 import { ModalObservationTrigger } from "@/core/components/Modals/ModalObservation"
 import { PageSelector } from "@/core/components/PageSelector"
 import { Table } from "@/core/components/Table"
 import { formatLocalDate } from "@/core/utils/dateFunctions"
-import { exportToExcel } from "@/core/utils/exportToExcel"
+import { exportNoPagination } from "@/core/utils/exportToExcel/exportNoPagination"
 import { getCookie } from "@/lib/cookies"
 import { ExpenseDetailsFilters } from "@/modules/expenses-components/expense-details-components/expense-details/presentation/components/ExpenseDetailsFilters"
 import {
@@ -300,13 +301,21 @@ export function ExpenseDetailsTable({ expense_id }: { expense_id?: string }) {
             )}
           </div>
 
-          <Button
-            className="flex items-center gap-1"
-            variant="secondary"
-            onClick={async () => await exportToExcel(exportTableData, columns)}>
-            <FileXls size={22} />
-            Exportar
-          </Button>
+          <div className="flex items-center gap-2">
+            <ExportTableToPDFButton
+              filename="meu-relatorio"
+              options={{ orientation: "portrait" }}
+              className="bg-red-500">
+              Exportar PDF
+            </ExportTableToPDFButton>
+            <Button
+              className="flex items-center gap-1"
+              variant="secondary"
+              onClick={exportNoPagination}>
+              <FileXls size={22} />
+              Exportar
+            </Button>
+          </div>
         </div>
         {data.expenseDetails.length == 0 ?
           <h2 className="mt-6 text-xl font-semibold">

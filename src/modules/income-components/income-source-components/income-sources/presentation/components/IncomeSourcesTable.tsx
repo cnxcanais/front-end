@@ -1,6 +1,7 @@
 "use client"
 
 import { Button } from "@/core/components/Button"
+import { ExportTableToPDFButton } from "@/core/components/ExportPDFButton"
 import { LoadingScreen } from "@/core/components/LoadingScreen"
 import { Modal } from "@/core/components/Modals/Modal"
 import { ModalFilesTrigger } from "@/core/components/Modals/ModalFiles/ModalFilesTrigger"
@@ -164,13 +165,21 @@ export function IncomeSourcesTable() {
           )}
         </div>
         {incomeSources.length > 0 && (
-          <Button
-            className="flex items-center gap-1"
-            variant="secondary"
-            onClick={exportNoPagination}>
-            <FileXls size={22} />
-            Exportar
-          </Button>
+          <div className="flex items-center gap-2">
+            <ExportTableToPDFButton
+              filename="meu-relatorio"
+              options={{ orientation: "portrait" }}
+              className="bg-red-500">
+              Exportar PDF
+            </ExportTableToPDFButton>
+            <Button
+              className="flex items-center gap-1"
+              variant="secondary"
+              onClick={exportNoPagination}>
+              <FileXls size={22} />
+              Exportar
+            </Button>
+          </div>
         )}
       </div>
 

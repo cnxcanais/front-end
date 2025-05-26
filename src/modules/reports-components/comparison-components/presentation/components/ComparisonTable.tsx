@@ -1,6 +1,7 @@
 "use client"
 
 import { Button } from "@/core/components/Button"
+import { ExportTableToPDFButton } from "@/core/components/ExportPDFButton"
 import { LoadingScreen } from "@/core/components/LoadingScreen"
 import { exportNoPagination } from "@/core/utils/exportToExcel/exportNoPagination"
 import { formatCurrency } from "@/core/utils/format-currency"
@@ -112,13 +113,21 @@ export function ComparisonTable() {
     <div>
       <ComparisonFilter onFilterChange={setFilters} />
       <div className="my-8 flow-root max-w-[40rem]">
-        <Button
-          className="mb-2 flex items-center gap-1"
-          variant="secondary"
-          onClick={exportNoPagination}>
-          <FileXls size={22} />
-          Exportar
-        </Button>
+        <div className="flex items-center gap-2">
+          <ExportTableToPDFButton
+            filename="meu-relatorio"
+            options={{ orientation: "portrait" }}
+            className="bg-red-500">
+            Exportar PDF
+          </ExportTableToPDFButton>
+          <Button
+            className="flex items-center gap-1"
+            variant="secondary"
+            onClick={exportNoPagination}>
+            <FileXls size={22} />
+            Exportar
+          </Button>
+        </div>
         <div className="-mx-4 -my-2 overflow-x-auto sm:-mx-6 lg:-mx-8">
           <div className="inline-block min-w-full py-2 align-middle sm:px-6 lg:px-8">
             <div className="overflow-hidden shadow ring-1 ring-black/5 sm:rounded-lg">

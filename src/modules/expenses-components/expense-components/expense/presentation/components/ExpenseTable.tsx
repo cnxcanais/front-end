@@ -4,6 +4,7 @@ import { Expense } from "@/@types/expense"
 import { ExpenseDetails } from "@/@types/expense-details"
 import { ExpenseGroup } from "@/@types/expense-group"
 import { Button } from "@/core/components/Button"
+import { ExportTableToPDFButton } from "@/core/components/ExportPDFButton"
 import { LoadingScreen } from "@/core/components/LoadingScreen"
 import { Modal } from "@/core/components/Modals/Modal"
 import { ModalFilesTrigger } from "@/core/components/Modals/ModalFiles/ModalFilesTrigger"
@@ -11,7 +12,7 @@ import { ModalObservationTrigger } from "@/core/components/Modals/ModalObservati
 import { PageSelector } from "@/core/components/PageSelector"
 import { SearchInput } from "@/core/components/SearchInput"
 import { Table } from "@/core/components/Table"
-import { exportToExcel } from "@/core/utils/exportToExcel"
+import { exportNoPagination } from "@/core/utils/exportToExcel/exportNoPagination"
 import { getAccountId } from "@/core/utils/get-account-id"
 import { ExpenseFilters } from "@/modules/expenses-components/expense-components/expense/presentation/components/ExpenseFilters"
 import { useExpenseQuery } from "@/modules/expenses-components/expense-components/infra/use-expense-query"
@@ -292,13 +293,21 @@ export function ExpenseTable() {
               Consultar Parcelas
             </Button>
           </div>
-          <Button
-            className="flex items-center gap-1"
-            variant="secondary"
-            onClick={async () => await exportToExcel(exportTableData, columns)}>
-            <FileXls size={22} />
-            Exportar
-          </Button>
+          <div className="flex items-center gap-2">
+            <ExportTableToPDFButton
+              filename="meu-relatorio"
+              options={{ orientation: "portrait" }}
+              className="bg-red-500">
+              Exportar PDF
+            </ExportTableToPDFButton>
+            <Button
+              className="flex items-center gap-1"
+              variant="secondary"
+              onClick={exportNoPagination}>
+              <FileXls size={22} />
+              Exportar
+            </Button>
+          </div>
         </div>
         {data.expenses.length === 0 ?
           <h2 className="mt-6 text-xl font-semibold">
