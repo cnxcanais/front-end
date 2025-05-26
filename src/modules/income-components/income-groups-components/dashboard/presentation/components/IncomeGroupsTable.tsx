@@ -2,6 +2,7 @@
 
 import { IncomeCategory } from "@/@types/income-category"
 import { Button } from "@/core/components/Button"
+import { ExportTableToPDFButton } from "@/core/components/ExportPDFButton"
 import { LoadingScreen } from "@/core/components/LoadingScreen"
 import { Modal } from "@/core/components/Modals/Modal"
 import { SearchInput } from "@/core/components/SearchInput"
@@ -142,13 +143,21 @@ export function IncomeGroupTable() {
           )}
         </div>
         {incomeGroups.length > 0 && (
-          <Button
-            className="flex items-center gap-1"
-            variant="secondary"
-            onClick={exportNoPagination}>
-            <FileXls size={22} />
-            Exportar
-          </Button>
+          <div className="flex items-center gap-2">
+            <ExportTableToPDFButton
+              filename="meu-relatorio"
+              options={{ orientation: "portrait" }}
+              className="bg-red-500">
+              Exportar PDF
+            </ExportTableToPDFButton>
+            <Button
+              className="flex items-center gap-1"
+              variant="secondary"
+              onClick={exportNoPagination}>
+              <FileXls size={22} />
+              Exportar
+            </Button>
+          </div>
         )}
       </div>
       {incomeGroups.length == 0 ?

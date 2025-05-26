@@ -2,6 +2,7 @@
 
 import { IncomeDetails } from "@/@types/income-details"
 import { Button } from "@/core/components/Button"
+import { ExportTableToPDFButton } from "@/core/components/ExportPDFButton"
 import { LoadingScreen } from "@/core/components/LoadingScreen"
 import { Table } from "@/core/components/Table"
 import { formatLocalDate } from "@/core/utils/dateFunctions"
@@ -109,13 +110,21 @@ export function SummaryDetailsTable() {
         <SummaryDetailsFilters onFilterChange={handleFilterChange} />
 
         <div className="mt-8 flex items-center justify-between">
-          <Button
-            className="flex items-center gap-1"
-            variant="secondary"
-            onClick={exportNoPagination}>
-            <FileXls size={22} />
-            Exportar
-          </Button>
+          <div className="flex items-center gap-2">
+            <ExportTableToPDFButton
+              filename="meu-relatorio"
+              options={{ orientation: "portrait" }}
+              className="bg-red-500">
+              Exportar PDF
+            </ExportTableToPDFButton>
+            <Button
+              className="flex items-center gap-1"
+              variant="secondary"
+              onClick={exportNoPagination}>
+              <FileXls size={22} />
+              Exportar
+            </Button>
+          </div>
         </div>
         {data.length == 0 ?
           <h2 className="mt-6 text-xl font-semibold">

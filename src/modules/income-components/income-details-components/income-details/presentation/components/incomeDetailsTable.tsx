@@ -3,6 +3,7 @@
 import { Income } from "@/@types/income"
 import { IncomeDetails } from "@/@types/income-details"
 import { Button } from "@/core/components/Button"
+import { ExportTableToPDFButton } from "@/core/components/ExportPDFButton"
 import * as Input from "@/core/components/Input"
 import { LoadingScreen } from "@/core/components/LoadingScreen"
 import { Modal } from "@/core/components/Modals/Modal"
@@ -10,7 +11,7 @@ import { ModalObservationTrigger } from "@/core/components/Modals/ModalObservati
 import { PageSelector } from "@/core/components/PageSelector"
 import { Table } from "@/core/components/Table"
 import { formatLocalDate } from "@/core/utils/dateFunctions"
-import { exportToExcel } from "@/core/utils/exportToExcel"
+import { exportNoPagination } from "@/core/utils/exportToExcel/exportNoPagination"
 import { getAccountId } from "@/core/utils/get-account-id"
 import { IncomeDetailsFilters } from "@/modules/income-components/income-details-components/income-details/presentation/components/incomeDetailsFilters"
 import {
@@ -332,14 +333,21 @@ export function IncomeDetailsTable({ income_id }: { income_id?: string }) {
               </Button>
             )}
           </div>
-
-          <Button
-            className="flex items-center gap-1"
-            variant="secondary"
-            onClick={() => exportToExcel(exportTableData, columns)}>
-            <FileXls size={22} />
-            Exportar
-          </Button>
+          <div className="flex items-center gap-2">
+            <ExportTableToPDFButton
+              filename="meu-relatorio"
+              options={{ orientation: "portrait" }}
+              className="bg-red-500">
+              Exportar PDF
+            </ExportTableToPDFButton>
+            <Button
+              className="flex items-center gap-1"
+              variant="secondary"
+              onClick={exportNoPagination}>
+              <FileXls size={22} />
+              Exportar
+            </Button>
+          </div>
         </div>
         {data.incomeDetails.length == 0 ?
           <h2 className="mt-6 text-xl font-semibold">
