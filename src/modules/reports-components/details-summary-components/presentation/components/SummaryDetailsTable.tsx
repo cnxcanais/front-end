@@ -8,6 +8,7 @@ import { Table } from "@/core/components/Table"
 import { formatLocalDate } from "@/core/utils/dateFunctions"
 import { exportNoPagination } from "@/core/utils/exportToExcel/exportNoPagination"
 import { getAccountId } from "@/core/utils/get-account-id"
+import { useOrganizationsQuery } from "@/modules/organization-components/organizations/infra/remote/hooks/use-organizations-query"
 import { getDetailsData } from "@/modules/reports-components/details-summary-components/infra/remote/get-details-data"
 import { SummaryDetailsFilters } from "@/modules/reports-components/details-summary-components/presentation/components/SummaryDetailsFilters"
 import { FileXls } from "@phosphor-icons/react"
@@ -22,13 +23,15 @@ export function SummaryDetailsTable() {
   const [filters, setFilters] = useState({
     start_date: new Date(currentYear, 0, 1),
     end_date: new Date(currentYear, 11, 31),
-    organization_id: undefined,
+    organization_id: "",
   })
 
   const { data, isLoading } = useQuery({
     queryKey: ["summary-details", { filters }],
     queryFn: () => getDetailsData(account_id, { ...filters }),
   })
+
+  const organizations = useOrganizationsQuery(account_id)
 
   const methods = useForm<IncomeDetails.QueryParams>({
     values: {
@@ -114,7 +117,9 @@ export function SummaryDetailsTable() {
             <ExportTableToPDFButton
               filename="meu-relatorio"
               options={{ orientation: "portrait" }}
-              title="Resumo de Contas Realizado"
+              title={`Resumo de Contas Realizado
+                Periodo: ${filters.start_date.toLocaleDateString("pt-br", { timeZone: "UTC" })} a ${(filters.end_date.toLocaleDateString("pt-br"), { timeZone: "UTC" })} 
+                Organização: ${!filters.organization_id ? "Todas" : organizations?.data.filter((org) => org.organization_id === filters.organization_id)[0].name}`}
               className="bg-red-500">
               Exportar PDF
             </ExportTableToPDFButton>

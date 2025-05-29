@@ -7,6 +7,7 @@ import { exportNoPagination } from "@/core/utils/exportToExcel/exportNoPaginatio
 import { getAccountId } from "@/core/utils/get-account-id"
 import { useExpenseDetailsQuery } from "@/modules/expenses-components/expense-details-components/infra/hooks/use-expense-details-query"
 import { useIncomeDetailsQuery } from "@/modules/income-components/income-details-components/infra/hooks/use-income-details-query"
+import { useOrganizationsQuery } from "@/modules/organization-components/organizations/infra/remote/hooks/use-organizations-query"
 import {
   groupDataForCashflow,
   renderCashflowTableRows,
@@ -32,6 +33,8 @@ export function CashflowTable() {
   }>()
 
   const account_id = getAccountId()
+
+  const organizations = useOrganizationsQuery(account_id)
 
   const {
     data: incomeDetailsData,
@@ -78,7 +81,9 @@ export function CashflowTable() {
             <ExportTableToPDFButton
               filename="meu-relatorio"
               options={{ orientation: "portrait" }}
-              title="Fluxo de Caixa"
+              title={`Fluxo de Caixa
+                Periodo: ${filters.start_date.toLocaleDateString("pt-br", { timeZone: "UTC" })} a ${filters.end_date.toLocaleDateString("pt-br", { timeZone: "UTC" })} 
+                Organização: ${!filters.organization_id ? "Todas" : organizations?.data.filter((org) => org.organization_id === filters.organization_id)[0].name}`}
               className="bg-red-500">
               Exportar PDF
             </ExportTableToPDFButton>

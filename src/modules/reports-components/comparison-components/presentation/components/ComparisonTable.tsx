@@ -117,7 +117,8 @@ export function ComparisonTable() {
           <ExportTableToPDFButton
             filename="meu-relatorio"
             options={{ orientation: "portrait" }}
-            title="Comparativos"
+            title={`Comparativo
+                Periodo: ${filters.start_date.toLocaleDateString("pt-br", { timeZone: "UTC" })} a ${filters.end_date.toLocaleDateString("pt-br", { timeZone: "UTC" })}`}
             className="bg-red-500">
             Exportar PDF
           </ExportTableToPDFButton>

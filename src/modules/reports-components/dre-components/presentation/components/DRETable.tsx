@@ -6,6 +6,7 @@ import { LoadingScreen } from "@/core/components/LoadingScreen"
 import { exportNoPagination } from "@/core/utils/exportToExcel/exportNoPagination"
 import { formatCurrency } from "@/core/utils/format-currency"
 import { getAccountId } from "@/core/utils/get-account-id"
+import { useOrganizationsQuery } from "@/modules/organization-components/organizations/infra/remote/hooks/use-organizations-query"
 import { useExpenseByGroupQuery } from "@/modules/reports-components/dre-components/infra/hooks/use-expense-by-group-query"
 import { useIncomeByGroupQuery } from "@/modules/reports-components/dre-components/infra/hooks/use-income-by-group-query"
 import { DREFilter } from "@/modules/reports-components/dre-components/presentation/components/DREFilter"
@@ -19,7 +20,7 @@ export function DRETable() {
   const [filters, setFilters] = useState({
     start_date: new Date(currentYear, 0, 1),
     end_date: new Date(currentYear, 11, 31),
-    organization_id: undefined,
+    organization_id: "",
   })
 
   const account_id = getAccountId()
@@ -37,6 +38,8 @@ export function DRETable() {
     isLoading: isExpensesLoading,
     refetch: refetchExpenses,
   } = useExpenseByGroupQuery(account_id, filters)
+
+  const organizations = useOrganizationsQuery(account_id)
 
   useEffect(() => {
     refetchIncomes()
@@ -57,7 +60,9 @@ export function DRETable() {
             <ExportTableToPDFButton
               filename="meu-relatorio"
               options={{ orientation: "portrait" }}
-              title="DRE"
+              title={`DRE
+                Periodo: ${filters.start_date.toLocaleDateString("pt-br", { timeZone: "UTC" })} a ${filters.end_date.toLocaleDateString("pt-br", { timeZone: "UTC" })} 
+                Organização: ${!filters.organization_id ? "Todas" : organizations?.data.filter((org) => org.organization_id === filters.organization_id)[0].name}`}
               className="bg-red-500">
               Exportar PDF
             </ExportTableToPDFButton>

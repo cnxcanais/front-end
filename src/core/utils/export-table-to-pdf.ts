@@ -81,15 +81,45 @@ export function exportTableToPDF(
       .map((cell) => cell.text)
   )
 
-  // Add title if provided
   let startY = 20
-  if (title) {
-    doc.setFontSize(16)
-    doc.text(title, doc.internal.pageSize.getWidth() / 2, 30, {
-      align: "center",
-    })
-    startY = 50 // Adjust starting position to accommodate the title
+
+  // Split title into lines
+  const titleLines = title.split("\n")
+  const lineHeight = 15
+
+  titleLines.forEach((line, index) => {
+    // Set font size for each line - first line larger, rest smaller
+    if (index === 0) {
+      doc.setFontSize(16) // First line gets larger font
+    } else {
+      doc.setFontSize(10) // Subsequent lines get smaller font
+    }
+
+    doc.text(line.trim(), 40, 30 + index * lineHeight)
+  })
+
+  const addLogo = () => {
+    const logoUrl = "/images/new-logo-black.png"
+
+    try {
+      // Calculate position for upper right corner
+      const pageWidth = doc.internal.pageSize.getWidth()
+      const imgWidth = 120
+      const imgHeight = 40
+      const xPos = pageWidth - imgWidth - 40
+      const yPos = titleLines.length > 1 ? 20 : 10
+
+      doc.addImage(logoUrl, "PNG", xPos, yPos, imgWidth, imgHeight)
+    } catch (error) {
+      console.error("Error adding logo:", error)
+    }
   }
+
+  addLogo()
+
+  // Add title if provided
+
+  startY = 40 + titleLines.length * lineHeight // Adjust starting position
 
   autoTable(doc, {
     head: [headers],
@@ -97,7 +127,7 @@ export function exportTableToPDF(
     startY: startY,
     styles: { fontSize: 8 },
     headStyles: { fillColor: [41, 128, 185] },
-    margin: { top: 20 },
+    margin: { top: 10 },
     didDrawPage: (data) => {
       doc.setFontSize(14)
     },
