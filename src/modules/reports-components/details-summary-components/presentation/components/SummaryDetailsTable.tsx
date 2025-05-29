@@ -118,7 +118,7 @@ export function SummaryDetailsTable() {
               filename="meu-relatorio"
               options={{ orientation: "portrait" }}
               title={`Resumo de Contas Realizado
-                Periodo: ${filters.start_date.toLocaleDateString("pt-br", { timeZone: "UTC" })} a ${(filters.end_date.toLocaleDateString("pt-br"), { timeZone: "UTC" })} 
+                Periodo: ${filters.start_date.toLocaleDateString("pt-br", { timeZone: "UTC" })} a ${filters.end_date.toLocaleDateString("pt-br", { timeZone: "UTC" })} 
                 Organização: ${!filters.organization_id ? "Todas" : organizations?.data.filter((org) => org.organization_id === filters.organization_id)[0].name}`}
               className="bg-red-500">
               Exportar PDF
