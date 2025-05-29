@@ -38,7 +38,11 @@ export function ExportTableToPDFButton({
   }
 
   return (
-    <Button className="flex" onClick={handleExport} disabled={isExporting}>
+    <Button
+      className="flex"
+      onClick={handleExport}
+      disabled={isExporting}
+      variant="secondary">
       {isExporting ?
         <>
           <svg
