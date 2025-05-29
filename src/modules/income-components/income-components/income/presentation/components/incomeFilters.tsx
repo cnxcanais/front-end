@@ -41,6 +41,8 @@ export function IncomeFilters({ onFilterChange }: FilterProps) {
   const { data: incomeSources, isLoading: incomeSourcesIsLoading } =
     useIncomeSourceQuery(account_id)
 
+  console.log(incomeSources)
+
   const { data: organizations, isLoading: organizationsIsLoading } =
     useOrganizationsQuery(account_id)
 

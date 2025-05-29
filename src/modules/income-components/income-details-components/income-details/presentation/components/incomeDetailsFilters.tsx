@@ -35,7 +35,7 @@ export function IncomeDetailsFilters({ onFilterChange }: FilterProps) {
       {
         fetchFn: getIncomeSources,
         mapFn: (income_source) => ({
-          label: income_source.group_name,
+          label: income_source.name,
           value: income_source.income_source_id,
         }),
         setState: setIncomeSources,
@@ -142,22 +142,6 @@ export function IncomeDetailsFilters({ onFilterChange }: FilterProps) {
                 </Input.Root>
               </div>
             </div>
-
-            {/* <div className="flex items-center gap-4">
-              <div className="flex flex-1 flex-col gap-2">
-                <label htmlFor="min_amount">Valor Inicial</label>
-                <Input.Root>
-                  <Input.Currency name="min_amount" control={control} />
-                </Input.Root>
-              </div>
-
-              <div className="flex flex-1 flex-col gap-2">
-                <label htmlFor="max_amount">Valor Final</label>
-                <Input.Root>
-                  <Input.Currency name="max_amount" control={control} />
-                </Input.Root>
-              </div>
-            </div> */}
 
             <div className="flex flex-1 flex-col gap-2">
               <label htmlFor="income_source_id">Cliente</label>

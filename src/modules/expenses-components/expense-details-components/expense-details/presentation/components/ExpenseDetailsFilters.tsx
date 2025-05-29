@@ -155,22 +155,6 @@ export function ExpenseDetailsFilters({ onFilterChange }: FilterProps) {
               </div>
             </div>
 
-            {/* <div className="flex items-center gap-4">
-              <div className="flex flex-1 flex-col gap-2">
-                <label htmlFor="min_amount">Valor Inicial</label>
-                <Input.Root>
-                  <Input.Currency name="min_amount" control={control} />
-                </Input.Root>
-              </div>
-
-              <div className="flex flex-1 flex-col gap-2">
-                <label htmlFor="max_amount">Valor Final</label>
-                <Input.Root>
-                  <Input.Currency name="max_amount" control={control} />
-                </Input.Root>
-              </div>
-            </div> */}
-
             <div className="flex flex-1 flex-col gap-2">
               <label htmlFor="supplier_id">Fornecedor</label>
               <Input.Root>
