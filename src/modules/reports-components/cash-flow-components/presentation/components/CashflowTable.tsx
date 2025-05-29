@@ -77,7 +77,7 @@ export function CashflowTable() {
       <FormProvider {...methods}>
         <CashflowFilter onFilterChange={(filters) => setFilters(filters)} />
         <div className="my-8 flow-root">
-          <div className="flex items-center gap-2">
+          <div className="mb-4 flex items-center gap-2">
             <ExportTableToPDFButton
               filename="meu-relatorio"
               options={{ orientation: "portrait" }}
