@@ -297,6 +297,7 @@ export function ExpenseTable() {
             <ExportTableToPDFButton
               filename="meu-relatorio"
               options={{ orientation: "portrait" }}
+              title="Despesas"
               className="bg-red-500">
               Exportar PDF
             </ExportTableToPDFButton>

@@ -165,6 +165,7 @@ export function IncomeBudgetTable() {
             <ExportTableToPDFButton
               filename="meu-relatorio"
               options={{ orientation: "portrait" }}
+              title="Orçamento - Receitas"
               className="bg-red-500">
               Exportar PDF
             </ExportTableToPDFButton>

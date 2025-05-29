@@ -166,6 +166,7 @@ export function SuppliersTable() {
             <ExportTableToPDFButton
               filename="meu-relatorio"
               options={{ orientation: "portrait" }}
+              title="Fornecedores"
               className="bg-red-500">
               Exportar PDF
             </ExportTableToPDFButton>

@@ -8,11 +8,13 @@ export function ExportTableToPDFButton({
   className = "",
   children,
   options = {},
+  title,
 }: {
   tableId?: string
   filename?: string
   className?: string
   children?: ReactNode
+  title?: string
   options?: {
     orientation?: "portrait" | "landscape"
     format?: "a4" | "a3" | "letter"
@@ -27,7 +29,7 @@ export function ExportTableToPDFButton({
     setIsExporting(true)
 
     try {
-      exportTableToPDF(tableId, filename)
+      exportTableToPDF(tableId, filename, true, title)
     } catch (error) {
       console.error("Erro na exportação:", error)
     } finally {

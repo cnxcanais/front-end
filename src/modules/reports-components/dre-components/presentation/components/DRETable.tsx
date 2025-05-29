@@ -57,6 +57,7 @@ export function DRETable() {
             <ExportTableToPDFButton
               filename="meu-relatorio"
               options={{ orientation: "portrait" }}
+              title="DRE"
               className="bg-red-500">
               Exportar PDF
             </ExportTableToPDFButton>

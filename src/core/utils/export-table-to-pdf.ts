@@ -4,7 +4,8 @@ import autoTable from "jspdf-autotable"
 export function exportTableToPDF(
   tableId: string = "table",
   filename: string = "exportacao",
-  autoExclude: boolean = true
+  autoExclude: boolean = true,
+  title?: string
 ) {
   const table = document.getElementById(tableId) as HTMLTableElement
   if (!table) {
@@ -80,10 +81,20 @@ export function exportTableToPDF(
       .map((cell) => cell.text)
   )
 
+  // Add title if provided
+  let startY = 20
+  if (title) {
+    doc.setFontSize(16)
+    doc.text(title, doc.internal.pageSize.getWidth() / 2, 30, {
+      align: "center",
+    })
+    startY = 50 // Adjust starting position to accommodate the title
+  }
+
   autoTable(doc, {
     head: [headers],
     body: rows,
-    startY: 20,
+    startY: startY,
     styles: { fontSize: 8 },
     headStyles: { fillColor: [41, 128, 185] },
     margin: { top: 20 },

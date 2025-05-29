@@ -135,6 +135,7 @@ export function BanksTable() {
             <ExportTableToPDFButton
               filename="meu-relatorio"
               options={{ orientation: "portrait" }}
+              title="Bancos"
               className="bg-red-500">
               Exportar PDF
             </ExportTableToPDFButton>

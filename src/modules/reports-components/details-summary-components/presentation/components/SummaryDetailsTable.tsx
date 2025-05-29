@@ -114,6 +114,7 @@ export function SummaryDetailsTable() {
             <ExportTableToPDFButton
               filename="meu-relatorio"
               options={{ orientation: "portrait" }}
+              title="Resumo de Contas Realizado"
               className="bg-red-500">
               Exportar PDF
             </ExportTableToPDFButton>

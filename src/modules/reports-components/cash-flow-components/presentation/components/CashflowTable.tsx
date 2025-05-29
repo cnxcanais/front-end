@@ -78,6 +78,7 @@ export function CashflowTable() {
             <ExportTableToPDFButton
               filename="meu-relatorio"
               options={{ orientation: "portrait" }}
+              title="Fluxo de Caixa"
               className="bg-red-500">
               Exportar PDF
             </ExportTableToPDFButton>

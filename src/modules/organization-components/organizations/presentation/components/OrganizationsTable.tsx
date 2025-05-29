@@ -148,6 +148,7 @@ export function OrganizationsTable() {
           <div className="flex items-center gap-2">
             <ExportTableToPDFButton
               filename="meu-relatorio"
+              title="Organizações"
               options={{ orientation: "portrait" }}
               className="bg-red-500">
               Exportar PDF

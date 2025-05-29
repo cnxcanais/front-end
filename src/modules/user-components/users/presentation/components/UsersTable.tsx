@@ -165,6 +165,7 @@ export function UsersTable() {
             <ExportTableToPDFButton
               filename="meu-relatorio"
               options={{ orientation: "portrait" }}
+              title="Usuários"
               className="bg-red-500">
               Exportar PDF
             </ExportTableToPDFButton>

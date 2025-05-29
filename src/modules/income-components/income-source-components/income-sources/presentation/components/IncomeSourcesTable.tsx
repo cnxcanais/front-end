@@ -169,6 +169,7 @@ export function IncomeSourcesTable() {
             <ExportTableToPDFButton
               filename="meu-relatorio"
               options={{ orientation: "portrait" }}
+              title="Clientes"
               className="bg-red-500">
               Exportar PDF
             </ExportTableToPDFButton>

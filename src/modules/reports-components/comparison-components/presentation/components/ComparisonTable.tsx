@@ -117,6 +117,7 @@ export function ComparisonTable() {
           <ExportTableToPDFButton
             filename="meu-relatorio"
             options={{ orientation: "portrait" }}
+            title="Comparativos"
             className="bg-red-500">
             Exportar PDF
           </ExportTableToPDFButton>

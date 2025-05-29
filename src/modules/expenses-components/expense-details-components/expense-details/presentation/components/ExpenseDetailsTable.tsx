@@ -305,6 +305,7 @@ export function ExpenseDetailsTable({ expense_id }: { expense_id?: string }) {
             <ExportTableToPDFButton
               filename="meu-relatorio"
               options={{ orientation: "portrait" }}
+              title="Parcelas de Despesas"
               className="bg-red-500">
               Exportar PDF
             </ExportTableToPDFButton>
