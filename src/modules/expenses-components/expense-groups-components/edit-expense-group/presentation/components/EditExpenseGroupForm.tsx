@@ -66,6 +66,7 @@ export function EditExpenseGroupForm({ id }: { id: string }) {
     resolver: zodResolver(editExpenseGroupFormSchema),
     values: {
       group_name: expenseGroup?.group_name,
+      expense_category_id: expenseGroup?.expense_category_id,
     },
   })
 
