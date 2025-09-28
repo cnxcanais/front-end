@@ -6,6 +6,8 @@ import { Button } from "@/core/components/Button"
 import * as Input from "@/core/components/Input"
 import { getAccountId } from "@/core/utils/get-account-id"
 import { ArrayConfig, populateArrays } from "@/core/utils/populateArrays"
+import { useGetAccountById } from "@/modules/accounts-components/accounts/infra/hooks/use-get-account-by-id-query"
+import { useGetAccountsQuery } from "@/modules/accounts-components/accounts/infra/hooks/use-get-accounts-query"
 import { getOrganizations } from "@/modules/organization-components/organizations/infra/remote"
 import { CaretDown, CaretRight } from "@phosphor-icons/react"
 import { useEffect, useMemo, useState } from "react"
@@ -21,13 +23,16 @@ interface FilterProps {
 }
 
 export function DREFilter({ onFilterChange }: FilterProps) {
-  const account_id = getAccountId()
+  const [account_id, set_account_id] = useState(getAccountId)
 
   const [collapsed, setCollapsed] = useState(false)
   const [isFilterFilled, setIsFilterFilled] = useState(false)
 
   const [arrayPlaceHolder, setArrayPlaceHolder] = useState("Carregando...")
   const [organizations, setOrganizations] = useState<SearchArray>([])
+
+  const { data: account } = useGetAccountById(account_id)
+  const account_list = useGetAccountsQuery()
 
   const arrayConfigs: ArrayConfig<any>[] = useMemo(
     () => [
