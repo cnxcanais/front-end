@@ -63,6 +63,7 @@ export function DREFilter({ onFilterChange }: FilterProps) {
     register,
     handleSubmit,
     reset,
+    setValue,
     watch,
     control,
     formState: { isSubmitted },
@@ -160,6 +161,7 @@ export function DREFilter({ onFilterChange }: FilterProps) {
                   options={[{ label: "", value: "" }].concat(accounts)}
                   placeholder={arrayPlaceHolder}
                   value={account_id}
+                  onChange={() => setValue("organization_id", "")}
                 />
               </Input.Root>
             </div>
