@@ -7,7 +7,7 @@ import * as Input from "@/core/components/Input"
 import { getAccountId } from "@/core/utils/get-account-id"
 import { ArrayConfig, populateArrays } from "@/core/utils/populateArrays"
 import { useGetAccountById } from "@/modules/accounts-components/accounts/infra/hooks/use-get-account-by-id-query"
-import { useGetAccountsQuery } from "@/modules/accounts-components/accounts/infra/hooks/use-get-accounts-query"
+import { getAccounts } from "@/modules/accounts-components/accounts/infra/remote"
 import { getOrganizations } from "@/modules/organization-components/organizations/infra/remote"
 import { CaretDown, CaretRight } from "@phosphor-icons/react"
 import { useEffect, useMemo, useState } from "react"
@@ -19,20 +19,21 @@ interface FilterProps {
     start_date: Date
     end_date: Date
     organization_id: string
+    account_id: string
   }) => void
 }
 
 export function DREFilter({ onFilterChange }: FilterProps) {
-  const [account_id, set_account_id] = useState(getAccountId)
-
   const [collapsed, setCollapsed] = useState(false)
   const [isFilterFilled, setIsFilterFilled] = useState(false)
 
   const [arrayPlaceHolder, setArrayPlaceHolder] = useState("Carregando...")
   const [organizations, setOrganizations] = useState<SearchArray>([])
+  const [accounts, setAccounts] = useState<SearchArray>([])
+
+  const account_id = getAccountId()
 
   const { data: account } = useGetAccountById(account_id)
-  const account_list = useGetAccountsQuery()
 
   const arrayConfigs: ArrayConfig<any>[] = useMemo(
     () => [
@@ -43,6 +44,14 @@ export function DREFilter({ onFilterChange }: FilterProps) {
           value: organization.organization_id,
         }),
         setState: setOrganizations,
+      },
+      {
+        fetchFn: getAccounts,
+        mapFn: (account) => ({
+          label: account.name,
+          value: account.account_id,
+        }),
+        setState: setAccounts,
       },
     ],
     []
@@ -61,16 +70,38 @@ export function DREFilter({ onFilterChange }: FilterProps) {
     start_date?: string
     end_date?: string
     organization_id?: string
+    account_id?: string
   }>()
 
   const formValues = watch()
 
+  const refreshOrganizations = async (id: string) => {
+    const newOrganizations = await getOrganizations(id)
+    return newOrganizations.map((organization) => ({
+      label: organization.name,
+      value: organization.organization_id,
+    }))
+  }
+
+  useEffect(() => {
+    if (formValues.account_id) {
+      refreshOrganizations(formValues.account_id).then((newOrganizations) => {
+        setOrganizations(newOrganizations)
+      })
+    }
+  }, [formValues])
+
   function onSubmit(data: Expense.GetRequestParams) {
     const cleanedData = {
       ...data,
-      start_date: data.start_date ? new Date(data.start_date) : undefined,
-      end_date: data.end_date ? new Date(data.end_date) : undefined,
+      start_date:
+        data.start_date ?
+          new Date(data.start_date)
+        : new Date(currentYear, 0, 1),
+      end_date:
+        data.end_date ? new Date(data.end_date) : new Date(currentYear, 11, 31),
       organization_id: data.organization_id ?? undefined,
+      account_id: data.account_id ?? undefined,
     }
     onFilterChange(cleanedData)
   }
@@ -81,6 +112,7 @@ export function DREFilter({ onFilterChange }: FilterProps) {
       start_date: new Date(currentYear, 0, 1),
       end_date: new Date(currentYear, 11, 31),
       organization_id: "",
+      account_id: account_id,
     })
   }
 
@@ -118,6 +150,21 @@ export function DREFilter({ onFilterChange }: FilterProps) {
         onSubmit={handleSubmit(onSubmit)}
         className={`rounded-lg border border-black bg-gray-100 p-3 ${collapsed ? "invisible hidden" : ""}`}>
         <div className="flex flex-col gap-4">
+          {account?.master_mode && (
+            <div className="flex flex-1 flex-col gap-2">
+              <label htmlFor="organization_id">Conta</label>
+              <Input.Root>
+                <Input.SelectInput
+                  name="account_id"
+                  control={control}
+                  options={[{ label: "", value: "" }].concat(accounts)}
+                  placeholder={arrayPlaceHolder}
+                  value={account_id}
+                />
+              </Input.Root>
+            </div>
+          )}
+
           <div className="flex flex-1 gap-2">
             <div className="flex flex-1 flex-col gap-2">
               <label htmlFor="start_date">Data Inicial</label>

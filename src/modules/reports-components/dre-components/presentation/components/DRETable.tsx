@@ -6,8 +6,6 @@ import { LoadingScreen } from "@/core/components/LoadingScreen"
 import { exportNoPagination } from "@/core/utils/exportToExcel/exportNoPagination"
 import { formatCurrency } from "@/core/utils/format-currency"
 import { getAccountId } from "@/core/utils/get-account-id"
-import { useGetAccountById } from "@/modules/accounts-components/accounts/infra/hooks/use-get-account-by-id-query"
-import { useGetAccountsQuery } from "@/modules/accounts-components/accounts/infra/hooks/use-get-accounts-query"
 import { useOrganizationsQuery } from "@/modules/organization-components/organizations/infra/remote/hooks/use-organizations-query"
 import { useExpenseByGroupQuery } from "@/modules/reports-components/dre-components/infra/hooks/use-expense-by-group-query"
 import { useIncomeByGroupQuery } from "@/modules/reports-components/dre-components/infra/hooks/use-income-by-group-query"
@@ -19,17 +17,20 @@ import { FormProvider, useForm } from "react-hook-form"
 
 export function DRETable() {
   const currentYear = new Date().getFullYear()
-  const [account_id, set_account_id] = useState(getAccountId())
   const [filters, setFilters] = useState({
     start_date: new Date(currentYear, 0, 1),
     end_date: new Date(currentYear, 11, 31),
     organization_id: "",
+    account_id: "",
   })
 
-  const methods = useForm()
+  const methods = useForm({
+    defaultValues: {
+      account_id: getAccountId(),
+    },
+  })
 
-  const { data: account } = useGetAccountById(account_id)
-  const account_list = useGetAccountsQuery()
+  const { account_id } = filters
 
   const {
     data: incomes,
@@ -49,10 +50,6 @@ export function DRETable() {
     refetchIncomes()
     refetchExpenses()
   }, [filters])
-
-  // useEffect(() => {
-  //   set_account_id(getAccountId())
-  // }, [])
 
   if (isIncomesLoading || !incomes || !expenses || isExpensesLoading)
     return <LoadingScreen />
