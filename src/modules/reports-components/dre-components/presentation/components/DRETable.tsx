@@ -66,8 +66,8 @@ export function DRETable() {
               filename="meu-relatorio"
               options={{ orientation: "portrait" }}
               title={`DRE
-                Periodo: ${filters.start_date.toLocaleDateString("pt-br", { timeZone: "UTC" })} a ${filters.end_date.toLocaleDateString("pt-br", { timeZone: "UTC" })} 
-                Organização: ${!filters.organization_id ? "Todas" : organizations?.data?.filter((org) => org.organization_id === filters.organization_id)[0].name}`}
+                Periodo: ${filters?.start_date?.toLocaleDateString("pt-br", { timeZone: "UTC" })} a ${filters?.end_date?.toLocaleDateString("pt-br", { timeZone: "UTC" })} 
+                Organização: ${!filters.organization_id ? "Todas" : organizations?.data?.find((org) => org.organization_id === filters?.organization_id)?.name || "Não Encontrada"} `}
               className="bg-red-500">
               Exportar PDF
             </ExportTableToPDFButton>
