@@ -1,5 +1,5 @@
 import { Icon } from "@phosphor-icons/react"
-import { Suitcase, User } from "@phosphor-icons/react/dist/ssr"
+import { BuildingOffice, Suitcase, User } from "@phosphor-icons/react/dist/ssr"
 
 type SidebarOptionProps = {
   name: string
@@ -24,7 +24,7 @@ export const sidebar_options: SidebarOptionProps[] = [
   {
     name: "Corretoras",
     href: "/corretoras",
-    Icon: Suitcase,
+    Icon: BuildingOffice,
     group: "Cadastros",
   },
 ]

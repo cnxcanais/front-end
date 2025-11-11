@@ -57,4 +57,12 @@ export const corretorasHandlers = [
     console.log("🎯 MSW intercepted wildcard DELETE corretoras:", request.url, params.id)
     return HttpResponse.json({ message: "Corretora removida com sucesso" })
   }),
+  http.post("https://provisory-url.com/corretoras", async ({ request }) => {
+    console.log("🎯 MSW intercepted POST corretoras:", request.url)
+    return HttpResponse.json({ message: "Corretora criada com sucesso" })
+  }),
+  http.post("*/corretoras", async ({ request }) => {
+    console.log("🎯 MSW intercepted wildcard POST corretoras:", request.url)
+    return HttpResponse.json({ message: "Corretora criada com sucesso" })
+  }),
 ]
