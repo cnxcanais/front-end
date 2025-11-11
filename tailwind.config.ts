@@ -7,6 +7,7 @@ export default {
     extend: {
       colors: {
         blue: {
+          "50": "#ADD8E6",
           "100": "#cecfd1",
           "200": "#9fa2a6",
           "300": "#72777d",
@@ -23,6 +24,14 @@ export default {
         },
         black: {
           "100": "#242832",
+        },
+        orange: {
+          "50": "#FFDAB3",
+          "100": "#FFB566",
+          "200": "#FF8A1F",
+          "300": "#CC6E19",
+          "400": "#995413",
+          "500": "#662C0C",
         },
         error: "#F75A68",
         success: "#00B37E",
