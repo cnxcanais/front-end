@@ -2,7 +2,6 @@
 
 import { Button } from "@/core/components/Button"
 import * as Input from "@/core/components/Input"
-import { authenticate } from "@/modules/login-components/login/infra/remote/authenticate"
 import {
   loginFormSchema,
   LoginSchema,
@@ -32,8 +31,8 @@ export function LoginForm() {
   async function onSubmit(data: LoginSchema) {
     setIsLoading(true)
     try {
-      await authenticate(data)
-      toast.success("Login realizado com sucesso!")
+      // await authenticate(data)
+      toast.success("Login efetuado com sucesso!")
       setTimeout(() => push("/dashboard"), 2000)
     } catch (error) {
       toast.error("Erro ao efetuar login: " + error)
