@@ -11,13 +11,19 @@ type SidebarOptionProps = {
 export const sidebar_options: SidebarOptionProps[] = [
   {
     name: "Perfil",
-    href: "/users/profile",
+    href: "",
     Icon: User,
     group: "Gerenciamento",
   },
   {
     name: "Seguradoras",
     href: "/seguradoras",
+    Icon: Suitcase,
+    group: "Cadastros",
+  },
+  {
+    name: "Corretoras",
+    href: "/corretoras",
     Icon: Suitcase,
     group: "Cadastros",
   },

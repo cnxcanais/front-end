@@ -80,9 +80,7 @@ export function LoginForm() {
         )}
       </div>
 
-      <Link
-        href="/define-password"
-        className="text-xs text-yellow-100 hover:text-yellow-200">
+      <Link href="" className="text-xs text-yellow-100 hover:text-yellow-200">
         Esqueceu sua senha? clique aqui
       </Link>
 

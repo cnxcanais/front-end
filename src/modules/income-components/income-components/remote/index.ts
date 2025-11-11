@@ -1,5 +1,0 @@
-export * from "./create-income"
-export * from "./edit-income"
-export * from "./get-income-by-id"
-export * from "./get-incomes"
-export * from "./remove-income"
