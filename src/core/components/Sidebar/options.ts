@@ -27,6 +27,12 @@ export const sidebar_options: SidebarOptionProps[] = [
     Icon: BuildingOffice,
     group: "Cadastros",
   },
+  {
+    name: "Produtores",
+    href: "/produtores",
+    Icon: User,
+    group: "Cadastros",
+  },
 ]
 
 type SidebarGroups = {

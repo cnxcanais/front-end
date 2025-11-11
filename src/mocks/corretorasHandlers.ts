@@ -65,4 +65,20 @@ export const corretorasHandlers = [
     console.log("🎯 MSW intercepted wildcard POST corretoras:", request.url)
     return HttpResponse.json({ message: "Corretora criada com sucesso" })
   }),
+  http.get("https://provisory-url.com/corretoras/:id", ({ request, params }) => {
+    console.log("🎯 MSW intercepted GET corretora by ID:", request.url, params.id)
+    return HttpResponse.json(mockCorretoras.data[0])
+  }),
+  http.get("*/corretoras/:id", ({ request, params }) => {
+    console.log("🎯 MSW intercepted wildcard GET corretora by ID:", request.url, params.id)
+    return HttpResponse.json(mockCorretoras.data[0])
+  }),
+  http.put("https://provisory-url.com/corretoras/:id", async ({ request, params }) => {
+    console.log("🎯 MSW intercepted PUT corretoras:", request.url, params.id)
+    return HttpResponse.json({ message: "Corretora atualizada com sucesso" })
+  }),
+  http.put("*/corretoras/:id", async ({ request, params }) => {
+    console.log("🎯 MSW intercepted wildcard PUT corretoras:", request.url, params.id)
+    return HttpResponse.json({ message: "Corretora atualizada com sucesso" })
+  }),
 ]
