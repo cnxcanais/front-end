@@ -39,7 +39,7 @@ export function Sidebar() {
           width={400}
           height={400}
           alt="Your Company"
-          src="/images/light-logo-new.png"
+          src="/images/cnx-logo.png"
           className={`h-20 w-auto cursor-pointer transition-opacity ${
             isOpen ? "opacity-100" : "opacity-0"
           }`}

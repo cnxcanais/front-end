@@ -7,11 +7,11 @@ export default function LoginComponentsLayout({
 }) {
   return (
     <div className="flex h-screen flex-col bg-blue-500">
-      <nav className="bg-black/60 opacity-90">
+      <nav className="bg-green-100 opacity-90">
         <div className="p-3">
           <Image
             className="h-20 w-auto"
-            src="/images/light-logo-new.png"
+            src="/images/cnx-logo.svg"
             alt="Logo"
             width={400}
             height={400}

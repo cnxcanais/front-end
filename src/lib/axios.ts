@@ -26,4 +26,8 @@ const cepApi = axios.create({
   baseURL: "https://viacep.com.br/ws",
 })
 
-export { api, cepApi }
+const bffApi = axios.create({
+  baseURL: process.env.NEXT_PUBLIC_BFF_API_URL,
+})
+
+export { api, bffApi, cepApi }

@@ -37,3 +37,12 @@ input:focus, textarea:focus {
     /* Firefox */
   }
 }
+
+:root {
+  --green-100: #00dfa7;
+  --black-100: #242832;
+  --blue-100: #02123B;
+  --white-100: #FFFFFF;
+
+
+}

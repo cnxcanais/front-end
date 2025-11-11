@@ -15,9 +15,10 @@ export async function fetchCep(cep: string, setValue: any) {
   const { data }: any = await findCep(cep)
 
   if (data.cep) {
-    setValue("address_1", data.logradouro)
-    setValue("city", data.localidade)
-    setValue("state", data.uf)
+    setValue("endereco", data.logradouro)
+    setValue("cidade", data.localidade)
+    setValue("uf", data.uf)
+    setValue("bairro", data.bairro)
   } else {
     toast.error("CEP não encontrado")
   }
