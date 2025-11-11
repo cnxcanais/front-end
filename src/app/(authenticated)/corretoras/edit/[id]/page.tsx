@@ -1,15 +1,16 @@
 import { PageTitle } from "@/core/components/PageTitle"
 import { EditCorretoraForm } from "@/modules/corretoras-components/edit-corretora/presentation/components/EditCorretoraForm"
 
-export default function EditCorretoraPage({
+export default async function EditCorretoraPage({
   params,
 }: {
-  params: { id: string }
+  params: Promise<{ id: string }>
 }) {
+  const { id } = await params
   return (
     <>
       <PageTitle content="Editar Corretora" />
-      <EditCorretoraForm id={params.id} />
+      <EditCorretoraForm id={id} />
     </>
   )
 }

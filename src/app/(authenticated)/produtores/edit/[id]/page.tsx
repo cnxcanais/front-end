@@ -1,15 +1,16 @@
 import { PageTitle } from "@/core/components/PageTitle"
 import { EditProdutorForm } from "@/modules/produtores-components/edit-produtor/presentation/components/EditProdutorForm"
 
-export default function EditProdutorPage({
+export default async function EditProdutorPage({
   params,
 }: {
-  params: { id: string }
+  params: Promise<{ id: string }>
 }) {
+  const { id } = await params
   return (
     <>
       <PageTitle content="Editar Produtor" />
-      <EditProdutorForm id={params.id} />
+      <EditProdutorForm id={id} />
     </>
   )
 }
