@@ -3,7 +3,7 @@ import { z } from "zod"
 
 export const createSeguradoraFormSchema = z.object({
   razaoSocial: z.string().nonempty({ message: "Obrigatório" }),
-  cnpjFormatado: z
+  cnpj: z
     .string()
     .nonempty({ message: "Obrigatório" })
     .refine(

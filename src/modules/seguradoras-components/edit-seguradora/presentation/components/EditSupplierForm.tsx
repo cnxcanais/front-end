@@ -50,7 +50,7 @@ export function EditSeguradoraForm({ id }: { id: string }) {
   async function onSubmit(data: Seguradora.UpdateRequest) {
     try {
       await editSeguradora(data)
-      toast.success("Fornecedor editado com sucesso!")
+      toast.success("Seguradora editada com sucesso!")
       setTimeout(() => push("/seguradoras"), 2000)
     } catch (error) {
       toast.error("Erro ao editar fornecedor: " + error)
@@ -87,6 +87,7 @@ export function EditSeguradoraForm({ id }: { id: string }) {
                     e.target.value = formatted
                   },
                 })}
+                disabled
                 type="text"
               />
             </Input.Root>

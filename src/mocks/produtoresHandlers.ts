@@ -1,5 +1,4 @@
 import { Produtor } from "@/@types/produtor"
-import { http, HttpResponse } from "msw"
 
 const BFF_API = process.env.NEXT_PUBLIC_BFF_API_URL
 
@@ -51,36 +50,36 @@ const mockProdutores: Produtor.GetResponse = {
 }
 
 export const produtoresHandlers = [
-  http.get("https://provisory-url.com/produtores", ({ request }) => {
-    console.log("🎯 MSW intercepted produtores request:", request.url)
-    return HttpResponse.json(mockProdutores)
-  }),
-  http.get("*/produtores", ({ request }) => {
-    console.log("🎯 MSW intercepted wildcard produtores:", request.url)
-    return HttpResponse.json(mockProdutores)
-  }),
-  http.post("https://provisory-url.com/produtores", async ({ request }) => {
-    console.log("🎯 MSW intercepted POST produtores:", request.url)
-    return HttpResponse.json({ message: "Produtor criado com sucesso" })
-  }),
-  http.post("*/produtores", async ({ request }) => {
-    console.log("🎯 MSW intercepted wildcard POST produtores:", request.url)
-    return HttpResponse.json({ message: "Produtor criado com sucesso" })
-  }),
-  http.get("https://provisory-url.com/produtores/:id", ({ request, params }) => {
-    console.log("🎯 MSW intercepted GET produtor by ID:", request.url, params.id)
-    return HttpResponse.json(mockProdutores.data[0])
-  }),
-  http.get("*/produtores/:id", ({ request, params }) => {
-    console.log("🎯 MSW intercepted wildcard GET produtor by ID:", request.url, params.id)
-    return HttpResponse.json(mockProdutores.data[0])
-  }),
-  http.put("https://provisory-url.com/produtores/:id", async ({ request, params }) => {
-    console.log("🎯 MSW intercepted PUT produtores:", request.url, params.id)
-    return HttpResponse.json({ message: "Produtor atualizado com sucesso" })
-  }),
-  http.put("*/produtores/:id", async ({ request, params }) => {
-    console.log("🎯 MSW intercepted wildcard PUT produtores:", request.url, params.id)
-    return HttpResponse.json({ message: "Produtor atualizado com sucesso" })
-  }),
+  // http.get("https://provisory-url.com/produtores", ({ request }) => {
+  //   console.log("🎯 MSW intercepted produtores request:", request.url)
+  //   return HttpResponse.json(mockProdutores)
+  // }),
+  // http.get("*/produtores", ({ request }) => {
+  //   console.log("🎯 MSW intercepted wildcard produtores:", request.url)
+  //   return HttpResponse.json(mockProdutores)
+  // }),
+  // http.post("https://provisory-url.com/produtores", async ({ request }) => {
+  //   console.log("🎯 MSW intercepted POST produtores:", request.url)
+  //   return HttpResponse.json({ message: "Produtor criado com sucesso" })
+  // }),
+  // http.post("*/produtores", async ({ request }) => {
+  //   console.log("🎯 MSW intercepted wildcard POST produtores:", request.url)
+  //   return HttpResponse.json({ message: "Produtor criado com sucesso" })
+  // }),
+  // http.get("https://provisory-url.com/produtores/:id", ({ request, params }) => {
+  //   console.log("🎯 MSW intercepted GET produtor by ID:", request.url, params.id)
+  //   return HttpResponse.json(mockProdutores.data[0])
+  // }),
+  // http.get("*/produtores/:id", ({ request, params }) => {
+  //   console.log("🎯 MSW intercepted wildcard GET produtor by ID:", request.url, params.id)
+  //   return HttpResponse.json(mockProdutores.data[0])
+  // }),
+  // http.put("https://provisory-url.com/produtores/:id", async ({ request, params }) => {
+  //   console.log("🎯 MSW intercepted PUT produtores:", request.url, params.id)
+  //   return HttpResponse.json({ message: "Produtor atualizado com sucesso" })
+  // }),
+  // http.put("*/produtores/:id", async ({ request, params }) => {
+  //   console.log("🎯 MSW intercepted wildcard PUT produtores:", request.url, params.id)
+  //   return HttpResponse.json({ message: "Produtor atualizado com sucesso" })
+  // }),
 ]

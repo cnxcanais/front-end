@@ -61,10 +61,10 @@ export function CreateSeguradoraForm() {
           </div>
 
           <div className="flex flex-1 flex-col gap-2">
-            <label htmlFor="cnpjFormatado">CNPJ</label>
-            <Input.Root variant={errors.cnpjFormatado ? "error" : "primary"}>
+            <label htmlFor="cnpj">CNPJ</label>
+            <Input.Root variant={errors.cnpj ? "error" : "primary"}>
               <Input.Control
-                {...register("cnpjFormatado", {
+                {...register("cnpj", {
                   onChange: (e) => {
                     const formatted = formatDocumentNumber(e.target.value)
                     e.target.value = formatted
@@ -73,9 +73,9 @@ export function CreateSeguradoraForm() {
                 type="text"
               />
             </Input.Root>
-            {errors.cnpjFormatado && (
+            {errors.cnpj && (
               <span className="text-xs text-red-500">
-                {errors.cnpjFormatado.message}
+                {errors.cnpj.message}
               </span>
             )}
           </div>

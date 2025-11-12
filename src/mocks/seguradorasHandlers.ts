@@ -1,5 +1,4 @@
 import { Seguradora } from "@/@types/seguradora"
-import { http, HttpResponse } from "msw"
 
 const BFF_API = process.env.NEXT_PUBLIC_BFF_API_URL
 
@@ -32,27 +31,23 @@ const mockSeguradoras: Seguradora.GetResponse = {
 }
 
 export const seguradorasHandlers = [
-  http.get(`${BFF_API}/seguradoras`, ({ request }) => {
-    console.log("MSW intercepted request to:", request.url)
-    return HttpResponse.json(mockSeguradoras)
-  }),
-
-  http.get(`${BFF_API}/seguradoras/:id`, ({ request }) => {
-    console.log(`MSW intercepted GET request for seguradora by id`)
-    return HttpResponse.json(mockSeguradoras.data[0])
-  }),
-
-  http.delete(`${BFF_API}/seguradoras/:id`, ({ request }) => {
-    console.log(`MSW intercepted DELETE request for seguradora ID`)
-    return HttpResponse.json({ message: `Seguradora deletada.` })
-  }),
-
-  http.post(`${BFF_API}/seguradoras`, ({ request }) => {
-    console.log(`MSW intercepted POST request to create seguradora`)
-    return HttpResponse.json({ message: `Seguradora criada com sucesso.` })
-  }),
-
-  http.put(`${BFF_API}/seguradoras/:id`, ({ request }) => {
-    return HttpResponse.json({ message: `Seguradora atualizada com sucesso.` })
-  }),
+  // http.get(`${BFF_API}/seguradoras`, ({ request }) => {
+  //   console.log("MSW intercepted request to:", request.url)
+  //   return HttpResponse.json(mockSeguradoras)
+  // }),
+  // http.get(`${BFF_API}/seguradoras/:id`, ({ request }) => {
+  //   console.log(`MSW intercepted GET request for seguradora by id`)
+  //   return HttpResponse.json(mockSeguradoras.data[0])
+  // }),
+  // http.delete(`${BFF_API}/seguradoras/:id`, ({ request }) => {
+  //   console.log(`MSW intercepted DELETE request for seguradora ID`)
+  //   return HttpResponse.json({ message: `Seguradora deletada.` })
+  // }),
+  // http.post(`${BFF_API}/seguradoras`, ({ request }) => {
+  //   console.log(`MSW intercepted POST request to create seguradora`)
+  //   return HttpResponse.json({ message: `Seguradora criada com sucesso.` })
+  // }),
+  // http.put(`${BFF_API}/seguradoras/:id`, ({ request }) => {
+  //   return HttpResponse.json({ message: `Seguradora atualizada com sucesso.` })
+  // }),
 ]

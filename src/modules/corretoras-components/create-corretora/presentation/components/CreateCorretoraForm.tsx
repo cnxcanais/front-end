@@ -34,7 +34,7 @@ export function CreateCorretoraForm() {
   async function onSubmit(data: Corretora.CreateRequest) {
     try {
       const response = await createCorretora(data)
-      toast.success(response)
+      toast.success("Corretora criada com sucesso!")
       setTimeout(() => push("/corretoras"), 2000)
     } catch (error) {
       toast.error("Erro ao criar corretora: " + error)

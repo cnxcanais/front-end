@@ -1,11 +1,10 @@
 import { Seguradora } from "@/@types/seguradora"
-import { formatCep } from "@/core/utils/format-cep"
 import { bffApi } from "@/lib/axios"
 import { AxiosError } from "axios"
 
 export async function createSeguradora({
   razaoSocial,
-  cnpjFormatado,
+  cnpj,
   codigoSusep,
   cep,
   endereco,
@@ -14,24 +13,19 @@ export async function createSeguradora({
   cidade,
   uf,
 }: Seguradora.CreateRequest) {
-  const cnpjOnlyNumbers = cnpjFormatado.replace(/\D/g, "")
-  const cepFormatted = formatCep(cep)
-  const enderecoCompletoFormatted = `${endereco}, ${numero}, ${bairro}, ${cidade}, ${uf}, ${cep}`
+  const cnpjOnlyNumbers = cnpj.replace(/\D/g, "")
 
   try {
     const { data } = await bffApi.post("/seguradoras", {
       razaoSocial,
       cnpj: cnpjOnlyNumbers,
-      cnpjFormatado,
       codigoSusep,
       cep,
-      cepFormatado: cepFormatted,
       endereco,
       numero,
       bairro,
       cidade,
       uf,
-      enderecoCompleto: enderecoCompletoFormatted,
     })
 
     return data.message

@@ -29,7 +29,7 @@ export namespace Seguradora {
 
   export type CreateRequest = {
     razaoSocial: string
-    cnpjFormatado: string
+    cnpj: string
     codigoSusep: string
     cep: string
     endereco: string
@@ -42,7 +42,6 @@ export namespace Seguradora {
   export type UpdateRequest = {
     id: string
     razaoSocial: string
-    cnpjFormatado: string
     codigoSusep: string
     cep: string
     endereco: string

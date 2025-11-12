@@ -63,7 +63,6 @@ export namespace Corretora {
     id: string
     razaoSocial: string
     nomeFantasia: string
-    cnpjCpfFormatado: string
     codigoSusep: string
     cepFormatado: string
     endereco: string

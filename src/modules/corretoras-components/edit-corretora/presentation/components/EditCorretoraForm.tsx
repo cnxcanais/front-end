@@ -102,7 +102,8 @@ export function EditCorretoraForm({ id }: { id: string }) {
         <div className="flex gap-4">
           <div className="flex flex-1 flex-col gap-2">
             <label htmlFor="cnpjCpfFormatado">CNPJ/CPF</label>
-            <Input.Root variant={errors.cnpjCpfFormatado ? "error" : "primary"}>
+            <Input.Root
+              variant={errors.cnpjCpfFormatado ? "error" : "disabled"}>
               <Input.Control
                 {...register("cnpjCpfFormatado", {
                   onChange: (e) => {
@@ -110,6 +111,7 @@ export function EditCorretoraForm({ id }: { id: string }) {
                   },
                 })}
                 type="text"
+                disabled
               />
             </Input.Root>
             {errors.cnpjCpfFormatado && (
@@ -246,7 +248,9 @@ export function EditCorretoraForm({ id }: { id: string }) {
               <Input.Control {...register("email")} type="email" />
             </Input.Root>
             {errors.email && (
-              <span className="text-xs text-red-500">{errors.email.message}</span>
+              <span className="text-xs text-red-500">
+                {errors.email.message}
+              </span>
             )}
           </div>
 
@@ -299,7 +303,8 @@ export function EditCorretoraForm({ id }: { id: string }) {
 
           <div className="flex max-w-[200px] flex-1 flex-col gap-2">
             <label htmlFor="percentualComissao">% Comissão</label>
-            <Input.Root variant={errors.percentualComissao ? "error" : "primary"}>
+            <Input.Root
+              variant={errors.percentualComissao ? "error" : "primary"}>
               <Input.Control
                 {...register("percentualComissao")}
                 type="number"

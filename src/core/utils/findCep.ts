@@ -19,6 +19,7 @@ export async function fetchCep(cep: string, setValue: any) {
     setValue("cidade", data.localidade)
     setValue("uf", data.uf)
     setValue("bairro", data.bairro)
+    setValue("logradouro", data.logradouro)
   } else {
     toast.error("CEP não encontrado")
   }
