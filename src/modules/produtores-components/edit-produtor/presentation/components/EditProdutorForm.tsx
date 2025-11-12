@@ -4,10 +4,18 @@ import { Produtor } from "@/@types/produtor"
 import { Button } from "@/core/components/Button"
 import * as Input from "@/core/components/Input"
 import { LoadingScreen } from "@/core/components/LoadingScreen"
+import { SelectInput } from "@/core/components/SelectInput"
 import { fetchCep } from "@/core/utils/findCep"
 import { formatPhoneNumber } from "@/core/utils/formatPhoneNumber"
 import { useProdutorByIdQuery } from "@/modules/produtores-components/edit-produtor/infra/hooks/use-produtor-by-id-query"
 import { editProdutor } from "@/modules/produtores-components/edit-produtor/infra/remote"
+import {
+  FormaRepasseLabels,
+  GrupoProdutorLabels,
+  StatusProdutorLabels,
+  TipoContaLabels,
+  TipoRepasseLabels,
+} from "@/modules/produtores-components/types/form-enums"
 import { zodResolver } from "@hookform/resolvers/zod"
 import { MagnifyingGlass } from "@phosphor-icons/react"
 import { useRouter } from "next/navigation"
@@ -83,7 +91,6 @@ export function EditProdutorForm({ id }: { id: string }) {
     <form
       className="mt-6 flex max-w-[1200px] flex-col gap-6"
       onSubmit={handleSubmit(onSubmit)}>
-      
       {/* Dados Pessoais */}
       <div className="flex flex-col gap-4">
         <h3 className="text-lg font-semibold">Dados Pessoais</h3>
@@ -93,15 +100,20 @@ export function EditProdutorForm({ id }: { id: string }) {
             <Input.Root variant={errors.nome ? "error" : "primary"}>
               <Input.Control {...register("nome")} type="text" />
             </Input.Root>
-            {errors.nome && <span className="text-xs text-red-500">{errors.nome.message}</span>}
+            {errors.nome && (
+              <span className="text-xs text-red-500">
+                {errors.nome.message}
+              </span>
+            )}
           </div>
 
           <div className="flex flex-col gap-2">
-            <label>Situação</label>
-            <select {...register("situacao")} className="rounded border p-2">
-              <option value="ATIVO">Ativo</option>
-              <option value="INATIVO">Inativo</option>
-            </select>
+            <SelectInput
+              options={StatusProdutorLabels}
+              label="Situação"
+              field_name="situacao"
+              {...register("situacao")}
+            />
           </div>
         </div>
 
@@ -131,7 +143,11 @@ export function EditProdutorForm({ id }: { id: string }) {
             <Input.Root variant={errors.email ? "error" : "primary"}>
               <Input.Control {...register("email")} type="email" />
             </Input.Root>
-            {errors.email && <span className="text-xs text-red-500">{errors.email.message}</span>}
+            {errors.email && (
+              <span className="text-xs text-red-500">
+                {errors.email.message}
+              </span>
+            )}
           </div>
 
           <div className="flex flex-1 flex-col gap-2">
@@ -146,7 +162,11 @@ export function EditProdutorForm({ id }: { id: string }) {
                 type="text"
               />
             </Input.Root>
-            {errors.telefoneCelular && <span className="text-xs text-red-500">{errors.telefoneCelular.message}</span>}
+            {errors.telefoneCelular && (
+              <span className="text-xs text-red-500">
+                {errors.telefoneCelular.message}
+              </span>
+            )}
           </div>
 
           <div className="flex flex-1 flex-col gap-2">
@@ -184,20 +204,30 @@ export function EditProdutorForm({ id }: { id: string }) {
                 }}
               />
             </Input.Root>
-            {errors.cep && <span className="text-xs text-red-500">{errors.cep.message}</span>}
+            {errors.cep && (
+              <span className="text-xs text-red-500">{errors.cep.message}</span>
+            )}
           </div>
 
           <div className="flex flex-1 flex-col gap-2">
             <label>Logradouro</label>
             <Input.Root variant={isCepSearched ? "primary" : "disabled"}>
-              <Input.Control disabled={!isCepSearched} {...register("logradouro")} type="text" />
+              <Input.Control
+                disabled={!isCepSearched}
+                {...register("logradouro")}
+                type="text"
+              />
             </Input.Root>
           </div>
 
           <div className="flex max-w-[150px] flex-col gap-2">
             <label>Número</label>
             <Input.Root variant={isCepSearched ? "primary" : "disabled"}>
-              <Input.Control disabled={!isCepSearched} {...register("numero")} type="text" />
+              <Input.Control
+                disabled={!isCepSearched}
+                {...register("numero")}
+                type="text"
+              />
             </Input.Root>
           </div>
         </div>
@@ -206,28 +236,44 @@ export function EditProdutorForm({ id }: { id: string }) {
           <div className="flex flex-1 flex-col gap-2">
             <label>Complemento</label>
             <Input.Root variant={isCepSearched ? "primary" : "disabled"}>
-              <Input.Control disabled={!isCepSearched} {...register("complemento")} type="text" />
+              <Input.Control
+                disabled={!isCepSearched}
+                {...register("complemento")}
+                type="text"
+              />
             </Input.Root>
           </div>
 
           <div className="flex flex-1 flex-col gap-2">
             <label>Bairro</label>
             <Input.Root variant={isCepSearched ? "primary" : "disabled"}>
-              <Input.Control disabled={!isCepSearched} {...register("bairro")} type="text" />
+              <Input.Control
+                disabled={!isCepSearched}
+                {...register("bairro")}
+                type="text"
+              />
             </Input.Root>
           </div>
 
           <div className="flex flex-1 flex-col gap-2">
             <label>Cidade</label>
             <Input.Root variant={isCepSearched ? "primary" : "disabled"}>
-              <Input.Control disabled={!isCepSearched} {...register("cidade")} type="text" />
+              <Input.Control
+                disabled={!isCepSearched}
+                {...register("cidade")}
+                type="text"
+              />
             </Input.Root>
           </div>
 
           <div className="flex max-w-[100px] flex-col gap-2">
             <label>UF</label>
             <Input.Root variant={isCepSearched ? "primary" : "disabled"}>
-              <Input.Control disabled={!isCepSearched} {...register("uf")} type="text" />
+              <Input.Control
+                disabled={!isCepSearched}
+                {...register("uf")}
+                type="text"
+              />
             </Input.Root>
           </div>
         </div>
@@ -266,12 +312,12 @@ export function EditProdutorForm({ id }: { id: string }) {
           </div>
 
           <div className="flex flex-col gap-2">
-            <label>Tipo Conta</label>
-            <select {...register("tipoConta")} className="rounded border p-2">
-              <option value="">Selecione</option>
-              <option value="CORRENTE">Corrente</option>
-              <option value="POUPANCA">Poupança</option>
-            </select>
+            <SelectInput
+              options={TipoContaLabels}
+              field_name="tipoConta"
+              label="Tipo Conta"
+              {...register("tipoConta")}
+            />
           </div>
         </div>
 
@@ -290,42 +336,53 @@ export function EditProdutorForm({ id }: { id: string }) {
         <h3 className="text-lg font-semibold">Repasse</h3>
         <div className="flex gap-4">
           <div className="flex flex-col gap-2">
-            <label>Tipo Repasse</label>
-            <select {...register("tipoRepasse")} className="rounded border p-2">
-              <option value="">Selecione</option>
-              <option value="DIRETO">Direto</option>
-              <option value="INDIRETO">Indireto</option>
-            </select>
+            <SelectInput
+              options={TipoRepasseLabels}
+              field_name="tipoRepasse"
+              label="Tipo Repasse"
+              {...register("tipoRepasse")}
+            />
           </div>
 
           <div className="flex flex-col gap-2">
-            <label>Forma Repasse</label>
-            <select {...register("formaRepasse")} className="rounded border p-2">
-              <option value="">Selecione</option>
-              <option value="DEPOSITO">Depósito</option>
-              <option value="PIX">PIX</option>
-              <option value="TED">TED</option>
-            </select>
+            <SelectInput
+              options={FormaRepasseLabels}
+              field_name="formaRepasse"
+              label="Forma Repasse"
+              {...register("formaRepasse")}
+            />
           </div>
 
           <div className="flex flex-col gap-2">
             <label>% Imposto</label>
             <Input.Root variant="primary">
-              <Input.Control {...register("percentualImposto")} type="number" step="0.01" />
+              <Input.Control
+                {...register("percentualImposto")}
+                type="number"
+                step="0.01"
+              />
             </Input.Root>
           </div>
 
           <div className="flex flex-col gap-2">
             <label>Primeira Repasse (%)</label>
             <Input.Root variant="primary">
-              <Input.Control {...register("primeiraRepasse")} type="number" step="0.01" />
+              <Input.Control
+                {...register("primeiraRepasse")}
+                type="number"
+                step="0.01"
+              />
             </Input.Root>
           </div>
 
           <div className="flex flex-col gap-2">
             <label>Demais Repasse (%)</label>
             <Input.Root variant="primary">
-              <Input.Control {...register("demaisRepasse")} type="number" step="0.01" />
+              <Input.Control
+                {...register("demaisRepasse")}
+                type="number"
+                step="0.01"
+              />
             </Input.Root>
           </div>
         </div>
@@ -343,12 +400,12 @@ export function EditProdutorForm({ id }: { id: string }) {
           </div>
 
           <div className="flex flex-col gap-2">
-            <label>Grupo Produtor</label>
-            <select {...register("grupoProdutor")} className="rounded border p-2">
-              <option value="">Selecione</option>
-              <option value="LIDER">Líder</option>
-              <option value="MEMBRO">Membro</option>
-            </select>
+            <SelectInput
+              options={GrupoProdutorLabels}
+              field_name="grupoProdutor"
+              label="Grupo Produtor"
+              {...register("grupoProdutor")}
+            />
           </div>
 
           <div className="flex flex-1 flex-col gap-2">
@@ -370,7 +427,11 @@ export function EditProdutorForm({ id }: { id: string }) {
         </div>
 
         <div className="flex items-center gap-2">
-          <input {...register("lgpdConsentimento")} type="checkbox" id="lgpdConsentimento" />
+          <input
+            {...register("lgpdConsentimento")}
+            type="checkbox"
+            id="lgpdConsentimento"
+          />
           <label htmlFor="lgpdConsentimento">Consentimento LGPD</label>
         </div>
       </div>
