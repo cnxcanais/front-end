@@ -5,6 +5,7 @@ import { Button } from "@/core/components/Button"
 import * as Input from "@/core/components/Input"
 import { SelectInput } from "@/core/components/SelectInput"
 import { fetchCep } from "@/core/utils/findCep"
+import { formatCep } from "@/core/utils/format-cep"
 import { formatDocumentNumber } from "@/core/utils/formatDocumentNumber"
 import { formatPhoneNumber } from "@/core/utils/formatPhoneNumber"
 import { useCorretoraQuery } from "@/modules/corretoras-components/corretora/infra/hooks/use-corretora-query"
@@ -215,10 +216,18 @@ export function CreateProdutorForm() {
                 <MagnifyingGlass className="mr-2 h-5 w-5" />
               </Input.Icon>
               <Input.Control
-                {...register("cep")}
+                {...register("cep", {
+                  onChange: (e) => {
+                    const cleaned = e.target.value
+                      .replace(/\D/g, "")
+                      .slice(0, 8)
+                    e.target.value = formatCep(cleaned)
+                  },
+                })}
                 type="text"
                 onBlur={(e) => {
-                  fetchCep(e.target.value, setValue)
+                  const cleanedCep = e.target.value.replace(/\D/g, "")
+                  fetchCep(cleanedCep, setValue)
                   setIsCepSearched(true)
                 }}
               />

@@ -5,6 +5,7 @@ import { Button } from "@/core/components/Button"
 import * as Input from "@/core/components/Input"
 import { LoadingScreen } from "@/core/components/LoadingScreen"
 import { fetchCep } from "@/core/utils/findCep"
+import { formatCep } from "@/core/utils/format-cep"
 import { formatDocumentNumber } from "@/core/utils/formatDocumentNumber"
 import { useSeguradoraByIdQuery } from "@/modules/seguradoras-components/edit-seguradora/infra/hooks/use-seguradora-by-id-query"
 import { editSeguradora } from "@/modules/seguradoras-components/edit-seguradora/infra/remote"
@@ -38,7 +39,7 @@ export function EditSeguradoraForm({ id }: { id: string }) {
       razaoSocial: seguradora?.razaoSocial || "",
       cnpjFormatado: seguradora?.cnpjFormatado || "",
       codigoSusep: seguradora?.codigoSusep || "",
-      cep: seguradora?.cep || "",
+      cep: seguradora ? formatCep(seguradora.cep) : "",
       endereco: seguradora?.endereco || "",
       numero: seguradora?.numero || "",
       bairro: seguradora?.bairro || "",
@@ -122,10 +123,18 @@ export function EditSeguradoraForm({ id }: { id: string }) {
                   <MagnifyingGlass className="mr-2 h-5 w-5" />
                 </Input.Icon>
                 <Input.Control
-                  {...register("cep")}
+                  {...register("cep", {
+                    onChange: (e) => {
+                      const cleaned = e.target.value
+                        .replace(/\D/g, "")
+                        .slice(0, 8)
+                      e.target.value = formatCep(cleaned)
+                    },
+                  })}
                   type="text"
                   onBlur={(e) => {
-                    fetchCep(e.target.value, setValue)
+                    const cleanedCep = e.target.value.replace(/\D/g, "")
+                    fetchCep(cleanedCep, setValue)
                     setIsCepSearched(true)
                   }}
                 />

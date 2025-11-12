@@ -6,6 +6,7 @@ import * as Input from "@/core/components/Input"
 import { LoadingScreen } from "@/core/components/LoadingScreen"
 import { SelectInput } from "@/core/components/SelectInput"
 import { fetchCep } from "@/core/utils/findCep"
+import { formatCep } from "@/core/utils/format-cep"
 import { formatPhoneNumber } from "@/core/utils/formatPhoneNumber"
 import { useProdutorByIdQuery } from "@/modules/produtores-components/edit-produtor/infra/hooks/use-produtor-by-id-query"
 import { editProdutor } from "@/modules/produtores-components/edit-produtor/infra/remote"
@@ -49,7 +50,7 @@ export function EditProdutorForm({ id }: { id: string }) {
       telefoneFixo: produtor?.telefoneFixo || "",
       telefoneCelular: produtor?.telefoneCelular || "",
       email: produtor?.email || "",
-      cep: produtor?.cep || "",
+      cep: produtor ? formatCep(produtor.cep) : "",
       logradouro: produtor?.logradouro || "",
       numero: produtor?.numero || "",
       complemento: produtor?.complemento || "",
@@ -196,10 +197,18 @@ export function EditProdutorForm({ id }: { id: string }) {
                 <MagnifyingGlass className="mr-2 h-5 w-5" />
               </Input.Icon>
               <Input.Control
-                {...register("cep")}
+                {...register("cep", {
+                  onChange: (e) => {
+                    const cleaned = e.target.value
+                      .replace(/\D/g, "")
+                      .slice(0, 8)
+                    e.target.value = formatCep(cleaned)
+                  },
+                })}
                 type="text"
                 onBlur={(e) => {
-                  fetchCep(e.target.value, setValue)
+                  const cleanedCep = e.target.value.replace(/\D/g, "")
+                  fetchCep(cleanedCep, setValue)
                   setIsCepSearched(true)
                 }}
               />

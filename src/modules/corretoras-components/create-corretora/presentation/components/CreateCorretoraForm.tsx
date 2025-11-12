@@ -4,6 +4,7 @@ import { Corretora } from "@/@types/corretora"
 import { Button } from "@/core/components/Button"
 import * as Input from "@/core/components/Input"
 import { fetchCep } from "@/core/utils/findCep"
+import { formatCep } from "@/core/utils/format-cep"
 import { formatDocumentNumber } from "@/core/utils/formatDocumentNumber"
 import { formatPhoneNumber } from "@/core/utils/formatPhoneNumber"
 import { zodResolver } from "@hookform/resolvers/zod"
@@ -113,10 +114,18 @@ export function CreateCorretoraForm() {
                 <MagnifyingGlass className="mr-2 h-5 w-5" />
               </Input.Icon>
               <Input.Control
-                {...register("cepFormatado")}
+                {...register("cepFormatado", {
+                  onChange: (e) => {
+                    const cleaned = e.target.value
+                      .replace(/\D/g, "")
+                      .slice(0, 8)
+                    e.target.value = formatCep(cleaned)
+                  },
+                })}
                 type="text"
                 onBlur={(e) => {
-                  fetchCep(e.target.value, setValue)
+                  const cleanedCep = e.target.value.replace(/\D/g, "")
+                  fetchCep(cleanedCep, setValue)
                   setIsCepSearched(true)
                 }}
               />
