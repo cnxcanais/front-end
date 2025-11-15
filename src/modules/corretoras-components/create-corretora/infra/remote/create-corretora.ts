@@ -18,7 +18,7 @@ export async function createCorretora({
   telefone,
   telefoneSecundario,
   website,
-  percentualComissao,
+  percentualImposto,
   observacoes,
   consentimentoLgpd,
 }: Corretora.CreateRequest) {
@@ -42,7 +42,7 @@ export async function createCorretora({
       telefone,
       telefoneSecundario,
       website,
-      percentualComissao,
+      percentualImposto,
       observacoes,
       consentimentoLgpd,
     })
