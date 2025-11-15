@@ -3,11 +3,12 @@ import { z } from "zod"
 
 export const editCorretoraFormSchema = z.object({
   id: z.string(),
-  razaoSocial: z.string().nonempty({ message: "Obrigatório" }),
-  nomeFantasia: z.string().nonempty({ message: "Obrigatório" }),
+  razaoSocial: z.string().nonempty({ message: "Obrigatório" }).max(255),
+  nomeFantasia: z.string().nonempty({ message: "Obrigatório" }).max(255),
   cnpjCpfFormatado: z
     .string()
     .nonempty({ message: "Obrigatório" })
+    .max(18)
     .refine(
       (value) => {
         const cleanValue = value.replace(/\D/g, "")
@@ -21,17 +22,17 @@ export const editCorretoraFormSchema = z.object({
       },
       { message: "CPF/CNPJ inválido" }
     ),
-  codigoSusep: z.string().nonempty({ message: "Obrigatório" }),
-  cepFormatado: z.string().nonempty({ message: "Obrigatório" }),
-  endereco: z.string().nonempty({ message: "Obrigatório" }),
-  numero: z.string().nonempty({ message: "Obrigatório" }),
-  complemento: z.string().optional(),
-  bairro: z.string().nonempty({ message: "Obrigatório" }),
-  cidade: z.string().nonempty({ message: "Obrigatório" }),
-  uf: z.string().nonempty({ message: "Obrigatório" }),
-  email: z.string().email({ message: "Email inválido" }),
-  telefone: z.string().nonempty({ message: "Obrigatório" }),
-  telefoneSecundario: z.string().optional(),
+  codigoSusep: z.string().nonempty({ message: "Obrigatório" }).max(20),
+  cepFormatado: z.string().nonempty({ message: "Obrigatório" }).max(9),
+  endereco: z.string().nonempty({ message: "Obrigatório" }).max(255),
+  numero: z.string().nonempty({ message: "Obrigatório" }).max(10),
+  complemento: z.string().max(100).optional(),
+  bairro: z.string().nonempty({ message: "Obrigatório" }).max(100),
+  cidade: z.string().nonempty({ message: "Obrigatório" }).max(100),
+  uf: z.string().nonempty({ message: "Obrigatório" }).max(2),
+  email: z.string().email({ message: "Email inválido" }).max(255),
+  telefone: z.string().nonempty({ message: "Obrigatório" }).max(20),
+  telefoneSecundario: z.string().max(20).optional(),
   website: z
     .string()
     .url({ message: "Url inválida" })

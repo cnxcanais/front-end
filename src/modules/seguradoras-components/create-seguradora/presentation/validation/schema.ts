@@ -2,7 +2,7 @@ import { validateCNPJ, validateCPF } from "@/core/utils/validadeDocuments"
 import { z } from "zod"
 
 export const createSeguradoraFormSchema = z.object({
-  razaoSocial: z.string().nonempty({ message: "Obrigatório" }),
+  razaoSocial: z.string().nonempty({ message: "Obrigatório" }).max(200),
   cnpj: z
     .string()
     .nonempty({ message: "Obrigatório" })
@@ -21,13 +21,13 @@ export const createSeguradoraFormSchema = z.object({
       },
       { message: "CPF/CNPJ inválido" }
     ),
-  codigoSusep: z.string().nonempty({ message: "Obrigatório" }),
-  cep: z.string().nonempty({ message: "Obrigatório" }),
-  endereco: z.string().nonempty({ message: "Obrigatório" }),
-  numero: z.string().nonempty({ message: "Obrigatório" }),
-  bairro: z.string().nonempty({ message: "Obrigatório" }),
-  cidade: z.string().nonempty({ message: "Obrigatório" }),
-  uf: z.string().nonempty({ message: "Obrigatório" }),
+  codigoSusep: z.string().nonempty({ message: "Obrigatório" }).max(50),
+  cep: z.string().nonempty({ message: "Obrigatório" }).max(9),
+  endereco: z.string().nonempty({ message: "Obrigatório" }).max(200),
+  numero: z.string().nonempty({ message: "Obrigatório" }).max(10),
+  bairro: z.string().nonempty({ message: "Obrigatório" }).max(100),
+  cidade: z.string().nonempty({ message: "Obrigatório" }).max(100),
+  uf: z.string().nonempty({ message: "Obrigatório" }).max(2),
 })
 
 export type CreateSeguradoraSchema = z.infer<typeof createSeguradoraFormSchema>
