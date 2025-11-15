@@ -50,6 +50,7 @@ export const createCorretoraFormSchema = z.object({
   percentualComissao: z
     .string()
     .nonempty({ message: "Obrigatório" })
+    .transform((val) => val.replace(",", "."))
     .pipe(z.coerce.number().min(0).max(100)),
   observacoes: z.string().optional(),
   consentimentoLgpd: z.boolean(),

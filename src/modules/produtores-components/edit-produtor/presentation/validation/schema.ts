@@ -24,9 +24,18 @@ export const editProdutorFormSchema = z.object({
   pix: z.string().optional(),
   tipoRepasse: z.string().optional(),
   formaRepasse: z.string().optional(),
-  percentualImposto: z.coerce.number().min(0).max(100).optional(),
-  primeiraRepasse: z.coerce.number().min(0).max(100).optional(),
-  demaisRepasse: z.coerce.number().min(0).max(100).optional(),
+  percentualImposto: z
+    .string()
+    .transform((val) => val.replace(",", "."))
+    .pipe(z.coerce.number().min(0).max(100).optional()),
+  primeiraRepasse: z
+    .string()
+    .transform((val) => val.replace(",", "."))
+    .pipe(z.coerce.number().min(0).max(100).optional()),
+  demaisRepasse: z
+    .string()
+    .transform((val) => val.replace(",", "."))
+    .pipe(z.coerce.number().min(0).max(100).optional()),
   grupos: z.string().optional(),
   grupoProdutor: z.string().optional(),
   liderGrupoId: z.string().optional(),

@@ -32,8 +32,16 @@ export const editCorretoraFormSchema = z.object({
   email: z.string().email({ message: "Email inválido" }),
   telefone: z.string().nonempty({ message: "Obrigatório" }),
   telefoneSecundario: z.string().optional(),
-  website: z.string().url({ message: "URL inválida" }).optional().or(z.literal("")),
-  percentualComissao: z.coerce.number().min(0).max(100),
+  website: z
+    .string()
+    .url({ message: "URL inválida" })
+    .optional()
+    .or(z.literal("")),
+  percentualComissao: z
+    .string()
+    .nonempty({ message: "Obrigatório" })
+    .transform((val) => val.replace(",", "."))
+    .pipe(z.coerce.number().min(0).max(100)),
   observacoes: z.string().optional(),
   consentimentoLgpd: z.boolean(),
 })

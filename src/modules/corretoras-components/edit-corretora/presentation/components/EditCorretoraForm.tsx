@@ -52,7 +52,7 @@ export function EditCorretoraForm({ id }: { id: string }) {
       telefone: corretora?.telefone || "",
       telefoneSecundario: corretora?.telefoneSecundario || "",
       website: corretora?.website || "",
-      percentualComissao: corretora?.percentualComissao || 0,
+      percentualComissao: corretora?.percentualComissao,
       observacoes: corretora?.observacoes || "",
       consentimentoLgpd: corretora?.consentimentoLgpd || false,
     },
