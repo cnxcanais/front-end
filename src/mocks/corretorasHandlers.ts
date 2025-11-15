@@ -25,7 +25,7 @@ const mockCorretoras: Corretora.GetResponse = {
       telefone: "(11) 1234-5678",
       telefoneSecundario: "(11) 1234-5679",
       website: "https://www.corretoraxyz.com.br",
-      percentualComissao: 10.5,
+      percentualImposto: 10.5,
       observacoes: "Corretora especializada em seguros de vida",
       consentimentoLgpd: true,
       dataConsentimentoLgpd: "2024-01-15T10:30:00.000Z",
