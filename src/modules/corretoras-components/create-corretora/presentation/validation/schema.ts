@@ -34,7 +34,18 @@ export const createCorretoraFormSchema = z.object({
   website: z
     .string()
     .url({ message: "Url inválida" })
-    .optional()
+    .refine(
+      (val) => {
+        if (val === "") return true
+        try {
+          const url = new URL(val)
+          return /\.[a-z]{2,}$/i.test(url.hostname)
+        } catch {
+          return false
+        }
+      },
+      { message: "Url inválida" }
+    )
     .or(z.literal("")),
   percentualComissao: z
     .string()
