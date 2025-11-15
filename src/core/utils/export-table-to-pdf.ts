@@ -99,7 +99,7 @@ export function exportTableToPDF(
   })
 
   const addLogo = () => {
-    const logoUrl = "/images/new-logo-black.png"
+    const logoUrl = "/images/cnx-logo.png"
 
     try {
       // Calculate position for upper right corner

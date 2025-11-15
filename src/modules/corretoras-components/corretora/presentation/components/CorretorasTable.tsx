@@ -1,13 +1,15 @@
 "use client"
 
 import { Button } from "@/core/components/Button"
+import { ExportTableToPDFButton } from "@/core/components/ExportPDFButton"
 import { LoadingScreen } from "@/core/components/LoadingScreen"
 import { Modal } from "@/core/components/Modals/Modal"
 import { SearchInput } from "@/core/components/SearchInput"
 import { Table } from "@/core/components/Table"
+import { exportNoPagination } from "@/core/utils/exportToExcel/exportNoPagination"
 import { useCorretoraQuery } from "@/modules/corretoras-components/corretora/infra/hooks/use-corretora-query"
 import { removeCorretora } from "@/modules/corretoras-components/corretora/infra/remote"
-import { Pencil, Trash } from "@phosphor-icons/react"
+import { FileXls, Pencil, Trash } from "@phosphor-icons/react"
 import { useRouter } from "next/navigation"
 import { useEffect, useState } from "react"
 import { toast } from "sonner"
@@ -102,6 +104,24 @@ export function CorretorasTable() {
             Cadastrar
           </Button>
         </div>
+        {corretoras.length > 0 && (
+          <div className="flex items-center gap-2">
+            <ExportTableToPDFButton
+              filename="meu-relatorio"
+              options={{ orientation: "portrait" }}
+              title="Fornecedores"
+              className="bg-red-500">
+              Exportar PDF
+            </ExportTableToPDFButton>
+            <Button
+              className="flex items-center gap-1"
+              variant="secondary"
+              onClick={exportNoPagination}>
+              <FileXls size={22} />
+              Exportar
+            </Button>
+          </div>
+        )}
       </div>
 
       {corretoras.length == 0 ?

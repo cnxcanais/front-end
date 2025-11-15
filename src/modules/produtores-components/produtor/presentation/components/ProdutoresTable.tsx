@@ -1,11 +1,13 @@
 "use client"
 
 import { Button } from "@/core/components/Button"
+import { ExportTableToPDFButton } from "@/core/components/ExportPDFButton"
 import { LoadingScreen } from "@/core/components/LoadingScreen"
 import { SearchInput } from "@/core/components/SearchInput"
 import { Table } from "@/core/components/Table"
+import { exportNoPagination } from "@/core/utils/exportToExcel/exportNoPagination"
 import { useProdutorQuery } from "@/modules/produtores-components/produtor/infra/hooks/use-produtor-query"
-import { Pencil, Trash } from "@phosphor-icons/react"
+import { FileXls, Pencil, Trash } from "@phosphor-icons/react"
 import { useRouter } from "next/navigation"
 import { useEffect, useState } from "react"
 
@@ -67,6 +69,24 @@ export function ProdutoresTable() {
             Cadastrar
           </Button>
         </div>
+        {produtores.length > 0 && (
+          <div className="flex items-center gap-2">
+            <ExportTableToPDFButton
+              filename="meu-relatorio"
+              options={{ orientation: "portrait" }}
+              title="Fornecedores"
+              className="bg-red-500">
+              Exportar PDF
+            </ExportTableToPDFButton>
+            <Button
+              className="flex items-center gap-1"
+              variant="secondary"
+              onClick={exportNoPagination}>
+              <FileXls size={22} />
+              Exportar
+            </Button>
+          </div>
+        )}
       </div>
 
       {produtores.length == 0 ?
