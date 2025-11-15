@@ -19,7 +19,7 @@ export namespace Corretora {
     telefone: string
     telefoneSecundario: string
     website: string
-    percentualComissao: number
+    percentualImposto: number
     observacoes: string
     consentimentoLgpd: boolean
     dataConsentimentoLgpd: string
@@ -54,7 +54,7 @@ export namespace Corretora {
     telefone: string
     telefoneSecundario: string
     website: string
-    percentualComissao: number
+    percentualImposto: number
     observacoes: string
     consentimentoLgpd: boolean
   }
@@ -75,7 +75,7 @@ export namespace Corretora {
     telefone: string
     telefoneSecundario: string
     website: string
-    percentualComissao: number
+    percentualImposto: number
     observacoes: string
     consentimentoLgpd: boolean
   }

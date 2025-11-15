@@ -18,7 +18,7 @@ export async function editCorretora({
   telefone,
   telefoneSecundario,
   website,
-  percentualComissao,
+  percentualImposto,
   observacoes,
   consentimentoLgpd,
 }: Corretora.UpdateRequest) {
@@ -40,7 +40,7 @@ export async function editCorretora({
       telefone,
       telefoneSecundario,
       website,
-      percentualComissao,
+      percentualImposto,
       observacoes,
       consentimentoLgpd,
     })

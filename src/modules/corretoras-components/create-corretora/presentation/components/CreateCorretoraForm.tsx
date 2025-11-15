@@ -35,7 +35,7 @@ export function CreateCorretoraForm() {
 
   async function onSubmit(data: Corretora.CreateRequest) {
     try {
-      const response = await createCorretora(data)
+      await createCorretora(data)
       toast.success("Corretora criada com sucesso!")
       setTimeout(() => push("/corretoras"), 2000)
     } catch (error) {
@@ -283,11 +283,11 @@ export function CreateCorretoraForm() {
           </div>
 
           <div className="flex max-w-[200px] flex-1 flex-col gap-2">
-            <label htmlFor="percentualComissao">% Comissão</label>
+            <label htmlFor="percentualImposto">% Imposto</label>
             <Input.Root
-              variant={errors.percentualComissao ? "error" : "primary"}>
+              variant={errors.percentualImposto ? "error" : "primary"}>
               <Input.Control
-                {...register("percentualComissao")}
+                {...register("percentualImposto")}
                 type="text"
                 inputMode="decimal"
                 onChange={(e) => {
@@ -295,9 +295,9 @@ export function CreateCorretoraForm() {
                 }}
               />
             </Input.Root>
-            {errors.percentualComissao && (
+            {errors.percentualImposto && (
               <span className="text-xs text-red-500">
-                {errors.percentualComissao.message}
+                {errors.percentualImposto.message}
               </span>
             )}
           </div>

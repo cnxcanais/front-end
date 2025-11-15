@@ -52,7 +52,7 @@ export function EditCorretoraForm({ id }: { id: string }) {
       telefone: corretora?.telefone || "",
       telefoneSecundario: corretora?.telefoneSecundario || "",
       website: corretora?.website || "",
-      percentualComissao: corretora?.percentualComissao,
+      percentualImposto: corretora?.percentualImposto,
       observacoes: corretora?.observacoes || "",
       consentimentoLgpd: corretora?.consentimentoLgpd || false,
     },
@@ -312,11 +312,11 @@ export function EditCorretoraForm({ id }: { id: string }) {
           </div>
 
           <div className="flex max-w-[200px] flex-1 flex-col gap-2">
-            <label htmlFor="percentualComissao">% Comissão</label>
+            <label htmlFor="percentualImposto">% Imposto</label>
             <Input.Root
-              variant={errors.percentualComissao ? "error" : "primary"}>
+              variant={errors.percentualImposto ? "error" : "primary"}>
               <Input.Control
-                {...register("percentualComissao")}
+                {...register("percentualImposto")}
                 type="text"
                 inputMode="decimal"
                 onChange={(e) => {
@@ -324,9 +324,9 @@ export function EditCorretoraForm({ id }: { id: string }) {
                 }}
               />
             </Input.Root>
-            {errors.percentualComissao && (
+            {errors.percentualImposto && (
               <span className="text-xs text-red-500">
-                {errors.percentualComissao.message}
+                {errors.percentualImposto.message}
               </span>
             )}
           </div>

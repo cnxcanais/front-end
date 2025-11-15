@@ -48,7 +48,7 @@ export const createCorretoraFormSchema = z.object({
       { message: "Url inválida" }
     )
     .or(z.literal("")),
-  percentualComissao: z
+  percentualImposto: z
     .string()
     .nonempty({ message: "Obrigatório" })
     .transform((val) => val.replace(",", "."))
