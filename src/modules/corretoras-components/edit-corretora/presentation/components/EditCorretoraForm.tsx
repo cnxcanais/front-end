@@ -8,6 +8,7 @@ import { fetchCep } from "@/core/utils/findCep"
 import { formatCep } from "@/core/utils/format-cep"
 import { formatDocumentNumber } from "@/core/utils/formatDocumentNumber"
 import { formatPhoneNumber } from "@/core/utils/formatPhoneNumber"
+import { normalizeDecimals } from "@/core/utils/normalizeDecimals"
 import { useCorretoraByIdQuery } from "@/modules/corretoras-components/edit-corretora/infra/hooks/use-corretora-by-id-query"
 import { editCorretora } from "@/modules/corretoras-components/edit-corretora/infra/remote"
 import { zodResolver } from "@hookform/resolvers/zod"
@@ -316,8 +317,11 @@ export function EditCorretoraForm({ id }: { id: string }) {
               variant={errors.percentualComissao ? "error" : "primary"}>
               <Input.Control
                 {...register("percentualComissao")}
-                type="number"
-                step="0.01"
+                type="text"
+                inputMode="decimal"
+                onChange={(e) => {
+                  normalizeDecimals(e.target, 2)
+                }}
               />
             </Input.Root>
             {errors.percentualComissao && (

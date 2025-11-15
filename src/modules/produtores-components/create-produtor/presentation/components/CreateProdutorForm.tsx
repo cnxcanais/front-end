@@ -8,6 +8,7 @@ import { fetchCep } from "@/core/utils/findCep"
 import { formatCep } from "@/core/utils/format-cep"
 import { formatDocumentNumber } from "@/core/utils/formatDocumentNumber"
 import { formatPhoneNumber } from "@/core/utils/formatPhoneNumber"
+import { normalizeDecimals } from "@/core/utils/normalizeDecimals"
 import { useCorretoraQuery } from "@/modules/corretoras-components/corretora/infra/hooks/use-corretora-query"
 import {
   FormaRepasseLabels,
@@ -409,8 +410,11 @@ export function CreateProdutorForm() {
             <Input.Root variant="primary">
               <Input.Control
                 {...register("percentualImposto")}
-                type="number"
-                step="0.01"
+                type="text"
+                inputMode="decimal"
+                onChange={(e) => {
+                  normalizeDecimals(e.target, 2)
+                }}
               />
             </Input.Root>
           </div>
@@ -420,8 +424,11 @@ export function CreateProdutorForm() {
             <Input.Root variant="primary">
               <Input.Control
                 {...register("primeiraRepasse")}
-                type="number"
-                step="0.01"
+                type="text"
+                inputMode="decimal"
+                onChange={(e) => {
+                  normalizeDecimals(e.target, 2)
+                }}
               />
             </Input.Root>
           </div>
@@ -431,8 +438,11 @@ export function CreateProdutorForm() {
             <Input.Root variant="primary">
               <Input.Control
                 {...register("demaisRepasse")}
-                type="number"
-                step="0.01"
+                type="text"
+                inputMode="decimal"
+                onChange={(e) => {
+                  normalizeDecimals(e.target, 2)
+                }}
               />
             </Input.Root>
           </div>

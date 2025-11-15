@@ -8,6 +8,7 @@ import { SelectInput } from "@/core/components/SelectInput"
 import { fetchCep } from "@/core/utils/findCep"
 import { formatCep } from "@/core/utils/format-cep"
 import { formatPhoneNumber } from "@/core/utils/formatPhoneNumber"
+import { normalizeDecimals } from "@/core/utils/normalizeDecimals"
 import { useProdutorByIdQuery } from "@/modules/produtores-components/edit-produtor/infra/hooks/use-produtor-by-id-query"
 import { editProdutor } from "@/modules/produtores-components/edit-produtor/infra/remote"
 import {
@@ -367,8 +368,11 @@ export function EditProdutorForm({ id }: { id: string }) {
             <Input.Root variant="primary">
               <Input.Control
                 {...register("percentualImposto")}
-                type="number"
-                step="0.01"
+                type="text"
+                inputMode="decimal"
+                onChange={(e) => {
+                  normalizeDecimals(e.target, 2)
+                }}
               />
             </Input.Root>
           </div>
@@ -378,8 +382,11 @@ export function EditProdutorForm({ id }: { id: string }) {
             <Input.Root variant="primary">
               <Input.Control
                 {...register("primeiraRepasse")}
-                type="number"
-                step="0.01"
+                type="text"
+                inputMode="decimal"
+                onChange={(e) => {
+                  normalizeDecimals(e.target, 2)
+                }}
               />
             </Input.Root>
           </div>
@@ -389,8 +396,11 @@ export function EditProdutorForm({ id }: { id: string }) {
             <Input.Root variant="primary">
               <Input.Control
                 {...register("demaisRepasse")}
-                type="number"
-                step="0.01"
+                type="text"
+                inputMode="decimal"
+                onChange={(e) => {
+                  normalizeDecimals(e.target, 2)
+                }}
               />
             </Input.Root>
           </div>

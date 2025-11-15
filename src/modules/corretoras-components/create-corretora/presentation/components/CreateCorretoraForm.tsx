@@ -7,6 +7,7 @@ import { fetchCep } from "@/core/utils/findCep"
 import { formatCep } from "@/core/utils/format-cep"
 import { formatDocumentNumber } from "@/core/utils/formatDocumentNumber"
 import { formatPhoneNumber } from "@/core/utils/formatPhoneNumber"
+import { normalizeDecimals } from "@/core/utils/normalizeDecimals"
 import { zodResolver } from "@hookform/resolvers/zod"
 import { MagnifyingGlass } from "@phosphor-icons/react"
 import { useRouter } from "next/navigation"
@@ -287,8 +288,11 @@ export function CreateCorretoraForm() {
               variant={errors.percentualComissao ? "error" : "primary"}>
               <Input.Control
                 {...register("percentualComissao")}
-                type="number"
-                step="0.01"
+                type="text"
+                inputMode="decimal"
+                onChange={(e) => {
+                  normalizeDecimals(e.target, 2)
+                }}
               />
             </Input.Root>
             {errors.percentualComissao && (
