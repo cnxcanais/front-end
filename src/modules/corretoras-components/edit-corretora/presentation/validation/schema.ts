@@ -34,8 +34,19 @@ export const editCorretoraFormSchema = z.object({
   telefoneSecundario: z.string().optional(),
   website: z
     .string()
-    .url({ message: "URL inválida" })
-    .optional()
+    .url({ message: "Url inválida" })
+    .refine(
+      (val) => {
+        if (val === "") return true
+        try {
+          const url = new URL(val)
+          return /\.[a-z]{2,}$/i.test(url.hostname)
+        } catch {
+          return false
+        }
+      },
+      { message: "Url inválida" }
+    )
     .or(z.literal("")),
   percentualComissao: z
     .string()
