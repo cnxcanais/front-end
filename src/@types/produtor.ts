@@ -36,6 +36,7 @@ export namespace Produtor {
     lgpdConsentimentoData: string
     createdAt: string
     updatedAt: string
+    digito: string
   }
 
   export type GetResponse = {
