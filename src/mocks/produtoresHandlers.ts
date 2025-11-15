@@ -41,6 +41,7 @@ const mockProdutores: Produtor.GetResponse = {
       lgpdConsentimentoData: "2025-11-05T00:00:00.000Z",
       createdAt: "2025-11-05T00:00:00.000Z",
       updatedAt: "2025-11-05T00:00:00.000Z",
+      digito: "7",
     },
   ],
   total: 1,
