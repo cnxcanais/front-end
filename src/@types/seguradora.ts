@@ -5,6 +5,20 @@ export namespace Seguradora {
     cnpj: string
     cnpjFormatado: string
     codigoSusep: string
+    fantasia: string
+    grupo: string
+    impostoRetido: number
+    habilitarJuros: boolean
+    calculoDesconto: string
+    calculoDescontoPadrao: string
+    diretor: string
+    gerente: string
+    website: string
+    email: string
+    telefone: string
+    telefoneSecundario: string
+    telefoneAssistencia24h: string
+    observacoes: string
     cep: string
     cepFormatado: string
     endereco: string
@@ -31,6 +45,20 @@ export namespace Seguradora {
     razaoSocial: string
     cnpj: string
     codigoSusep: string
+    fantasia: string
+    grupo: string
+    impostoRetido: number
+    habilitarJuros: boolean
+    calculoDesconto: string
+    calculoDescontoPadrao: string
+    diretor: string
+    gerente: string
+    website: string
+    email: string
+    telefone: string
+    telefoneSecundario: string
+    telefoneAssistencia24h: string
+    observacoes: string
     cep: string
     endereco: string
     numero: string
@@ -42,7 +70,22 @@ export namespace Seguradora {
   export type UpdateRequest = {
     id: string
     razaoSocial: string
+    cnpj: string
     codigoSusep: string
+    fantasia: string
+    grupo: string
+    impostoRetido: number
+    habilitarJuros: boolean
+    calculoDesconto: string
+    calculoDescontoPadrao: string
+    diretor: string
+    gerente: string
+    website: string
+    email: string
+    telefone: string
+    telefoneSecundario: string
+    telefoneAssistencia24h: string
+    observacoes: string
     cep: string
     endereco: string
     numero: string

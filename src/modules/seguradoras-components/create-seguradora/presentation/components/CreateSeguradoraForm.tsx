@@ -6,6 +6,7 @@ import * as Input from "@/core/components/Input"
 import { fetchCep } from "@/core/utils/findCep"
 import { formatCep } from "@/core/utils/format-cep"
 import { formatDocumentNumber } from "@/core/utils/formatDocumentNumber"
+import { normalizeDecimals } from "@/core/utils/normalizeDecimals"
 import { zodResolver } from "@hookform/resolvers/zod"
 import { MagnifyingGlass } from "@phosphor-icons/react"
 import { useRouter } from "next/navigation"
@@ -32,10 +33,9 @@ export function CreateSeguradoraForm() {
     resolver: zodResolver(createSeguradoraFormSchema),
   })
 
-  async function onSubmit(data: Seguradora.CreateRequest) {
-    console.log(data)
+  async function onSubmit(data: any) {
     try {
-      const response = await createSeguradora(data)
+      const response = await createSeguradora(data as Seguradora.CreateRequest)
       toast.success(response)
       setTimeout(() => push("/seguradoras"), 2000)
     } catch (error) {
@@ -47,7 +47,9 @@ export function CreateSeguradoraForm() {
     <form
       className="mt-6 flex max-w-[1000px] flex-col gap-4"
       onSubmit={handleSubmit(onSubmit)}>
+      {/* Contato */}
       <div className="flex flex-col gap-4">
+        <h3 className="text-lg font-semibold">Contato</h3>
         <div className="flex gap-4">
           <div className="flex flex-1 flex-col gap-2">
             <label htmlFor="razaoSocial">Nome</label>
@@ -84,7 +86,7 @@ export function CreateSeguradoraForm() {
 
         <div className="flex gap-4">
           <div className="flex flex-1 flex-col gap-2">
-            <label htmlFor="address_1">Susep</label>
+            <label htmlFor="codigoSusep">Susep</label>
             <Input.Root variant={errors.codigoSusep ? "error" : "primary"}>
               <Input.Control {...register("codigoSusep")} type="text" />
             </Input.Root>
@@ -94,8 +96,86 @@ export function CreateSeguradoraForm() {
               </span>
             )}
           </div>
+
+          <div className="flex flex-1 flex-col gap-2">
+            <label htmlFor="fantasia">Fantasia</label>
+            <Input.Root variant="primary">
+              <Input.Control {...register("fantasia")} type="text" />
+            </Input.Root>
+          </div>
+
+          <div className="flex flex-1 flex-col gap-2">
+            <label htmlFor="grupo">Grupo</label>
+            <Input.Root variant="primary">
+              <Input.Control {...register("grupo")} type="text" />
+            </Input.Root>
+          </div>
         </div>
 
+        <div className="flex gap-4">
+          <div className="flex flex-1 flex-col gap-2">
+            <label htmlFor="diretor">Diretor</label>
+            <Input.Root variant="primary">
+              <Input.Control {...register("diretor")} type="text" />
+            </Input.Root>
+          </div>
+
+          <div className="flex flex-1 flex-col gap-2">
+            <label htmlFor="gerente">Gerente</label>
+            <Input.Root variant="primary">
+              <Input.Control {...register("gerente")} type="text" />
+            </Input.Root>
+          </div>
+        </div>
+
+        <div className="flex gap-4">
+          <div className="flex flex-1 flex-col gap-2">
+            <label htmlFor="email">Email</label>
+            <Input.Root variant="primary">
+              <Input.Control {...register("email")} type="email" />
+            </Input.Root>
+          </div>
+
+          <div className="flex flex-1 flex-col gap-2">
+            <label htmlFor="telefone">Telefone</label>
+            <Input.Root variant="primary">
+              <Input.Control {...register("telefone")} type="text" />
+            </Input.Root>
+          </div>
+
+          <div className="flex flex-1 flex-col gap-2">
+            <label htmlFor="telefoneSecundario">Telefone Secundário</label>
+            <Input.Root variant="primary">
+              <Input.Control {...register("telefoneSecundario")} type="text" />
+            </Input.Root>
+          </div>
+        </div>
+
+        <div className="flex gap-4">
+          <div className="flex flex-1 flex-col gap-2">
+            <label htmlFor="telefoneAssistencia24h">
+              Telefone Assistência 24h
+            </label>
+            <Input.Root variant="primary">
+              <Input.Control
+                {...register("telefoneAssistencia24h")}
+                type="text"
+              />
+            </Input.Root>
+          </div>
+
+          <div className="flex flex-1 flex-col gap-2">
+            <label htmlFor="website">Website</label>
+            <Input.Root variant="primary">
+              <Input.Control {...register("website")} type="text" />
+            </Input.Root>
+          </div>
+        </div>
+      </div>
+
+      {/* Endreço */}
+      <div className="flex flex-col gap-4">
+        <h3 className="text-lg font-semibold">Endereço</h3>
         <div className="flex flex-col gap-4">
           <div className="flex gap-4">
             <div className="flex flex-col gap-2">
@@ -176,7 +256,7 @@ export function CreateSeguradoraForm() {
                 <Input.Control
                   disabled={!isCepSearched}
                   {...register("numero")}
-                  type="number"
+                  type="text"
                 />
               </Input.Root>
               {errors.numero && (
@@ -202,6 +282,71 @@ export function CreateSeguradoraForm() {
               )}
             </div>
           </div>
+        </div>
+      </div>
+
+      {/* Impostos */}
+      <div className="flex flex-col gap-4">
+        <h3 className="text-lg font-semibold">Impostos</h3>
+        <div className="flex gap-4">
+          <div className="flex flex-col gap-2">
+            <label htmlFor="impostoRetido">Imposto Retido (%)</label>
+            <Input.Root variant="primary">
+              <Input.Control
+                {...register("impostoRetido")}
+                type="text"
+                inputMode="decimal"
+                onChange={(e) => {
+                  normalizeDecimals(e.target, 2)
+                }}
+              />
+            </Input.Root>
+          </div>
+
+          <div className="flex flex-col gap-2">
+            <label htmlFor="calculoDesconto">Cálculo Desconto</label>
+            <Input.Root variant="primary">
+              <Input.Control
+                {...register("calculoDesconto")}
+                type="text"
+                inputMode="decimal"
+                onChange={(e) => {
+                  normalizeDecimals(e.target, 2)
+                }}
+              />
+            </Input.Root>
+          </div>
+
+          <div className="flex items-center gap-2">
+            <input
+              {...register("habilitarJuros")}
+              type="checkbox"
+              id="habilitarJuros"
+            />
+            <label htmlFor="habilitarJuros">Habilitar Juros</label>
+          </div>
+
+          <div className="flex items-center gap-2">
+            <input
+              {...register("calculoDescontoPadrao")}
+              type="checkbox"
+              id="calculoDescontoPadrao"
+            />
+            <label htmlFor="calculoDescontoPadrao">
+              Cálculo Desconto Padrão
+            </label>
+          </div>
+        </div>
+      </div>
+
+      {/* Outros */}
+      <div className="flex flex-col gap-4">
+        <h3 className="text-lg font-semibold">Outros</h3>
+        <div className="flex flex-col gap-2">
+          <label htmlFor="observacoes">Observações</label>
+          <Input.Root variant="primary">
+            <Input.Control {...register("observacoes")} type="text" />
+          </Input.Root>
         </div>
       </div>
 
