@@ -19,17 +19,15 @@ export const createProdutorFormSchema = z.object({
       { message: "CPF/CNPJ inválido" }
     ),
   homePage: z.string().max(255).optional(),
-  telefoneComercial: z.string().max(11).optional(),
+  telefoneComercial: z.string().optional(),
   contaContabil: z.string().max(50).optional(),
   repasseSobre: z.string().max(50).optional(),
   excluirRepasse: z.boolean(),
   corretoraId: z.string().nonempty({ message: "Obrigatório" }),
-  inscricaoEstadual: z.string().max(50).optional(),
-  inscricaoMunicipal: z.string().max(50).optional(),
-  telefoneFixo: z.string().max(11).optional(),
-  telefoneCelular: z.string().nonempty({ message: "Obrigatório" }).max(11),
+  telefoneFixo: z.string().optional(),
+  telefoneCelular: z.string().nonempty({ message: "Obrigatório" }),
   email: z.string().email({ message: "Email inválido" }).max(255),
-  cep: z.string().nonempty({ message: "Obrigatório" }).max(8),
+  cep: z.string().nonempty({ message: "Obrigatório" }),
   logradouro: z.string().nonempty({ message: "Obrigatório" }).max(255),
   numero: z.string().nonempty({ message: "Obrigatório" }).max(10),
   complemento: z.string().max(100).optional(),
@@ -52,13 +50,7 @@ export const createProdutorFormSchema = z.object({
     .string()
     .transform((val) => val.replace(",", "."))
     .pipe(z.coerce.number().min(0).max(100).optional()),
-  demaisRepasse: z
-    .string()
-    .transform((val) => val.replace(",", "."))
-    .pipe(z.coerce.number().min(0).max(100).optional()),
   grupos: z.string().max(255).optional(),
-  grupoProdutor: z.string().max(50).optional(),
-  liderGrupoId: z.string().optional(),
   lgpdConsentimento: z.boolean(),
   observacoes: z.string().optional(),
 })

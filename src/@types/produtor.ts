@@ -11,8 +11,6 @@ export namespace Produtor {
     repasseSobre: string
     excluirRepasse: boolean
     corretoraId: string
-    inscricaoEstadual: string
-    inscricaoMunicipal: string
     telefoneFixo: string
     telefoneCelular: string
     email: string
@@ -33,10 +31,7 @@ export namespace Produtor {
     formaRepasse: string
     percentualImposto: number
     primeiraRepasse: number
-    demaisRepasse: number
     grupos: string
-    grupoProdutor: string
-    liderGrupoId: string
     lgpdConsentimento: boolean
     lgpdConsentimentoData: string
     createdAt: string
@@ -56,5 +51,5 @@ export namespace Produtor {
 
   export type CreateRequest = Omit<Type, "id" | "createdAt" | "updatedAt">
 
-  export type UpdateRequest = Omit<Type, "createdAt" | "updatedAt">
+  export type UpdateRequest = Omit<Type, "id" | "createdAt" | "updatedAt">
 }

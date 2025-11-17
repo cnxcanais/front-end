@@ -1,6 +1,7 @@
 "use client"
 
 import { Produtor } from "@/@types/produtor"
+import { AutocompleteInput } from "@/core/components/AutocompleteInput"
 import { Button } from "@/core/components/Button"
 import * as Input from "@/core/components/Input"
 import { SelectInput } from "@/core/components/SelectInput"
@@ -13,7 +14,6 @@ import { useCorretoraQuery } from "@/modules/corretoras-components/corretora/inf
 import { useBancosQuery } from "@/modules/produtores-components/produtor/infra/hooks/use-banco-query"
 import {
   FormaRepasseLabels,
-  GrupoProdutorLabels,
   StatusProdutorLabels,
   TipoContaLabels,
   TipoPessoaLabels,
@@ -44,7 +44,7 @@ export function CreateProdutorForm() {
       .sort((a, b) => a.name.localeCompare(b.name))
       .map((banco) => ({
         text: `${banco.name} - ${banco.code}`,
-        value: banco.name,
+        value: banco.code,
       }))
   }, [bancosData])
 
@@ -72,8 +72,8 @@ export function CreateProdutorForm() {
 
   async function onSubmit(data: Produtor.CreateRequest) {
     try {
-      const response = await createProdutor(data)
-      toast.success(response)
+      await createProdutor(data)
+      toast.success("Produtor criado com sucesso!")
       setTimeout(() => push("/produtores"), 2000)
     } catch (error) {
       toast.error("Erro ao criar produtor: " + error)
@@ -151,22 +151,6 @@ export function CreateProdutorForm() {
                 {errors.corretoraId.message}
               </span>
             )}
-          </div>
-        </div>
-
-        <div className="flex gap-4">
-          <div className="flex flex-1 flex-col gap-2">
-            <label>Inscrição Estadual</label>
-            <Input.Root variant="primary">
-              <Input.Control {...register("inscricaoEstadual")} type="text" />
-            </Input.Root>
-          </div>
-
-          <div className="flex flex-1 flex-col gap-2">
-            <label>Inscrição Municipal</label>
-            <Input.Root variant="primary">
-              <Input.Control {...register("inscricaoMunicipal")} type="text" />
-            </Input.Root>
           </div>
         </div>
       </div>
@@ -375,7 +359,7 @@ export function CreateProdutorForm() {
         <h3 className="text-lg font-semibold">Dados Bancários</h3>
         <div className="flex gap-4">
           <div className="flex flex-1 flex-col gap-2">
-            <SelectInput
+            <AutocompleteInput
               options={bancosOptions}
               label="Banco"
               field_name="banco"
@@ -498,26 +482,19 @@ export function CreateProdutorForm() {
               />
             </Input.Root>
           </div>
-
-          <div className="flex flex-col gap-2">
-            <label>Demais Repasse (%)</label>
-            <Input.Root variant="primary">
-              <Input.Control
-                {...register("demaisRepasse")}
-                type="text"
-                inputMode="decimal"
-                onChange={(e) => {
-                  normalizeDecimals(e.target, 2)
-                }}
-              />
-            </Input.Root>
-          </div>
         </div>
       </div>
 
-      {/* Grupo */}
+      {/* Observações e LGPD */}
       <div className="flex flex-col gap-4 bg-gray-50 p-4 shadow-md">
-        <h3 className="text-lg font-semibold">Grupo</h3>
+        <h3 className="text-lg font-semibold">Outros</h3>
+        <div className="flex flex-col gap-2">
+          <label>Observações</label>
+          <Input.Root variant="primary">
+            <Input.Control {...register("observacoes")} type="text" />
+          </Input.Root>
+        </div>
+
         <div className="flex gap-4">
           <div className="flex flex-1 flex-col gap-2">
             <label>Grupos</label>
@@ -526,40 +503,14 @@ export function CreateProdutorForm() {
             </Input.Root>
           </div>
 
-          <div className="flex flex-col gap-2">
-            <SelectInput
-              options={GrupoProdutorLabels}
-              field_name="grupoProdutor"
-              {...register("grupoProdutor")}
-              label="Grupo Produtor"
+          <div className="flex items-center gap-2">
+            <input
+              {...register("lgpdConsentimento")}
+              type="checkbox"
+              id="lgpdConsentimento"
             />
+            <label htmlFor="lgpdConsentimento">Consentimento LGPD</label>
           </div>
-
-          <div className="flex flex-1 flex-col gap-2">
-            <label>Líder Grupo ID</label>
-            <Input.Root variant="primary">
-              <Input.Control {...register("liderGrupoId")} type="text" />
-            </Input.Root>
-          </div>
-        </div>
-      </div>
-
-      {/* Observações e LGPD */}
-      <div className="flex flex-col gap-4 bg-gray-50 p-4 shadow-md">
-        <div className="flex flex-col gap-2">
-          <label>Observações</label>
-          <Input.Root variant="primary">
-            <Input.Control {...register("observacoes")} type="text" />
-          </Input.Root>
-        </div>
-
-        <div className="flex items-center gap-2">
-          <input
-            {...register("lgpdConsentimento")}
-            type="checkbox"
-            id="lgpdConsentimento"
-          />
-          <label htmlFor="lgpdConsentimento">Consentimento LGPD</label>
         </div>
       </div>
 
