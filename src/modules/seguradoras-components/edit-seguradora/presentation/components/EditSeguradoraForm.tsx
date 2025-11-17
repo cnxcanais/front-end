@@ -43,7 +43,7 @@ export function EditSeguradoraForm({ id }: { id: string }) {
       codigoSusep: seguradora?.codigoSusep || "",
       fantasia: seguradora?.fantasia || "",
       grupo: seguradora?.grupo || "",
-      impostoRetido: seguradora?.impostoRetido || 0,
+      impostoRetido: seguradora?.impostoRetido,
       habilitarJuros: seguradora?.habilitarJuros || false,
       calculoDesconto: seguradora?.calculoDesconto || "",
       calculoDescontoPadrao: seguradora?.calculoDescontoPadrao || false,
@@ -375,6 +375,7 @@ export function EditSeguradoraForm({ id }: { id: string }) {
               {...register("habilitarJuros")}
               type="checkbox"
               id="habilitarJuros"
+              defaultChecked={seguradora.habilitarJuros}
             />
             <label htmlFor="habilitarJuros">Habilitar Juros</label>
           </div>
@@ -384,6 +385,7 @@ export function EditSeguradoraForm({ id }: { id: string }) {
               {...register("calculoDescontoPadrao")}
               type="checkbox"
               id="calculoDescontoPadrao"
+              defaultChecked={seguradora.calculoDescontoPadrao}
             />
             <label htmlFor="calculoDescontoPadrao">
               Cálculo Desconto Padrão

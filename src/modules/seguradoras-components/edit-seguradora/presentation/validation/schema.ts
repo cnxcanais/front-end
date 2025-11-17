@@ -46,7 +46,11 @@ export const editSeguradoraFormSchema = z.object({
   telefoneSecundario: z.string().max(20).or(z.literal("")),
   telefoneAssistencia24h: z.string().max(20).or(z.literal("")),
   observacoes: z.string().or(z.literal("")),
-  cep: z.string().nonempty({ message: "Obrigatório" }).max(9),
+  cep: z
+    .string()
+    .nonempty({ message: "Obrigatório" })
+    .transform((val) => val.replace(/\D/g, ""))
+    .pipe(z.string().max(9)),
   endereco: z.string().nonempty({ message: "Obrigatório" }).max(200),
   numero: z.string().nonempty({ message: "Obrigatório" }).max(10),
   bairro: z.string().nonempty({ message: "Obrigatório" }).max(100),
