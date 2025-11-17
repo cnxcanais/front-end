@@ -6,6 +6,10 @@ export namespace Corretora {
     cnpjCpf: string
     cnpjCpfFormatado: string
     codigoSusep: string
+    grupo: string
+    gerente: string
+    contato: string
+    celular: string
     cep: string
     cepFormatado: string
     endereco: string
@@ -43,6 +47,10 @@ export namespace Corretora {
     nomeFantasia: string
     cnpjCpfFormatado: string
     codigoSusep: string
+    grupo: string
+    gerente: string
+    contato: string
+    celular: string
     cepFormatado: string
     endereco: string
     numero: string
@@ -65,6 +73,10 @@ export namespace Corretora {
     nomeFantasia: string
     codigoSusep: string
     cepFormatado: string
+    grupo: string
+    gerente: string
+    contato: string
+    celular: string
     endereco: string
     numero: string
     complemento: string

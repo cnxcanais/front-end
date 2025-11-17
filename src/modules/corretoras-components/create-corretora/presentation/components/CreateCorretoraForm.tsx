@@ -47,7 +47,9 @@ export function CreateCorretoraForm() {
     <form
       className="mt-6 flex max-w-[1000px] flex-col gap-4"
       onSubmit={handleSubmit(onSubmit)}>
+      {/* Dados Cadastrais */}
       <div className="flex flex-col gap-4">
+        <h3 className="text-lg font-semibold">Dados Cadastrais</h3>
         <div className="flex gap-4">
           <div className="flex flex-1 flex-col gap-2">
             <label htmlFor="razaoSocial">Razão Social</label>
@@ -105,8 +107,24 @@ export function CreateCorretoraForm() {
               </span>
             )}
           </div>
-        </div>
 
+          <div className="flex flex-1 flex-col gap-2">
+            <label htmlFor="grupo">Grupo</label>
+            <Input.Root variant={errors.grupo ? "error" : "primary"}>
+              <Input.Control {...register("grupo")} type="text" />
+            </Input.Root>
+            {errors.grupo && (
+              <span className="text-xs text-red-500">
+                {errors.grupo.message}
+              </span>
+            )}
+          </div>
+        </div>
+      </div>
+
+      {/* Endereço */}
+      <div className="flex flex-col gap-4">
+        <h3 className="text-lg font-semibold">Endereço</h3>
         <div className="flex gap-4">
           <div className="flex flex-col gap-2">
             <label htmlFor="cepFormatado">CEP</label>
@@ -221,7 +239,10 @@ export function CreateCorretoraForm() {
             )}
           </div>
         </div>
-
+      </div>
+      {/* Contato */}
+      <div className="flex flex-col gap-4">
+        <h3 className="text-lg font-semibold">Contato</h3>
         <div className="flex gap-4">
           <div className="flex flex-1 flex-col gap-2">
             <label htmlFor="email">Email</label>
@@ -269,6 +290,54 @@ export function CreateCorretoraForm() {
           </div>
         </div>
 
+        <div className="flex gap-4">
+          <div className="flex flex-1 flex-col gap-2">
+            <label htmlFor="gerente">Gerente</label>
+            <Input.Root variant={errors.gerente ? "error" : "primary"}>
+              <Input.Control
+                {...register("gerente", {
+                  onChange: (e) => {
+                    e.target.value = formatDocumentNumber(e.target.value)
+                  },
+                })}
+                type="text"
+              />
+            </Input.Root>
+            {errors.gerente && (
+              <span className="text-xs text-red-500">
+                {errors.gerente.message}
+              </span>
+            )}
+          </div>
+
+          <div className="flex flex-1 flex-col gap-2">
+            <label htmlFor="contato">Contato</label>
+            <Input.Root variant={errors.contato ? "error" : "primary"}>
+              <Input.Control {...register("contato")} type="text" />
+            </Input.Root>
+            {errors.contato && (
+              <span className="text-xs text-red-500">
+                {errors.contato.message}
+              </span>
+            )}
+          </div>
+
+          <div className="flex flex-1 flex-col gap-2">
+            <label htmlFor="celular">Celular</label>
+            <Input.Root variant={errors.celular ? "error" : "primary"}>
+              <Input.Control {...register("celular")} type="text" />
+            </Input.Root>
+            {errors.celular && (
+              <span className="text-xs text-red-500">
+                {errors.celular.message}
+              </span>
+            )}
+          </div>
+        </div>
+      </div>
+      {/* Outros */}
+      <div className="flex flex-col gap-4">
+        <h3 className="text-lg font-semibold">Outros</h3>
         <div className="flex gap-4">
           <div className="flex flex-1 flex-col gap-2">
             <label htmlFor="website">Website</label>
