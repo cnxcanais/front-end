@@ -10,7 +10,7 @@ export namespace Seguradora {
     impostoRetido: number
     habilitarJuros: boolean
     calculoDesconto: string
-    calculoDescontoPadrao: string
+    calculoDescontoPadrao: boolean
     diretor: string
     gerente: string
     website: string

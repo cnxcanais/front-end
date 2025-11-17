@@ -1,5 +1,5 @@
 import { PageTitle } from "@/core/components/PageTitle"
-import { EditSeguradoraForm } from "@/modules/seguradoras-components/edit-seguradora/presentation/components/EditSupplierForm"
+import { EditSeguradoraForm } from "@/modules/seguradoras-components/edit-seguradora/presentation/components/EditSeguradoraForm"
 
 export default async function EditSeguradoraRender({
   params,

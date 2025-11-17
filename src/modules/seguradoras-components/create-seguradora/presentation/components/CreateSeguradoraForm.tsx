@@ -6,6 +6,7 @@ import * as Input from "@/core/components/Input"
 import { fetchCep } from "@/core/utils/findCep"
 import { formatCep } from "@/core/utils/format-cep"
 import { formatDocumentNumber } from "@/core/utils/formatDocumentNumber"
+import { formatPhoneNumber } from "@/core/utils/formatPhoneNumber"
 import { normalizeDecimals } from "@/core/utils/normalizeDecimals"
 import { zodResolver } from "@hookform/resolvers/zod"
 import { MagnifyingGlass } from "@phosphor-icons/react"
@@ -139,14 +140,29 @@ export function CreateSeguradoraForm() {
           <div className="flex flex-1 flex-col gap-2">
             <label htmlFor="telefone">Telefone</label>
             <Input.Root variant="primary">
-              <Input.Control {...register("telefone")} type="text" />
+              <Input.Control
+                {...register("telefone", {
+                  onChange: (e) => {
+                    e.target.value = formatPhoneNumber(e.target.value)
+                  },
+                })}
+                type="text"
+              />
             </Input.Root>
           </div>
 
           <div className="flex flex-1 flex-col gap-2">
             <label htmlFor="telefoneSecundario">Telefone Secundário</label>
             <Input.Root variant="primary">
-              <Input.Control {...register("telefoneSecundario")} type="text" />
+              <Input.Control
+                {...(register("telefoneSecundario"),
+                {
+                  onChange: (e) => {
+                    e.target.value = formatPhoneNumber(e.target.value)
+                  },
+                })}
+                type="text"
+              />
             </Input.Root>
           </div>
         </div>
@@ -158,7 +174,11 @@ export function CreateSeguradoraForm() {
             </label>
             <Input.Root variant="primary">
               <Input.Control
-                {...register("telefoneAssistencia24h")}
+                {...register("telefoneAssistencia24h", {
+                  onChange: (e) => {
+                    e.target.value = formatPhoneNumber(e.target.value)
+                  },
+                })}
                 type="text"
               />
             </Input.Root>

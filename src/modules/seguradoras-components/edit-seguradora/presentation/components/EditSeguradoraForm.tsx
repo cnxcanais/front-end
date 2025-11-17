@@ -7,6 +7,8 @@ import { LoadingScreen } from "@/core/components/LoadingScreen"
 import { fetchCep } from "@/core/utils/findCep"
 import { formatCep } from "@/core/utils/format-cep"
 import { formatDocumentNumber } from "@/core/utils/formatDocumentNumber"
+import { formatPhoneNumber } from "@/core/utils/formatPhoneNumber"
+import { normalizeDecimals } from "@/core/utils/normalizeDecimals"
 import { useSeguradoraByIdQuery } from "@/modules/seguradoras-components/edit-seguradora/infra/hooks/use-seguradora-by-id-query"
 import { editSeguradora } from "@/modules/seguradoras-components/edit-seguradora/infra/remote"
 import { zodResolver } from "@hookform/resolvers/zod"
@@ -39,6 +41,20 @@ export function EditSeguradoraForm({ id }: { id: string }) {
       razaoSocial: seguradora?.razaoSocial || "",
       cnpjFormatado: seguradora?.cnpjFormatado || "",
       codigoSusep: seguradora?.codigoSusep || "",
+      fantasia: seguradora?.fantasia || "",
+      grupo: seguradora?.grupo || "",
+      impostoRetido: seguradora?.impostoRetido || 0,
+      habilitarJuros: seguradora?.habilitarJuros || false,
+      calculoDesconto: seguradora?.calculoDesconto || "",
+      calculoDescontoPadrao: seguradora?.calculoDescontoPadrao || false,
+      diretor: seguradora?.diretor || "",
+      gerente: seguradora?.gerente || "",
+      website: seguradora?.website || "",
+      email: seguradora?.email || "",
+      telefone: seguradora?.telefone || "",
+      telefoneSecundario: seguradora?.telefoneSecundario || "",
+      telefoneAssistencia24h: seguradora?.telefoneAssistencia24h || "",
+      observacoes: seguradora?.observacoes || "",
       cep: seguradora ? formatCep(seguradora.cep) : "",
       endereco: seguradora?.endereco || "",
       numero: seguradora?.numero || "",
@@ -48,9 +64,9 @@ export function EditSeguradoraForm({ id }: { id: string }) {
     },
   })
 
-  async function onSubmit(data: Seguradora.UpdateRequest) {
+  async function onSubmit(data: any) {
     try {
-      await editSeguradora(data)
+      await editSeguradora(data as Seguradora.UpdateRequest)
       toast.success("Seguradora editada com sucesso!")
       setTimeout(() => push("/seguradoras"), 2000)
     } catch (error) {
@@ -64,7 +80,9 @@ export function EditSeguradoraForm({ id }: { id: string }) {
     <form
       className="mt-6 flex max-w-[1000px] flex-col gap-4"
       onSubmit={handleSubmit(onSubmit)}>
+      {/* Contato */}
       <div className="flex flex-col gap-4">
+        <h3 className="text-lg font-semibold">Contato</h3>
         <div className="flex gap-4">
           <div className="flex flex-1 flex-col gap-2">
             <label htmlFor="razaoSocial">Nome</label>
@@ -102,7 +120,7 @@ export function EditSeguradoraForm({ id }: { id: string }) {
 
         <div className="flex gap-4">
           <div className="flex flex-1 flex-col gap-2">
-            <label htmlFor="address_1">Susep</label>
+            <label htmlFor="codigoSusep">Susep</label>
             <Input.Root variant={errors.codigoSusep ? "error" : "primary"}>
               <Input.Control {...register("codigoSusep")} type="text" />
             </Input.Root>
@@ -112,8 +130,105 @@ export function EditSeguradoraForm({ id }: { id: string }) {
               </span>
             )}
           </div>
+
+          <div className="flex flex-1 flex-col gap-2">
+            <label htmlFor="fantasia">Fantasia</label>
+            <Input.Root variant="primary">
+              <Input.Control {...register("fantasia")} type="text" />
+            </Input.Root>
+          </div>
+
+          <div className="flex flex-1 flex-col gap-2">
+            <label htmlFor="grupo">Grupo</label>
+            <Input.Root variant="primary">
+              <Input.Control {...register("grupo")} type="text" />
+            </Input.Root>
+          </div>
         </div>
 
+        <div className="flex gap-4">
+          <div className="flex flex-1 flex-col gap-2">
+            <label htmlFor="diretor">Diretor</label>
+            <Input.Root variant="primary">
+              <Input.Control {...register("diretor")} type="text" />
+            </Input.Root>
+          </div>
+
+          <div className="flex flex-1 flex-col gap-2">
+            <label htmlFor="gerente">Gerente</label>
+            <Input.Root variant="primary">
+              <Input.Control {...register("gerente")} type="text" />
+            </Input.Root>
+          </div>
+        </div>
+
+        <div className="flex gap-4">
+          <div className="flex flex-1 flex-col gap-2">
+            <label htmlFor="email">Email</label>
+            <Input.Root variant="primary">
+              <Input.Control {...register("email")} type="email" />
+            </Input.Root>
+          </div>
+
+          <div className="flex flex-1 flex-col gap-2">
+            <label htmlFor="telefone">Telefone</label>
+            <Input.Root variant="primary">
+              <Input.Control
+                {...register("telefone", {
+                  onChange: (e) => {
+                    e.target.value = formatPhoneNumber(e.target.value)
+                  },
+                })}
+                type="text"
+              />
+            </Input.Root>
+          </div>
+
+          <div className="flex flex-1 flex-col gap-2">
+            <label htmlFor="telefoneSecundario">Telefone Secundário</label>
+            <Input.Root variant="primary">
+              <Input.Control
+                {...(register("telefoneSecundario"),
+                {
+                  onChange: (e) => {
+                    e.target.value = formatPhoneNumber(e.target.value)
+                  },
+                })}
+                type="text"
+              />
+            </Input.Root>
+          </div>
+        </div>
+
+        <div className="flex gap-4">
+          <div className="flex flex-1 flex-col gap-2">
+            <label htmlFor="telefoneAssistencia24h">
+              Telefone Assistência 24h
+            </label>
+            <Input.Root variant="primary">
+              <Input.Control
+                {...register("telefoneAssistencia24h", {
+                  onChange: (e) => {
+                    e.target.value = formatPhoneNumber(e.target.value)
+                  },
+                })}
+                type="text"
+              />
+            </Input.Root>
+          </div>
+
+          <div className="flex flex-1 flex-col gap-2">
+            <label htmlFor="website">Website</label>
+            <Input.Root variant="primary">
+              <Input.Control {...register("website")} type="text" />
+            </Input.Root>
+          </div>
+        </div>
+      </div>
+
+      {/* Endereço */}
+      <div className="flex flex-col gap-4">
+        <h3 className="text-lg font-semibold">Endereço</h3>
         <div className="flex flex-col gap-4">
           <div className="flex gap-4">
             <div className="flex flex-col gap-2">
@@ -194,7 +309,7 @@ export function EditSeguradoraForm({ id }: { id: string }) {
                 <Input.Control
                   disabled={!isCepSearched}
                   {...register("numero")}
-                  type="number"
+                  type="text"
                 />
               </Input.Root>
               {errors.numero && (
@@ -220,6 +335,71 @@ export function EditSeguradoraForm({ id }: { id: string }) {
               )}
             </div>
           </div>
+        </div>
+      </div>
+
+      {/* Impostos */}
+      <div className="flex flex-col gap-4">
+        <h3 className="text-lg font-semibold">Impostos</h3>
+        <div className="flex gap-4">
+          <div className="flex flex-col gap-2">
+            <label htmlFor="impostoRetido">Imposto Retido (%)</label>
+            <Input.Root variant="primary">
+              <Input.Control
+                {...register("impostoRetido")}
+                type="text"
+                inputMode="decimal"
+                onChange={(e) => {
+                  normalizeDecimals(e.target, 2)
+                }}
+              />
+            </Input.Root>
+          </div>
+
+          <div className="flex flex-col gap-2">
+            <label htmlFor="calculoDesconto">Cálculo Desconto</label>
+            <Input.Root variant="primary">
+              <Input.Control
+                {...register("calculoDesconto")}
+                type="text"
+                inputMode="decimal"
+                onChange={(e) => {
+                  normalizeDecimals(e.target, 2)
+                }}
+              />
+            </Input.Root>
+          </div>
+
+          <div className="flex items-center gap-2">
+            <input
+              {...register("habilitarJuros")}
+              type="checkbox"
+              id="habilitarJuros"
+            />
+            <label htmlFor="habilitarJuros">Habilitar Juros</label>
+          </div>
+
+          <div className="flex items-center gap-2">
+            <input
+              {...register("calculoDescontoPadrao")}
+              type="checkbox"
+              id="calculoDescontoPadrao"
+            />
+            <label htmlFor="calculoDescontoPadrao">
+              Cálculo Desconto Padrão
+            </label>
+          </div>
+        </div>
+      </div>
+
+      {/* Outros */}
+      <div className="flex flex-col gap-4">
+        <h3 className="text-lg font-semibold">Outros</h3>
+        <div className="flex flex-col gap-2">
+          <label htmlFor="observacoes">Observações</label>
+          <Input.Root variant="primary">
+            <Input.Control {...register("observacoes")} type="text" />
+          </Input.Root>
         </div>
       </div>
 
