@@ -15,15 +15,18 @@ import { useEffect, useState } from "react"
 import { toast } from "sonner"
 
 export function SeguradorasTable() {
-  const { data: seguradoras, isLoading, refetch } = useSeguradoraQuery()
+  const [page, setPage] = useState(1)
+  const [limit] = useState(10)
+  const { data, isLoading, refetch } = useSeguradoraQuery(page, limit)
   const { push } = useRouter()
 
   const [open, setOpen] = useState(false)
   const [id, setId] = useState("")
-
   const [filteredResults, setFilteredResults] = useState([])
 
-  // handlers for Delete and Edit
+  const seguradoras = data?.data || []
+  const totalPages = data?.totalPages || 1
+
   const handleEdit = (id: string) => {
     push(`/seguradoras/edit/${id}`)
   }
@@ -40,36 +43,22 @@ export function SeguradorasTable() {
     }
   }
 
-  // column structure for table
   const columns = [
     { header: "Nome", accessor: "razaoSocial" },
-    {
-      header: "Documento",
-      accessor: "cnpjFormatado",
-    },
-    {
-      header: "Endereço",
-      accessor: "enderecoCompleto",
-    },
-    {
-      header: "Cidade",
-      accessor: "cidade",
-    },
-    {
-      header: "UF",
-      accessor: "uf",
-    },
+    { header: "Documento", accessor: "cnpjFormatado" },
+    { header: "Endereço", accessor: "enderecoCompleto" },
+    { header: "Cidade", accessor: "cidade" },
+    { header: "UF", accessor: "uf" },
     {
       header: "Ações",
       accessor: "id",
-      render: (value: string, row: unknown) => (
+      render: (value: string) => (
         <div className="flex space-x-4">
           <Pencil
             className="cursor-pointer duration-300 ease-in-out hover:text-blue-500"
             size={24}
             onClick={() => handleEdit(value)}
           />
-
           <Trash
             className="cursor-pointer duration-300 ease-in-out hover:text-blue-500"
             size={24}
@@ -83,12 +72,11 @@ export function SeguradorasTable() {
     },
   ]
 
-  // updates filteredResults when suppliers changes
   useEffect(() => {
     if (seguradoras) setFilteredResults(seguradoras)
   }, [seguradoras, isLoading])
 
-  if (!seguradoras || isLoading) return <LoadingScreen />
+  if (isLoading) return <LoadingScreen />
 
   return (
     <>
@@ -113,7 +101,6 @@ export function SeguradorasTable() {
             searchParam="razaoSocial"
             onSearchResult={setFilteredResults}
           />
-
           <Button
             onClick={() => push("/seguradoras/create")}
             variant="secondary">
@@ -144,7 +131,27 @@ export function SeguradorasTable() {
         <h2 className="mt-6 text-xl font-semibold">
           Nenhum fornecedor cadastrado.
         </h2>
-      : <Table columns={columns} data={filteredResults} />}
+      : <>
+          <Table columns={columns} data={filteredResults} />
+          <div className="md-2 mt-0 flex items-center justify-end gap-2">
+            <button
+              onClick={() => setPage((p) => Math.max(1, p - 1))}
+              disabled={page === 1}
+              className="rounded px-3 py-1 text-sm enabled:hover:bg-gray-100 disabled:opacity-50">
+              Anterior
+            </button>
+            <span className="text-sm">
+              Página {page} de {totalPages}
+            </span>
+            <button
+              onClick={() => setPage((p) => Math.min(totalPages, p + 1))}
+              disabled={page === totalPages}
+              className="rounded px-3 py-1 text-sm enabled:hover:bg-gray-100 disabled:opacity-50">
+              Próxima
+            </button>
+          </div>
+        </>
+      }
     </>
   )
 }

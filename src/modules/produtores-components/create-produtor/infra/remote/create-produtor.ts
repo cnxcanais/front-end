@@ -3,8 +3,6 @@ import { bffApi } from "@/lib/axios"
 import { AxiosError } from "axios"
 
 export async function createProdutor({
-  inscricaoEstadual,
-  inscricaoMunicipal,
   telefoneFixo,
   complemento,
   banco,
@@ -15,18 +13,23 @@ export async function createProdutor({
   tipoRepasse,
   formaRepasse,
   grupos,
-  grupoProdutor,
-  liderGrupoId,
   observacoes,
-  digito,
+  digitoConta,
+  telefoneCelular,
+  telefoneComercial,
   ...rest
 }: Produtor.CreateRequest) {
   try {
+    const telefoneFixoOnlyNumber = telefoneFixo?.replace(/\D/g, "")
+    const telefoneCelularOnlyNumber = telefoneCelular?.replace(/\D/g, "")
+    const telefoneComercialOnlyNumber = telefoneComercial?.replace(/\D/g, "")
     const response = await bffApi.post("/produtores", {
       ...rest,
-      inscricaoEstadual: inscricaoEstadual === "" ? null : inscricaoEstadual,
-      inscricaoMunicipal: inscricaoMunicipal === "" ? null : inscricaoMunicipal,
-      telefoneFixo: telefoneFixo === "" ? null : telefoneFixo,
+      telefoneFixo: telefoneFixo === "" ? null : telefoneFixoOnlyNumber,
+      telefoneCelular:
+        telefoneCelular === "" ? null : telefoneCelularOnlyNumber,
+      telefoneComercial:
+        telefoneComercial === "" ? null : telefoneComercialOnlyNumber,
       complemento: complemento === "" ? null : complemento,
       banco: banco === "" ? null : banco,
       agencia: agencia === "" ? null : agencia,
@@ -36,10 +39,8 @@ export async function createProdutor({
       tipoRepasse: tipoRepasse === "" ? null : tipoRepasse,
       formaRepasse: formaRepasse === "" ? null : formaRepasse,
       grupos: grupos === "" ? null : grupos,
-      grupoProdutor: grupoProdutor === "" ? null : grupoProdutor,
-      liderGrupoId: liderGrupoId === "" ? null : liderGrupoId,
       observacoes: observacoes === "" ? null : observacoes,
-      digito: digito === "" ? null : digito,
+      digitoConta: digitoConta === "" ? null : digitoConta,
     })
     return response.data.message
   } catch (error) {

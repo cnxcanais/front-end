@@ -4,45 +4,23 @@ import { AxiosError } from "axios"
 
 export async function editCorretora({
   id,
-  razaoSocial,
-  nomeFantasia,
-  codigoSusep,
   cepFormatado,
-  endereco,
-  numero,
   complemento,
-  bairro,
-  cidade,
-  uf,
-  email,
-  telefone,
   telefoneSecundario,
   website,
-  percentualImposto,
   observacoes,
-  consentimentoLgpd,
+  ...rest
 }: Corretora.UpdateRequest) {
   const cep = cepFormatado.replace(/\D/g, "")
 
   try {
     await bffApi.put(`/corretoras/${id}`, {
-      razaoSocial,
-      nomeFantasia,
-      codigoSusep,
-      cep,
-      endereco,
-      numero,
+      cep: cep,
       complemento: complemento === "" ? null : complemento,
-      bairro,
-      cidade,
-      uf,
-      email,
-      telefone,
       telefoneSecundario: telefoneSecundario === "" ? null : telefoneSecundario,
       website: website === "" ? null : website,
-      percentualImposto,
       observacoes: observacoes === "" ? null : observacoes,
-      consentimentoLgpd,
+      ...rest,
     })
   } catch (error) {
     if (error instanceof AxiosError) throw error.response.data.message
