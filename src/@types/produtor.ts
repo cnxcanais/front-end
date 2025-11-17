@@ -5,6 +5,11 @@ export namespace Produtor {
     situacao: string
     pessoa: string
     cnpjCpf: string
+    homePage: string
+    telefoneComercial: string
+    contaContabil: string
+    repasseSobre: string
+    excluirRepasse: boolean
     corretoraId: string
     inscricaoEstadual: string
     inscricaoMunicipal: string
@@ -36,7 +41,7 @@ export namespace Produtor {
     lgpdConsentimentoData: string
     createdAt: string
     updatedAt: string
-    digito: string
+    digitoConta: string
   }
 
   export type GetResponse = {

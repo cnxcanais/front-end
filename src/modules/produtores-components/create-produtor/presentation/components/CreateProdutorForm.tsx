@@ -10,6 +10,7 @@ import { formatDocumentNumber } from "@/core/utils/formatDocumentNumber"
 import { formatPhoneNumber } from "@/core/utils/formatPhoneNumber"
 import { normalizeDecimals } from "@/core/utils/normalizeDecimals"
 import { useCorretoraQuery } from "@/modules/corretoras-components/corretora/infra/hooks/use-corretora-query"
+import { useBancosQuery } from "@/modules/produtores-components/produtor/infra/hooks/use-banco-query"
 import {
   FormaRepasseLabels,
   GrupoProdutorLabels,
@@ -34,6 +35,19 @@ export function CreateProdutorForm() {
   const { push } = useRouter()
   const [isCepSearched, setIsCepSearched] = useState(false)
 
+  const { data: bancosData } = useBancosQuery()
+
+  const bancosOptions = useMemo(() => {
+    if (!bancosData) return []
+
+    return bancosData
+      .sort((a, b) => a.name.localeCompare(b.name))
+      .map((banco) => ({
+        text: `${banco.name} - ${banco.code}`,
+        value: banco.name,
+      }))
+  }, [bancosData])
+
   const {
     register,
     handleSubmit,
@@ -48,10 +62,12 @@ export function CreateProdutorForm() {
   const corretorasOptions = useMemo(() => {
     if (!corretorasData) return []
 
-    return corretorasData.map((corretora) => ({
-      text: corretora.razaoSocial,
-      value: corretora.id,
-    }))
+    return corretorasData
+      .sort((a, b) => a.razaoSocial.localeCompare(b.razaoSocial))
+      .map((corretora) => ({
+        text: corretora.razaoSocial,
+        value: corretora.id,
+      }))
   }, [corretorasData])
 
   async function onSubmit(data: Produtor.CreateRequest) {
@@ -69,7 +85,7 @@ export function CreateProdutorForm() {
       className="mt-6 flex max-w-[1200px] flex-col gap-6"
       onSubmit={handleSubmit(onSubmit)}>
       {/* Dados Pessoais */}
-      <div className="flex flex-col gap-4">
+      <div className="flex flex-col gap-4 bg-gray-50 p-4 shadow-md">
         <h3 className="text-lg font-semibold">Dados Pessoais</h3>
         <div className="flex gap-4">
           <div className="flex flex-1 flex-col gap-2">
@@ -156,9 +172,16 @@ export function CreateProdutorForm() {
       </div>
 
       {/* Contato */}
-      <div className="flex flex-col gap-4">
+      <div className="flex flex-col gap-4 bg-gray-50 p-4 shadow-md">
         <h3 className="text-lg font-semibold">Contato</h3>
         <div className="flex gap-4">
+          <div className="flex flex-1 flex-col gap-2">
+            <label>Home Page</label>
+            <Input.Root variant="primary">
+              <Input.Control {...register("homePage")} type="text" />
+            </Input.Root>
+          </div>
+
           <div className="flex flex-1 flex-col gap-2">
             <label>Email</label>
             <Input.Root variant={errors.email ? "error" : "primary"}>
@@ -170,7 +193,9 @@ export function CreateProdutorForm() {
               </span>
             )}
           </div>
+        </div>
 
+        <div className="flex gap-4">
           <div className="flex flex-1 flex-col gap-2">
             <label>Telefone Celular</label>
             <Input.Root variant={errors.telefoneCelular ? "error" : "primary"}>
@@ -203,11 +228,25 @@ export function CreateProdutorForm() {
               />
             </Input.Root>
           </div>
+
+          <div className="flex flex-1 flex-col gap-2">
+            <label>Telefone Comercial</label>
+            <Input.Root variant="primary">
+              <Input.Control
+                {...register("telefoneComercial", {
+                  onChange: (e) => {
+                    e.target.value = formatPhoneNumber(e.target.value)
+                  },
+                })}
+                type="text"
+              />
+            </Input.Root>
+          </div>
         </div>
       </div>
 
       {/* Endereço */}
-      <div className="flex flex-col gap-4">
+      <div className="flex flex-col gap-4 bg-gray-50 p-4 shadow-md">
         <h3 className="text-lg font-semibold">Endereço</h3>
         <div className="flex gap-4">
           <div className="flex flex-col gap-2">
@@ -332,14 +371,16 @@ export function CreateProdutorForm() {
       </div>
 
       {/* Dados Bancários */}
-      <div className="flex flex-col gap-4">
+      <div className="flex flex-col gap-4 bg-gray-50 p-4 shadow-md">
         <h3 className="text-lg font-semibold">Dados Bancários</h3>
         <div className="flex gap-4">
           <div className="flex flex-1 flex-col gap-2">
-            <label>Banco</label>
-            <Input.Root variant="primary">
-              <Input.Control {...register("banco")} type="text" />
-            </Input.Root>
+            <SelectInput
+              options={bancosOptions}
+              label="Banco"
+              field_name="banco"
+              {...register("banco")}
+            />
           </div>
 
           <div className="flex flex-col gap-2">
@@ -359,7 +400,7 @@ export function CreateProdutorForm() {
           <div className="flex max-w-[100px] flex-col gap-2">
             <label>Dígito</label>
             <Input.Root variant="primary">
-              <Input.Control {...register("digito")} type="text" />
+              <Input.Control {...register("digitoConta")} type="text" />
             </Input.Root>
           </div>
 
@@ -384,8 +425,33 @@ export function CreateProdutorForm() {
       </div>
 
       {/* Repasse */}
-      <div className="flex flex-col gap-4">
+      <div className="flex flex-col gap-4 bg-gray-50 p-4 shadow-md">
         <h3 className="text-lg font-semibold">Repasse</h3>
+        <div className="flex gap-4">
+          <div className="flex flex-1 flex-col gap-2">
+            <label>Conta Contábil</label>
+            <Input.Root variant="primary">
+              <Input.Control {...register("contaContabil")} type="text" />
+            </Input.Root>
+          </div>
+
+          <div className="flex flex-1 flex-col gap-2">
+            <label>Repasse Sobre</label>
+            <Input.Root variant="primary">
+              <Input.Control {...register("repasseSobre")} type="text" />
+            </Input.Root>
+          </div>
+
+          <div className="flex items-center gap-2">
+            <input
+              {...register("excluirRepasse")}
+              type="checkbox"
+              id="excluirRepasse"
+            />
+            <label htmlFor="excluirRepasse">Excluir Repasse</label>
+          </div>
+        </div>
+
         <div className="flex gap-4">
           <div className="flex flex-col gap-2">
             <SelectInput
@@ -450,7 +516,7 @@ export function CreateProdutorForm() {
       </div>
 
       {/* Grupo */}
-      <div className="flex flex-col gap-4">
+      <div className="flex flex-col gap-4 bg-gray-50 p-4 shadow-md">
         <h3 className="text-lg font-semibold">Grupo</h3>
         <div className="flex gap-4">
           <div className="flex flex-1 flex-col gap-2">
@@ -479,7 +545,7 @@ export function CreateProdutorForm() {
       </div>
 
       {/* Observações e LGPD */}
-      <div className="flex flex-col gap-4">
+      <div className="flex flex-col gap-4 bg-gray-50 p-4 shadow-md">
         <div className="flex flex-col gap-2">
           <label>Observações</label>
           <Input.Root variant="primary">

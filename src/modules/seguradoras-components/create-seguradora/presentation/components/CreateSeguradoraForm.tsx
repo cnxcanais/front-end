@@ -3,15 +3,17 @@
 import { Seguradora } from "@/@types/seguradora"
 import { Button } from "@/core/components/Button"
 import * as Input from "@/core/components/Input"
+import { SelectInput } from "@/core/components/SelectInput"
 import { fetchCep } from "@/core/utils/findCep"
 import { formatCep } from "@/core/utils/format-cep"
 import { formatDocumentNumber } from "@/core/utils/formatDocumentNumber"
 import { formatPhoneNumber } from "@/core/utils/formatPhoneNumber"
 import { normalizeDecimals } from "@/core/utils/normalizeDecimals"
+import { useGrupoEconomicoQuery } from "@/modules/grupos-economicos-components/grupos-economicos/infra/hooks/use-grupo-economico-query"
 import { zodResolver } from "@hookform/resolvers/zod"
 import { MagnifyingGlass } from "@phosphor-icons/react"
 import { useRouter } from "next/navigation"
-import { useState } from "react"
+import { useMemo, useState } from "react"
 import { useForm } from "react-hook-form"
 import { toast } from "sonner"
 import { createSeguradora } from "../../infra/remote/create-seguradora"
@@ -24,6 +26,19 @@ export function CreateSeguradoraForm() {
   const { push } = useRouter()
 
   const [isCepSearched, setIsCepSearched] = useState(false)
+
+  const { data: gruposEconomicos } = useGrupoEconomicoQuery()
+
+  const gruposOptions = useMemo(() => {
+    if (!gruposEconomicos) return []
+
+    return gruposEconomicos
+      .sort((a, b) => a.nome.localeCompare(b.nome))
+      .map((grupo) => ({
+        text: grupo.nome,
+        value: grupo.id,
+      }))
+  }, [gruposEconomicos])
 
   const {
     register,
@@ -106,10 +121,17 @@ export function CreateSeguradoraForm() {
           </div>
 
           <div className="flex flex-1 flex-col gap-2">
-            <label htmlFor="grupo">Grupo</label>
-            <Input.Root variant="primary">
-              <Input.Control {...register("grupo")} type="text" />
-            </Input.Root>
+            <SelectInput
+              options={gruposOptions}
+              label="Grupo Econômico"
+              field_name="grupo"
+              {...register("grupo")}
+            />
+            {errors.grupo && (
+              <span className="text-xs text-red-500">
+                {errors.grupo.message}
+              </span>
+            )}
           </div>
         </div>
       </div>
@@ -198,7 +220,7 @@ export function CreateSeguradoraForm() {
         </div>
       </div>
 
-      {/* Endreço */}
+      {/* Endereço */}
       <div className="flex flex-col gap-4 bg-gray-50 p-4 shadow-md">
         <h3 className="text-lg font-semibold">Endereço</h3>
         <div className="flex flex-col gap-4">

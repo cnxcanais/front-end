@@ -4,17 +4,19 @@ import { Seguradora } from "@/@types/seguradora"
 import { Button } from "@/core/components/Button"
 import * as Input from "@/core/components/Input"
 import { LoadingScreen } from "@/core/components/LoadingScreen"
+import { SelectInput } from "@/core/components/SelectInput"
 import { fetchCep } from "@/core/utils/findCep"
 import { formatCep } from "@/core/utils/format-cep"
 import { formatDocumentNumber } from "@/core/utils/formatDocumentNumber"
 import { formatPhoneNumber } from "@/core/utils/formatPhoneNumber"
 import { normalizeDecimals } from "@/core/utils/normalizeDecimals"
+import { useGrupoEconomicoQuery } from "@/modules/grupos-economicos-components/grupos-economicos/infra/hooks/use-grupo-economico-query"
 import { useSeguradoraByIdQuery } from "@/modules/seguradoras-components/edit-seguradora/infra/hooks/use-seguradora-by-id-query"
 import { editSeguradora } from "@/modules/seguradoras-components/edit-seguradora/infra/remote"
 import { zodResolver } from "@hookform/resolvers/zod"
 import { MagnifyingGlass } from "@phosphor-icons/react"
 import { useRouter } from "next/navigation"
-import { useState } from "react"
+import { useMemo, useState } from "react"
 import { useForm } from "react-hook-form"
 import { toast } from "sonner"
 import {
@@ -26,6 +28,19 @@ export function EditSeguradoraForm({ id }: { id: string }) {
   const { push } = useRouter()
 
   const [isCepSearched, setIsCepSearched] = useState(false)
+
+  const { data: gruposEconomicos } = useGrupoEconomicoQuery()
+
+  const gruposOptions = useMemo(() => {
+    if (!gruposEconomicos) return []
+
+    return gruposEconomicos
+      .sort((a, b) => a.nome.localeCompare(b.nome))
+      .map((grupo) => ({
+        text: grupo.nome,
+        value: grupo.id,
+      }))
+  }, [gruposEconomicos])
 
   const { data: seguradora, isLoading } = useSeguradoraByIdQuery(id)
 
@@ -139,10 +154,12 @@ export function EditSeguradoraForm({ id }: { id: string }) {
           </div>
 
           <div className="flex flex-1 flex-col gap-2">
-            <label htmlFor="grupo">Grupo</label>
-            <Input.Root variant="primary">
-              <Input.Control {...register("grupo")} type="text" />
-            </Input.Root>
+            <SelectInput
+              options={gruposOptions}
+              label="Grupo Econômico"
+              field_name="grupo"
+              {...register("grupo")}
+            />
           </div>
         </div>
       </div>

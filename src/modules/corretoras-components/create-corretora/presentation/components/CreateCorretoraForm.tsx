@@ -3,15 +3,17 @@
 import { Corretora } from "@/@types/corretora"
 import { Button } from "@/core/components/Button"
 import * as Input from "@/core/components/Input"
+import { SelectInput } from "@/core/components/SelectInput"
 import { fetchCep } from "@/core/utils/findCep"
 import { formatCep } from "@/core/utils/format-cep"
 import { formatDocumentNumber } from "@/core/utils/formatDocumentNumber"
 import { formatPhoneNumber } from "@/core/utils/formatPhoneNumber"
 import { normalizeDecimals } from "@/core/utils/normalizeDecimals"
+import { useGrupoEconomicoQuery } from "@/modules/grupos-economicos-components/grupos-economicos/infra/hooks/use-grupo-economico-query"
 import { zodResolver } from "@hookform/resolvers/zod"
 import { MagnifyingGlass } from "@phosphor-icons/react"
 import { useRouter } from "next/navigation"
-import { useState } from "react"
+import { useMemo, useState } from "react"
 import { useForm } from "react-hook-form"
 import { toast } from "sonner"
 import { createCorretora } from "../../infra/remote/create-corretora"
@@ -23,6 +25,19 @@ import {
 export function CreateCorretoraForm() {
   const { push } = useRouter()
   const [isCepSearched, setIsCepSearched] = useState(false)
+
+  const { data: gruposEconomicos } = useGrupoEconomicoQuery()
+
+  const gruposOptions = useMemo(() => {
+    if (!gruposEconomicos) return []
+
+    return gruposEconomicos
+      .sort((a, b) => a.nome.localeCompare(b.nome))
+      .map((grupo) => ({
+        text: grupo.nome,
+        value: grupo.id,
+      }))
+  }, [gruposEconomicos])
 
   const {
     register,
@@ -48,7 +63,7 @@ export function CreateCorretoraForm() {
       className="mt-6 flex max-w-[1000px] flex-col gap-4"
       onSubmit={handleSubmit(onSubmit)}>
       {/* Dados Cadastrais */}
-      <div className="flex flex-col gap-4">
+      <div className="flex flex-col gap-4 bg-gray-50 p-4 shadow-md">
         <h3 className="text-lg font-semibold">Dados Cadastrais</h3>
         <div className="flex gap-4">
           <div className="flex flex-1 flex-col gap-2">
@@ -109,13 +124,15 @@ export function CreateCorretoraForm() {
           </div>
 
           <div className="flex flex-1 flex-col gap-2">
-            <label htmlFor="grupo">Grupo</label>
-            <Input.Root variant={errors.grupo ? "error" : "primary"}>
-              <Input.Control {...register("grupo")} type="text" />
-            </Input.Root>
-            {errors.grupo && (
+            <SelectInput
+              options={gruposOptions}
+              label="Grupo Econômico"
+              field_name="grupo"
+              {...register("grupoEconomicoId")}
+            />
+            {errors.grupoEconomicoId && (
               <span className="text-xs text-red-500">
-                {errors.grupo.message}
+                {errors.grupoEconomicoId.message}
               </span>
             )}
           </div>
@@ -123,7 +140,7 @@ export function CreateCorretoraForm() {
       </div>
 
       {/* Endereço */}
-      <div className="flex flex-col gap-4">
+      <div className="flex flex-col gap-4 bg-gray-50 p-4 shadow-md">
         <h3 className="text-lg font-semibold">Endereço</h3>
         <div className="flex gap-4">
           <div className="flex flex-col gap-2">
@@ -241,7 +258,7 @@ export function CreateCorretoraForm() {
         </div>
       </div>
       {/* Contato */}
-      <div className="flex flex-col gap-4">
+      <div className="flex flex-col gap-4 bg-gray-50 p-4 shadow-md">
         <h3 className="text-lg font-semibold">Contato</h3>
         <div className="flex gap-4">
           <div className="flex flex-1 flex-col gap-2">
@@ -336,7 +353,7 @@ export function CreateCorretoraForm() {
         </div>
       </div>
       {/* Outros */}
-      <div className="flex flex-col gap-4">
+      <div className="flex flex-col gap-4 bg-gray-50 p-4 shadow-md">
         <h3 className="text-lg font-semibold">Outros</h3>
         <div className="flex gap-4">
           <div className="flex flex-1 flex-col gap-2">

@@ -46,6 +46,11 @@ export function EditProdutorForm({ id }: { id: string }) {
       id: produtor?.id || "",
       nome: produtor?.nome || "",
       situacao: produtor?.situacao || "ATIVO",
+      homePage: produtor?.homePage || "",
+      telefoneComercial: produtor?.telefoneComercial || "",
+      contaContabil: produtor?.contaContabil || "",
+      repasseSobre: produtor?.repasseSobre || "",
+      excluirRepasse: produtor?.excluirRepasse || false,
       inscricaoEstadual: produtor?.inscricaoEstadual || "",
       inscricaoMunicipal: produtor?.inscricaoMunicipal || "",
       telefoneFixo: produtor?.telefoneFixo || "",
@@ -62,7 +67,7 @@ export function EditProdutorForm({ id }: { id: string }) {
       agencia: produtor?.agencia || "",
       conta: produtor?.conta || "",
       tipoConta: produtor?.tipoConta || "",
-      digito: produtor?.conta?.split("-")[1] || "",
+      digitoConta: produtor?.digitoConta || "",
       pix: produtor?.pix || "",
       tipoRepasse: produtor?.tipoRepasse || "",
       formaRepasse: produtor?.formaRepasse || "",
@@ -141,6 +146,13 @@ export function EditProdutorForm({ id }: { id: string }) {
         <h3 className="text-lg font-semibold">Contato</h3>
         <div className="flex gap-4">
           <div className="flex flex-1 flex-col gap-2">
+            <label>Home Page</label>
+            <Input.Root variant="primary">
+              <Input.Control {...register("homePage")} type="text" />
+            </Input.Root>
+          </div>
+
+          <div className="flex flex-1 flex-col gap-2">
             <label>Email</label>
             <Input.Root variant={errors.email ? "error" : "primary"}>
               <Input.Control {...register("email")} type="email" />
@@ -176,6 +188,20 @@ export function EditProdutorForm({ id }: { id: string }) {
             <Input.Root variant="primary">
               <Input.Control
                 {...register("telefoneFixo", {
+                  onChange: (e) => {
+                    e.target.value = formatPhoneNumber(e.target.value)
+                  },
+                })}
+                type="text"
+              />
+            </Input.Root>
+          </div>
+
+          <div className="flex flex-1 flex-col gap-2">
+            <label>Telefone Comercial</label>
+            <Input.Root variant="primary">
+              <Input.Control
+                {...register("telefoneComercial", {
                   onChange: (e) => {
                     e.target.value = formatPhoneNumber(e.target.value)
                   },
@@ -317,7 +343,7 @@ export function EditProdutorForm({ id }: { id: string }) {
           <div className="flex max-w-[100px] flex-col gap-2">
             <label>Dígito</label>
             <Input.Root variant="primary">
-              <Input.Control {...register("digito")} type="text" />
+              <Input.Control {...register("digitoConta")} type="text" />
             </Input.Root>
           </div>
 
@@ -344,6 +370,31 @@ export function EditProdutorForm({ id }: { id: string }) {
       {/* Repasse */}
       <div className="flex flex-col gap-4">
         <h3 className="text-lg font-semibold">Repasse</h3>
+        <div className="flex gap-4">
+          <div className="flex flex-1 flex-col gap-2">
+            <label>Conta Contábil</label>
+            <Input.Root variant="primary">
+              <Input.Control {...register("contaContabil")} type="text" />
+            </Input.Root>
+          </div>
+
+          <div className="flex flex-1 flex-col gap-2">
+            <label>Repasse Sobre</label>
+            <Input.Root variant="primary">
+              <Input.Control {...register("repasseSobre")} type="text" />
+            </Input.Root>
+          </div>
+
+          <div className="flex items-center gap-2">
+            <input
+              {...register("excluirRepasse")}
+              type="checkbox"
+              id="excluirRepasse"
+            />
+            <label htmlFor="excluirRepasse">Excluir Repasse</label>
+          </div>
+        </div>
+
         <div className="flex gap-4">
           <div className="flex flex-col gap-2">
             <SelectInput

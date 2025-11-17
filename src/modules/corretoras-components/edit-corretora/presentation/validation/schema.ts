@@ -23,7 +23,7 @@ export const editCorretoraFormSchema = z.object({
       { message: "CPF/CNPJ inválido" }
     ),
   codigoSusep: z.string().nonempty({ message: "Obrigatório" }).max(20),
-  grupo: z.string().max(100).optional(),
+  grupoEconomicoId: z.string().max(100).optional(),
   gerente: z.string().max(100).optional(),
   contato: z.string().max(100).optional(),
   celular: z.string().max(20).optional(),

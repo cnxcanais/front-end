@@ -4,6 +4,7 @@ import { Corretora } from "@/@types/corretora"
 import { Button } from "@/core/components/Button"
 import * as Input from "@/core/components/Input"
 import { LoadingScreen } from "@/core/components/LoadingScreen"
+import { SelectInput } from "@/core/components/SelectInput"
 import { fetchCep } from "@/core/utils/findCep"
 import { formatCep } from "@/core/utils/format-cep"
 import { formatDocumentNumber } from "@/core/utils/formatDocumentNumber"
@@ -11,10 +12,11 @@ import { formatPhoneNumber } from "@/core/utils/formatPhoneNumber"
 import { normalizeDecimals } from "@/core/utils/normalizeDecimals"
 import { useCorretoraByIdQuery } from "@/modules/corretoras-components/edit-corretora/infra/hooks/use-corretora-by-id-query"
 import { editCorretora } from "@/modules/corretoras-components/edit-corretora/infra/remote"
+import { useGrupoEconomicoQuery } from "@/modules/grupos-economicos-components/grupos-economicos/infra/hooks/use-grupo-economico-query"
 import { zodResolver } from "@hookform/resolvers/zod"
 import { MagnifyingGlass } from "@phosphor-icons/react"
 import { useRouter } from "next/navigation"
-import { useState } from "react"
+import { useMemo, useState } from "react"
 import { useForm } from "react-hook-form"
 import { toast } from "sonner"
 import {
@@ -27,6 +29,8 @@ export function EditCorretoraForm({ id }: { id: string }) {
   const [isCepSearched, setIsCepSearched] = useState(false)
 
   const { data: corretora, isLoading } = useCorretoraByIdQuery(id)
+
+  console.log(corretora)
 
   const {
     register,
@@ -41,7 +45,7 @@ export function EditCorretoraForm({ id }: { id: string }) {
       nomeFantasia: corretora?.nomeFantasia || "",
       cnpjCpfFormatado: corretora?.cnpjCpfFormatado || "",
       codigoSusep: corretora?.codigoSusep || "",
-      grupo: corretora?.grupo || "",
+      grupoEconomicoId: corretora?.grupoEconomicoId || "",
       gerente: corretora?.gerente || "",
       contato: corretora?.contato || "",
       celular: corretora?.celular || "",
@@ -62,6 +66,19 @@ export function EditCorretoraForm({ id }: { id: string }) {
     },
   })
 
+  const { data: gruposEconomicos } = useGrupoEconomicoQuery()
+
+  const gruposOptions = useMemo(() => {
+    if (!gruposEconomicos) return []
+
+    return gruposEconomicos
+      .sort((a, b) => a.nome.localeCompare(b.nome))
+      .map((grupo) => ({
+        text: grupo.nome,
+        value: grupo.id,
+      }))
+  }, [gruposEconomicos])
+
   async function onSubmit(data: Corretora.UpdateRequest) {
     try {
       await editCorretora(data)
@@ -79,7 +96,7 @@ export function EditCorretoraForm({ id }: { id: string }) {
       className="mt-6 flex max-w-[1000px] flex-col gap-4"
       onSubmit={handleSubmit(onSubmit)}>
       {/* Dados Cadastrais */}
-      <div className="flex flex-col gap-4">
+      <div className="flex flex-col gap-4 bg-gray-50 p-4 shadow-md">
         <h3 className="text-lg font-semibold">Dados Cadastrais</h3>
         <div className="flex gap-4">
           <div className="flex flex-1 flex-col gap-2">
@@ -142,16 +159,23 @@ export function EditCorretoraForm({ id }: { id: string }) {
           </div>
 
           <div className="flex flex-1 flex-col gap-2">
-            <label htmlFor="grupo">Grupo</label>
-            <Input.Root variant="primary">
-              <Input.Control {...register("grupo")} type="text" />
-            </Input.Root>
+            <SelectInput
+              options={gruposOptions}
+              label="Grupo Econômico"
+              field_name="grupo"
+              {...register("grupoEconomicoId")}
+            />
+            {errors.grupoEconomicoId && (
+              <span className="text-xs text-red-500">
+                {errors.grupoEconomicoId.message}
+              </span>
+            )}
           </div>
         </div>
       </div>
 
       {/* Endereço */}
-      <div className="flex flex-col gap-4">
+      <div className="flex flex-col gap-4 bg-gray-50 p-4 shadow-md">
         <h3 className="text-lg font-semibold">Endereço</h3>
         <div className="flex gap-4">
           <div className="flex flex-col gap-2">
@@ -270,7 +294,7 @@ export function EditCorretoraForm({ id }: { id: string }) {
       </div>
 
       {/* Contato */}
-      <div className="flex flex-col gap-4">
+      <div className="flex flex-col gap-4 bg-gray-50 p-4 shadow-md">
         <h3 className="text-lg font-semibold">Contato</h3>
         <div className="flex gap-4">
           <div className="flex flex-1 flex-col gap-2">
@@ -366,7 +390,7 @@ export function EditCorretoraForm({ id }: { id: string }) {
       </div>
 
       {/* Outros */}
-      <div className="flex flex-col gap-4">
+      <div className="flex flex-col gap-4 bg-gray-50 p-4 shadow-md">
         <h3 className="text-lg font-semibold">Outros</h3>
         <div className="flex gap-4">
           <div className="flex flex-1 flex-col gap-2">

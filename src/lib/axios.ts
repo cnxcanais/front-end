@@ -30,4 +30,8 @@ const bffApi = axios.create({
   baseURL: process.env.NEXT_PUBLIC_BFF_API_URL,
 })
 
-export { api, bffApi, cepApi }
+const bancosApi = axios.create({
+  baseURL: "https://brasilapi.com.br/api/banks/v1",
+})
+
+export { api, bancosApi, bffApi, cepApi }
