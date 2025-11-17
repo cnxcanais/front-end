@@ -48,9 +48,9 @@ export function CreateSeguradoraForm() {
     <form
       className="mt-6 flex max-w-[1000px] flex-col gap-4"
       onSubmit={handleSubmit(onSubmit)}>
-      {/* Contato */}
-      <div className="flex flex-col gap-4">
-        <h3 className="text-lg font-semibold">Contato</h3>
+      {/* Dados Cadastrais */}
+      <div className="flex flex-col gap-4 bg-gray-50 p-4 shadow-md">
+        <h3 className="text-lg font-semibold">Dados Cadastrais</h3>
         <div className="flex gap-4">
           <div className="flex flex-1 flex-col gap-2">
             <label htmlFor="razaoSocial">Nome</label>
@@ -64,6 +64,20 @@ export function CreateSeguradoraForm() {
             )}
           </div>
 
+          <div className="flex flex-1 flex-col gap-2">
+            <label htmlFor="codigoSusep">Susep</label>
+            <Input.Root variant={errors.codigoSusep ? "error" : "primary"}>
+              <Input.Control {...register("codigoSusep")} type="text" />
+            </Input.Root>
+            {errors.codigoSusep && (
+              <span className="text-xs text-red-500">
+                {errors.codigoSusep.message}
+              </span>
+            )}
+          </div>
+        </div>
+
+        <div className="flex gap-4">
           <div className="flex flex-1 flex-col gap-2">
             <label htmlFor="cnpj">CNPJ</label>
             <Input.Root variant={errors.cnpj ? "error" : "primary"}>
@@ -83,20 +97,6 @@ export function CreateSeguradoraForm() {
               </span>
             )}
           </div>
-        </div>
-
-        <div className="flex gap-4">
-          <div className="flex flex-1 flex-col gap-2">
-            <label htmlFor="codigoSusep">Susep</label>
-            <Input.Root variant={errors.codigoSusep ? "error" : "primary"}>
-              <Input.Control {...register("codigoSusep")} type="text" />
-            </Input.Root>
-            {errors.codigoSusep && (
-              <span className="text-xs text-red-500">
-                {errors.codigoSusep.message}
-              </span>
-            )}
-          </div>
 
           <div className="flex flex-1 flex-col gap-2">
             <label htmlFor="fantasia">Fantasia</label>
@@ -112,6 +112,11 @@ export function CreateSeguradoraForm() {
             </Input.Root>
           </div>
         </div>
+      </div>
+
+      {/* Contato */}
+      <div className="flex flex-col gap-4 bg-gray-50 p-4 shadow-md">
+        <h3 className="text-lg font-semibold">Contato</h3>
 
         <div className="flex gap-4">
           <div className="flex flex-1 flex-col gap-2">
@@ -194,7 +199,7 @@ export function CreateSeguradoraForm() {
       </div>
 
       {/* Endreço */}
-      <div className="flex flex-col gap-4">
+      <div className="flex flex-col gap-4 bg-gray-50 p-4 shadow-md">
         <h3 className="text-lg font-semibold">Endereço</h3>
         <div className="flex flex-col gap-4">
           <div className="flex gap-4">
@@ -306,7 +311,7 @@ export function CreateSeguradoraForm() {
       </div>
 
       {/* Impostos */}
-      <div className="flex flex-col gap-4">
+      <div className="flex flex-col gap-4 bg-gray-50 p-4 shadow-md">
         <h3 className="text-lg font-semibold">Impostos</h3>
         <div className="flex gap-4">
           <div className="flex flex-col gap-2">
@@ -360,7 +365,7 @@ export function CreateSeguradoraForm() {
       </div>
 
       {/* Outros */}
-      <div className="flex flex-col gap-4">
+      <div className="flex flex-col gap-4 bg-gray-50 p-4 shadow-md">
         <h3 className="text-lg font-semibold">Outros</h3>
         <div className="flex flex-col gap-2">
           <label htmlFor="observacoes">Observações</label>
