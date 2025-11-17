@@ -15,12 +15,17 @@ import { useEffect, useState } from "react"
 import { toast } from "sonner"
 
 export function GruposEconomicosTable() {
-  const { data: gruposEconomicos, isLoading, refetch } = useGrupoEconomicoQuery()
+  const [page, setPage] = useState(1)
+  const [limit] = useState(10)
+  const { data, isLoading, refetch } = useGrupoEconomicoQuery(page, limit)
   const { push } = useRouter()
 
   const [open, setOpen] = useState(false)
   const [id, setId] = useState("")
   const [filteredResults, setFilteredResults] = useState([])
+
+  const gruposEconomicos = data?.data || []
+  const totalPages = data?.totalPages || 1
 
   const handleEdit = (id: string) => {
     push(`/grupos-economicos/edit/${id}`)
@@ -64,10 +69,10 @@ export function GruposEconomicosTable() {
   ]
 
   useEffect(() => {
-    if (gruposEconomicos) setFilteredResults(gruposEconomicos)
-  }, [gruposEconomicos, isLoading])
+    if (gruposEconomicos.length > 0) setFilteredResults(gruposEconomicos)
+  }, [gruposEconomicos])
 
-  if (!gruposEconomicos || isLoading) return <LoadingScreen />
+  if (isLoading) return <LoadingScreen />
 
   return (
     <>
@@ -118,11 +123,32 @@ export function GruposEconomicosTable() {
         )}
       </div>
 
-      {gruposEconomicos.length == 0 ?
+      {gruposEconomicos.length == 0 ? (
         <h2 className="mt-6 text-xl font-semibold">
           Nenhum grupo econômico cadastrado.
         </h2>
-      : <Table columns={columns} data={filteredResults} />}
+      ) : (
+        <>
+          <Table columns={columns} data={filteredResults} />
+          <div className="mt-2 flex items-center justify-end gap-2">
+            <button
+              onClick={() => setPage((p) => Math.max(1, p - 1))}
+              disabled={page === 1}
+              className="rounded px-3 py-1 text-sm disabled:opacity-50 enabled:hover:bg-gray-100">
+              Anterior
+            </button>
+            <span className="text-sm">
+              Página {page} de {totalPages}
+            </span>
+            <button
+              onClick={() => setPage((p) => Math.min(totalPages, p + 1))}
+              disabled={page === totalPages}
+              className="rounded px-3 py-1 text-sm disabled:opacity-50 enabled:hover:bg-gray-100">
+              Próxima
+            </button>
+          </div>
+        </>
+      )}
     </>
   )
 }

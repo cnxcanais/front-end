@@ -60,9 +60,9 @@ export function CreateProdutorForm() {
   const { data: corretorasData } = useCorretoraQuery()
 
   const corretorasOptions = useMemo(() => {
-    if (!corretorasData) return []
+    if (!corretorasData?.data) return []
 
-    return corretorasData
+    return corretorasData.data
       .sort((a, b) => a.razaoSocial.localeCompare(b.razaoSocial))
       .map((corretora) => ({
         text: corretora.razaoSocial,

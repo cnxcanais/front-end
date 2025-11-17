@@ -73,7 +73,7 @@ export function SeguradorasTable() {
   ]
 
   useEffect(() => {
-    if (seguradoras) setFilteredResults(seguradoras)
+    if (seguradoras.length > 0) setFilteredResults(seguradoras)
   }, [seguradoras, isLoading])
 
   if (isLoading) return <LoadingScreen />

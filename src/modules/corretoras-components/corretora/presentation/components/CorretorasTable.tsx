@@ -15,12 +15,17 @@ import { useEffect, useState } from "react"
 import { toast } from "sonner"
 
 export function CorretorasTable() {
-  const { data: corretoras, isLoading, refetch } = useCorretoraQuery()
+  const [page, setPage] = useState(1)
+  const [limit] = useState(10)
+  const { data, isLoading, refetch } = useCorretoraQuery(page, limit)
   const { push } = useRouter()
 
   const [open, setOpen] = useState(false)
   const [id, setId] = useState("")
   const [filteredResults, setFilteredResults] = useState([])
+
+  const corretoras = data?.data || []
+  const totalPages = data?.totalPages || 1
 
   const handleEdit = (id: string) => {
     push(`/corretoras/edit/${id}`)
@@ -70,10 +75,10 @@ export function CorretorasTable() {
   ]
 
   useEffect(() => {
-    if (corretoras) setFilteredResults(corretoras)
-  }, [corretoras, isLoading])
+    if (corretoras.length > 0) setFilteredResults(corretoras)
+  }, [corretoras])
 
-  if (!corretoras || isLoading) return <LoadingScreen />
+  if (isLoading) return <LoadingScreen />
 
   return (
     <>
@@ -124,11 +129,32 @@ export function CorretorasTable() {
         )}
       </div>
 
-      {corretoras.length == 0 ?
+      {corretoras.length == 0 ? (
         <h2 className="mt-6 text-xl font-semibold">
           Nenhuma corretora cadastrada.
         </h2>
-      : <Table columns={columns} data={filteredResults} />}
+      ) : (
+        <>
+          <Table columns={columns} data={filteredResults} />
+          <div className="mt-2 flex items-center justify-end gap-2">
+            <button
+              onClick={() => setPage((p) => Math.max(1, p - 1))}
+              disabled={page === 1}
+              className="rounded px-3 py-1 text-sm disabled:opacity-50 enabled:hover:bg-gray-100">
+              Anterior
+            </button>
+            <span className="text-sm">
+              Página {page} de {totalPages}
+            </span>
+            <button
+              onClick={() => setPage((p) => Math.min(totalPages, p + 1))}
+              disabled={page === totalPages}
+              className="rounded px-3 py-1 text-sm disabled:opacity-50 enabled:hover:bg-gray-100">
+              Próxima
+            </button>
+          </div>
+        </>
+      )}
     </>
   )
 }

@@ -12,10 +12,15 @@ import { useRouter } from "next/navigation"
 import { useEffect, useState } from "react"
 
 export function ProdutoresTable() {
-  const { data: produtores, isLoading } = useProdutorQuery()
+  const [page, setPage] = useState(1)
+  const [limit] = useState(10)
+  const { data, isLoading } = useProdutorQuery(page, limit)
   const { push } = useRouter()
 
   const [filteredResults, setFilteredResults] = useState([])
+
+  const produtores = data?.data || []
+  const totalPages = data?.totalPages || 1
 
   const handleEdit = (id: string) => {
     push(`/produtores/edit/${id}`)
@@ -49,10 +54,10 @@ export function ProdutoresTable() {
   ]
 
   useEffect(() => {
-    if (produtores) setFilteredResults(produtores)
-  }, [produtores, isLoading])
+    if (produtores.length > 0) setFilteredResults(produtores)
+  }, [produtores])
 
-  if (!produtores || isLoading) return <LoadingScreen />
+  if (isLoading) return <LoadingScreen />
 
   return (
     <>
@@ -89,11 +94,32 @@ export function ProdutoresTable() {
         )}
       </div>
 
-      {produtores.length == 0 ?
+      {produtores.length == 0 ? (
         <h2 className="mt-6 text-xl font-semibold">
           Nenhum produtor cadastrado.
         </h2>
-      : <Table columns={columns} data={filteredResults} />}
+      ) : (
+        <>
+          <Table columns={columns} data={filteredResults} />
+          <div className="mt-2 flex items-center justify-end gap-2">
+            <button
+              onClick={() => setPage((p) => Math.max(1, p - 1))}
+              disabled={page === 1}
+              className="rounded px-3 py-1 text-sm disabled:opacity-50 enabled:hover:bg-gray-100">
+              Anterior
+            </button>
+            <span className="text-sm">
+              Página {page} de {totalPages}
+            </span>
+            <button
+              onClick={() => setPage((p) => Math.min(totalPages, p + 1))}
+              disabled={page === totalPages}
+              className="rounded px-3 py-1 text-sm disabled:opacity-50 enabled:hover:bg-gray-100">
+              Próxima
+            </button>
+          </div>
+        </>
+      )}
     </>
   )
 }

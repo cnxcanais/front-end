@@ -1,8 +1,10 @@
 import { bffApi } from "@/lib/axios"
 
-export async function getGruposEconomicos() {
-  const response = await bffApi.get("/grupos-economicos")
-  return response.data.data
+export async function getGruposEconomicos(page = 1, limit = 10) {
+  const response = await bffApi.get("/grupos-economicos", {
+    params: { page, limit }
+  })
+  return response.data
 }
 
 export async function removeGrupoEconomico(id: string) {

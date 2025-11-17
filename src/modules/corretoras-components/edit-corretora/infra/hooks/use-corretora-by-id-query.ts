@@ -7,7 +7,7 @@ export function useCorretoraByIdQuery(id: string) {
     return useQuery({
       queryKey: ["corretora", id],
       queryFn: () => getCorretoraById(id),
-      enabled: id !== "",
+      enabled: !!id && id !== "",
     })
   } catch (error) {
     console.log(error)
