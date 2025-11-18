@@ -23,7 +23,7 @@ export const createSeguradoraFormSchema = z.object({
     ),
   codigoSusep: z.string().nonempty({ message: "Obrigatório" }).max(50),
   fantasia: z.string().max(100).optional(),
-  grupo: z.string().max(100).optional(),
+  grupoEconomicoId: z.string().max(100).optional(),
   impostoRetido: z
     .string()
     .transform((val) => val.replace(",", "."))
@@ -35,15 +35,16 @@ export const createSeguradoraFormSchema = z.object({
   gerente: z.string().max(100).optional(),
   website: z.string().max(255).optional(),
   email: z.string().email({ message: "Email inválido" }).max(100).optional(),
-  telefone: z.string().max(20).optional(),
-  telefoneSecundario: z.string().max(20).optional(),
-  telefoneAssistencia24h: z.string().max(20).optional(),
+  telefone: z.string().optional(),
+  telefoneSecundario: z.string().optional(),
+  telefoneAssistencia24h: z.string().optional(),
   observacoes: z.string().optional(),
   cep: z.string().nonempty({ message: "Obrigatório" }).max(9),
   endereco: z.string().nonempty({ message: "Obrigatório" }).max(200),
   numero: z.string().nonempty({ message: "Obrigatório" }).max(10),
   bairro: z.string().nonempty({ message: "Obrigatório" }).max(100),
   cidade: z.string().nonempty({ message: "Obrigatório" }).max(100),
+  complemento: z.string().max(100).optional(),
   uf: z.string().nonempty({ message: "Obrigatório" }).max(2),
 })
 

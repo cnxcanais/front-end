@@ -30,9 +30,9 @@ export function CreateSeguradoraForm() {
   const { data: gruposEconomicos } = useGrupoEconomicoQuery()
 
   const gruposOptions = useMemo(() => {
-    if (!gruposEconomicos) return []
+    if (!gruposEconomicos?.data) return []
 
-    return gruposEconomicos
+    return gruposEconomicos.data
       .sort((a, b) => a.nome.localeCompare(b.nome))
       .map((grupo) => ({
         text: grupo.nome,
@@ -51,8 +51,8 @@ export function CreateSeguradoraForm() {
 
   async function onSubmit(data: any) {
     try {
-      const response = await createSeguradora(data as Seguradora.CreateRequest)
-      toast.success(response)
+      await createSeguradora(data as Seguradora.CreateRequest)
+      toast.success("Seguradora criada com sucesso!")
       setTimeout(() => push("/seguradoras"), 2000)
     } catch (error) {
       toast.error("Erro ao criar seguradora: " + error)
@@ -124,12 +124,12 @@ export function CreateSeguradoraForm() {
             <SelectInput
               options={gruposOptions}
               label="Grupo Econômico"
-              field_name="grupo"
-              {...register("grupo")}
+              field_name="grupoEconomicoId"
+              {...register("grupoEconomicoId")}
             />
-            {errors.grupo && (
+            {errors.grupoEconomicoId && (
               <span className="text-xs text-red-500">
-                {errors.grupo.message}
+                {errors.grupoEconomicoId.message}
               </span>
             )}
           </div>
@@ -182,8 +182,7 @@ export function CreateSeguradoraForm() {
             <label htmlFor="telefoneSecundario">Telefone Secundário</label>
             <Input.Root variant="primary">
               <Input.Control
-                {...(register("telefoneSecundario"),
-                {
+                {...register("telefoneSecundario", {
                   onChange: (e) => {
                     e.target.value = formatPhoneNumber(e.target.value)
                   },
@@ -303,6 +302,22 @@ export function CreateSeguradoraForm() {
                 <Input.Control
                   disabled={!isCepSearched}
                   {...register("numero")}
+                  type="text"
+                />
+              </Input.Root>
+              {errors.numero && (
+                <span className="text-xs text-red-500">
+                  {errors.numero.message}
+                </span>
+              )}
+            </div>
+
+            <div className="flex max-w-[150px] flex-1 flex-col gap-2">
+              <label htmlFor="complemento">Complemento</label>
+              <Input.Root variant={isCepSearched ? "primary" : "disabled"}>
+                <Input.Control
+                  disabled={!isCepSearched}
+                  {...register("complemento")}
                   type="text"
                 />
               </Input.Root>

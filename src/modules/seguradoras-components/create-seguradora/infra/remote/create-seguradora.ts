@@ -5,7 +5,6 @@ import { AxiosError } from "axios"
 export async function createSeguradora({
   cnpj,
   fantasia,
-  grupo,
   calculoDesconto,
   diretor,
   gerente,
@@ -13,18 +12,22 @@ export async function createSeguradora({
   email,
   telefone,
   telefoneSecundario,
+  telefoneAssistencia24h,
   observacoes,
   ...rest
 }: Seguradora.CreateRequest) {
-  const cnpjOnlyNumbers = cnpj.replace(/\D/g, "")
-  const telefoneOnlyNumbers = telefone.replace(/\D/g, "")
-  const telefoneSecundarioOnlyNumbers = telefoneSecundario.replace(/\D/g, "")
+  const cnpjOnlyNumbers = cnpj?.replace(/\D/g, "")
+  const telefoneOnlyNumbers = telefone?.replace(/\D/g, "")
+  const telefoneSecundarioOnlyNumbers = telefoneSecundario?.replace(/\D/g, "")
+  const telefoneAssistencia24hOnlyNumbers = telefoneAssistencia24h?.replace(
+    /\D/g,
+    ""
+  )
 
   try {
     const { data } = await bffApi.post("/seguradoras", {
       cnpj: cnpjOnlyNumbers,
       fantasia: fantasia === "" ? null : fantasia,
-      grupo: grupo === "" ? null : grupo,
       calculoDesconto: calculoDesconto === "" ? null : calculoDesconto,
       diretor: diretor === "" ? null : diretor,
       gerente: gerente === "" ? null : gerente,
@@ -33,6 +36,10 @@ export async function createSeguradora({
       telefone: telefone === "" ? null : telefoneOnlyNumbers,
       telefoneSecundario:
         telefoneSecundario === "" ? null : telefoneSecundarioOnlyNumbers,
+      telefoneAssistencia24h:
+        telefoneAssistencia24h === "" ? null : (
+          telefoneAssistencia24hOnlyNumbers
+        ),
       observacoes: observacoes === "" ? null : observacoes,
       ...rest,
     })

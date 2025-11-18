@@ -32,9 +32,9 @@ export function EditSeguradoraForm({ id }: { id: string }) {
   const { data: gruposEconomicos } = useGrupoEconomicoQuery()
 
   const gruposOptions = useMemo(() => {
-    if (!gruposEconomicos) return []
+    if (!gruposEconomicos?.data) return []
 
-    return gruposEconomicos
+    return gruposEconomicos.data
       .sort((a, b) => a.nome.localeCompare(b.nome))
       .map((grupo) => ({
         text: grupo.nome,
@@ -54,10 +54,9 @@ export function EditSeguradoraForm({ id }: { id: string }) {
     values: {
       id: seguradora?.id || "",
       razaoSocial: seguradora?.razaoSocial || "",
-      cnpjFormatado: seguradora?.cnpjFormatado || "",
       codigoSusep: seguradora?.codigoSusep || "",
       fantasia: seguradora?.fantasia || "",
-      grupo: seguradora?.grupo || "",
+      grupoEconomicoId: seguradora?.grupoEconomicoId || "",
       impostoRetido: seguradora?.impostoRetido,
       habilitarJuros: seguradora?.habilitarJuros || false,
       calculoDesconto: seguradora?.calculoDesconto || "",
@@ -126,24 +125,14 @@ export function EditSeguradoraForm({ id }: { id: string }) {
 
         <div className="flex gap-4">
           <div className="flex flex-1 flex-col gap-2">
-            <label htmlFor="cnpjFormatado">CNPJ</label>
-            <Input.Root variant={errors.cnpjFormatado ? "error" : "primary"}>
+            <label htmlFor="cnpj">CNPJ</label>
+            <Input.Root variant="disabled">
               <Input.Control
-                {...register("cnpjFormatado", {
-                  onChange: (e) => {
-                    const formatted = formatDocumentNumber(e.target.value)
-                    e.target.value = formatted
-                  },
-                })}
+                value={formatDocumentNumber(seguradora.cnpj)}
                 disabled
                 type="text"
               />
             </Input.Root>
-            {errors.cnpjFormatado && (
-              <span className="text-xs text-red-500">
-                {errors.cnpjFormatado.message}
-              </span>
-            )}
           </div>
 
           <div className="flex flex-1 flex-col gap-2">
@@ -157,8 +146,8 @@ export function EditSeguradoraForm({ id }: { id: string }) {
             <SelectInput
               options={gruposOptions}
               label="Grupo Econômico"
-              field_name="grupo"
-              {...register("grupo")}
+              field_name="grupoEconomicoId"
+              {...register("grupoEconomicoId")}
             />
           </div>
         </div>
@@ -210,8 +199,7 @@ export function EditSeguradoraForm({ id }: { id: string }) {
             <label htmlFor="telefoneSecundario">Telefone Secundário</label>
             <Input.Root variant="primary">
               <Input.Control
-                {...(register("telefoneSecundario"),
-                {
+                {...register("telefoneSecundario", {
                   onChange: (e) => {
                     e.target.value = formatPhoneNumber(e.target.value)
                   },

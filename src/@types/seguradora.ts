@@ -3,10 +3,9 @@ export namespace Seguradora {
     id: string
     razaoSocial: string
     cnpj: string
-    cnpjFormatado: string
     codigoSusep: string
     fantasia: string
-    grupo: string
+    grupoEconomicoId: string
     impostoRetido: number
     habilitarJuros: boolean
     calculoDesconto: string
@@ -26,7 +25,7 @@ export namespace Seguradora {
     bairro: string
     cidade: string
     uf: string
-    enderecoCompleto: string
+    complemento: string
     createdAt: string
     updatedAt: string
   }
@@ -41,56 +40,7 @@ export namespace Seguradora {
 
   export type GetByIdResponse = Type
 
-  export type CreateRequest = {
-    razaoSocial: string
-    cnpj: string
-    codigoSusep: string
-    fantasia: string
-    grupo: string
-    impostoRetido: number
-    habilitarJuros: boolean
-    calculoDesconto: string
-    calculoDescontoPadrao: string
-    diretor: string
-    gerente: string
-    website: string
-    email: string
-    telefone: string
-    telefoneSecundario: string
-    telefoneAssistencia24h: string
-    observacoes: string
-    cep: string
-    endereco: string
-    numero: string
-    bairro: string
-    cidade: string
-    uf: string
-  }
+  export type CreateRequest = Omit<Type, "id" | "createdAt" | "updatedAt">
 
-  export type UpdateRequest = {
-    id: string
-    razaoSocial: string
-    cnpj: string
-    codigoSusep: string
-    fantasia: string
-    grupo: string
-    impostoRetido: number
-    habilitarJuros: boolean
-    calculoDesconto: string
-    calculoDescontoPadrao: string
-    diretor: string
-    gerente: string
-    website: string
-    email: string
-    telefone: string
-    telefoneSecundario: string
-    telefoneAssistencia24h: string
-    observacoes: string
-    cep: string
-    endereco: string
-    numero: string
-    bairro: string
-    cidade: string
-    uf: string
-  }
+  export type UpdateRequest = Omit<Type, "createdAt" | "updatedAt">
 }

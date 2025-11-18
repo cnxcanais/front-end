@@ -5,7 +5,7 @@ import { AxiosError } from "axios"
 export async function editSeguradora({
   id,
   fantasia,
-  grupo,
+  grupoEconomicoId,
   calculoDesconto,
   diretor,
   gerente,
@@ -13,15 +13,21 @@ export async function editSeguradora({
   email,
   telefone,
   telefoneSecundario,
+  telefoneAssistencia24h,
   observacoes,
   ...rest
 }: Seguradora.UpdateRequest) {
   try {
     const telefoneOnlyNumbers = telefone.replace(/\D/g, "")
     const telefoneSecundarioOnlyNumbers = telefoneSecundario.replace(/\D/g, "")
+    const telefoneAssistencia24hOnlyNumbers = telefoneAssistencia24h.replace(
+      /\D/g,
+      ""
+    )
+
     await bffApi.put(`/seguradoras/${id}`, {
       fantasia: fantasia === "" ? null : fantasia,
-      grupo: grupo === "" ? null : grupo,
+      grupoEconomicoId: grupoEconomicoId === "" ? null : grupoEconomicoId,
       calculoDesconto: calculoDesconto === "" ? null : calculoDesconto,
       diretor: diretor === "" ? null : diretor,
       gerente: gerente === "" ? null : gerente,
@@ -30,6 +36,10 @@ export async function editSeguradora({
       telefone: telefone === "" ? null : telefoneOnlyNumbers,
       telefoneSecundario:
         telefoneSecundario === "" ? null : telefoneSecundarioOnlyNumbers,
+      telefoneAssistencia24h:
+        telefoneAssistencia24h === "" ? null : (
+          telefoneAssistencia24hOnlyNumbers
+        ),
       observacoes: observacoes === "" ? null : observacoes,
       ...rest,
     })

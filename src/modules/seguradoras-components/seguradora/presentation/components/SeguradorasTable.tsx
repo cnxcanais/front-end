@@ -73,7 +73,10 @@ export function SeguradorasTable() {
   ]
 
   useEffect(() => {
-    if (seguradoras.length > 0) setFilteredResults(seguradoras)
+    if (seguradoras.length > 0)
+      setFilteredResults(
+        seguradoras.sort((a, b) => a.razaoSocial.localeCompare(b.razaoSocial))
+      )
   }, [seguradoras, isLoading])
 
   if (isLoading) return <LoadingScreen />
