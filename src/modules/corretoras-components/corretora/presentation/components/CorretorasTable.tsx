@@ -7,9 +7,10 @@ import { Modal } from "@/core/components/Modals/Modal"
 import { SearchInput } from "@/core/components/SearchInput"
 import { Table } from "@/core/components/Table"
 import { exportNoPagination } from "@/core/utils/exportToExcel/exportNoPagination"
+import { formatPhoneNumber } from "@/core/utils/formatPhoneNumber"
 import { useCorretoraQuery } from "@/modules/corretoras-components/corretora/infra/hooks/use-corretora-query"
 import { removeCorretora } from "@/modules/corretoras-components/corretora/infra/remote"
-import { FileXls, Pencil, Trash } from "@phosphor-icons/react"
+import { FileXls, Paperclip, Pencil, Trash } from "@phosphor-icons/react"
 import { useRouter } from "next/navigation"
 import { useEffect, useState } from "react"
 import { toast } from "sonner"
@@ -48,7 +49,11 @@ export function CorretorasTable() {
     { header: "Nome Fantasia", accessor: "nomeFantasia" },
     { header: "CNPJ/CPF", accessor: "cnpjCpfFormatado" },
     { header: "Email", accessor: "email" },
-    { header: "Telefone", accessor: "telefone" },
+    {
+      header: "Telefone",
+      accessor: "telefone",
+      render: (value: string) => <span> {formatPhoneNumber(value)}</span>,
+    },
     { header: "Cidade", accessor: "cidade" },
     { header: "UF", accessor: "uf" },
     {
@@ -69,13 +74,20 @@ export function CorretorasTable() {
               setOpen(true)
             }}
           />
+          <Paperclip
+            className="cursor-pointer duration-300 ease-in-out hover:text-blue-500"
+            size={24}
+          />
         </div>
       ),
     },
   ]
 
   useEffect(() => {
-    if (corretoras.length > 0) setFilteredResults(corretoras)
+    if (corretoras.length > 0)
+      setFilteredResults(
+        corretoras.sort((a, b) => a.razaoSocial.localeCompare(b.razaoSocial))
+      )
   }, [corretoras])
 
   if (isLoading) return <LoadingScreen />
@@ -129,18 +141,17 @@ export function CorretorasTable() {
         )}
       </div>
 
-      {corretoras.length == 0 ? (
+      {corretoras.length == 0 ?
         <h2 className="mt-6 text-xl font-semibold">
           Nenhuma corretora cadastrada.
         </h2>
-      ) : (
-        <>
+      : <>
           <Table columns={columns} data={filteredResults} />
           <div className="mt-2 flex items-center justify-end gap-2">
             <button
               onClick={() => setPage((p) => Math.max(1, p - 1))}
               disabled={page === 1}
-              className="rounded px-3 py-1 text-sm disabled:opacity-50 enabled:hover:bg-gray-100">
+              className="rounded px-3 py-1 text-sm enabled:hover:bg-gray-100 disabled:opacity-50">
               Anterior
             </button>
             <span className="text-sm">
@@ -149,12 +160,12 @@ export function CorretorasTable() {
             <button
               onClick={() => setPage((p) => Math.min(totalPages, p + 1))}
               disabled={page === totalPages}
-              className="rounded px-3 py-1 text-sm disabled:opacity-50 enabled:hover:bg-gray-100">
+              className="rounded px-3 py-1 text-sm enabled:hover:bg-gray-100 disabled:opacity-50">
               Próxima
             </button>
           </div>
         </>
-      )}
+      }
     </>
   )
 }

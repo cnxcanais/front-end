@@ -7,7 +7,7 @@ import { SearchInput } from "@/core/components/SearchInput"
 import { Table } from "@/core/components/Table"
 import { exportNoPagination } from "@/core/utils/exportToExcel/exportNoPagination"
 import { useProdutorQuery } from "@/modules/produtores-components/produtor/infra/hooks/use-produtor-query"
-import { FileXls, Pencil, Trash } from "@phosphor-icons/react"
+import { FileXls, Paperclip, Pencil, Trash } from "@phosphor-icons/react"
 import { useRouter } from "next/navigation"
 import { useEffect, useState } from "react"
 
@@ -45,6 +45,10 @@ export function ProdutoresTable() {
             onClick={() => handleEdit(value)}
           />
           <Trash
+            className="cursor-pointer duration-300 ease-in-out hover:text-blue-500"
+            size={24}
+          />
+          <Paperclip
             className="cursor-pointer duration-300 ease-in-out hover:text-blue-500"
             size={24}
           />
@@ -94,18 +98,17 @@ export function ProdutoresTable() {
         )}
       </div>
 
-      {produtores.length == 0 ? (
+      {produtores.length == 0 ?
         <h2 className="mt-6 text-xl font-semibold">
           Nenhum produtor cadastrado.
         </h2>
-      ) : (
-        <>
+      : <>
           <Table columns={columns} data={filteredResults} />
           <div className="mt-2 flex items-center justify-end gap-2">
             <button
               onClick={() => setPage((p) => Math.max(1, p - 1))}
               disabled={page === 1}
-              className="rounded px-3 py-1 text-sm disabled:opacity-50 enabled:hover:bg-gray-100">
+              className="rounded px-3 py-1 text-sm enabled:hover:bg-gray-100 disabled:opacity-50">
               Anterior
             </button>
             <span className="text-sm">
@@ -114,12 +117,12 @@ export function ProdutoresTable() {
             <button
               onClick={() => setPage((p) => Math.min(totalPages, p + 1))}
               disabled={page === totalPages}
-              className="rounded px-3 py-1 text-sm disabled:opacity-50 enabled:hover:bg-gray-100">
+              className="rounded px-3 py-1 text-sm enabled:hover:bg-gray-100 disabled:opacity-50">
               Próxima
             </button>
           </div>
         </>
-      )}
+      }
     </>
   )
 }

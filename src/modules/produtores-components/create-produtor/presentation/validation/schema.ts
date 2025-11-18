@@ -8,7 +8,6 @@ export const createProdutorFormSchema = z.object({
   cnpjCpf: z
     .string()
     .nonempty({ message: "Obrigatório" })
-    .max(14)
     .refine(
       (value) => {
         const cleanValue = value.replace(/\D/g, "")

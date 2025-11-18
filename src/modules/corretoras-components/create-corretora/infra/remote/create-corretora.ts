@@ -9,19 +9,27 @@ export async function createCorretora({
   telefoneSecundario,
   website,
   observacoes,
+  telefone,
+  celular,
   ...rest
 }: Corretora.CreateRequest) {
   const cnpjCpf = cnpjCpfFormatado.replace(/\D/g, "")
   const cep = cepFormatado.replace(/\D/g, "")
+  const telefoneNoNumbers = telefone.replace(/\D/g, "")
+  const celularNoNumbers = celular.replace(/\D/g, "")
+  const telefoneSecundarioNoNumbers = telefoneSecundario.replace(/\D/g, "")
 
   try {
     const { data } = await bffApi.post("/corretoras", {
       cnpjCpf: cnpjCpf,
       cep: cep,
       complemento: complemento === "" ? null : complemento,
-      telefoneSecundario: telefoneSecundario === "" ? null : telefoneSecundario,
+      telefoneSecundario:
+        telefoneSecundario === "" ? null : telefoneSecundarioNoNumbers,
       website: website === "" ? null : website,
       observacoes: observacoes === "" ? null : observacoes,
+      telefone: telefone === "" ? null : telefoneNoNumbers,
+      celular: celular === "" ? null : celularNoNumbers,
       ...rest,
     })
 

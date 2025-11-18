@@ -1,27 +1,8 @@
-import { validateCNPJ, validateCPF } from "@/core/utils/validadeDocuments"
 import { z } from "zod"
 
 export const editCorretoraFormSchema = z.object({
-  id: z.string(),
   razaoSocial: z.string().nonempty({ message: "Obrigatório" }).max(255),
   nomeFantasia: z.string().nonempty({ message: "Obrigatório" }).max(255),
-  cnpjCpfFormatado: z
-    .string()
-    .nonempty({ message: "Obrigatório" })
-    .max(18)
-    .refine(
-      (value) => {
-        const cleanValue = value.replace(/\D/g, "")
-        if (cleanValue.length === 11) {
-          return validateCPF(cleanValue)
-        }
-        if (cleanValue.length === 14) {
-          return validateCNPJ(cleanValue)
-        }
-        return false
-      },
-      { message: "CPF/CNPJ inválido" }
-    ),
   codigoSusep: z.string().nonempty({ message: "Obrigatório" }).max(20),
   grupoEconomicoId: z.string().max(100).optional(),
   gerente: z.string().max(100).optional(),

@@ -27,7 +27,7 @@ export function CreateSeguradoraForm() {
 
   const [isCepSearched, setIsCepSearched] = useState(false)
 
-  const { data: gruposEconomicos } = useGrupoEconomicoQuery()
+  const { data: gruposEconomicos } = useGrupoEconomicoQuery(1, 100)
 
   const gruposOptions = useMemo(() => {
     if (!gruposEconomicos?.data) return []

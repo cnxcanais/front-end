@@ -9,7 +9,7 @@ import { Table } from "@/core/components/Table"
 import { exportNoPagination } from "@/core/utils/exportToExcel/exportNoPagination"
 import { useSeguradoraQuery } from "@/modules/seguradoras-components/seguradora/infra/hooks/use-seguradora-query"
 import { removeSeguradora } from "@/modules/seguradoras-components/seguradora/infra/remote"
-import { FileXls, Pencil, Trash } from "@phosphor-icons/react"
+import { FileXls, Paperclip, Pencil, Trash } from "@phosphor-icons/react"
 import { useRouter } from "next/navigation"
 import { useEffect, useState } from "react"
 import { toast } from "sonner"
@@ -66,6 +66,10 @@ export function SeguradorasTable() {
               setId(value)
               setOpen(true)
             }}
+          />
+          <Paperclip
+            className="cursor-pointer duration-300 ease-in-out hover:text-blue-500"
+            size={24}
           />
         </div>
       ),

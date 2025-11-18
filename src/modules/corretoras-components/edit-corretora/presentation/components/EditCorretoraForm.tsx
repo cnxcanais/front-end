@@ -7,7 +7,6 @@ import { LoadingScreen } from "@/core/components/LoadingScreen"
 import { SelectInput } from "@/core/components/SelectInput"
 import { fetchCep } from "@/core/utils/findCep"
 import { formatCep } from "@/core/utils/format-cep"
-import { formatDocumentNumber } from "@/core/utils/formatDocumentNumber"
 import { formatPhoneNumber } from "@/core/utils/formatPhoneNumber"
 import { normalizeDecimals } from "@/core/utils/normalizeDecimals"
 import { useCorretoraByIdQuery } from "@/modules/corretoras-components/edit-corretora/infra/hooks/use-corretora-by-id-query"
@@ -40,15 +39,13 @@ export function EditCorretoraForm({ id }: { id: string }) {
   } = useForm<EditCorretoraSchema>({
     resolver: zodResolver(editCorretoraFormSchema),
     values: {
-      id: corretora?.id || "",
       razaoSocial: corretora?.razaoSocial || "",
       nomeFantasia: corretora?.nomeFantasia || "",
-      cnpjCpfFormatado: corretora?.cnpjCpfFormatado || "",
       codigoSusep: corretora?.codigoSusep || "",
       grupoEconomicoId: corretora?.grupoEconomicoId || "",
       gerente: corretora?.gerente || "",
       contato: corretora?.contato || "",
-      celular: corretora?.celular || "",
+      celular: formatPhoneNumber(corretora?.celular) || "",
       cepFormatado: corretora?.cepFormatado || "",
       endereco: corretora?.endereco || "",
       numero: corretora?.numero || "",
@@ -57,8 +54,9 @@ export function EditCorretoraForm({ id }: { id: string }) {
       cidade: corretora?.cidade || "",
       uf: corretora?.uf || "",
       email: corretora?.email || "",
-      telefone: corretora?.telefone || "",
-      telefoneSecundario: corretora?.telefoneSecundario || "",
+      telefone: formatPhoneNumber(corretora?.telefone) || "",
+      telefoneSecundario:
+        formatPhoneNumber(corretora?.telefoneSecundario) || "",
       website: corretora?.website || "",
       percentualImposto: corretora?.percentualImposto,
       observacoes: corretora?.observacoes || "",
@@ -66,12 +64,12 @@ export function EditCorretoraForm({ id }: { id: string }) {
     },
   })
 
-  const { data: gruposEconomicos } = useGrupoEconomicoQuery()
+  const { data: gruposEconomicos } = useGrupoEconomicoQuery(1, 100)
 
   const gruposOptions = useMemo(() => {
-    if (!gruposEconomicos) return []
+    if (!gruposEconomicos?.data) return []
 
-    return gruposEconomicos
+    return gruposEconomicos.data
       .sort((a, b) => a.nome.localeCompare(b.nome))
       .map((grupo) => ({
         text: grupo.nome,
@@ -81,7 +79,7 @@ export function EditCorretoraForm({ id }: { id: string }) {
 
   async function onSubmit(data: Corretora.UpdateRequest) {
     try {
-      await editCorretora(data)
+      await editCorretora({ ...data, id })
       toast.success("Corretora editada com sucesso!")
       setTimeout(() => push("/corretoras"), 2000)
     } catch (error) {
@@ -127,23 +125,13 @@ export function EditCorretoraForm({ id }: { id: string }) {
         <div className="flex gap-4">
           <div className="flex flex-1 flex-col gap-2">
             <label htmlFor="cnpjCpfFormatado">CNPJ/CPF</label>
-            <Input.Root
-              variant={errors.cnpjCpfFormatado ? "error" : "disabled"}>
+            <Input.Root variant="disabled">
               <Input.Control
-                {...register("cnpjCpfFormatado", {
-                  onChange: (e) => {
-                    e.target.value = formatDocumentNumber(e.target.value)
-                  },
-                })}
+                value={corretora.cnpjCpfFormatado}
                 type="text"
                 disabled
               />
             </Input.Root>
-            {errors.cnpjCpfFormatado && (
-              <span className="text-xs text-red-500">
-                {errors.cnpjCpfFormatado.message}
-              </span>
-            )}
           </div>
 
           <div className="flex flex-1 flex-col gap-2">
@@ -346,21 +334,9 @@ export function EditCorretoraForm({ id }: { id: string }) {
         <div className="flex gap-4">
           <div className="flex flex-1 flex-col gap-2">
             <label htmlFor="gerente">Gerente</label>
-            <Input.Root variant={errors.gerente ? "error" : "primary"}>
-              <Input.Control
-                {...register("gerente", {
-                  onChange: (e) => {
-                    e.target.value = formatDocumentNumber(e.target.value)
-                  },
-                })}
-                type="text"
-              />
+            <Input.Root variant="primary">
+              <Input.Control {...register("gerente")} type="text" />
             </Input.Root>
-            {errors.gerente && (
-              <span className="text-xs text-red-500">
-                {errors.gerente.message}
-              </span>
-            )}
           </div>
 
           <div className="flex flex-1 flex-col gap-2">

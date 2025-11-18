@@ -15,7 +15,6 @@ export async function editProdutor(
     tipoRepasse,
     formaRepasse,
     grupos,
-
     observacoes,
     ...rest
   }: Produtor.UpdateRequest
