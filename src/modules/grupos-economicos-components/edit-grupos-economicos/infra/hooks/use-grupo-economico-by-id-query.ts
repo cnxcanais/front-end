@@ -5,5 +5,6 @@ export function useGrupoEconomicoByIdQuery(id: string) {
   return useQuery({
     queryKey: ["grupo-economico", id],
     queryFn: () => getGrupoEconomicoById(id),
+    enabled: !!id,
   })
 }

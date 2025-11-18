@@ -18,6 +18,7 @@ export function EditGrupoEconomicoForm({ id }: { id: string }) {
   const { push } = useRouter()
 
   const { data: grupoEconomico, isLoading } = useGrupoEconomicoByIdQuery(id)
+  console.log("grupoEconomico", grupoEconomico)
 
   const {
     register,
@@ -31,7 +32,7 @@ export function EditGrupoEconomicoForm({ id }: { id: string }) {
     },
   })
 
-  async function onSubmit(data: EditGrupoEconomicoSchema) {
+  async function onSubmit(data: { nome: string; id: string }) {
     try {
       await editGrupoEconomico(data)
       toast.success("Grupo Econômico editado com sucesso!")

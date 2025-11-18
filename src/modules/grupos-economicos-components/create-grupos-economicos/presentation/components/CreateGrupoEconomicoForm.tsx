@@ -23,7 +23,7 @@ export function CreateGrupoEconomicoForm() {
     resolver: zodResolver(createGrupoEconomicoFormSchema),
   })
 
-  async function onSubmit(data: CreateGrupoEconomicoSchema) {
+  async function onSubmit(data: { nome: string }) {
     try {
       await createGrupoEconomico(data)
       toast.success("Grupo Econômico criado com sucesso!")
