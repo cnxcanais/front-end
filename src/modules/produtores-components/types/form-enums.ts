@@ -28,6 +28,12 @@ export enum StatusProdutor {
   INATIVO = "INATIVO",
 }
 
+export enum RepasseSobre {
+  PREMIO_LIQUIDO = "PREMIO_LIQUIDO",
+  PREMIO_BRUTO = "PREMIO_BRUTO",
+  COMISSAO = "COMISSAO",
+}
+
 export const TipoPessoaLabels: { text: string; value: TipoPessoa }[] = [
   { text: "Pessoa Física", value: TipoPessoa.FISICA },
   { text: "Pessoa Jurídica", value: TipoPessoa.JURIDICA },
@@ -56,4 +62,10 @@ export const GrupoProdutorLabels: { text: string; value: GrupoProdutor }[] = [
 export const StatusProdutorLabels: { text: string; value: string }[] = [
   { text: "Ativo", value: StatusProdutor.ATIVO },
   { text: "Inativo", value: StatusProdutor.INATIVO },
+]
+
+export const RepasseSobreLabels: { text: string; value: string }[] = [
+  { text: "Prêmio Líquido", value: RepasseSobre.PREMIO_LIQUIDO },
+  { text: "Prêmio Bruto", value: RepasseSobre.PREMIO_BRUTO },
+  { text: "Comissão", value: RepasseSobre.COMISSAO },
 ]

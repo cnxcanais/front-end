@@ -9,13 +9,17 @@ import { SelectInput } from "@/core/components/SelectInput"
 import { fetchCep } from "@/core/utils/findCep"
 import { formatCep } from "@/core/utils/format-cep"
 import { formatPhoneNumber } from "@/core/utils/formatPhoneNumber"
+import { normalizeDecimals } from "@/core/utils/normalizeDecimals"
 import { useCorretoraByIdQuery } from "@/modules/corretoras-components/edit-corretora/infra/hooks/use-corretora-by-id-query"
 import { useProdutorByIdQuery } from "@/modules/produtores-components/edit-produtor/infra/hooks/use-produtor-by-id-query"
 import { editProdutor } from "@/modules/produtores-components/edit-produtor/infra/remote"
 import { useBancosQuery } from "@/modules/produtores-components/produtor/infra/hooks/use-banco-query"
 import {
+  FormaRepasseLabels,
+  RepasseSobreLabels,
   StatusProdutorLabels,
   TipoContaLabels,
+  TipoRepasseLabels,
 } from "@/modules/produtores-components/types/form-enums"
 import { zodResolver } from "@hookform/resolvers/zod"
 import { MagnifyingGlass } from "@phosphor-icons/react"
@@ -408,8 +412,88 @@ export function EditProdutorForm({ id }: { id: string }) {
         </div>
       </div>
 
-      {/* Observações e LGPD */}
+      {/* Repasse */}
       <div className="flex flex-col gap-4 bg-gray-50 p-4 shadow-md">
+        <h3 className="text-lg font-semibold">Repasse</h3>
+        <div className="flex gap-4">
+          <div className="flex flex-1 flex-col gap-2">
+            <label>Conta Contábil</label>
+            <Input.Root variant="primary">
+              <Input.Control {...register("contaContabil")} type="text" />
+            </Input.Root>
+          </div>
+
+          <div className="flex flex-1 flex-col gap-2">
+            <SelectInput
+              options={RepasseSobreLabels}
+              field_name="repasseSobre"
+              label="Repasse Sobre"
+              {...register("repasseSobre")}
+            />
+          </div>
+
+          <div className="flex items-center gap-2">
+            <input
+              {...register("excluirRepasse")}
+              type="checkbox"
+              id="excluirRepasse"
+            />
+            <label htmlFor="excluirRepasse">Excluir Repasse</label>
+          </div>
+        </div>
+
+        <div className="flex gap-4">
+          <div className="flex flex-col gap-2">
+            <SelectInput
+              options={TipoRepasseLabels}
+              field_name="tipoRepasse"
+              label="Tipo Repasse"
+              {...register("tipoRepasse")}
+            />
+          </div>
+
+          <div className="flex flex-col gap-2">
+            <SelectInput
+              options={FormaRepasseLabels}
+              field_name="formaRepasse"
+              label="Forma Repasse"
+              {...register("formaRepasse")}
+            />
+          </div>
+
+          <div className="flex flex-col gap-2">
+            <label>% Imposto</label>
+            <Input.Root variant="primary">
+              <Input.Control
+                {...register("percentualImposto")}
+                type="text"
+                inputMode="decimal"
+                onChange={(e) => {
+                  normalizeDecimals(e.target, 2)
+                }}
+              />
+            </Input.Root>
+          </div>
+
+          <div className="flex flex-col gap-2">
+            <label>Primeira Repasse (%)</label>
+            <Input.Root variant="primary">
+              <Input.Control
+                {...register("primeiraRepasse")}
+                type="text"
+                inputMode="decimal"
+                onChange={(e) => {
+                  normalizeDecimals(e.target, 2)
+                }}
+              />
+            </Input.Root>
+          </div>
+        </div>
+      </div>
+
+      {/* Outros */}
+      <div className="flex flex-col gap-4 bg-gray-50 p-4 shadow-md">
+        <h3 className="text-lg font-semibold">Outros</h3>
         <div className="flex flex-col gap-2">
           <label>Observações</label>
           <Input.Root variant="primary">

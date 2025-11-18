@@ -7,19 +7,24 @@ export async function editCorretora({
   cepFormatado,
   complemento,
   telefoneSecundario,
+  telefone,
   website,
   observacoes,
   ...rest
 }: Corretora.UpdateRequest) {
   const cep = cepFormatado.replace(/\D/g, "")
+  const telefoneFormatado = telefone.replace(/\D/g, "")
+  const telefoneSecundarioFormatado = telefoneSecundario.replace(/\D/g, "")
 
   try {
     await bffApi.put(`/corretoras/${id}`, {
       cep: cep,
       complemento: complemento === "" ? null : complemento,
-      telefoneSecundario: telefoneSecundario === "" ? null : telefoneSecundario,
+      telefoneSecundario:
+        telefoneSecundario === "" ? null : telefoneSecundarioFormatado,
       website: website === "" ? null : website,
       observacoes: observacoes === "" ? null : observacoes,
+      telefone: telefoneFormatado,
       ...rest,
     })
   } catch (error) {

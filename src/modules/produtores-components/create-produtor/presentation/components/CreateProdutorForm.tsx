@@ -14,6 +14,7 @@ import { useCorretoraQuery } from "@/modules/corretoras-components/corretora/inf
 import { useBancosQuery } from "@/modules/produtores-components/produtor/infra/hooks/use-banco-query"
 import {
   FormaRepasseLabels,
+  RepasseSobreLabels,
   StatusProdutorLabels,
   TipoContaLabels,
   TipoPessoaLabels,
@@ -420,10 +421,12 @@ export function CreateProdutorForm() {
           </div>
 
           <div className="flex flex-1 flex-col gap-2">
-            <label>Repasse Sobre</label>
-            <Input.Root variant="primary">
-              <Input.Control {...register("repasseSobre")} type="text" />
-            </Input.Root>
+            <SelectInput
+              options={RepasseSobreLabels}
+              field_name="repasseSobre"
+              label="Repasse Sobre"
+              {...register("repasseSobre")}
+            />
           </div>
 
           <div className="flex items-center gap-2">
