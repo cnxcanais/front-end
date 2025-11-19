@@ -60,8 +60,14 @@ export function ProdutoresTable() {
     { header: "Nome", accessor: "nome" },
     { header: "CPF/CNPJ", accessor: "cnpjCpf" },
     { header: "Situação", accessor: "situacao" },
-    { header: "Email", accessor: "email" },
-    { header: "Telefone", accessor: "telefoneCelular" },
+    {
+      header: "Corretora",
+      accessor: "corretoraId",
+      render: (value: string) => {
+        const corretora = corretoras?.data?.find((c) => c.id === value)
+        return corretora?.razaoSocial || value
+      },
+    },
     { header: "Cidade", accessor: "cidade" },
     { header: "UF", accessor: "uf" },
     {

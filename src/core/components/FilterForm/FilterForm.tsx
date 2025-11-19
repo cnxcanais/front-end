@@ -124,12 +124,15 @@ export function FilterForm({ fields, onFilter, defaultOpen = true, appliedFilter
             {Object.keys(displayedFilters).map(key => {
               const value = displayedFilters[key]
               const field = fields.find(f => f.name === key)
+              const displayValue = field?.type === "select" && field.options 
+                ? field.options.find(option => option.value === value)?.label || value
+                : value
               return (
                 <div
                   key={key}
                   className="flex items-center gap-2 rounded-full bg-blue-100 px-3 py-1 text-sm">
                   <span className="font-medium">{field?.label}:</span>
-                  <span>{value}</span>
+                  <span>{displayValue}</span>
                   <button
                     onClick={() => handleRemoveTag(key)}
                     className="ml-1 hover:text-red-500">
