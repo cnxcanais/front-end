@@ -8,10 +8,11 @@ import { Modal } from "@/core/components/Modals/Modal"
 import { Pagination } from "@/core/components/Pagination"
 import { Table } from "@/core/components/Table"
 import { exportNoPagination } from "@/core/utils/exportToExcel/exportNoPagination"
+import { useCorretoraQuery } from "@/modules/corretoras-components/corretora/infra/hooks/use-corretora-query"
 import { useProdutorQuery } from "@/modules/produtores-components/produtor/infra/hooks/use-produtor-query"
 import { FileXls, Paperclip, Pencil, Trash } from "@phosphor-icons/react"
 import { useRouter } from "next/navigation"
-import { useEffect, useState } from "react"
+import { useEffect, useMemo, useState } from "react"
 import { toast } from "sonner"
 import { removeProdutor } from "../../infra/remote/remove-produtor"
 
@@ -20,11 +21,21 @@ export function ProdutoresTable() {
   const [limit, setLimit] = useState(10)
   const [filters, setFilters] = useState<Record<string, string>>({})
   const { data, isLoading, refetch } = useProdutorQuery(page, limit, filters)
+  const { data: corretoras, isLoading: isLoadingCorretoras } =
+    useCorretoraQuery()
   const { push } = useRouter()
   const [open, setOpen] = useState(false)
   const [id, setId] = useState("")
 
   const [filteredResults, setFilteredResults] = useState([])
+
+  const corretorasOptions = useMemo(() => {
+    if (isLoadingCorretoras || !corretoras) return []
+    return corretoras.data.map((corretora) => ({
+      label: corretora.razaoSocial,
+      value: corretora.id,
+    }))
+  }, [corretoras, isLoadingCorretoras])
 
   const produtores = data?.data || []
   const totalPages = data?.totalPages || 1
@@ -91,11 +102,18 @@ export function ProdutoresTable() {
       name: "corretoraId",
       label: "Corretora",
       placeholder: "Buscar por Corretora",
+      type: "select",
+      options: corretorasOptions,
     },
     {
       name: "situacao",
       label: "Situação",
       placeholder: "Buscar por Situação",
+      type: "select",
+      options: [
+        { label: "Ativo", value: "ATIVO" },
+        { label: "Inativo", value: "INATIVO" },
+      ],
     },
   ]
 
