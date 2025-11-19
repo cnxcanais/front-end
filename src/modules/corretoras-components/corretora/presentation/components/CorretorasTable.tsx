@@ -6,7 +6,6 @@ import { FilterField, FilterForm } from "@/core/components/FilterForm"
 import { LoadingScreen } from "@/core/components/LoadingScreen"
 import { Modal } from "@/core/components/Modals/Modal"
 import { Pagination } from "@/core/components/Pagination"
-import { SearchInput } from "@/core/components/SearchInput"
 import { Table } from "@/core/components/Table"
 import { exportNoPagination } from "@/core/utils/exportToExcel/exportNoPagination"
 import { formatPhoneNumber } from "@/core/utils/formatPhoneNumber"
@@ -138,11 +137,6 @@ export function CorretorasTable() {
       />
       <div className="mt-8 flex items-center justify-between">
         <div className="flex h-full gap-4">
-          <SearchInput
-            data={corretoras}
-            searchParam="razaoSocial"
-            onSearchResult={setFilteredResults}
-          />
           <Button
             onClick={() => push("/corretoras/create")}
             variant="secondary">

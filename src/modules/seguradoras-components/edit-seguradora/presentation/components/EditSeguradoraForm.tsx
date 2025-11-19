@@ -65,9 +65,11 @@ export function EditSeguradoraForm({ id }: { id: string }) {
       gerente: seguradora?.gerente || "",
       website: seguradora?.website || "",
       email: seguradora?.email || "",
-      telefone: seguradora?.telefone || "",
-      telefoneSecundario: seguradora?.telefoneSecundario || "",
-      telefoneAssistencia24h: seguradora?.telefoneAssistencia24h || "",
+      telefone: formatPhoneNumber(seguradora?.telefone) || "",
+      telefoneSecundario:
+        formatPhoneNumber(seguradora?.telefoneSecundario) || "",
+      telefoneAssistencia24h:
+        formatPhoneNumber(seguradora?.telefoneAssistencia24h) || "",
       observacoes: seguradora?.observacoes || "",
       cep: seguradora ? formatCep(seguradora.cep) : "",
       endereco: seguradora?.endereco || "",
