@@ -17,20 +17,51 @@ interface FilterFormProps {
   fields: FilterField[]
   onFilter: (filters: Record<string, string>) => void
   defaultOpen?: boolean
+  appliedFilters?: Record<string, string>
 }
 
-export function FilterForm({ fields, onFilter, defaultOpen = true }: FilterFormProps) {
+export function FilterForm({ fields, onFilter, defaultOpen = true, appliedFilters: externalAppliedFilters }: FilterFormProps) {
   const [isOpen, setIsOpen] = useState(defaultOpen)
   const [filters, setFilters] = useState<Record<string, string>>({})
+  const [appliedFilters, setAppliedFilters] = useState<Record<string, string>>({})
+  
+  const displayedFilters = externalAppliedFilters || appliedFilters
+
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault()
-    onFilter(filters)
+    const cleaned: Record<string, string> = {}
+    Object.keys(filters).forEach(key => {
+      const value = filters[key]
+      if (value && value.trim()) {
+        cleaned[key] = value
+      }
+    })
+    setAppliedFilters(() => cleaned)
+    onFilter(cleaned)
   }
 
   const handleClear = () => {
     setFilters({})
+    setAppliedFilters({})
     onFilter({})
+  }
+
+  const handleRemoveTag = (key: string) => {
+    const newApplied: Record<string, string> = {}
+    const newFilters: Record<string, string> = {}
+    
+    Object.keys(displayedFilters).forEach(k => {
+      if (k !== key) newApplied[k] = displayedFilters[k]
+    })
+    
+    Object.keys(filters).forEach(k => {
+      if (k !== key) newFilters[k] = filters[k]
+    })
+    
+    setFilters(newFilters)
+    setAppliedFilters(newApplied)
+    onFilter(newApplied)
   }
 
   return (
@@ -85,6 +116,30 @@ export function FilterForm({ fields, onFilter, defaultOpen = true }: FilterFormP
             </Button>
           </div>
         </form>
+      )}
+      
+      {Object.keys(displayedFilters).length > 0 && (
+        <div className={isOpen ? "border-t border-gray-200 p-4" : "p-4"}>
+          <div className="flex flex-wrap gap-2">
+            {Object.keys(displayedFilters).map(key => {
+              const value = displayedFilters[key]
+              const field = fields.find(f => f.name === key)
+              return (
+                <div
+                  key={key}
+                  className="flex items-center gap-2 rounded-full bg-blue-100 px-3 py-1 text-sm">
+                  <span className="font-medium">{field?.label}:</span>
+                  <span>{value}</span>
+                  <button
+                    onClick={() => handleRemoveTag(key)}
+                    className="ml-1 hover:text-red-500">
+                    ×
+                  </button>
+                </div>
+              )
+            })}
+          </div>
+        </div>
       )}
     </div>
   )

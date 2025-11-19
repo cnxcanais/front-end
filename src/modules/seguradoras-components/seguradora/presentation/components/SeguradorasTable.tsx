@@ -16,7 +16,7 @@ import { toast } from "sonner"
 
 export function SeguradorasTable() {
   const [page, setPage] = useState(1)
-  const [limit] = useState(10)
+  const [limit, setLimit] = useState(10)
   const [filters, setFilters] = useState<Record<string, string>>({})
   const { data, isLoading, refetch } = useSeguradoraQuery(page, limit, filters)
   const { push } = useRouter()
@@ -106,35 +106,7 @@ export function SeguradorasTable() {
           </Button>
         </div>
       </Modal>
-      <FilterForm fields={filterFields} onFilter={handleFilter} />
-      
-      {Object.keys(filters).filter(key => filters[key]).length > 0 && (
-        <div className="mb-4 flex flex-wrap gap-2">
-          {Object.entries(filters)
-            .filter(([_, value]) => value)
-            .map(([key, value]) => {
-              const field = filterFields.find(f => f.name === key)
-              return (
-                <div
-                  key={key}
-                  className="flex items-center gap-2 rounded-full bg-blue-100 px-3 py-1 text-sm">
-                  <span className="font-medium">{field?.label}:</span>
-                  <span>{value}</span>
-                  <button
-                    onClick={() => {
-                      const newFilters = { ...filters }
-                      delete newFilters[key]
-                      setFilters(newFilters)
-                      setPage(1)
-                    }}
-                    className="ml-1 hover:text-red-500">
-                    ×
-                  </button>
-                </div>
-              )
-            })}
-        </div>
-      )}
+      <FilterForm fields={filterFields} onFilter={handleFilter} appliedFilters={filters} />
       
       <div className="mt-8 flex items-center justify-between">
         <Button
@@ -168,22 +140,38 @@ export function SeguradorasTable() {
         </h2>
       : <>
           <Table columns={columns} data={seguradoras} />
-          <div className="md-2 mt-0 flex items-center justify-end gap-2">
-            <button
-              onClick={() => setPage((p) => Math.max(1, p - 1))}
-              disabled={page === 1}
-              className="rounded px-3 py-1 text-sm enabled:hover:bg-gray-100 disabled:opacity-50">
-              Anterior
-            </button>
-            <span className="text-sm">
-              Página {page} de {totalPages}
-            </span>
-            <button
-              onClick={() => setPage((p) => Math.min(totalPages, p + 1))}
-              disabled={page === totalPages}
-              className="rounded px-3 py-1 text-sm enabled:hover:bg-gray-100 disabled:opacity-50">
-              Próxima
-            </button>
+          <div className="md-2 mt-0 flex items-center justify-between">
+            <div className="flex items-center gap-2">
+              <span className="text-sm">Itens por página:</span>
+              <select
+                value={limit}
+                onChange={(e) => {
+                  setLimit(Number(e.target.value))
+                  setPage(1)
+                }}
+                className="w-16 rounded border border-gray-300 px-2 py-1 text-sm">
+                <option value={5}>5</option>
+                <option value={10}>10</option>
+                <option value={20}>20</option>
+              </select>
+            </div>
+            <div className="flex items-center gap-2">
+              <button
+                onClick={() => setPage((p) => Math.max(1, p - 1))}
+                disabled={page === 1}
+                className="rounded px-3 py-1 text-sm enabled:hover:bg-gray-100 disabled:opacity-50">
+                Anterior
+              </button>
+              <span className="text-sm">
+                Página {page} de {totalPages}
+              </span>
+              <button
+                onClick={() => setPage((p) => Math.min(totalPages, p + 1))}
+                disabled={page === totalPages}
+                className="rounded px-3 py-1 text-sm enabled:hover:bg-gray-100 disabled:opacity-50">
+                Próxima
+              </button>
+            </div>
           </div>
         </>
       }
