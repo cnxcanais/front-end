@@ -5,6 +5,7 @@ import { ExportTableToPDFButton } from "@/core/components/ExportPDFButton"
 import { FilterField, FilterForm } from "@/core/components/FilterForm"
 import { LoadingScreen } from "@/core/components/LoadingScreen"
 import { Modal } from "@/core/components/Modals/Modal"
+import { Pagination } from "@/core/components/Pagination"
 import { SearchInput } from "@/core/components/SearchInput"
 import { Table } from "@/core/components/Table"
 import { exportNoPagination } from "@/core/utils/exportToExcel/exportNoPagination"
@@ -18,7 +19,7 @@ import { toast } from "sonner"
 
 export function CorretorasTable() {
   const [page, setPage] = useState(1)
-  const [limit] = useState(10)
+  const [limit, setLimit] = useState(10)
   const { push } = useRouter()
 
   const [open, setOpen] = useState(false)
@@ -174,23 +175,16 @@ export function CorretorasTable() {
         </h2>
       : <>
           <Table columns={columns} data={filteredResults} />
-          <div className="mt-2 flex items-center justify-end gap-2">
-            <button
-              onClick={() => setPage((p) => Math.max(1, p - 1))}
-              disabled={page === 1}
-              className="rounded px-3 py-1 text-sm enabled:hover:bg-gray-100 disabled:opacity-50">
-              Anterior
-            </button>
-            <span className="text-sm">
-              Página {page} de {totalPages}
-            </span>
-            <button
-              onClick={() => setPage((p) => Math.min(totalPages, p + 1))}
-              disabled={page === totalPages}
-              className="rounded px-3 py-1 text-sm enabled:hover:bg-gray-100 disabled:opacity-50">
-              Próxima
-            </button>
-          </div>
+          <Pagination
+            page={page}
+            totalPages={totalPages}
+            limit={limit}
+            onPageChange={setPage}
+            onLimitChange={(newLimit) => {
+              setLimit(newLimit)
+              setPage(1)
+            }}
+          />
         </>
       }
     </>

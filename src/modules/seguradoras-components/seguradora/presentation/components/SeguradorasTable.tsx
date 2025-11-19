@@ -5,6 +5,7 @@ import { ExportTableToPDFButton } from "@/core/components/ExportPDFButton"
 import { FilterField, FilterForm } from "@/core/components/FilterForm"
 import { LoadingScreen } from "@/core/components/LoadingScreen"
 import { Modal } from "@/core/components/Modals/Modal"
+import { Pagination } from "@/core/components/Pagination"
 import { Table } from "@/core/components/Table"
 import { exportNoPagination } from "@/core/utils/exportToExcel/exportNoPagination"
 import { useSeguradoraQuery } from "@/modules/seguradoras-components/seguradora/infra/hooks/use-seguradora-query"
@@ -146,39 +147,16 @@ export function SeguradorasTable() {
         </h2>
       : <>
           <Table columns={columns} data={seguradoras} />
-          <div className="md-2 mt-0 flex items-center justify-between">
-            <div className="flex items-center gap-2">
-              <span className="text-sm">Itens por página:</span>
-              <select
-                value={limit}
-                onChange={(e) => {
-                  setLimit(Number(e.target.value))
-                  setPage(1)
-                }}
-                className="w-16 rounded border border-gray-300 px-2 py-1 text-sm">
-                <option value={5}>5</option>
-                <option value={10}>10</option>
-                <option value={20}>20</option>
-              </select>
-            </div>
-            <div className="flex items-center gap-2">
-              <button
-                onClick={() => setPage((p) => Math.max(1, p - 1))}
-                disabled={page === 1}
-                className="rounded px-3 py-1 text-sm enabled:hover:bg-gray-100 disabled:opacity-50">
-                Anterior
-              </button>
-              <span className="text-sm">
-                Página {page} de {totalPages}
-              </span>
-              <button
-                onClick={() => setPage((p) => Math.min(totalPages, p + 1))}
-                disabled={page === totalPages}
-                className="rounded px-3 py-1 text-sm enabled:hover:bg-gray-100 disabled:opacity-50">
-                Próxima
-              </button>
-            </div>
-          </div>
+          <Pagination
+            page={page}
+            totalPages={totalPages}
+            limit={limit}
+            onPageChange={setPage}
+            onLimitChange={(newLimit) => {
+              setLimit(newLimit)
+              setPage(1)
+            }}
+          />
         </>
       }
     </>
