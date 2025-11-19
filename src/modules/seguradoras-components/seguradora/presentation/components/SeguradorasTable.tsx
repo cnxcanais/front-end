@@ -2,27 +2,27 @@
 
 import { Button } from "@/core/components/Button"
 import { ExportTableToPDFButton } from "@/core/components/ExportPDFButton"
+import { FilterForm, FilterField } from "@/core/components/FilterForm"
 import { LoadingScreen } from "@/core/components/LoadingScreen"
 import { Modal } from "@/core/components/Modals/Modal"
-import { SearchInput } from "@/core/components/SearchInput"
 import { Table } from "@/core/components/Table"
 import { exportNoPagination } from "@/core/utils/exportToExcel/exportNoPagination"
 import { useSeguradoraQuery } from "@/modules/seguradoras-components/seguradora/infra/hooks/use-seguradora-query"
 import { removeSeguradora } from "@/modules/seguradoras-components/seguradora/infra/remote"
 import { FileXls, Paperclip, Pencil, Trash } from "@phosphor-icons/react"
 import { useRouter } from "next/navigation"
-import { useEffect, useState } from "react"
+import { useState } from "react"
 import { toast } from "sonner"
 
 export function SeguradorasTable() {
   const [page, setPage] = useState(1)
   const [limit] = useState(10)
-  const { data, isLoading, refetch } = useSeguradoraQuery(page, limit)
+  const [filters, setFilters] = useState<Record<string, string>>({})
+  const { data, isLoading, refetch } = useSeguradoraQuery(page, limit, filters)
   const { push } = useRouter()
 
   const [open, setOpen] = useState(false)
   const [id, setId] = useState("")
-  const [filteredResults, setFilteredResults] = useState([])
 
   const seguradoras = data?.data || []
   const totalPages = data?.totalPages || 1
@@ -43,8 +43,20 @@ export function SeguradorasTable() {
     }
   }
 
+  const filterFields: FilterField[] = [
+    { name: "razaoSocial", label: "Razão Social", placeholder: "Buscar por razão social" },
+    { name: "cnpj", label: "CNPJ", placeholder: "Buscar por CNPJ" },
+    { name: "uf", label: "UF", placeholder: "Buscar por UF" },
+  ]
+
+  const handleFilter = (newFilters: Record<string, string>) => {
+    setFilters(newFilters)
+    setPage(1)
+  }
+
   const columns = [
-    { header: "Nome", accessor: "razaoSocial" },
+    { header: "Razão Social", accessor: "razaoSocial" },
+    { header: "Nome Fantasia", accessor: "fantasia" },
     { header: "Documento", accessor: "cnpjFormatado" },
     { header: "Endereço", accessor: "enderecoCompleto" },
     { header: "Cidade", accessor: "cidade" },
@@ -76,13 +88,6 @@ export function SeguradorasTable() {
     },
   ]
 
-  useEffect(() => {
-    if (seguradoras.length > 0)
-      setFilteredResults(
-        seguradoras.sort((a, b) => a.razaoSocial.localeCompare(b.razaoSocial))
-      )
-  }, [seguradoras, isLoading])
-
   if (isLoading) return <LoadingScreen />
 
   return (
@@ -101,19 +106,42 @@ export function SeguradorasTable() {
           </Button>
         </div>
       </Modal>
-      <div className="mt-8 flex items-center justify-between">
-        <div className="flex h-full gap-4">
-          <SearchInput
-            data={seguradoras}
-            searchParam="razaoSocial"
-            onSearchResult={setFilteredResults}
-          />
-          <Button
-            onClick={() => push("/seguradoras/create")}
-            variant="secondary">
-            Cadastrar
-          </Button>
+      <FilterForm fields={filterFields} onFilter={handleFilter} />
+      
+      {Object.keys(filters).filter(key => filters[key]).length > 0 && (
+        <div className="mb-4 flex flex-wrap gap-2">
+          {Object.entries(filters)
+            .filter(([_, value]) => value)
+            .map(([key, value]) => {
+              const field = filterFields.find(f => f.name === key)
+              return (
+                <div
+                  key={key}
+                  className="flex items-center gap-2 rounded-full bg-blue-100 px-3 py-1 text-sm">
+                  <span className="font-medium">{field?.label}:</span>
+                  <span>{value}</span>
+                  <button
+                    onClick={() => {
+                      const newFilters = { ...filters }
+                      delete newFilters[key]
+                      setFilters(newFilters)
+                      setPage(1)
+                    }}
+                    className="ml-1 hover:text-red-500">
+                    ×
+                  </button>
+                </div>
+              )
+            })}
         </div>
+      )}
+      
+      <div className="mt-8 flex items-center justify-between">
+        <Button
+          onClick={() => push("/seguradoras/create")}
+          variant="secondary">
+          Cadastrar
+        </Button>
         {seguradoras.length > 0 && (
           <div className="flex items-center gap-2">
             <ExportTableToPDFButton
@@ -139,7 +167,7 @@ export function SeguradorasTable() {
           Nenhum fornecedor cadastrado.
         </h2>
       : <>
-          <Table columns={columns} data={filteredResults} />
+          <Table columns={columns} data={seguradoras} />
           <div className="md-2 mt-0 flex items-center justify-end gap-2">
             <button
               onClick={() => setPage((p) => Math.max(1, p - 1))}
