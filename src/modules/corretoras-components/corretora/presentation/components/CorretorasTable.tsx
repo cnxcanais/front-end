@@ -2,6 +2,7 @@
 
 import { Button } from "@/core/components/Button"
 import { ExportTableToPDFButton } from "@/core/components/ExportPDFButton"
+import { FilterField, FilterForm } from "@/core/components/FilterForm"
 import { LoadingScreen } from "@/core/components/LoadingScreen"
 import { Modal } from "@/core/components/Modals/Modal"
 import { SearchInput } from "@/core/components/SearchInput"
@@ -18,18 +19,39 @@ import { toast } from "sonner"
 export function CorretorasTable() {
   const [page, setPage] = useState(1)
   const [limit] = useState(10)
-  const { data, isLoading, refetch } = useCorretoraQuery(page, limit)
   const { push } = useRouter()
 
   const [open, setOpen] = useState(false)
   const [id, setId] = useState("")
   const [filteredResults, setFilteredResults] = useState([])
+  const [filters, setFilters] = useState<Record<string, string>>({})
+  const { data, isLoading, refetch } = useCorretoraQuery(page, limit, filters)
 
   const corretoras = data?.data || []
   const totalPages = data?.totalPages || 1
 
   const handleEdit = (id: string) => {
     push(`/corretoras/edit/${id}`)
+  }
+
+  const filterFields: FilterField[] = [
+    {
+      name: "razaoSocial",
+      label: "Razão Social",
+      placeholder: "Buscar por razão social",
+    },
+    {
+      name: "nomeFantasia",
+      label: "Nome Fantasia",
+      placeholder: "Buscar por rome fantasia",
+    },
+    { name: "cnpj", label: "CNPJ", placeholder: "Buscar por CNPJ" },
+    { name: "uf", label: "UF", placeholder: "Buscar por UF" },
+  ]
+
+  const handleFilter = (newFilters: Record<string, string>) => {
+    setFilters(newFilters)
+    setPage(1)
   }
 
   const handleConfirmDelete = async () => {
@@ -108,6 +130,11 @@ export function CorretorasTable() {
           </Button>
         </div>
       </Modal>
+      <FilterForm
+        fields={filterFields}
+        onFilter={handleFilter}
+        appliedFilters={filters}
+      />
       <div className="mt-8 flex items-center justify-between">
         <div className="flex h-full gap-4">
           <SearchInput

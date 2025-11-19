@@ -2,7 +2,7 @@
 
 import { Button } from "@/core/components/Button"
 import { ExportTableToPDFButton } from "@/core/components/ExportPDFButton"
-import { FilterForm, FilterField } from "@/core/components/FilterForm"
+import { FilterField, FilterForm } from "@/core/components/FilterForm"
 import { LoadingScreen } from "@/core/components/LoadingScreen"
 import { Modal } from "@/core/components/Modals/Modal"
 import { Table } from "@/core/components/Table"
@@ -44,7 +44,11 @@ export function SeguradorasTable() {
   }
 
   const filterFields: FilterField[] = [
-    { name: "razaoSocial", label: "Razão Social", placeholder: "Buscar por razão social" },
+    {
+      name: "razaoSocial",
+      label: "Razão Social",
+      placeholder: "Buscar por razão social",
+    },
     { name: "cnpj", label: "CNPJ", placeholder: "Buscar por CNPJ" },
     { name: "uf", label: "UF", placeholder: "Buscar por UF" },
   ]
@@ -106,12 +110,14 @@ export function SeguradorasTable() {
           </Button>
         </div>
       </Modal>
-      <FilterForm fields={filterFields} onFilter={handleFilter} appliedFilters={filters} />
-      
+      <FilterForm
+        fields={filterFields}
+        onFilter={handleFilter}
+        appliedFilters={filters}
+      />
+
       <div className="mt-8 flex items-center justify-between">
-        <Button
-          onClick={() => push("/seguradoras/create")}
-          variant="secondary">
+        <Button onClick={() => push("/seguradoras/create")} variant="secondary">
           Cadastrar
         </Button>
         {seguradoras.length > 0 && (
