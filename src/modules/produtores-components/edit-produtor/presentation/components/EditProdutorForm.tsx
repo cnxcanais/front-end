@@ -5,6 +5,7 @@ import { AutocompleteInput } from "@/core/components/AutocompleteInput"
 import { Button } from "@/core/components/Button"
 import * as Input from "@/core/components/Input"
 import { LoadingScreen } from "@/core/components/LoadingScreen"
+import { MapModal } from "@/core/components/MapModal"
 import { SelectInput } from "@/core/components/SelectInput"
 import { fetchCep } from "@/core/utils/findCep"
 import { formatCep } from "@/core/utils/format-cep"
@@ -22,7 +23,7 @@ import {
   TipoRepasseLabels,
 } from "@/modules/produtores-components/types/form-enums"
 import { zodResolver } from "@hookform/resolvers/zod"
-import { MagnifyingGlass } from "@phosphor-icons/react"
+import { MagnifyingGlass, MapPin } from "@phosphor-icons/react"
 import { useRouter } from "next/navigation"
 import { useMemo, useState } from "react"
 import { useForm } from "react-hook-form"
@@ -35,6 +36,7 @@ import {
 export function EditProdutorForm({ id }: { id: string }) {
   const { push } = useRouter()
   const [isCepSearched, setIsCepSearched] = useState(false)
+  const [showMapModal, setShowMapModal] = useState(false)
 
   const { data: bancosData, isLoading: isLoadingBancos } = useBancosQuery()
 
@@ -107,6 +109,8 @@ export function EditProdutorForm({ id }: { id: string }) {
 
   if (!produtor || isLoading || isLoadingBancos || isLoadingCorretora)
     return <LoadingScreen />
+
+  const fullAddress = `${produtor.logradouro}, ${produtor.numero} - ${produtor.bairro}, ${produtor.cidade} - ${produtor.uf}, ${produtor.cep}`
 
   return (
     <form
@@ -252,7 +256,17 @@ export function EditProdutorForm({ id }: { id: string }) {
 
       {/* Endereço */}
       <div className="flex flex-col gap-4 bg-gray-50 p-4 shadow-md">
-        <h3 className="text-lg font-semibold">Endereço</h3>
+        <div className="flex items-center justify-between">
+          <h3 className="text-lg font-semibold">Endereço</h3>
+          <Button
+            type="button"
+            variant="secondary"
+            onClick={() => setShowMapModal(true)}
+            className="flex items-center gap-2">
+            <MapPin size={18} />
+            Ver no Mapa
+          </Button>
+        </div>
         <div className="flex gap-4">
           <div className="flex flex-col gap-2">
             <label>CEP</label>
@@ -518,6 +532,11 @@ export function EditProdutorForm({ id }: { id: string }) {
           </div>
         </div>
       </div>
+      <MapModal
+        open={showMapModal}
+        onClose={() => setShowMapModal(false)}
+        address={fullAddress}
+      />
 
       <div className="my-2 flex gap-4">
         <Button type="submit" disabled={isSubmitting} variant="primary">
