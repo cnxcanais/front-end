@@ -11,11 +11,11 @@ import { exportNoPagination } from "@/core/utils/exportToExcel/exportNoPaginatio
 import { formatPhoneNumber } from "@/core/utils/formatPhoneNumber"
 import { useCorretoraQuery } from "@/modules/corretoras-components/corretora/infra/hooks/use-corretora-query"
 import { removeCorretora } from "@/modules/corretoras-components/corretora/infra/remote"
+import { useGrupoEconomicoQuery } from "@/modules/grupos-economicos-components/grupos-economicos/infra/hooks/use-grupo-economico-query"
 import { FileXls, Paperclip, Pencil, Trash } from "@phosphor-icons/react"
 import { useRouter } from "next/navigation"
 import { useEffect, useState } from "react"
 import { toast } from "sonner"
-
 export function CorretorasTable() {
   const [page, setPage] = useState(1)
   const [limit, setLimit] = useState(10)
@@ -26,7 +26,7 @@ export function CorretorasTable() {
   const [filteredResults, setFilteredResults] = useState([])
   const [filters, setFilters] = useState<Record<string, string>>({})
   const { data, isLoading, refetch } = useCorretoraQuery(page, limit, filters)
-
+  const { data: gruposEconomicos } = useGrupoEconomicoQuery(1, 100)
   const corretoras = data?.data || []
   const totalPages = data?.totalPages || 1
 
@@ -70,6 +70,14 @@ export function CorretorasTable() {
     { header: "Razão Social", accessor: "razaoSocial" },
     { header: "Nome Fantasia", accessor: "nomeFantasia" },
     { header: "CNPJ/CPF", accessor: "cnpjCpfFormatado" },
+    {
+      header: "Grupo Economico",
+      accessor: "grupoEconomicoId",
+      render: (value: string) => {
+        const grupo = gruposEconomicos?.data?.find((c) => c.id === value)
+        return grupo?.nome || value
+      },
+    },
     { header: "Email", accessor: "email" },
     {
       header: "Telefone",
