@@ -4,6 +4,7 @@ import { Seguradora } from "@/@types/seguradora"
 import { Button } from "@/core/components/Button"
 import * as Input from "@/core/components/Input"
 import { LoadingScreen } from "@/core/components/LoadingScreen"
+import { MapModal } from "@/core/components/MapModal"
 import { SelectInput } from "@/core/components/SelectInput"
 import { fetchCep } from "@/core/utils/findCep"
 import { formatCep } from "@/core/utils/format-cep"
@@ -14,7 +15,7 @@ import { useGrupoEconomicoQuery } from "@/modules/grupos-economicos-components/g
 import { useSeguradoraByIdQuery } from "@/modules/seguradoras-components/edit-seguradora/infra/hooks/use-seguradora-by-id-query"
 import { editSeguradora } from "@/modules/seguradoras-components/edit-seguradora/infra/remote"
 import { zodResolver } from "@hookform/resolvers/zod"
-import { MagnifyingGlass } from "@phosphor-icons/react"
+import { MagnifyingGlass, MapPin } from "@phosphor-icons/react"
 import { useRouter } from "next/navigation"
 import { useMemo, useState } from "react"
 import { useForm } from "react-hook-form"
@@ -28,6 +29,7 @@ export function EditSeguradoraForm({ id }: { id: string }) {
   const { push } = useRouter()
 
   const [isCepSearched, setIsCepSearched] = useState(false)
+  const [showMapModal, setShowMapModal] = useState(false)
 
   const { data: gruposEconomicos } = useGrupoEconomicoQuery()
 
@@ -91,6 +93,8 @@ export function EditSeguradoraForm({ id }: { id: string }) {
   }
 
   if (!seguradora || isLoading) return <LoadingScreen />
+
+  const fullAddress = `${seguradora.endereco}, ${seguradora.numero} - ${seguradora.bairro}, ${seguradora.cidade} - ${seguradora.uf}, ${seguradora.cepFormatado}`
 
   return (
     <form
@@ -240,7 +244,17 @@ export function EditSeguradoraForm({ id }: { id: string }) {
 
       {/* Endereço */}
       <div className="flex flex-col gap-4 bg-gray-50 p-4 shadow-md">
-        <h3 className="text-lg font-semibold">Endereço</h3>
+        <div className="flex items-center justify-between">
+          <h3 className="text-lg font-semibold">Endereço</h3>
+          <Button
+            type="button"
+            variant="secondary"
+            onClick={() => setShowMapModal(true)}
+            className="flex items-center gap-2">
+            <MapPin size={18} />
+            Ver no Mapa
+          </Button>
+        </div>
         <div className="flex flex-col gap-4">
           <div className="flex gap-4">
             <div className="flex flex-col gap-2">
@@ -416,6 +430,12 @@ export function EditSeguradoraForm({ id }: { id: string }) {
           </Input.Root>
         </div>
       </div>
+
+      <MapModal
+        open={showMapModal}
+        onClose={() => setShowMapModal(false)}
+        address={fullAddress}
+      />
 
       <div className="my-2 flex gap-4">
         <Button type="submit" disabled={isSubmitting} variant="primary">
