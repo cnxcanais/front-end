@@ -47,7 +47,7 @@ export function ProdutoresTable() {
   const handleConfirmDelete = async () => {
     try {
       await removeProdutor(id)
-      toast.success("Seguradora removida com sucesso!")
+      toast.success("Produtor removido com sucesso!")
       refetch()
     } catch (error) {
       toast.error(error)
@@ -137,8 +137,8 @@ export function ProdutoresTable() {
   return (
     <>
       <Modal
-        title="Remover Seguradora"
-        content="Você tem certeza de que deseja remover esta seguradora?"
+        title="Remover Produtor"
+        content="Você tem certeza de que deseja remover este produtor?"
         onClose={() => setOpen(false)}
         open={open}>
         <div className="flex items-center justify-center gap-4">
