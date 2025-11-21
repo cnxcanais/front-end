@@ -1,4 +1,5 @@
 import { Corretora } from "@/@types/corretora"
+import { emptyToNull } from "@/core/utils/emptyToNull"
 import { bffApi } from "@/lib/axios"
 import { AxiosError } from "axios"
 
@@ -20,18 +21,16 @@ export async function createCorretora({
   const telefoneSecundarioNoNumbers = telefoneSecundario.replace(/\D/g, "")
 
   try {
-    const { data } = await bffApi.post("/corretoras", {
-      cnpjCpf: cnpjCpf,
-      cep: cep,
-      complemento: complemento === "" ? null : complemento,
-      telefoneSecundario:
-        telefoneSecundario === "" ? null : telefoneSecundarioNoNumbers,
-      website: website === "" ? null : website,
-      observacoes: observacoes === "" ? null : observacoes,
-      telefone: telefone === "" ? null : telefoneNoNumbers,
-      celular: celular === "" ? null : celularNoNumbers,
+    const payload = emptyToNull({
+      cnpjCpf,
+      cep,
+      telefoneSecundario: telefoneSecundarioNoNumbers,
+      telefone: telefoneNoNumbers,
+      celular: celularNoNumbers,
       ...rest,
     })
+
+    const { data } = await bffApi.post("/corretoras", payload)
 
     return data.message
   } catch (error) {

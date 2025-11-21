@@ -1,20 +1,13 @@
 import { Seguradora } from "@/@types/seguradora"
+import { emptyToNull } from "@/core/utils/emptyToNull"
 import { bffApi } from "@/lib/axios"
 import { AxiosError } from "axios"
 
 export async function editSeguradora({
   id,
-  fantasia,
-  grupoEconomicoId,
-  calculoDesconto,
-  diretor,
-  gerente,
-  website,
-  email,
   telefone,
   telefoneSecundario,
   telefoneAssistencia24h,
-  observacoes,
   ...rest
 }: Seguradora.UpdateRequest) {
   try {
@@ -25,24 +18,14 @@ export async function editSeguradora({
       ""
     )
 
-    await bffApi.put(`/seguradoras/${id}`, {
-      fantasia: fantasia === "" ? null : fantasia,
-      grupoEconomicoId: grupoEconomicoId === "" ? null : grupoEconomicoId,
-      calculoDesconto: calculoDesconto === "" ? null : calculoDesconto,
-      diretor: diretor === "" ? null : diretor,
-      gerente: gerente === "" ? null : gerente,
-      website: website === "" ? null : website,
-      email: email === "" ? null : email,
-      telefone: telefone === "" ? null : telefoneOnlyNumbers,
-      telefoneSecundario:
-        telefoneSecundario === "" ? null : telefoneSecundarioOnlyNumbers,
-      telefoneAssistencia24h:
-        telefoneAssistencia24h === "" ? null : (
-          telefoneAssistencia24hOnlyNumbers
-        ),
-      observacoes: observacoes === "" ? null : observacoes,
+    const payload = emptyToNull({
+      telefone: telefoneOnlyNumbers,
+      telefoneSecundario: telefoneSecundarioOnlyNumbers,
+      telefoneAssistencia24h: telefoneAssistencia24hOnlyNumbers,
       ...rest,
     })
+
+    await bffApi.put(`/seguradoras/${id}`, payload)
   } catch (error) {
     // all errors will return in a message property inside data
     if (error instanceof AxiosError) throw error.response.data.message

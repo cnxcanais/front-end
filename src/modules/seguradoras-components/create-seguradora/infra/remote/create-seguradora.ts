@@ -1,19 +1,13 @@
 import { Seguradora } from "@/@types/seguradora"
+import { emptyToNull } from "@/core/utils/emptyToNull"
 import { bffApi } from "@/lib/axios"
 import { AxiosError } from "axios"
 
 export async function createSeguradora({
   cnpj,
-  fantasia,
-  calculoDesconto,
-  diretor,
-  gerente,
-  website,
-  email,
   telefone,
   telefoneSecundario,
   telefoneAssistencia24h,
-  observacoes,
   ...rest
 }: Seguradora.CreateRequest) {
   const cnpjOnlyNumbers = cnpj?.replace(/\D/g, "")
@@ -25,24 +19,15 @@ export async function createSeguradora({
   )
 
   try {
-    const { data } = await bffApi.post("/seguradoras", {
+    const payload = emptyToNull({
       cnpj: cnpjOnlyNumbers,
-      fantasia: fantasia === "" ? null : fantasia,
-      calculoDesconto: calculoDesconto === "" ? null : calculoDesconto,
-      diretor: diretor === "" ? null : diretor,
-      gerente: gerente === "" ? null : gerente,
-      website: website === "" ? null : website,
-      email: email === "" ? null : email,
-      telefone: telefone === "" ? null : telefoneOnlyNumbers,
-      telefoneSecundario:
-        telefoneSecundario === "" ? null : telefoneSecundarioOnlyNumbers,
-      telefoneAssistencia24h:
-        telefoneAssistencia24h === "" ? null : (
-          telefoneAssistencia24hOnlyNumbers
-        ),
-      observacoes: observacoes === "" ? null : observacoes,
+      telefone: telefoneOnlyNumbers,
+      telefoneSecundario: telefoneSecundarioOnlyNumbers,
+      telefoneAssistencia24h: telefoneAssistencia24hOnlyNumbers,
       ...rest,
     })
+
+    const { data } = await bffApi.post("/seguradoras", payload)
 
     return data.message
   } catch (error) {
