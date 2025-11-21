@@ -377,6 +377,7 @@ export function EditProdutorForm({ id }: { id: string }) {
               {...register("banco")}
               label="Banco"
               defaultValue={produtor?.banco}
+              variant={`${errors.banco ? "error" : "primary"}`}
             />
             {errors.banco && (
               <span className="text-xs text-red-500">
@@ -387,16 +388,26 @@ export function EditProdutorForm({ id }: { id: string }) {
 
           <div className="flex flex-col gap-2">
             <label>Agência</label>
-            <Input.Root variant="primary">
+            <Input.Root variant={`${errors.agencia ? "error" : "primary"}`}>
               <Input.Control {...register("agencia")} type="text" />
             </Input.Root>
+            {errors.agencia && (
+              <span className="text-xs text-red-500">
+                {errors.agencia.message}
+              </span>
+            )}
           </div>
 
           <div className="flex flex-col gap-2">
             <label>Conta</label>
-            <Input.Root variant="primary">
+            <Input.Root variant={`${errors.conta ? "error" : "primary"}`}>
               <Input.Control {...register("conta")} type="text" />
             </Input.Root>
+            {errors.conta && (
+              <span className="text-xs text-red-500">
+                {errors.conta.message}
+              </span>
+            )}
           </div>
 
           <div className="flex max-w-[100px] flex-col gap-2">
@@ -413,15 +424,23 @@ export function EditProdutorForm({ id }: { id: string }) {
               label="Tipo Conta"
               {...register("tipoConta")}
             />
+            {errors.tipoConta && (
+              <span className="text-xs text-red-500">
+                {errors.tipoConta.message}
+              </span>
+            )}
           </div>
         </div>
 
         <div className="flex gap-4">
           <div className="flex flex-1 flex-col gap-2">
             <label>PIX</label>
-            <Input.Root variant="primary">
+            <Input.Root variant={`${errors.pix ? "error" : "primary"}`}>
               <Input.Control {...register("pix")} type="text" />
             </Input.Root>
+            {errors.pix && (
+              <span className="text-xs text-red-500">{errors.pix.message}</span>
+            )}
           </div>
         </div>
       </div>

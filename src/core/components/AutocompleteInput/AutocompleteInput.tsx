@@ -17,6 +17,7 @@ type AutocompleteInputProps = {
   name?: string
   value?: string
   defaultValue?: string
+  variant?: "primary" | "disabled" | "error"
 }
 
 export const AutocompleteInput = forwardRef<
@@ -33,6 +34,7 @@ export const AutocompleteInput = forwardRef<
       name,
       value,
       defaultValue,
+      variant,
       ...rest
     },
     ref
@@ -59,7 +61,9 @@ export const AutocompleteInput = forwardRef<
     const filteredOptions = options.filter(
       (option) =>
         option.text?.toLowerCase().includes(search.toLowerCase()) ||
-        String(option.value || "").toLowerCase().includes(search.toLowerCase())
+        String(option.value || "")
+          .toLowerCase()
+          .includes(search.toLowerCase())
     )
 
     useEffect(() => {
@@ -94,13 +98,22 @@ export const AutocompleteInput = forwardRef<
     return (
       <div ref={containerRef} className="relative flex flex-col gap-2">
         <label htmlFor={field_name}>{label}</label>
-        <Input.Root variant="primary">
+        <Input.Root variant={`${variant ? variant : "primary"}`}>
           <Input.Control
             type="text"
             value={search}
             onChange={(e) => {
               setSearch(e.target.value)
               setIsOpen(true)
+              if (e.target.value === "" && hiddenInputRef.current && onChange) {
+                hiddenInputRef.current.value = ""
+                const event = new Event("change", { bubbles: true }) as any
+                Object.defineProperty(event, "target", {
+                  value: hiddenInputRef.current,
+                  enumerable: true,
+                })
+                onChange(event)
+              }
             }}
             onFocus={() => setIsOpen(true)}
           />
