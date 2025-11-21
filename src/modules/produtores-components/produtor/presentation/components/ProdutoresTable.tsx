@@ -168,9 +168,9 @@ export function ProdutoresTable() {
         {produtores.length > 0 && (
           <div className="flex items-center gap-2">
             <ExportTableToPDFButton
-              filename="meu-relatorio"
+              filename={`produtores.${new Date().toLocaleDateString("pt-BR").replace(/\//g, "-")}`}
               options={{ orientation: "portrait" }}
-              title="Fornecedores"
+              title="Produtores"
               className="bg-red-500">
               Exportar PDF
             </ExportTableToPDFButton>

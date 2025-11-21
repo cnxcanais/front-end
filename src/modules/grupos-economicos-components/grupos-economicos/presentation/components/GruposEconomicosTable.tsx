@@ -127,7 +127,7 @@ export function GruposEconomicosTable() {
         {gruposEconomicos.length > 0 && (
           <div className="flex items-center gap-2">
             <ExportTableToPDFButton
-              filename="grupos-economicos"
+              filename={`grupo-economicos.${new Date().toLocaleDateString("pt-BR").replace(/\//g, "-")}`}
               options={{ orientation: "portrait" }}
               title="Grupos Econômicos"
               className="bg-red-500">
