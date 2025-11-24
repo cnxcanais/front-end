@@ -146,6 +146,11 @@ export function EditSeguradoraForm({ id }: { id: string }) {
             <Input.Root variant="primary">
               <Input.Control {...register("fantasia")} type="text" />
             </Input.Root>
+            {errors.fantasia && (
+              <span className="text-xs text-red-500">
+                {errors.fantasia.message}
+              </span>
+            )}
           </div>
 
           <div className="flex flex-1 flex-col gap-2">
@@ -155,6 +160,11 @@ export function EditSeguradoraForm({ id }: { id: string }) {
               field_name="grupoEconomicoId"
               {...register("grupoEconomicoId")}
             />
+            {errors.grupoEconomicoId && (
+              <span className="text-xs text-red-500">
+                {errors.grupoEconomicoId.message}
+              </span>
+            )}
           </div>
         </div>
       </div>
@@ -169,6 +179,11 @@ export function EditSeguradoraForm({ id }: { id: string }) {
             <Input.Root variant="primary">
               <Input.Control {...register("diretor")} type="text" />
             </Input.Root>
+            {errors.diretor && (
+              <span className="text-xs text-red-500">
+                {errors.diretor.message}
+              </span>
+            )}
           </div>
 
           <div className="flex flex-1 flex-col gap-2">
@@ -176,6 +191,11 @@ export function EditSeguradoraForm({ id }: { id: string }) {
             <Input.Root variant="primary">
               <Input.Control {...register("gerente")} type="text" />
             </Input.Root>
+            {errors.gerente && (
+              <span className="text-xs text-red-500">
+                {errors.gerente.message}
+              </span>
+            )}
           </div>
         </div>
 
@@ -185,6 +205,11 @@ export function EditSeguradoraForm({ id }: { id: string }) {
             <Input.Root variant="primary">
               <Input.Control {...register("email")} type="email" />
             </Input.Root>
+            {errors.email && (
+              <span className="text-xs text-red-500">
+                {errors.email.message}
+              </span>
+            )}
           </div>
 
           <div className="flex flex-1 flex-col gap-2">
@@ -199,6 +224,11 @@ export function EditSeguradoraForm({ id }: { id: string }) {
                 type="text"
               />
             </Input.Root>
+            {errors.telefone && (
+              <span className="text-xs text-red-500">
+                {errors.telefone.message}
+              </span>
+            )}
           </div>
 
           <div className="flex flex-1 flex-col gap-2">
@@ -213,6 +243,11 @@ export function EditSeguradoraForm({ id }: { id: string }) {
                 type="text"
               />
             </Input.Root>
+            {errors.telefoneSecundario && (
+              <span className="text-xs text-red-500">
+                {errors.telefoneSecundario.message}
+              </span>
+            )}
           </div>
         </div>
 
@@ -231,6 +266,11 @@ export function EditSeguradoraForm({ id }: { id: string }) {
                 type="text"
               />
             </Input.Root>
+            {errors.telefoneAssistencia24h && (
+              <span className="text-xs text-red-500">
+                {errors.telefoneAssistencia24h.message}
+              </span>
+            )}
           </div>
 
           <div className="flex flex-1 flex-col gap-2">
@@ -238,6 +278,11 @@ export function EditSeguradoraForm({ id }: { id: string }) {
             <Input.Root variant="primary">
               <Input.Control {...register("website")} type="text" />
             </Input.Root>
+            {errors.website && (
+              <span className="text-xs text-red-500">
+                {errors.website.message}
+              </span>
+            )}
           </div>
         </div>
       </div>
@@ -380,6 +425,11 @@ export function EditSeguradoraForm({ id }: { id: string }) {
                 }}
               />
             </Input.Root>
+            {errors.impostoRetido && (
+              <span className="text-xs text-red-500">
+                {errors.impostoRetido.message}
+              </span>
+            )}
           </div>
 
           <div className="flex flex-col gap-2">
@@ -394,6 +444,11 @@ export function EditSeguradoraForm({ id }: { id: string }) {
                 }}
               />
             </Input.Root>
+            {errors.calculoDesconto && (
+              <span className="text-xs text-red-500">
+                {errors.calculoDesconto.message}
+              </span>
+            )}
           </div>
 
           <div className="flex items-center gap-2">
@@ -428,6 +483,11 @@ export function EditSeguradoraForm({ id }: { id: string }) {
           <Input.Root variant="primary">
             <Input.Control {...register("observacoes")} type="text" />
           </Input.Root>
+          {errors.observacoes && (
+            <span className="text-xs text-red-500">
+              {errors.observacoes.message}
+            </span>
+          )}
         </div>
       </div>
 
