@@ -34,12 +34,12 @@ export const createProdutorFormSchema = z
     telefoneComercial: z.string().optional(),
     contaContabil: z
       .string()
-      .max(50, { message: "Campo deve ter no máximo 50 caracteres" })
-      .optional(),
+      .nonempty({ message: "Obrigatório" })
+      .max(50, { message: "Campo deve ter no máximo 50 caracteres" }),
     repasseSobre: z
       .string()
-      .max(50, { message: "Campo deve ter no máximo 50 caracteres" })
-      .optional(),
+      .nonempty({ message: "Obrigatório" })
+      .max(50, { message: "Campo deve ter no máximo 50 caracteres" }),
     excluirRepasse: z.boolean(),
     corretoraId: z.string().nonempty({ message: "Obrigatório" }),
     telefoneFixo: z.string().optional(),
@@ -99,12 +99,12 @@ export const createProdutorFormSchema = z
       .optional(),
     tipoRepasse: z
       .string()
-      .max(20, { message: "Campo deve ter no máximo 20 caracteres" })
-      .optional(),
+      .nonempty({ message: "Obrigatório" })
+      .max(20, { message: "Campo deve ter no máximo 20 caracteres" }),
     formaRepasse: z
       .string()
-      .max(20, { message: "Campo deve ter no máximo 20 caracteres" })
-      .optional(),
+      .nonempty({ message: "Obrigatório" })
+      .max(20, { message: "Campo deve ter no máximo 20 caracteres" }),
     percentualImposto: z
       .string()
       .transform((val) => val.replace(",", "."))
@@ -147,7 +147,37 @@ export const createProdutorFormSchema = z
     },
     {
       message: "Obrigatório junto a banco",
-      path: ["agencia", "conta", "pix"],
+      path: ["agencia"],
+    }
+  )
+  .refine(
+    (data) => {
+      if (!data.banco || data.banco.trim() === "") {
+        return true
+      }
+      const hasAgenciaAndConta =
+        (data.agencia?.trim() || "") !== "" && (data.conta?.trim() || "") !== ""
+      const hasPix = (data.pix?.trim() || "") !== ""
+      return hasAgenciaAndConta || hasPix
+    },
+    {
+      message: "Obrigatório junto a banco",
+      path: ["conta"],
+    }
+  )
+  .refine(
+    (data) => {
+      if (!data.banco || data.banco.trim() === "") {
+        return true
+      }
+      const hasAgenciaAndConta =
+        (data.agencia?.trim() || "") !== "" && (data.conta?.trim() || "") !== ""
+      const hasPix = (data.pix?.trim() || "") !== ""
+      return hasAgenciaAndConta || hasPix
+    },
+    {
+      message: "Obrigatório junto a banco",
+      path: ["tipoConta"],
     }
   )
   .refine(
@@ -200,17 +230,13 @@ export const createProdutorFormSchema = z
   )
   .refine(
     (data) => {
-      const hasBankData =
-        (data.digitoConta?.trim() || "") !== "" ||
-        (data.agencia?.trim() || "") !== "" ||
-        (data.conta?.trim() || "") !== "" ||
-        (data.banco?.trim() || "") !== ""
-      if (hasBankData) return data.tipoConta || data.tipoConta.trim() !== ""
-      return true
+      const hasPix = (data.pix?.trim() || "") !== ""
+      const hasBank = (data.banco?.trim() || "") !== ""
+      return hasPix || hasBank
     },
     {
-      message: "Obrigatório junto a dados bancáios",
-      path: ["tipoConta"],
+      message: "Pix ou Conta deve ser preenchido",
+      path: ["banco"],
     }
   )
 

@@ -17,18 +17,19 @@ export const editProdutorFormSchema = z
     telefoneComercial: z.string().optional(),
     contaContabil: z
       .string()
-      .max(50, { message: "Campo deve ter no máximo 50 caracteres" })
-      .optional(),
+      .nonempty({ message: "Obrigatório" })
+      .max(50, { message: "Campo deve ter no máximo 50 caracteres" }),
     repasseSobre: z
       .string()
-      .max(50, { message: "Campo deve ter no máximo 50 caracteres" })
-      .optional(),
+      .nonempty({ message: "Obrigatório" })
+      .max(50, { message: "Campo deve ter no máximo 50 caracteres" }),
     excluirRepasse: z.boolean(),
     telefoneFixo: z.string().optional(),
     telefoneCelular: z.string().nonempty({ message: "Obrigatório" }),
     email: z
       .string()
       .email({ message: "Email inválido" })
+      .nonempty({ message: "Obrigatório" })
       .max(100, { message: "Campo deve ter no máximo 100 caracteres" }),
     cep: z.string().nonempty({ message: "Obrigatório" }),
     logradouro: z
@@ -57,8 +58,8 @@ export const editProdutorFormSchema = z
       .max(2, { message: "Campo deve ter no máximo 2 caracteres" }),
     banco: z
       .string()
-      .max(100, { message: "Campo deve ter no máximo 100 caracteres" })
-      .optional(),
+      .nonempty({ message: "Obrigatório" })
+      .max(100, { message: "Campo deve ter no máximo 100 caracteres" }),
     agencia: z
       .string()
       .max(10, { message: "Campo deve ter no máximo 100 caracteres" })
@@ -81,12 +82,12 @@ export const editProdutorFormSchema = z
       .optional(),
     tipoRepasse: z
       .string()
-      .max(20, { message: "Campo deve ter no máximo 20 caracteres" })
-      .optional(),
+      .nonempty({ message: "Obrigatório" })
+      .max(20, { message: "Campo deve ter no máximo 20 caracteres" }),
     formaRepasse: z
       .string()
-      .max(20, { message: "Campo deve ter no máximo 20 caracteres" })
-      .optional(),
+      .nonempty({ message: "Obrigatório" })
+      .max(20, { message: "Campo deve ter no máximo 20 caracteres" }),
     percentualImposto: z
       .string()
       .transform((val) => val.replace(",", "."))
@@ -126,7 +127,52 @@ export const editProdutorFormSchema = z
     },
     {
       message: "Obrigatório junto a banco",
-      path: ["agencia", "conta", "pix"],
+      path: ["agencia"],
+    }
+  )
+  .refine(
+    (data) => {
+      if (!data.banco || data.banco.trim() === "") {
+        return true
+      }
+      const hasAgenciaAndConta =
+        (data.agencia?.trim() || "") !== "" && (data.conta?.trim() || "") !== ""
+      const hasPix = (data.pix?.trim() || "") !== ""
+      return hasAgenciaAndConta || hasPix
+    },
+    {
+      message: "Obrigatório junto a banco",
+      path: ["agencia"],
+    }
+  )
+  .refine(
+    (data) => {
+      if (!data.banco || data.banco.trim() === "") {
+        return true
+      }
+      const hasAgenciaAndConta =
+        (data.agencia?.trim() || "") !== "" && (data.conta?.trim() || "") !== ""
+      const hasPix = (data.pix?.trim() || "") !== ""
+      return hasAgenciaAndConta || hasPix
+    },
+    {
+      message: "Obrigatório junto a banco",
+      path: ["conta"],
+    }
+  )
+  .refine(
+    (data) => {
+      if (!data.banco || data.banco.trim() === "") {
+        return true
+      }
+      const hasAgenciaAndConta =
+        (data.agencia?.trim() || "") !== "" && (data.conta?.trim() || "") !== ""
+      const hasPix = (data.pix?.trim() || "") !== ""
+      return hasAgenciaAndConta || hasPix
+    },
+    {
+      message: "Obrigatório junto a banco",
+      path: ["tipoConta"],
     }
   )
   .refine(
@@ -179,17 +225,13 @@ export const editProdutorFormSchema = z
   )
   .refine(
     (data) => {
-      const hasBankData =
-        (data.digitoConta?.trim() || "") !== "" ||
-        (data.agencia?.trim() || "") !== "" ||
-        (data.conta?.trim() || "") !== "" ||
-        (data.banco?.trim() || "") !== ""
-      if (hasBankData) return data.tipoConta || data.tipoConta.trim() !== ""
-      return true
+      const hasPix = (data.pix?.trim() || "") !== ""
+      const hasBank = (data.banco?.trim() || "") !== ""
+      return hasPix || hasBank
     },
     {
-      message: "Obrigatório junto a dados bancáios",
-      path: ["tipoConta"],
+      message: "Pix ou Conta deve ser preenchido",
+      path: ["banco"],
     }
   )
 export type EditProdutorSchema = z.infer<typeof editProdutorFormSchema>

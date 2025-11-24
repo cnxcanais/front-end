@@ -44,6 +44,40 @@ export function SeguradorasTable() {
     }
   }
 
+  const brStates = [
+    "AC",
+    "AL",
+    "AP",
+    "AM",
+    "BA",
+    "CE",
+    "DF",
+    "ES",
+    "GO",
+    "MA",
+    "MT",
+    "MS",
+    "MG",
+    "PA",
+    "PB",
+    "PR",
+    "PE",
+    "PI",
+    "RJ",
+    "RN",
+    "RS",
+    "RO",
+    "RR",
+    "SC",
+    "SP",
+    "SE",
+    "TO",
+  ]
+  const ufOptions = brStates.map((uf) => ({
+    label: uf,
+    value: uf,
+  }))
+
   const filterFields: FilterField[] = [
     {
       name: "razaoSocial",
@@ -51,7 +85,18 @@ export function SeguradorasTable() {
       placeholder: "Buscar por razão social",
     },
     { name: "cnpj", label: "CNPJ", placeholder: "Buscar por CNPJ" },
-    { name: "uf", label: "UF", placeholder: "Buscar por UF" },
+    {
+      name: "uf",
+      label: "UF",
+      type: "select",
+      options: ufOptions,
+      placeholder: "Buscar por UF",
+    },
+    {
+      name: "fantasia",
+      label: "Nome Fantasia",
+      placeholder: "Buscar por Nome Fantasia",
+    },
   ]
 
   const handleFilter = (newFilters: Record<string, string>) => {
