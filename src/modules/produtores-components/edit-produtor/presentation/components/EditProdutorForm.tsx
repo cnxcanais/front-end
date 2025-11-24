@@ -139,6 +139,11 @@ export function EditProdutorForm({ id }: { id: string }) {
               field_name="situacao"
               {...register("situacao")}
             />
+            {errors.situacao && (
+              <span className="text-xs text-red-500">
+                {errors.situacao.message}
+              </span>
+            )}
           </div>
 
           <div className="flex flex-col gap-2">
@@ -179,6 +184,11 @@ export function EditProdutorForm({ id }: { id: string }) {
             <Input.Root variant="primary">
               <Input.Control {...register("homePage")} type="text" />
             </Input.Root>
+            {errors.homePage && (
+              <span className="text-xs text-red-500">
+                {errors.homePage.message}
+              </span>
+            )}
           </div>
 
           <div className="flex flex-1 flex-col gap-2">
@@ -305,6 +315,11 @@ export function EditProdutorForm({ id }: { id: string }) {
                 type="text"
               />
             </Input.Root>
+            {errors.logradouro && (
+              <span className="text-xs text-red-500">
+                {errors.logradouro.message}
+              </span>
+            )}
           </div>
 
           <div className="flex max-w-[150px] flex-col gap-2">
@@ -316,6 +331,11 @@ export function EditProdutorForm({ id }: { id: string }) {
                 type="text"
               />
             </Input.Root>
+            {errors.numero && (
+              <span className="text-xs text-red-500">
+                {errors.numero.message}
+              </span>
+            )}
           </div>
         </div>
 
@@ -329,6 +349,11 @@ export function EditProdutorForm({ id }: { id: string }) {
                 type="text"
               />
             </Input.Root>
+            {errors.complemento && (
+              <span className="text-xs text-red-500">
+                {errors.complemento.message}
+              </span>
+            )}
           </div>
 
           <div className="flex flex-1 flex-col gap-2">
@@ -340,6 +365,11 @@ export function EditProdutorForm({ id }: { id: string }) {
                 type="text"
               />
             </Input.Root>
+            {errors.bairro && (
+              <span className="text-xs text-red-500">
+                {errors.bairro.message}
+              </span>
+            )}
           </div>
 
           <div className="flex flex-1 flex-col gap-2">
@@ -351,6 +381,11 @@ export function EditProdutorForm({ id }: { id: string }) {
                 type="text"
               />
             </Input.Root>
+            {errors.cidade && (
+              <span className="text-xs text-red-500">
+                {errors.cidade.message}
+              </span>
+            )}
           </div>
 
           <div className="flex max-w-[100px] flex-col gap-2">
@@ -362,6 +397,9 @@ export function EditProdutorForm({ id }: { id: string }) {
                 type="text"
               />
             </Input.Root>
+            {errors.uf && (
+              <span className="text-xs text-red-500">{errors.uf.message}</span>
+            )}
           </div>
         </div>
       </div>
@@ -415,6 +453,11 @@ export function EditProdutorForm({ id }: { id: string }) {
             <Input.Root variant="primary">
               <Input.Control {...register("digitoConta")} type="text" />
             </Input.Root>
+            {errors.digitoConta && (
+              <span className="text-xs text-red-500">
+                {errors.digitoConta.message}
+              </span>
+            )}
           </div>
 
           <div className="flex flex-col gap-2">
@@ -454,6 +497,11 @@ export function EditProdutorForm({ id }: { id: string }) {
             <Input.Root variant="primary">
               <Input.Control {...register("contaContabil")} type="text" />
             </Input.Root>
+            {errors.contaContabil && (
+              <span className="text-xs text-red-500">
+                {errors.contaContabil.message}
+              </span>
+            )}
           </div>
 
           <div className="flex flex-1 flex-col gap-2">
@@ -463,6 +511,11 @@ export function EditProdutorForm({ id }: { id: string }) {
               label="Repasse Sobre"
               {...register("repasseSobre")}
             />
+            {errors.repasseSobre && (
+              <span className="text-xs text-red-500">
+                {errors.repasseSobre.message}
+              </span>
+            )}
           </div>
 
           <div className="flex items-center gap-2">
@@ -483,6 +536,11 @@ export function EditProdutorForm({ id }: { id: string }) {
               label="Tipo Repasse"
               {...register("tipoRepasse")}
             />
+            {errors.tipoRepasse && (
+              <span className="text-xs text-red-500">
+                {errors.tipoRepasse.message}
+              </span>
+            )}
           </div>
 
           <div className="flex flex-col gap-2">
@@ -492,6 +550,11 @@ export function EditProdutorForm({ id }: { id: string }) {
               label="Forma Repasse"
               {...register("formaRepasse")}
             />
+            {errors.formaRepasse && (
+              <span className="text-xs text-red-500">
+                {errors.formaRepasse.message}
+              </span>
+            )}
           </div>
 
           <div className="flex flex-col gap-2">
@@ -506,6 +569,11 @@ export function EditProdutorForm({ id }: { id: string }) {
                 }}
               />
             </Input.Root>
+            {errors.percentualImposto && (
+              <span className="text-xs text-red-500">
+                {errors.percentualImposto.message}
+              </span>
+            )}
           </div>
 
           <div className="flex flex-col gap-2">
@@ -520,6 +588,11 @@ export function EditProdutorForm({ id }: { id: string }) {
                 }}
               />
             </Input.Root>
+            {errors.primeiraRepasse && (
+              <span className="text-xs text-red-500">
+                {errors.primeiraRepasse.message}
+              </span>
+            )}
           </div>
         </div>
       </div>
@@ -532,6 +605,11 @@ export function EditProdutorForm({ id }: { id: string }) {
           <Input.Root variant="primary">
             <Input.Control {...register("observacoes")} type="text" />
           </Input.Root>
+          {errors.observacoes && (
+            <span className="text-xs text-red-500">
+              {errors.observacoes.message}
+            </span>
+          )}
         </div>
 
         <div className="flex gap-4">
@@ -540,6 +618,11 @@ export function EditProdutorForm({ id }: { id: string }) {
             <Input.Root variant="primary">
               <Input.Control {...register("grupos")} type="text" />
             </Input.Root>
+            {errors.grupos && (
+              <span className="text-xs text-red-500">
+                {errors.grupos.message}
+              </span>
+            )}
           </div>
           <div className="flex items-center gap-2">
             <input
