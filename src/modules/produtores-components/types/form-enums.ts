@@ -14,8 +14,10 @@ export enum TipoRepasse {
 }
 
 export enum FormaRepasse {
-  DEPOSITO = "DEPOSITO",
-  TED = "TED",
+  NO_RECEBIMENTO = "NO_RECEBIMENTO",
+  TUDO_PRIMEIRA_PARCELA = "TUDO_PRIMEIRA_PARCELA",
+  ANTECIPADO_NA_PARCELA = "ANTECIPADO_NA_PARCELA",
+  ANTECIPADO_TUDO_APOLICE = "ANTECIPADO_TUDO_APOLICE",
 }
 
 export enum GrupoProdutor {
@@ -30,8 +32,8 @@ export enum StatusProdutor {
 
 export enum RepasseSobre {
   PREMIO_LIQUIDO = "PREMIO_LIQUIDO",
-  PREMIO_BRUTO = "PREMIO_BRUTO",
-  COMISSAO = "COMISSAO",
+  VALOR_FIXO = "VALOR_FIXO",
+  COMISSAO_CORRETORA = "COMISSAO_CORRETORA",
 }
 
 export const TipoPessoaLabels: { text: string; value: TipoPessoa }[] = [
@@ -50,8 +52,13 @@ export const TipoRepasseLabels: { text: string; value: TipoRepasse }[] = [
 ]
 
 export const FormaRepasseLabels: { text: string; value: FormaRepasse }[] = [
-  { text: "Depósito", value: FormaRepasse.DEPOSITO },
-  { text: "TED", value: FormaRepasse.TED },
+  { text: "No Recebimento", value: FormaRepasse.NO_RECEBIMENTO },
+  { text: "Tudo Primeira Parcela", value: FormaRepasse.TUDO_PRIMEIRA_PARCELA },
+  { text: "Antecipado Na Parcela", value: FormaRepasse.ANTECIPADO_NA_PARCELA },
+  {
+    text: "Antecipado Tudo Apólice",
+    value: FormaRepasse.ANTECIPADO_NA_PARCELA,
+  },
 ]
 
 export const GrupoProdutorLabels: { text: string; value: GrupoProdutor }[] = [
@@ -66,6 +73,6 @@ export const StatusProdutorLabels: { text: string; value: string }[] = [
 
 export const RepasseSobreLabels: { text: string; value: string }[] = [
   { text: "Prêmio Líquido", value: RepasseSobre.PREMIO_LIQUIDO },
-  { text: "Prêmio Bruto", value: RepasseSobre.PREMIO_BRUTO },
-  { text: "Comissão", value: RepasseSobre.COMISSAO },
+  { text: "Valor Fixo", value: RepasseSobre.VALOR_FIXO },
+  { text: "Comissão Corretora", value: RepasseSobre.COMISSAO_CORRETORA },
 ]
