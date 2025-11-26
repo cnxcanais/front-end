@@ -15,9 +15,9 @@ export enum TipoRepasse {
 
 export enum FormaRepasse {
   NO_RECEBIMENTO = "NO_RECEBIMENTO",
-  TUDO_PRIMEIRA_PARCELA = "TUDO_PRIMEIRA_PARCELA",
-  ANTECIPADO_NA_PARCELA = "ANTECIPADO_NA_PARCELA",
-  ANTECIPADO_TUDO_APOLICE = "ANTECIPADO_TUDO_APOLICE",
+  ANTECIPADO_PRIMEIRA_PARCELA = "ANTECIPADO_PRIMEIRA_PARCELA",
+  ANTECIPADO_PARCELA = "ANTECIPADO_PARCELA",
+  ANTECIPADO_EMISSAO = "ANTECIPADO_EMISSAO",
 }
 
 export enum GrupoProdutor {
@@ -53,11 +53,14 @@ export const TipoRepasseLabels: { text: string; value: TipoRepasse }[] = [
 
 export const FormaRepasseLabels: { text: string; value: FormaRepasse }[] = [
   { text: "No Recebimento", value: FormaRepasse.NO_RECEBIMENTO },
-  { text: "Tudo Primeira Parcela", value: FormaRepasse.TUDO_PRIMEIRA_PARCELA },
-  { text: "Antecipado Na Parcela", value: FormaRepasse.ANTECIPADO_NA_PARCELA },
+  {
+    text: "Tudo Primeira Parcela",
+    value: FormaRepasse.ANTECIPADO_PRIMEIRA_PARCELA,
+  },
+  { text: "Antecipado Na Parcela", value: FormaRepasse.ANTECIPADO_PARCELA },
   {
     text: "Antecipado Tudo Apólice",
-    value: FormaRepasse.ANTECIPADO_NA_PARCELA,
+    value: FormaRepasse.ANTECIPADO_EMISSAO,
   },
 ]
 
