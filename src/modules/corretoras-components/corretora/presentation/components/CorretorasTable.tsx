@@ -12,7 +12,13 @@ import { formatPhoneNumber } from "@/core/utils/formatPhoneNumber"
 import { useCorretoraQuery } from "@/modules/corretoras-components/corretora/infra/hooks/use-corretora-query"
 import { removeCorretora } from "@/modules/corretoras-components/corretora/infra/remote"
 import { useGrupoEconomicoQuery } from "@/modules/grupos-economicos-components/grupos-economicos/infra/hooks/use-grupo-economico-query"
-import { FileXls, Paperclip, Pencil, Trash, VideoCamera } from "@phosphor-icons/react"
+import {
+  FileXls,
+  Paperclip,
+  Pencil,
+  Trash,
+  VideoCamera,
+} from "@phosphor-icons/react"
 import { useRouter } from "next/navigation"
 import { useEffect, useState } from "react"
 import { toast } from "sonner"
@@ -170,7 +176,7 @@ export function CorretorasTable() {
             <Button
               className="flex items-center gap-1"
               variant="secondary"
-              onClick={exportNoPagination}>
+              onClick={() => exportNoPagination("corretora")}>
               <FileXls size={22} />
               Exportar
             </Button>

@@ -1,6 +1,6 @@
 import * as XLSX from "xlsx"
 
-export const exportNoPagination = () => {
+export const exportNoPagination = (filename?: string) => {
   const table = document.getElementById("table")
   if (!table) return
 
@@ -271,13 +271,12 @@ export const exportNoPagination = () => {
 
   const ws = XLSX.utils.json_to_sheet(finalRows)
 
+  const fileName =
+    filename ?
+      `${filename}-${new Date().toLocaleDateString("pt-BR").replace(/\//g, "-")}`
+    : "Tabela exportada"
+
   const wb = XLSX.utils.book_new()
   XLSX.utils.book_append_sheet(wb, ws, "Tabela 1")
-  XLSX.writeFile(wb, "Tabela Exportada.xlsx")
-
-  // console.log("tableObject", formattedTable)
-
-  // const tableData = Array.from(table?.getElementsByTagName("tr") || [])
-  // const workbook = XLSX.utils.table_to_book(table, { sheet: "Tabela 1" })
-  // XLSX.writeFile(workbook, "Tabela Exportada.xlsx")
+  XLSX.writeFile(wb, fileName)
 }

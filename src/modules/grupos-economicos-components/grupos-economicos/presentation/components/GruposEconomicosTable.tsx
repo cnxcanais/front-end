@@ -127,7 +127,7 @@ export function GruposEconomicosTable() {
         {gruposEconomicos.length > 0 && (
           <div className="flex items-center gap-2">
             <ExportTableToPDFButton
-              filename={`grupo-economicos.${new Date().toLocaleDateString("pt-BR").replace(/\//g, "-")}`}
+              filename={`grupos-economicos.${new Date().toLocaleDateString("pt-BR").replace(/\//g, "-")}`}
               options={{ orientation: "portrait" }}
               title="Grupos Econômicos"
               className="bg-red-500">
@@ -136,7 +136,7 @@ export function GruposEconomicosTable() {
             <Button
               className="flex items-center gap-1"
               variant="secondary"
-              onClick={exportNoPagination}>
+              onClick={() => exportNoPagination("grupos-economicos")}>
               <FileXls size={22} />
               Exportar
             </Button>

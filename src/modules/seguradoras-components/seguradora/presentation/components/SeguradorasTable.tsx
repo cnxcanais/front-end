@@ -178,7 +178,7 @@ export function SeguradorasTable() {
             <Button
               className="flex items-center gap-1"
               variant="secondary"
-              onClick={exportNoPagination}>
+              onClick={() => exportNoPagination("seguradoras")}>
               <FileXls size={22} />
               Exportar
             </Button>

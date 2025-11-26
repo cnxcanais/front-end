@@ -5,9 +5,7 @@ import { Button } from "./Button"
 export function ExportTableToPDFButton({
   tableId = "table",
   filename = "table-export",
-  className = "",
   children,
-  options = {},
   title,
 }: {
   tableId?: string
