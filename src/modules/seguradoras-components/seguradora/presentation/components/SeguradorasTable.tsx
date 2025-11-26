@@ -38,7 +38,9 @@ export function SeguradorasTable() {
       toast.success("Seguradora removida com sucesso!")
       refetch()
     } catch (error) {
-      toast.error(error)
+      const message =
+        error?.response?.data?.message || "Erro ao remover seguradora"
+      toast.error(message)
     } finally {
       setOpen(false)
     }

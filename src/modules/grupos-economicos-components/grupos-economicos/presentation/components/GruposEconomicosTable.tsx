@@ -43,7 +43,9 @@ export function GruposEconomicosTable() {
       toast.success("Grupo Econômico removido com sucesso!")
       refetch()
     } catch (error) {
-      toast.error(error)
+      const message =
+        error?.response?.data?.message || "Erro ao remover grupo econômico"
+      toast.error(message)
     } finally {
       setOpen(false)
     }

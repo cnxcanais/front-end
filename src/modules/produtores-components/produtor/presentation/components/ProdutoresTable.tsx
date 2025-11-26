@@ -50,7 +50,9 @@ export function ProdutoresTable() {
       toast.success("Produtor removido com sucesso!")
       refetch()
     } catch (error) {
-      toast.error(error)
+      const message =
+        error?.response?.data?.message || "Erro ao remover produtor"
+      toast.error(message)
     } finally {
       setOpen(false)
     }
