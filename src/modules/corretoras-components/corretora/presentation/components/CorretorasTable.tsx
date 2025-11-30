@@ -5,6 +5,7 @@ import { ExportTableToPDFButton } from "@/core/components/ExportPDFButton"
 import { FilterField, FilterForm } from "@/core/components/FilterForm"
 import { LoadingScreen } from "@/core/components/LoadingScreen"
 import { Modal } from "@/core/components/Modals/Modal"
+import { ModalFilesTrigger } from "@/core/components/Modals/ModalFiles/ModalFilesTrigger"
 import { Pagination } from "@/core/components/Pagination"
 import { Table } from "@/core/components/Table"
 import { exportNoPagination } from "@/core/utils/exportToExcel/exportNoPagination"
@@ -94,6 +95,13 @@ export function CorretorasTable() {
     },
     { header: "Cidade", accessor: "cidade" },
     { header: "UF", accessor: "uf" },
+    {
+      header: "Arquivos",
+      accessor: "id",
+      render: (value: string) => (
+        <ModalFilesTrigger entityId={value} entityType={"corretora"} />
+      ),
+    },
     {
       header: "Ações",
       accessor: "id",

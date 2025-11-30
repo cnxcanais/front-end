@@ -5,12 +5,13 @@ import { ExportTableToPDFButton } from "@/core/components/ExportPDFButton"
 import { FilterField, FilterForm } from "@/core/components/FilterForm"
 import { LoadingScreen } from "@/core/components/LoadingScreen"
 import { Modal } from "@/core/components/Modals/Modal"
+import { ModalFilesTrigger } from "@/core/components/Modals/ModalFiles/ModalFilesTrigger"
 import { Pagination } from "@/core/components/Pagination"
 import { Table } from "@/core/components/Table"
 import { exportNoPagination } from "@/core/utils/exportToExcel/exportNoPagination"
 import { useSeguradoraQuery } from "@/modules/seguradoras-components/seguradora/infra/hooks/use-seguradora-query"
 import { removeSeguradora } from "@/modules/seguradoras-components/seguradora/infra/remote"
-import { FileXls, Paperclip, Pencil, Trash } from "@phosphor-icons/react"
+import { FileXls, Pencil, Trash } from "@phosphor-icons/react"
 import { useRouter } from "next/navigation"
 import { useState } from "react"
 import { toast } from "sonner"
@@ -114,6 +115,13 @@ export function SeguradorasTable() {
     { header: "Cidade", accessor: "cidade" },
     { header: "UF", accessor: "uf" },
     {
+      header: "Arquivos",
+      accessor: "id",
+      render: (value: string) => (
+        <ModalFilesTrigger entityId={value} entityType={"seguradora"} />
+      ),
+    },
+    {
       header: "Ações",
       accessor: "id",
       render: (value: string) => (
@@ -130,10 +138,6 @@ export function SeguradorasTable() {
               setId(value)
               setOpen(true)
             }}
-          />
-          <Paperclip
-            className="cursor-pointer duration-300 ease-in-out hover:text-blue-500"
-            size={24}
           />
         </div>
       ),

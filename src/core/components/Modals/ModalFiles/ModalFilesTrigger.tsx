@@ -4,7 +4,7 @@ import { useState } from "react"
 
 type ModalFilesTrigger = {
   entityId: string
-  entityType: "income_source_id" | "income_id" | "expense_id" | "supplier_id"
+  entityType: "seguradora" | "produtor" | "corretora" | "segurado"
 }
 
 export function ModalFilesTrigger({ entityId, entityType }: ModalFilesTrigger) {

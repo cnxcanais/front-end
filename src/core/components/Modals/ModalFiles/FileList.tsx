@@ -1,7 +1,6 @@
 import { LoadingScreen } from "@/core/components/LoadingScreen"
 import { removeFile } from "@/core/components/Modals/ModalFiles/remote"
 import { SearchInput } from "@/core/components/SearchInput"
-import { getAccountId } from "@/core/utils/get-account-id"
 import { File, X } from "@phosphor-icons/react"
 import Link from "next/link"
 import { useEffect, useState } from "react"
@@ -9,7 +8,7 @@ import { toast } from "sonner"
 import { useFetchFilesQuery } from "./remote/use-fetch-files-query"
 
 type FileListProps = {
-  entityType: "income_source_id" | "income_id" | "expense_id" | "supplier_id"
+  entityType: "seguradora" | "produtor" | "corretora" | "segurado"
   entityId: string
 }
 
@@ -17,13 +16,11 @@ export function FileList({ entityId, entityType }: FileListProps) {
   const [filteredFiles, setFilteredFiles] = useState([])
   const [entityFiles, setEntityFiles] = useState([])
 
-  const account_id = getAccountId()
-
   const {
     data: fileList,
     isLoading,
     refetch,
-  } = useFetchFilesQuery({ account_id, entityId, entityType })
+  } = useFetchFilesQuery({ entityId, entityType })
 
   async function handleRemoveUploaded(fileId: string) {
     try {
@@ -37,12 +34,8 @@ export function FileList({ entityId, entityType }: FileListProps) {
 
   useEffect(() => {
     if (fileList && fileList.length > 0) {
-      const filteredFilesByEntityId = fileList.filter(
-        (file) => file[entityType] === entityId
-      )
-
-      setEntityFiles(filteredFilesByEntityId)
-      setFilteredFiles(filteredFilesByEntityId)
+      setEntityFiles(fileList)
+      setFilteredFiles(fileList)
     }
   }, [fileList])
 
@@ -64,7 +57,7 @@ export function FileList({ entityId, entityType }: FileListProps) {
       <div className="max-w-96 pb-2">
         <SearchInput
           data={entityFiles}
-          searchParam="description"
+          searchParam="originalName"
           onSearchResult={(result) => setFilteredFiles(result)}
         />
       </div>
@@ -73,8 +66,8 @@ export function FileList({ entityId, entityType }: FileListProps) {
         <div className="grid grid-cols-2 gap-4 sm:grid-cols-3">
           {filteredFiles.map((file) => (
             <Link
-              key={file.file_id}
-              href={file.file_url}
+              key={file.id}
+              href={file.url}
               className="group relative cursor-pointer rounded-lg border p-2 hover:border-blue-500">
               <div className="aspect-w-1 aspect-h-1 w-full overflow-hidden rounded-lg bg-gray-100">
                 <div className="flex items-center justify-center">
@@ -83,7 +76,7 @@ export function FileList({ entityId, entityType }: FileListProps) {
               </div>
               <div className="mt-2">
                 <p className="truncate text-sm font-medium text-gray-900">
-                  {file.description}
+                  {file.originalName}
                 </p>
               </div>
 
@@ -91,9 +84,9 @@ export function FileList({ entityId, entityType }: FileListProps) {
                 onClick={(e) => {
                   e.preventDefault()
                   e.stopPropagation()
-                  handleRemoveUploaded(file.file_id)
+                  handleRemoveUploaded(file.id)
                 }}
-                className="absolute right-2 top-2 rounded-full border border-black bg-white p-1 text-black opacity-0 shadow-sm transition-opacity hover:border-white hover:bg-gray-500 hover:text-white group-hover:opacity-100">
+                className="border-black text-black absolute right-2 top-2 rounded-full border bg-white p-1 opacity-0 shadow-sm transition-opacity hover:border-white hover:bg-gray-500 hover:text-white group-hover:opacity-100">
                 <X size={16} />
               </button>
             </Link>

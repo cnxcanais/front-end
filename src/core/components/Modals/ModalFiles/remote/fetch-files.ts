@@ -1,19 +1,14 @@
 import { Files } from "@/@types/files"
-import { api } from "@/lib/axios"
+import { bffApi } from "@/lib/axios"
 
-export async function fetchFiles(
-  account_id: string,
-  queryParams?: { key: string; value: string }[]
-) {
+export async function fetchFiles(entityId: string, entityType: string) {
   try {
-    const response = await api.get<Files.GetRequest>(
-      `/file/account/${account_id}`,
-      {
-        params: {
-          queryParams,
-        },
-      }
-    )
+    const response = await bffApi.get<Files.GetRequest>(`/files`, {
+      params: {
+        entityId,
+        entity: entityType,
+      },
+    })
 
     return response.data.files
   } catch (error) {

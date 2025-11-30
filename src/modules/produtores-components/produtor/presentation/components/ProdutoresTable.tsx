@@ -5,12 +5,13 @@ import { ExportTableToPDFButton } from "@/core/components/ExportPDFButton"
 import { FilterField, FilterForm } from "@/core/components/FilterForm"
 import { LoadingScreen } from "@/core/components/LoadingScreen"
 import { Modal } from "@/core/components/Modals/Modal"
+import { ModalFilesTrigger } from "@/core/components/Modals/ModalFiles/ModalFilesTrigger"
 import { Pagination } from "@/core/components/Pagination"
 import { Table } from "@/core/components/Table"
 import { exportNoPagination } from "@/core/utils/exportToExcel/exportNoPagination"
 import { useCorretoraQuery } from "@/modules/corretoras-components/corretora/infra/hooks/use-corretora-query"
 import { useProdutorQuery } from "@/modules/produtores-components/produtor/infra/hooks/use-produtor-query"
-import { FileXls, Paperclip, Pencil, Trash } from "@phosphor-icons/react"
+import { FileXls, Pencil, Trash } from "@phosphor-icons/react"
 import { useRouter } from "next/navigation"
 import { useEffect, useMemo, useState } from "react"
 import { toast } from "sonner"
@@ -73,6 +74,13 @@ export function ProdutoresTable() {
     { header: "Cidade", accessor: "cidade" },
     { header: "UF", accessor: "uf" },
     {
+      header: "Arquivos",
+      accessor: "id",
+      render: (value: string) => (
+        <ModalFilesTrigger entityId={value} entityType={"produtor"} />
+      ),
+    },
+    {
       header: "Ações",
       accessor: "id",
       render: (value: string) => (
@@ -89,10 +97,6 @@ export function ProdutoresTable() {
               setId(value)
               setOpen(true)
             }}
-          />
-          <Paperclip
-            className="cursor-pointer duration-300 ease-in-out hover:text-blue-500"
-            size={24}
           />
         </div>
       ),

@@ -1,14 +1,13 @@
 import { Button } from "@/core/components/Button"
 import { saveFile } from "@/core/components/Modals/ModalFiles/remote"
 import { formatFileSize } from "@/core/utils/format-file-size"
-import { getAccountId } from "@/core/utils/get-account-id"
 import { File, FileX, UploadSimple } from "@phosphor-icons/react"
 import { useState } from "react"
 import { toast } from "sonner"
 import { useFetchFilesQuery } from "./remote/use-fetch-files-query"
 
 type FileUploadQueueProps = {
-  entityType: "income_source_id" | "income_id" | "expense_id" | "supplier_id"
+  entityType: "seguradora" | "produtor" | "corretora" | "segurado"
   entityId: string
 }
 
@@ -18,16 +17,15 @@ export function FileUploadQueue({
   entityId,
   entityType,
 }: FileUploadQueueProps) {
-  const account_id = getAccountId()
-
   const [filesInQueue, setFilesInQueue] = useState<File[]>([])
 
-  const { refetch } = useFetchFilesQuery({ account_id, entityId, entityType })
+  const { refetch } = useFetchFilesQuery({ entityId, entityType })
 
   async function handleUpload() {
     try {
       const payload = {
-        account_id,
+        entity: entityType,
+        entityId,
         files: filesInQueue,
       }
 
