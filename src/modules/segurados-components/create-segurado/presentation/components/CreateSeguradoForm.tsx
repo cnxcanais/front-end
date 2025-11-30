@@ -10,6 +10,7 @@ import { formatCep } from "@/core/utils/format-cep"
 import { formatDocumentNumber } from "@/core/utils/formatDocumentNumber"
 import { formatPhoneNumber } from "@/core/utils/formatPhoneNumber"
 import { useCorretoraQuery } from "@/modules/corretoras-components/corretora/infra/hooks/use-corretora-query"
+import { useBancosQuery } from "@/modules/produtores-components/produtor/infra/hooks/use-banco-query"
 import { useProdutorQuery } from "@/modules/produtores-components/produtor/infra/hooks/use-produtor-query"
 import {
   EstadoCivilLabels,
@@ -46,6 +47,38 @@ export function CreateSeguradoForm() {
 
   const tipoPessoa = useWatch({ control, name: "tipoPessoa" })
   const { data: corretorasData } = useCorretoraQuery()
+  const { data: bancosData } = useBancosQuery()
+  const nomeRazaoSocialValue = useWatch({
+    control,
+    name: "nomeRazaoSocial" as any,
+  }) as string | undefined
+  const cnpjCpfValue = useWatch({ control, name: "cnpjCpf" as any }) as
+    | string
+    | undefined
+  const grupoValue = useWatch({ control, name: "grupo" as any }) as
+    | string
+    | undefined
+  const corretoraIdValue = useWatch({ control, name: "corretoraId" as any }) as
+    | string
+    | undefined
+  const statusValue = useWatch({ control, name: "status" as any }) as
+    | string
+    | undefined
+  const emailValue = useWatch({ control, name: "email" as any }) as
+    | string
+    | undefined
+  const vencimentoCnhValue = useWatch({
+    control,
+    name: "vencimentoCnh" as any,
+  }) as string | undefined
+  const representanteLegalNomeValue = useWatch({
+    control,
+    name: "representanteLegalNome" as any,
+  }) as string | undefined
+  const representanteLegalCpfValue = useWatch({
+    control,
+    name: "representanteLegalCpf" as any,
+  }) as string | undefined
   const { data: produtoresData } = useProdutorQuery()
 
   const corretorasOptions = useMemo(() => {
@@ -70,6 +103,17 @@ export function CreateSeguradoForm() {
       }))
   }, [produtoresData])
 
+  const bancosOptions = useMemo(() => {
+    if (!bancosData) return []
+
+    return bancosData
+      .sort((a, b) => a.name.localeCompare(b.name))
+      .map((banco) => ({
+        text: `${banco.name} - ${banco.code}`,
+        value: banco.code,
+      }))
+  }, [bancosData])
+
   async function onSubmit(data: Segurado.CreateRequest) {
     try {
       await createSegurado(data)
@@ -90,7 +134,13 @@ export function CreateSeguradoForm() {
         <div className="flex gap-4">
           <div className="flex flex-1 flex-col gap-2">
             <label>Nome/Razão Social</label>
-            <Input.Root variant={errors.nomeRazaoSocial ? "error" : "primary"}>
+            <Input.Root
+              variant={
+                errors.nomeRazaoSocial ? "error"
+                : nomeRazaoSocialValue ?
+                  "primary"
+                : "error"
+              }>
               <Input.Control {...register("nomeRazaoSocial")} type="text" />
             </Input.Root>
             {errors.nomeRazaoSocial && (
@@ -105,6 +155,12 @@ export function CreateSeguradoForm() {
               options={StatusSeguradoLabels}
               label="Status"
               field_name="status"
+              style={
+                errors.status ? { borderColor: "rgb(239 68 68)" }
+                : statusValue ?
+                  {}
+                : { borderColor: "rgb(239 68 68)" }
+              }
               {...register("status")}
             />
             {errors.status && (
@@ -119,6 +175,7 @@ export function CreateSeguradoForm() {
               options={TipoPessoaLabels}
               label="Tipo de Pessoa"
               field_name="tipoPessoa"
+              style={tipoPessoa ? {} : { borderColor: "rgb(239 68 68)" }}
               {...register("tipoPessoa")}
             />
             {errors.tipoPessoa && (
@@ -132,7 +189,13 @@ export function CreateSeguradoForm() {
         <div className="flex gap-4">
           <div className="flex flex-1 flex-col gap-2">
             <label>CPF/CNPJ</label>
-            <Input.Root variant={errors.cnpjCpf ? "error" : "primary"}>
+            <Input.Root
+              variant={
+                errors.cnpjCpf ? "error"
+                : cnpjCpfValue ?
+                  "primary"
+                : "error"
+              }>
               <Input.Control
                 {...register("cnpjCpf", {
                   onChange: (e) => {
@@ -154,6 +217,12 @@ export function CreateSeguradoForm() {
               options={corretorasOptions}
               label="Corretora"
               field_name="corretoraId"
+              variant={
+                errors.corretoraId ? "error"
+                : corretoraIdValue ?
+                  "primary"
+                : "error"
+              }
               {...register("corretoraId")}
             />
             {errors.corretoraId && (
@@ -165,7 +234,13 @@ export function CreateSeguradoForm() {
 
           <div className="flex flex-1 flex-col gap-2">
             <label>Grupo</label>
-            <Input.Root variant={errors.grupo ? "error" : "primary"}>
+            <Input.Root
+              variant={
+                errors.grupo ? "error"
+                : grupoValue ?
+                  "primary"
+                : "error"
+              }>
               <Input.Control {...register("grupo")} type="text" />
             </Input.Root>
             {errors.grupo && (
@@ -189,7 +264,12 @@ export function CreateSeguradoForm() {
               <div className="flex flex-1 flex-col gap-2">
                 <label>Nome do Representante Legal *</label>
                 <Input.Root
-                  variant={errors.representanteLegalNome ? "error" : "primary"}>
+                  variant={
+                    errors.representanteLegalNome ? "error"
+                    : representanteLegalNomeValue ?
+                      "primary"
+                    : "error"
+                  }>
                   <Input.Control
                     {...register("representanteLegalNome")}
                     type="text"
@@ -205,7 +285,12 @@ export function CreateSeguradoForm() {
               <div className="flex flex-1 flex-col gap-2">
                 <label>CPF do Representante Legal *</label>
                 <Input.Root
-                  variant={errors.representanteLegalCpf ? "error" : "primary"}>
+                  variant={
+                    errors.representanteLegalCpf ? "error"
+                    : representanteLegalCpfValue ?
+                      "primary"
+                    : "error"
+                  }>
                   <Input.Control
                     {...register("representanteLegalCpf", {
                       onChange: (e) => {
@@ -277,7 +362,13 @@ export function CreateSeguradoForm() {
 
             <div className="flex flex-1 flex-col gap-2">
               <label>Vencimento CNH *</label>
-              <Input.Root variant="primary">
+              <Input.Root
+                variant={
+                  errors.vencimentoCnh ? "error"
+                  : vencimentoCnhValue ?
+                    "primary"
+                  : "error"
+                }>
                 <Input.Control {...register("vencimentoCnh")} type="date" />
               </Input.Root>
               {errors.vencimentoCnh && (
@@ -296,7 +387,13 @@ export function CreateSeguradoForm() {
         <div className="flex gap-4">
           <div className="flex flex-1 flex-col gap-2">
             <label>Email</label>
-            <Input.Root variant={errors.email ? "error" : "primary"}>
+            <Input.Root
+              variant={
+                errors.email ? "error"
+                : emailValue ?
+                  "primary"
+                : "error"
+              }>
               <Input.Control {...register("email")} type="email" />
             </Input.Root>
             {errors.email && (
@@ -466,10 +563,13 @@ export function CreateSeguradoForm() {
         <h3 className="text-lg font-semibold">Dados Bancários</h3>
         <div className="flex gap-4">
           <div className="flex flex-1 flex-col gap-2">
-            <label>Banco</label>
-            <Input.Root variant="primary">
-              <Input.Control {...register("banco")} type="text" />
-            </Input.Root>
+            <AutocompleteInput
+              options={bancosOptions}
+              label="Banco"
+              field_name="banco"
+              variant={errors.banco ? "error" : "primary"}
+              {...register("banco")}
+            />
           </div>
 
           <div className="flex flex-1 flex-col gap-2">

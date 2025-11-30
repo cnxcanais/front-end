@@ -10,6 +10,7 @@ import { fetchCep } from "@/core/utils/findCep"
 import { formatCep } from "@/core/utils/format-cep"
 import { formatDocumentNumber } from "@/core/utils/formatDocumentNumber"
 import { formatPhoneNumber } from "@/core/utils/formatPhoneNumber"
+import { useBancosQuery } from "@/modules/produtores-components/produtor/infra/hooks/use-banco-query"
 import { useProdutorQuery } from "@/modules/produtores-components/produtor/infra/hooks/use-produtor-query"
 import { useSeguradoByIdQuery } from "@/modules/segurados-components/segurado/infra/hooks/use-segurado-by-id-query"
 import {
@@ -55,6 +56,47 @@ export function EditSeguradoForm({ id }: EditSeguradoFormProps) {
     | string
     | undefined
   const tipoPessoa = tipoPessoaWatch ?? seguradoData?.tipoPessoa
+
+  const nomeRazaoSocialValue = useWatch({
+    control,
+    name: "nomeRazaoSocial" as any,
+  }) as string | undefined
+  const grupoValue = useWatch({ control, name: "grupo" as any }) as
+    | string
+    | undefined
+  const statusValue = useWatch({ control, name: "status" as any }) as
+    | string
+    | undefined
+  const emailValue = useWatch({ control, name: "email" as any }) as
+    | string
+    | undefined
+  const vencimentoCnhValue = useWatch({
+    control,
+    name: "vencimentoCnh" as any,
+  }) as string | undefined
+  const representanteLegalNomeValue = useWatch({
+    control,
+    name: "representanteLegalNome" as any,
+  }) as string | undefined
+  const representanteLegalCpfValue = useWatch({
+    control,
+    name: "representanteLegalCpf" as any,
+  }) as string | undefined
+  const bancoValue = useWatch({ control, name: "banco" as any }) as
+    | string
+    | undefined
+  const { data: bancosData } = useBancosQuery()
+
+  const bancosOptions = useMemo(() => {
+    if (!bancosData) return []
+
+    return bancosData
+      .sort((a, b) => a.name.localeCompare(b.name))
+      .map((banco) => ({
+        text: `${banco.name} - ${banco.code}`,
+        value: banco.code,
+      }))
+  }, [bancosData])
 
   const produtoresOptions = useMemo(() => {
     if (!produtoresData?.data) return []
@@ -136,7 +178,16 @@ export function EditSeguradoForm({ id }: EditSeguradoFormProps) {
         <div className="flex gap-4">
           <div className="flex flex-1 flex-col gap-2">
             <label>Nome/Razão Social</label>
-            <Input.Root variant={errors.nomeRazaoSocial ? "error" : "primary"}>
+            <Input.Root
+              variant={
+                errors.nomeRazaoSocial ? "error"
+                : (
+                  !nomeRazaoSocialValue ||
+                  nomeRazaoSocialValue?.toString().trim() === ""
+                ) ?
+                  "error"
+                : "primary"
+              }>
               <Input.Control {...register("nomeRazaoSocial")} type="text" />
             </Input.Root>
             {errors.nomeRazaoSocial && (
@@ -151,6 +202,10 @@ export function EditSeguradoForm({ id }: EditSeguradoFormProps) {
               options={StatusSeguradoLabels}
               label="Status"
               field_name="status"
+              style={{
+                borderColor:
+                  errors.status || !statusValue ? "rgb(239 68 68)" : undefined,
+              }}
               {...register("status")}
             />
             {errors.status && (
@@ -162,7 +217,13 @@ export function EditSeguradoForm({ id }: EditSeguradoFormProps) {
 
           <div className="flex flex-1 flex-col gap-2">
             <label>Grupo</label>
-            <Input.Root variant={errors.grupo ? "error" : "primary"}>
+            <Input.Root
+              variant={
+                errors.grupo ? "error"
+                : !grupoValue || grupoValue?.toString().trim() === "" ?
+                  "error"
+                : "primary"
+              }>
               <Input.Control {...register("grupo")} type="text" />
             </Input.Root>
             {errors.grupo && (
@@ -442,10 +503,23 @@ export function EditSeguradoForm({ id }: EditSeguradoFormProps) {
         <h3 className="text-lg font-semibold">Dados Bancários</h3>
         <div className="flex gap-4">
           <div className="flex flex-1 flex-col gap-2">
-            <label>Banco</label>
-            <Input.Root variant="primary">
-              <Input.Control {...register("banco")} type="text" />
-            </Input.Root>
+            <AutocompleteInput
+              options={bancosOptions}
+              label="Banco"
+              field_name="banco"
+              variant={
+                errors.banco ? "error"
+                : !bancoValue || bancoValue?.toString().trim() === "" ?
+                  "error"
+                : "primary"
+              }
+              {...register("banco")}
+            />
+            {errors.banco && (
+              <span className="text-xs text-red-500">
+                {errors.banco.message}
+              </span>
+            )}
           </div>
 
           <div className="flex flex-1 flex-col gap-2">

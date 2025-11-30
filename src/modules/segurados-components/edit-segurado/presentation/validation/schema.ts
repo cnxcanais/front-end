@@ -32,7 +32,7 @@ export const updateSeguradoFormSchema = z
     conta: z.string().optional(),
     digitoConta: z.string().optional(),
     tipoConta: z.string().optional(),
-    pix: z.string().optional(),
+    pix: z.coerce.string().optional(),
     produtorId: z.string().optional(),
     supervisor: z.string().optional(),
     canalVendas: z.string().optional(),
