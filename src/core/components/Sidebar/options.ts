@@ -1,5 +1,11 @@
 import { Icon } from "@phosphor-icons/react"
-import { BuildingOffice, Buildings, Suitcase, User, IdentificationBadge } from "@phosphor-icons/react/dist/ssr"
+import {
+  BuildingOffice,
+  Buildings,
+  IdentificationBadge,
+  Suitcase,
+  User,
+} from "@phosphor-icons/react/dist/ssr"
 
 type SidebarOptionProps = {
   name: string

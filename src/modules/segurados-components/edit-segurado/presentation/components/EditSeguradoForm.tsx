@@ -22,7 +22,7 @@ import { zodResolver } from "@hookform/resolvers/zod"
 import { MagnifyingGlass } from "@phosphor-icons/react"
 import { useRouter } from "next/navigation"
 import { useEffect, useMemo, useState } from "react"
-import { useForm } from "react-hook-form"
+import { useForm, useWatch } from "react-hook-form"
 import { toast } from "sonner"
 import { updateSegurado } from "../../infra/remote/update-segurado"
 import {
@@ -45,10 +45,16 @@ export function EditSeguradoForm({ id }: EditSeguradoFormProps) {
     register,
     handleSubmit,
     setValue,
+    control,
     formState: { isSubmitting, errors },
   } = useForm<UpdateSeguradoSchema>({
     resolver: zodResolver(updateSeguradoFormSchema),
   })
+
+  const tipoPessoaWatch = useWatch({ control, name: "tipoPessoa" as any }) as
+    | string
+    | undefined
+  const tipoPessoa = tipoPessoaWatch ?? seguradoData?.tipoPessoa
 
   const produtoresOptions = useMemo(() => {
     if (!produtoresData?.data) return []
@@ -213,32 +219,57 @@ export function EditSeguradoForm({ id }: EditSeguradoFormProps) {
             />
           </div>
 
-          <div className="flex flex-1 flex-col gap-2">
-            <label>Representante Legal</label>
-            <Input.Root variant="primary">
-              <Input.Control
-                {...register("representanteLegalNome")}
-                type="text"
-              />
-            </Input.Root>
-          </div>
+          {tipoPessoa === "JURIDICA" && (
+            <div className="flex flex-col gap-4 border-l-4 border-yellow-400 bg-yellow-50 p-4">
+              <h4 className="font-semibold text-yellow-800">
+                Dados do Representante Legal
+              </h4>
+              <div className="flex gap-4">
+                <div className="flex flex-1 flex-col gap-2">
+                  <label>Nome do Representante Legal *</label>
+                  <Input.Root
+                    variant={
+                      errors.representanteLegalNome ? "error" : "primary"
+                    }>
+                    <Input.Control
+                      {...register("representanteLegalNome")}
+                      type="text"
+                    />
+                  </Input.Root>
+                  {errors.representanteLegalNome && (
+                    <span className="text-xs text-red-500">
+                      {errors.representanteLegalNome.message}
+                    </span>
+                  )}
+                </div>
+
+                <div className="flex flex-1 flex-col gap-2">
+                  <label>CPF do Representante Legal *</label>
+                  <Input.Root
+                    variant={
+                      errors.representanteLegalCpf ? "error" : "primary"
+                    }>
+                    <Input.Control
+                      {...register("representanteLegalCpf", {
+                        onChange: (e) => {
+                          e.target.value = formatDocumentNumber(e.target.value)
+                        },
+                      })}
+                      type="text"
+                    />
+                  </Input.Root>
+                  {errors.representanteLegalCpf && (
+                    <span className="text-xs text-red-500">
+                      {errors.representanteLegalCpf.message}
+                    </span>
+                  )}
+                </div>
+              </div>
+            </div>
+          )}
         </div>
 
         <div className="flex gap-4">
-          <div className="flex flex-1 flex-col gap-2">
-            <label>CPF Representante Legal</label>
-            <Input.Root variant="primary">
-              <Input.Control
-                {...register("representanteLegalCpf", {
-                  onChange: (e) => {
-                    e.target.value = formatDocumentNumber(e.target.value)
-                  },
-                })}
-                type="text"
-              />
-            </Input.Root>
-          </div>
-
           <div className="flex flex-1 flex-col gap-2">
             <label>Ramo de Atividade</label>
             <Input.Root variant="primary">
@@ -247,10 +278,15 @@ export function EditSeguradoForm({ id }: EditSeguradoFormProps) {
           </div>
 
           <div className="flex flex-1 flex-col gap-2">
-            <label>Vencimento CNH</label>
+            <label>Vencimento CNH *</label>
             <Input.Root variant="primary">
               <Input.Control {...register("vencimentoCnh")} type="date" />
             </Input.Root>
+            {errors.vencimentoCnh && (
+              <span className="text-xs text-red-500">
+                {errors.vencimentoCnh.message}
+              </span>
+            )}
           </div>
         </div>
       </div>
