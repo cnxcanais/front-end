@@ -8,8 +8,12 @@ import { LoadingScreen } from "@/core/components/LoadingScreen"
 import { SelectInput } from "@/core/components/SelectInput"
 import { fetchCep } from "@/core/utils/findCep"
 import { formatCep } from "@/core/utils/format-cep"
-import { formatDocumentNumber } from "@/core/utils/formatDocumentNumber"
+import {
+  formatDocumentNumber,
+  formatStaticDocument,
+} from "@/core/utils/formatDocumentNumber"
 import { formatPhoneNumber } from "@/core/utils/formatPhoneNumber"
+import { useCorretoraQuery } from "@/modules/corretoras-components/corretora/infra/hooks/use-corretora-query"
 import { useBancosQuery } from "@/modules/produtores-components/produtor/infra/hooks/use-banco-query"
 import { useProdutorQuery } from "@/modules/produtores-components/produtor/infra/hooks/use-produtor-query"
 import { useSeguradoByIdQuery } from "@/modules/segurados-components/segurado/infra/hooks/use-segurado-by-id-query"
@@ -41,13 +45,13 @@ export function EditSeguradoForm({ id }: EditSeguradoFormProps) {
 
   const { data: seguradoData, isLoading } = useSeguradoByIdQuery(id)
   const { data: produtoresData } = useProdutorQuery()
+  const { data: corretorasData } = useCorretoraQuery()
 
   const {
     register,
     handleSubmit,
     setValue,
     control,
-    watch,
     formState: { isSubmitting, errors },
   } = useForm<UpdateSeguradoSchema>({
     resolver: zodResolver(updateSeguradoFormSchema),
@@ -57,8 +61,6 @@ export function EditSeguradoForm({ id }: EditSeguradoFormProps) {
     | string
     | undefined
   const tipoPessoa = tipoPessoaWatch ?? seguradoData?.tipoPessoa
-
-  const formValues = watch()
 
   const { data: bancosData } = useBancosQuery()
 
@@ -95,7 +97,7 @@ export function EditSeguradoForm({ id }: EditSeguradoFormProps) {
       )
       setValue(
         "representanteLegalCpf",
-        seguradoData.representanteLegalCpf || ""
+        formatStaticDocument(seguradoData.representanteLegalCpf) || ""
       )
       setValue("rg", seguradoData.rg)
       setValue("orgaoEmissor", seguradoData.orgaoEmissor)
@@ -130,7 +132,7 @@ export function EditSeguradoForm({ id }: EditSeguradoFormProps) {
       setIsCepSearched(true)
     }
   }, [seguradoData, setValue])
-  // ...existing code...
+
   async function onSubmit(data: Segurado.UpdateRequest) {
     try {
       await updateSegurado(id, data)
@@ -140,6 +142,8 @@ export function EditSeguradoForm({ id }: EditSeguradoFormProps) {
       toast.error("Erro ao atualizar segurado: " + error)
     }
   }
+
+  console.log(errors)
 
   if (isLoading) return <LoadingScreen />
 
@@ -152,10 +156,8 @@ export function EditSeguradoForm({ id }: EditSeguradoFormProps) {
         <h3 className="text-lg font-semibold">Dados Pessoais</h3>
         <div className="flex gap-4">
           <div className="flex flex-1 flex-col gap-2">
-            <label>
-              Nome/Razão Social <span style={{ color: "red" }}>*</span>
-            </label>
-            <Input.Root variant={errors.nomeRazaoSocial ? "error" : "primary"}>
+            <label>Nome/Razão Social</label>
+            <Input.Root>
               <Input.Control {...register("nomeRazaoSocial")} type="text" />
             </Input.Root>
             {errors.nomeRazaoSocial && (
@@ -164,10 +166,11 @@ export function EditSeguradoForm({ id }: EditSeguradoFormProps) {
               </span>
             )}
           </div>
+
           <div className="flex flex-col gap-2">
             <SelectInput
               options={StatusSeguradoLabels}
-              label="Status *"
+              label="Status"
               field_name="status"
               {...register("status")}
             />
@@ -177,11 +180,52 @@ export function EditSeguradoForm({ id }: EditSeguradoFormProps) {
               </span>
             )}
           </div>
+
+          <div className="flex flex-col gap-2">
+            <label>Tipo de Pessoa</label>
+            <Input.Root variant="disabled">
+              <Input.Control
+                value={
+                  tipoPessoa === "JURIDICA" ? "Pessoa Jurídica" : (
+                    "Pessoa Física"
+                  )
+                }
+                type="text"
+                disabled
+              />
+            </Input.Root>
+          </div>
+        </div>
+
+        <div className="flex gap-4">
           <div className="flex flex-1 flex-col gap-2">
-            <label>
-              Grupo <span style={{ color: "red" }}>*</span>
-            </label>
-            <Input.Root variant={errors.grupo ? "error" : "primary"}>
+            <label>CPF/CNPJ</label>
+            <Input.Root variant="disabled">
+              <Input.Control
+                value={formatStaticDocument(seguradoData?.cnpjCpf)}
+                type="text"
+                disabled
+              />
+            </Input.Root>
+          </div>
+
+          <div className="flex flex-1 flex-col gap-2">
+            <label>Corretora</label>
+            <Input.Root variant="disabled">
+              <Input.Control
+                value={
+                  corretorasData?.data?.filter(
+                    (corretora) => corretora.id === seguradoData?.corretoraId
+                  )[0]?.razaoSocial
+                }
+                type="text"
+              />
+            </Input.Root>
+          </div>
+
+          <div className="flex flex-1 flex-col gap-2">
+            <label>Grupo</label>
+            <Input.Root variant="disabled">
               <Input.Control {...register("grupo")} type="text" />
             </Input.Root>
             {errors.grupo && (
@@ -196,6 +240,49 @@ export function EditSeguradoForm({ id }: EditSeguradoFormProps) {
       {/* Dados Pessoais Adicionais */}
       <div className="flex flex-col gap-4 bg-gray-50 p-4 shadow-md">
         <h3 className="text-lg font-semibold">Dados Adicionais</h3>
+        {tipoPessoa === "JURIDICA" && (
+          <div className="flex flex-col gap-4 border-l-4 border-yellow-400 bg-yellow-50 p-4">
+            <h4 className="font-semibold text-yellow-800">
+              Dados do Representante Legal
+            </h4>
+            <div className="flex gap-4">
+              <div className="flex flex-1 flex-col gap-2">
+                <label>Nome do Representante Legal</label>
+                <Input.Root>
+                  <Input.Control
+                    {...register("representanteLegalNome")}
+                    type="text"
+                  />
+                </Input.Root>
+                {errors.representanteLegalNome && (
+                  <span className="text-xs text-red-500">
+                    {errors.representanteLegalNome.message}
+                  </span>
+                )}
+              </div>
+
+              <div className="flex flex-1 flex-col gap-2">
+                <label>CPF do Representante Legal</label>
+                <Input.Root>
+                  <Input.Control
+                    {...register("representanteLegalCpf", {
+                      onChange: (e) => {
+                        e.target.value = formatDocumentNumber(e.target.value)
+                      },
+                    })}
+                    type="text"
+                  />
+                </Input.Root>
+                {errors.representanteLegalCpf && (
+                  <span className="text-xs text-red-500">
+                    {errors.representanteLegalCpf.message}
+                  </span>
+                )}
+              </div>
+            </div>
+          </div>
+        )}
+
         <div className="flex gap-4">
           <div className="flex flex-1 flex-col gap-2">
             <label>RG</label>
@@ -238,74 +325,25 @@ export function EditSeguradoForm({ id }: EditSeguradoFormProps) {
             />
           </div>
 
-          {tipoPessoa === "JURIDICA" && (
-            <div className="flex flex-col gap-4 border-l-4 border-yellow-400 bg-yellow-50 p-4">
-              <h4 className="font-semibold text-yellow-800">
-                Dados do Representante Legal
-              </h4>
-              <div className="flex gap-4">
-                <div className="flex flex-1 flex-col gap-2">
-                  <label>Nome do Representante Legal *</label>
-                  <Input.Root
-                    variant={
-                      errors.representanteLegalNome ? "error" : "primary"
-                    }>
-                    <Input.Control
-                      {...register("representanteLegalNome")}
-                      type="text"
-                    />
-                  </Input.Root>
-                  {errors.representanteLegalNome && (
-                    <span className="text-xs text-red-500">
-                      {errors.representanteLegalNome.message}
-                    </span>
-                  )}
-                </div>
-
-                <div className="flex flex-1 flex-col gap-2">
-                  <label>CPF do Representante Legal *</label>
-                  <Input.Root
-                    variant={
-                      errors.representanteLegalCpf ? "error" : "primary"
-                    }>
-                    <Input.Control
-                      {...register("representanteLegalCpf", {
-                        onChange: (e) => {
-                          e.target.value = formatDocumentNumber(e.target.value)
-                        },
-                      })}
-                      type="text"
-                    />
-                  </Input.Root>
-                  {errors.representanteLegalCpf && (
-                    <span className="text-xs text-red-500">
-                      {errors.representanteLegalCpf.message}
-                    </span>
-                  )}
-                </div>
-              </div>
+          <div className="flex flex-1 flex-col gap-2">
+            <div className="flex flex-1 flex-col gap-2">
+              <label>Ramo de Atividade</label>
+              <Input.Root variant="primary">
+                <Input.Control {...register("ramoAtividade")} type="text" />
+              </Input.Root>
             </div>
-          )}
-        </div>
 
-        <div className="flex gap-4">
-          <div className="flex flex-1 flex-col gap-2">
-            <label>Ramo de Atividade</label>
-            <Input.Root variant="primary">
-              <Input.Control {...register("ramoAtividade")} type="text" />
-            </Input.Root>
-          </div>
-
-          <div className="flex flex-1 flex-col gap-2">
-            <label>Vencimento CNH *</label>
-            <Input.Root variant="primary">
-              <Input.Control {...register("vencimentoCnh")} type="date" />
-            </Input.Root>
-            {errors.vencimentoCnh && (
-              <span className="text-xs text-red-500">
-                {errors.vencimentoCnh.message}
-              </span>
-            )}
+            <div className="flex flex-1 flex-col gap-2">
+              <label>Vencimento CNH</label>
+              <Input.Root>
+                <Input.Control {...register("vencimentoCnh")} type="date" />
+              </Input.Root>
+              {errors.vencimentoCnh && (
+                <span className="text-xs text-red-500">
+                  {errors.vencimentoCnh.message}
+                </span>
+              )}
+            </div>
           </div>
         </div>
       </div>
@@ -465,15 +503,7 @@ export function EditSeguradoForm({ id }: EditSeguradoFormProps) {
               options={bancosOptions}
               label="Banco"
               field_name="banco"
-              variant={
-                errors.banco ? "error"
-                : (
-                  !formValues.banco ||
-                  formValues.banco?.toString().trim() === ""
-                ) ?
-                  "error"
-                : "primary"
-              }
+              variant={errors.banco ? "error" : "primary"}
               {...register("banco")}
             />
             {errors.banco && (
@@ -560,7 +590,7 @@ export function EditSeguradoForm({ id }: EditSeguradoFormProps) {
         </div>
       </div>
 
-      <div className="flex justify-end gap-4">
+      <div className="mb-5 flex justify-end gap-4">
         <Button
           type="button"
           variant="tertiary"
