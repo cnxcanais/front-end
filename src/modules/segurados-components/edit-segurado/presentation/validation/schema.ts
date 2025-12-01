@@ -1,3 +1,4 @@
+import { validateCNPJ, validateCPF } from "@/core/utils/validadeDocuments"
 import { z } from "zod"
 
 export const updateSeguradoFormSchema = z
@@ -54,6 +55,20 @@ export const updateSeguradoFormSchema = z
     {
       message:
         "CPF do representante legal é obrigatório quando o nome é informado",
+      path: ["representanteLegalCpf"],
+    }
+  )
+  .refine(
+    (data) => {
+      if (data.representanteLegalCpf) {
+        const cleanedDocument = data.representanteLegalCpf.replace(/\D/g, "")
+        if (cleanedDocument.length === 11) return validateCPF(cleanedDocument)
+        if (cleanedDocument.length === 14) return validateCNPJ(cleanedDocument)
+      }
+      return true
+    },
+    {
+      message: "CPF ou CNPJ inválido",
       path: ["representanteLegalCpf"],
     }
   )
