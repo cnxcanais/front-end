@@ -1,3 +1,5 @@
-export * from "./get-segurados"
+export * from "./export-segurado-csv"
 export * from "./get-segurado-by-id"
+export * from "./get-segurados"
+export * from "./import-segurado-csv"
 export * from "./remove-segurado"

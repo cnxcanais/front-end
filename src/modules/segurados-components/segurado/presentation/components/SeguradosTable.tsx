@@ -1,23 +1,25 @@
 "use client"
 
 import { Button } from "@/core/components/Button"
-import { ExportTableToPDFButton } from "@/core/components/ExportPDFButton"
 import { FilterField, FilterForm } from "@/core/components/FilterForm"
 import { LoadingScreen } from "@/core/components/LoadingScreen"
 import { Modal } from "@/core/components/Modals/Modal"
 import { ModalFilesTrigger } from "@/core/components/Modals/ModalFiles/ModalFilesTrigger"
 import { Pagination } from "@/core/components/Pagination"
 import { Table } from "@/core/components/Table"
-import { exportNoPagination } from "@/core/utils/exportToExcel/exportNoPagination"
 import { formatStaticDocument } from "@/core/utils/formatDocumentNumber"
 import { useCorretoraQuery } from "@/modules/corretoras-components/corretora/infra/hooks/use-corretora-query"
 import { useProdutorQuery } from "@/modules/produtores-components/produtor/infra/hooks/use-produtor-query"
 import { useSeguradoQuery } from "@/modules/segurados-components/segurado/infra/hooks/use-segurado-query"
-import { FileXls, Pencil, Trash } from "@phosphor-icons/react"
+import {
+  exportSegurados,
+  removeSegurado,
+} from "@/modules/segurados-components/segurado/infra/remote"
+import { FileCsv, Pencil, Trash } from "@phosphor-icons/react"
 import { useRouter } from "next/navigation"
 import { useEffect, useMemo, useState } from "react"
 import { toast } from "sonner"
-import { removeSegurado } from "../../infra/remote/remove-segurado"
+import { ImportSeguradosModal } from "./ImportSeguradosModal"
 
 export function SeguradosTable() {
   const [page, setPage] = useState(1)
@@ -31,6 +33,7 @@ export function SeguradosTable() {
   const { push } = useRouter()
   const [open, setOpen] = useState(false)
   const [id, setId] = useState("")
+  const [openImportModal, setOpenImportModal] = useState(false)
 
   const [filteredResults, setFilteredResults] = useState([])
 
@@ -42,19 +45,29 @@ export function SeguradosTable() {
     }))
   }, [corretoras, isLoadingCorretoras])
 
-  const produtoresOptions = useMemo(() => {
-    if (isLoadingProdutores || !produtores?.data) return []
-    return produtores.data.map((produtor) => ({
-      label: produtor.nome,
-      value: produtor.id,
-    }))
-  }, [produtores, isLoadingProdutores])
-
   const segurados = data?.data || []
   const totalPages = data?.totalPages || 1
 
   const handleEdit = (id: string) => {
     push(`/segurados/edit/${id}`)
+  }
+
+  const handleDownloadCsv = () => {
+    exportSegurados(filters)
+      .then((response) => {
+        const url = window.URL.createObjectURL(new Blob([response]))
+        const link = document.createElement("a")
+        link.href = url
+        link.setAttribute(
+          "download",
+          `segurados-${new Date().toLocaleDateString("pt-br")}.csv`
+        )
+        document.body.appendChild(link)
+        link.click()
+      })
+      .catch((error) => {
+        console.error("Erro ao exportar segurados:", error)
+      })
   }
 
   const handleConfirmDelete = async () => {
@@ -152,11 +165,14 @@ export function SeguradosTable() {
       options: corretorasOptions,
     },
     {
-      name: "produtorId",
-      label: "Produtor",
-      placeholder: "Buscar por Produtor",
+      name: "tipoPessoa",
+      label: "Tipo Pessoa",
+      placeholder: "Buscar por Tipo de Pessoa",
       type: "select",
-      options: produtoresOptions,
+      options: [
+        { label: "Pessoa Física", value: "FISICA" },
+        { label: "Pessoa Jurídica", value: "JURIDICA" },
+      ],
     },
     {
       name: "status",
@@ -212,19 +228,19 @@ export function SeguradosTable() {
         </div>
         {segurados.length > 0 && (
           <div className="flex items-center gap-2">
-            <ExportTableToPDFButton
-              filename={`segurados.${new Date().toLocaleDateString("pt-BR").replace(/\//g, "-")}`}
-              options={{ orientation: "portrait" }}
-              title="Segurados"
-              className="bg-red-500">
-              Exportar PDF
-            </ExportTableToPDFButton>
             <Button
               className="flex items-center gap-1"
               variant="secondary"
-              onClick={() => exportNoPagination("segurados")}>
-              <FileXls size={22} />
-              Exportar
+              onClick={() => setOpenImportModal(true)}>
+              <FileCsv size={22} />
+              Importar Segurados
+            </Button>
+            <Button
+              className="flex items-center gap-1"
+              variant="secondary"
+              onClick={() => handleDownloadCsv()}>
+              <FileCsv size={22} />
+              Exportar Segurados
             </Button>
           </div>
         )}
@@ -245,6 +261,11 @@ export function SeguradosTable() {
               setLimit(newLimit)
               setPage(1)
             }}
+          />
+          <ImportSeguradosModal
+            open={openImportModal}
+            onClose={() => setOpenImportModal(false)}
+            onSuccess={refetch}
           />
         </>
       }

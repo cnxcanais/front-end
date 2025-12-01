@@ -60,11 +60,41 @@ export namespace Segurado {
 
   export type CreateRequest = Omit<
     Type,
-    "id" | "createdAt" | "updatedAt" | "createdBy" | "updatedBy" | "deletedAt" | "deletedBy" | "enderecoCompleto"
+    | "id"
+    | "createdAt"
+    | "updatedAt"
+    | "createdBy"
+    | "updatedBy"
+    | "deletedAt"
+    | "deletedBy"
+    | "enderecoCompleto"
   >
 
   export type UpdateRequest = Omit<
     Type,
-    "id" | "createdAt" | "updatedAt" | "createdBy" | "updatedBy" | "deletedAt" | "deletedBy" | "enderecoCompleto" | "tipoPessoa" | "cnpjCpf" | "corretoraId"
+    | "id"
+    | "createdAt"
+    | "updatedAt"
+    | "createdBy"
+    | "updatedBy"
+    | "deletedAt"
+    | "deletedBy"
+    | "enderecoCompleto"
+    | "tipoPessoa"
+    | "cnpjCpf"
+    | "corretoraId"
   >
+
+  export type ImportRequest = {
+    file: File
+    duplicateBehavior: "SKIP" | "UPDATE"
+  }
+
+  export type ExportRequest = {
+    nomeRazaoSocial?: string
+    cnpjCpf?: string
+    corretoraId?: string
+    status?: "ATIVO" | "INATIVO"
+    tipoPessoa?: "FISICA" | "JURIDICA"
+  }
 }
