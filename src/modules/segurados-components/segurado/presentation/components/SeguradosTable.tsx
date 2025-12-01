@@ -9,6 +9,7 @@ import { ModalFilesTrigger } from "@/core/components/Modals/ModalFiles/ModalFile
 import { Pagination } from "@/core/components/Pagination"
 import { Table } from "@/core/components/Table"
 import { exportNoPagination } from "@/core/utils/exportToExcel/exportNoPagination"
+import { formatStaticDocument } from "@/core/utils/formatDocumentNumber"
 import { useCorretoraQuery } from "@/modules/corretoras-components/corretora/infra/hooks/use-corretora-query"
 import { useProdutorQuery } from "@/modules/produtores-components/produtor/infra/hooks/use-produtor-query"
 import { useSeguradoQuery } from "@/modules/segurados-components/segurado/infra/hooks/use-segurado-query"
@@ -64,7 +65,9 @@ export function SeguradosTable() {
     } catch (error) {
       const err: any = error
       const message =
-        err?.response?.data?.message || err?.message || "Erro ao remover segurado"
+        err?.response?.data?.message ||
+        err?.message ||
+        "Erro ao remover segurado"
       toast.error(message)
     } finally {
       setOpen(false)
@@ -73,7 +76,13 @@ export function SeguradosTable() {
 
   const columns = [
     { header: "Nome/Razão Social", accessor: "nomeRazaoSocial" },
-    { header: "CPF/CNPJ", accessor: "cnpjCpf" },
+    {
+      header: "CPF/CNPJ",
+      accessor: "cnpjCpf",
+      render: (value: string) => {
+        return formatStaticDocument(value)
+      },
+    },
     { header: "Tipo", accessor: "tipoPessoa" },
     { header: "Status", accessor: "status" },
     {
@@ -197,9 +206,7 @@ export function SeguradosTable() {
 
       <div className="mt-8 flex items-center justify-between">
         <div className="flex h-full gap-4">
-          <Button
-            onClick={() => push("/segurados/create")}
-            variant="secondary">
+          <Button onClick={() => push("/segurados/create")} variant="secondary">
             Cadastrar
           </Button>
         </div>

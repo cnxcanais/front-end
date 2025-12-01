@@ -47,6 +47,7 @@ export function EditSeguradoForm({ id }: EditSeguradoFormProps) {
     handleSubmit,
     setValue,
     control,
+    watch,
     formState: { isSubmitting, errors },
   } = useForm<UpdateSeguradoSchema>({
     resolver: zodResolver(updateSeguradoFormSchema),
@@ -57,34 +58,8 @@ export function EditSeguradoForm({ id }: EditSeguradoFormProps) {
     | undefined
   const tipoPessoa = tipoPessoaWatch ?? seguradoData?.tipoPessoa
 
-  const nomeRazaoSocialValue = useWatch({
-    control,
-    name: "nomeRazaoSocial" as any,
-  }) as string | undefined
-  const grupoValue = useWatch({ control, name: "grupo" as any }) as
-    | string
-    | undefined
-  const statusValue = useWatch({ control, name: "status" as any }) as
-    | string
-    | undefined
-  const emailValue = useWatch({ control, name: "email" as any }) as
-    | string
-    | undefined
-  const vencimentoCnhValue = useWatch({
-    control,
-    name: "vencimentoCnh" as any,
-  }) as string | undefined
-  const representanteLegalNomeValue = useWatch({
-    control,
-    name: "representanteLegalNome" as any,
-  }) as string | undefined
-  const representanteLegalCpfValue = useWatch({
-    control,
-    name: "representanteLegalCpf" as any,
-  }) as string | undefined
-  const bancoValue = useWatch({ control, name: "banco" as any }) as
-    | string
-    | undefined
+  const formValues = watch()
+
   const { data: bancosData } = useBancosQuery()
 
   const bancosOptions = useMemo(() => {
@@ -155,7 +130,7 @@ export function EditSeguradoForm({ id }: EditSeguradoFormProps) {
       setIsCepSearched(true)
     }
   }, [seguradoData, setValue])
-
+  // ...existing code...
   async function onSubmit(data: Segurado.UpdateRequest) {
     try {
       await updateSegurado(id, data)
@@ -177,17 +152,10 @@ export function EditSeguradoForm({ id }: EditSeguradoFormProps) {
         <h3 className="text-lg font-semibold">Dados Pessoais</h3>
         <div className="flex gap-4">
           <div className="flex flex-1 flex-col gap-2">
-            <label>Nome/Razão Social</label>
-            <Input.Root
-              variant={
-                errors.nomeRazaoSocial ? "error"
-                : (
-                  !nomeRazaoSocialValue ||
-                  nomeRazaoSocialValue?.toString().trim() === ""
-                ) ?
-                  "error"
-                : "primary"
-              }>
+            <label>
+              Nome/Razão Social <span style={{ color: "red" }}>*</span>
+            </label>
+            <Input.Root variant={errors.nomeRazaoSocial ? "error" : "primary"}>
               <Input.Control {...register("nomeRazaoSocial")} type="text" />
             </Input.Root>
             {errors.nomeRazaoSocial && (
@@ -196,16 +164,11 @@ export function EditSeguradoForm({ id }: EditSeguradoFormProps) {
               </span>
             )}
           </div>
-
           <div className="flex flex-col gap-2">
             <SelectInput
               options={StatusSeguradoLabels}
-              label="Status"
+              label="Status *"
               field_name="status"
-              style={{
-                borderColor:
-                  errors.status || !statusValue ? "rgb(239 68 68)" : undefined,
-              }}
               {...register("status")}
             />
             {errors.status && (
@@ -214,16 +177,11 @@ export function EditSeguradoForm({ id }: EditSeguradoFormProps) {
               </span>
             )}
           </div>
-
           <div className="flex flex-1 flex-col gap-2">
-            <label>Grupo</label>
-            <Input.Root
-              variant={
-                errors.grupo ? "error"
-                : !grupoValue || grupoValue?.toString().trim() === "" ?
-                  "error"
-                : "primary"
-              }>
+            <label>
+              Grupo <span style={{ color: "red" }}>*</span>
+            </label>
+            <Input.Root variant={errors.grupo ? "error" : "primary"}>
               <Input.Control {...register("grupo")} type="text" />
             </Input.Root>
             {errors.grupo && (
@@ -509,7 +467,10 @@ export function EditSeguradoForm({ id }: EditSeguradoFormProps) {
               field_name="banco"
               variant={
                 errors.banco ? "error"
-                : !bancoValue || bancoValue?.toString().trim() === "" ?
+                : (
+                  !formValues.banco ||
+                  formValues.banco?.toString().trim() === ""
+                ) ?
                   "error"
                 : "primary"
               }
