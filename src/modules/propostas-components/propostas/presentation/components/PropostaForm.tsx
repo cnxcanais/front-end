@@ -167,26 +167,72 @@ export function PropostaForm({ proposta, isEdit }: PropostaFormProps) {
         ]
         break
       case 1:
-        fieldsToValidate = ["inicioVigencia", "fimVigencia"]
+        if (isAutomovelRamo) {
+          fieldsToValidate = []
+        } else {
+          fieldsToValidate = ["inicioVigencia", "fimVigencia"]
+        }
         break
       case 2:
-        fieldsToValidate = []
+        if (isAutomovelRamo) {
+          fieldsToValidate = ["inicioVigencia", "fimVigencia"]
+        } else {
+          fieldsToValidate = []
+        }
         break
       case 3:
-        fieldsToValidate = ["premioLiquido"]
+        if (isAutomovelRamo) {
+          fieldsToValidate = []
+        } else {
+          fieldsToValidate = ["premioLiquido"]
+        if (formData.parcelas.length > 0) {
+          const hasEmptyDates = formData.parcelas.some(
+            (p: any) => !p.dataVencimento || !p.previsaoRecebimento
+          )
+          if (hasEmptyDates) {
+            toast.error("Preencha o vencimento e previsão de recebimento de todas as parcelas")
+            return
+          }
+        }
+        }
         break
       case 4:
-        fieldsToValidate = [
-          "percentualComissao",
-          "comissaoSobre",
-          "formaComissao",
-          "valorComissao",
-        ]
+        if (isAutomovelRamo) {
+          fieldsToValidate = ["premioLiquido"]
+          if (formData.parcelas.length > 0) {
+            const hasEmptyDates = formData.parcelas.some(
+              (p: any) => !p.dataVencimento || !p.previsaoRecebimento
+            )
+            if (hasEmptyDates) {
+              toast.error("Preencha o vencimento e previsão de recebimento de todas as parcelas")
+              return
+            }
+          }
+        } else {
+          fieldsToValidate = [
+            "percentualComissao",
+            "comissaoSobre",
+            "formaComissao",
+            "valorComissao",
+          ]
+        }
         break
       case 5:
-        fieldsToValidate = []
+        if (isAutomovelRamo) {
+          fieldsToValidate = [
+            "percentualComissao",
+            "comissaoSobre",
+            "formaComissao",
+            "valorComissao",
+          ]
+        } else {
+          fieldsToValidate = []
+        }
         break
       case 6:
+        fieldsToValidate = []
+        break
+      case 7:
         fieldsToValidate = []
         break
     }
@@ -230,15 +276,29 @@ export function PropostaForm({ proposta, isEdit }: PropostaFormProps) {
     }
   }
 
-  const tabs = [
-    "Proposta",
-    "Vigência",
-    "Apólice e Endosso",
-    "Prêmio e Parcelas",
-    "Comissão",
-    "Repasses",
-    "Revisão",
-  ]
+  const selectedRamo = ramos?.data?.find((r) => r.id === formData.ramoId)
+  const isAutomovelRamo = selectedRamo?.descricao?.toLowerCase().includes("autom")
+
+  const tabs = isAutomovelRamo
+    ? [
+        "Proposta",
+        "Veículo",
+        "Vigência",
+        "Apólice e Endosso",
+        "Prêmio e Parcelas",
+        "Comissão",
+        "Repasses",
+        "Revisão",
+      ]
+    : [
+        "Proposta",
+        "Vigência",
+        "Apólice e Endosso",
+        "Prêmio e Parcelas",
+        "Comissão",
+        "Repasses",
+        "Revisão",
+      ]
 
   const segurado = segurados?.data?.find((s) => s.id === formData.seguradoId)
 
@@ -308,54 +368,82 @@ export function PropostaForm({ proposta, isEdit }: PropostaFormProps) {
                 </span>
               )}
             </div>
-            <SelectInput
-              label="Seguradora *"
-              field_name="seguradoraId"
-              value={formData.seguradoraId}
-              onChange={(e) => setValue("seguradoraId", e.target.value)}
-              options={
-                seguradoras?.data?.map((s) => ({
-                  text: s.razaoSocial,
-                  value: s.id,
-                })) || []
-              }
-              required
-            />
-            <SelectInput
-              label="Produtor *"
-              field_name="produtorId"
-              value={formData.produtorId}
-              onChange={(e) => setValue("produtorId", e.target.value)}
-              options={
-                produtores?.data?.map((p) => ({ text: p.nome, value: p.id })) ||
-                []
-              }
-              required
-            />
-            <SelectInput
-              label="Corretora *"
-              field_name="corretoraId"
-              value={formData.corretoraId}
-              onChange={(e) => setValue("corretoraId", e.target.value)}
-              options={
-                corretoras?.data?.map((c) => ({
-                  text: c.razaoSocial,
-                  value: c.id,
-                })) || []
-              }
-              required
-            />
-            <SelectInput
-              label="Ramo *"
-              field_name="ramoId"
-              value={formData.ramoId}
-              onChange={(e) => setValue("ramoId", e.target.value)}
-              options={
-                ramos?.data?.map((r) => ({ text: r.descricao, value: r.id })) ||
-                []
-              }
-              required
-            />
+            <div>
+              <SelectInput
+                label="Seguradora *"
+                field_name="seguradoraId"
+                value={formData.seguradoraId}
+                onChange={(e) => setValue("seguradoraId", e.target.value)}
+                options={
+                  seguradoras?.data?.map((s) => ({
+                    text: s.razaoSocial,
+                    value: s.id,
+                  })) || []
+                }
+                required
+              />
+              {errors.seguradoraId && (
+                <span className="text-xs text-red-500">
+                  {errors.seguradoraId.message}
+                </span>
+              )}
+            </div>
+            <div>
+              <SelectInput
+                label="Produtor *"
+                field_name="produtorId"
+                value={formData.produtorId}
+                onChange={(e) => setValue("produtorId", e.target.value)}
+                options={
+                  produtores?.data?.map((p) => ({ text: p.nome, value: p.id })) ||
+                  []
+                }
+                required
+              />
+              {errors.produtorId && (
+                <span className="text-xs text-red-500">
+                  {errors.produtorId.message}
+                </span>
+              )}
+            </div>
+            <div>
+              <SelectInput
+                label="Corretora *"
+                field_name="corretoraId"
+                value={formData.corretoraId}
+                onChange={(e) => setValue("corretoraId", e.target.value)}
+                options={
+                  corretoras?.data?.map((c) => ({
+                    text: c.razaoSocial,
+                    value: c.id,
+                  })) || []
+                }
+                required
+              />
+              {errors.corretoraId && (
+                <span className="text-xs text-red-500">
+                  {errors.corretoraId.message}
+                </span>
+              )}
+            </div>
+            <div>
+              <SelectInput
+                label="Ramo *"
+                field_name="ramoId"
+                value={formData.ramoId}
+                onChange={(e) => setValue("ramoId", e.target.value)}
+                options={
+                  ramos?.data?.map((r) => ({ text: r.descricao, value: r.id })) ||
+                  []
+                }
+                required
+              />
+              {errors.ramoId && (
+                <span className="text-xs text-red-500">
+                  {errors.ramoId.message}
+                </span>
+              )}
+            </div>
             <SelectInput
               label="Produto"
               field_name="produtoId"
@@ -363,35 +451,102 @@ export function PropostaForm({ proposta, isEdit }: PropostaFormProps) {
               onChange={(e) => setValue("produtoId", e.target.value)}
               options={produtosOptions}
             />
-            <SelectInput
-              label="Tipo de Documento *"
-              field_name="tipoDocumento"
-              value={formData.tipoDocumento}
-              onChange={(e) => setValue("tipoDocumento", e.target.value as any)}
-              options={[
-                { text: "Proposta", value: "Proposta" },
-                { text: "Apólice", value: "Apólice" },
-                { text: "Renovação", value: "Renovação" },
-                { text: "Endosso", value: "Endosso" },
-              ]}
-              required
-            />
-            <SelectInput
-              label="Origem *"
-              field_name="origem"
-              value={formData.origem}
-              onChange={(e) => setValue("origem", e.target.value as any)}
-              options={[
-                { text: "Manual", value: "Manual" },
-                { text: "Importação", value: "Importação" },
-                { text: "Integração", value: "Integração" },
-              ]}
-              required
-            />
+            <div>
+              <SelectInput
+                label="Tipo de Documento *"
+                field_name="tipoDocumento"
+                value={formData.tipoDocumento}
+                onChange={(e) => setValue("tipoDocumento", e.target.value as any)}
+                options={[
+                  { text: "Proposta", value: "Proposta" },
+                  { text: "Apólice", value: "Apólice" },
+                  { text: "Renovação", value: "Renovação" },
+                  { text: "Endosso", value: "Endosso" },
+                ]}
+                required
+              />
+              {errors.tipoDocumento && (
+                <span className="text-xs text-red-500">
+                  {errors.tipoDocumento.message}
+                </span>
+              )}
+            </div>
+            <div>
+              <SelectInput
+                label="Origem *"
+                field_name="origem"
+                value={formData.origem}
+                onChange={(e) => setValue("origem", e.target.value as any)}
+                options={[
+                  { text: "Manual", value: "Manual" },
+                  { text: "Importação", value: "Importação" },
+                  { text: "Integração", value: "Integração" },
+                ]}
+                required
+              />
+              {errors.origem && (
+                <span className="text-xs text-red-500">
+                  {errors.origem.message}
+                </span>
+              )}
+            </div>
           </div>
         )}
 
-        {activeTab === 1 && (
+        {activeTab === 1 && isAutomovelRamo && (
+          <div className="grid grid-cols-2 gap-4">
+            <div>
+              <label>Placa do Veículo</label>
+              <Input.Root className="mt-2">
+                <Input.Control {...register("placaVeiculo")} />
+              </Input.Root>
+            </div>
+            <div>
+              <label>Chassi do Veículo</label>
+              <Input.Root className="mt-2">
+                <Input.Control {...register("chassiVeiculo")} />
+              </Input.Root>
+            </div>
+            <div>
+              <label>Marca do Veículo</label>
+              <Input.Root className="mt-2">
+                <Input.Control {...register("marcaVeiculo")} />
+              </Input.Root>
+            </div>
+            <div>
+              <label>Modelo do Veículo</label>
+              <Input.Root className="mt-2">
+                <Input.Control {...register("modeloVeiculo")} />
+              </Input.Root>
+            </div>
+            <div>
+              <label>Ano de Fabricação</label>
+              <Input.Root className="mt-2">
+                <Input.Control
+                  type="number"
+                  {...register("anoFabricacaoVeiculo", { valueAsNumber: true })}
+                />
+              </Input.Root>
+            </div>
+            <div>
+              <label>Ano do Modelo</label>
+              <Input.Root className="mt-2">
+                <Input.Control
+                  type="number"
+                  {...register("anoModeloVeiculo", { valueAsNumber: true })}
+                />
+              </Input.Root>
+            </div>
+            <div className="col-span-2">
+              <label>Complemento</label>
+              <Input.Root className="mt-2">
+                <Input.Control {...register("complementoItem")} />
+              </Input.Root>
+            </div>
+          </div>
+        )}
+
+        {((activeTab === 1 && !isAutomovelRamo) || (activeTab === 2 && isAutomovelRamo)) && (
           <div className="grid grid-cols-2 gap-4">
             <div>
               <label>Início da Vigência *</label>
@@ -418,7 +573,7 @@ export function PropostaForm({ proposta, isEdit }: PropostaFormProps) {
           </div>
         )}
 
-        {activeTab === 2 && (
+        {((activeTab === 2 && !isAutomovelRamo) || (activeTab === 3 && isAutomovelRamo)) && (
           <div className="grid grid-cols-2 gap-4">
             <div>
               <label>Número da Apólice</label>
@@ -453,7 +608,7 @@ export function PropostaForm({ proposta, isEdit }: PropostaFormProps) {
           </div>
         )}
 
-        {activeTab === 3 && (
+        {((activeTab === 3 && !isAutomovelRamo) || (activeTab === 4 && isAutomovelRamo)) && (
           <div className="space-y-4">
             <div className="grid grid-cols-3 gap-4">
               <div>
@@ -549,7 +704,7 @@ export function PropostaForm({ proposta, isEdit }: PropostaFormProps) {
           </div>
         )}
 
-        {activeTab === 4 && (
+        {((activeTab === 4 && !isAutomovelRamo) || (activeTab === 5 && isAutomovelRamo)) && (
           <div className="grid grid-cols-2 gap-4">
             <div>
               <label>% Comissão *</label>
@@ -605,7 +760,7 @@ export function PropostaForm({ proposta, isEdit }: PropostaFormProps) {
 
 
 
-        {activeTab === 5 && (
+        {((activeTab === 5 && !isAutomovelRamo) || (activeTab === 6 && isAutomovelRamo)) && (
           <div className="space-y-4">
             <div className="flex justify-between items-center">
               <h4 className="font-semibold">Repasses</h4>
@@ -699,7 +854,7 @@ export function PropostaForm({ proposta, isEdit }: PropostaFormProps) {
         )}
       </div>
 
-      {activeTab === 6 && (
+      {((activeTab === 6 && !isAutomovelRamo) || (activeTab === 7 && isAutomovelRamo)) && (
         <div className="space-y-4">
           <div className="rounded-lg bg-gray-50 p-6">
               <h3 className="mb-4 text-lg font-semibold">Proposta</h3>
@@ -777,6 +932,62 @@ export function PropostaForm({ proposta, isEdit }: PropostaFormProps) {
                 />
               </div>
             </div>
+
+            {isAutomovelRamo && (
+              <div className="rounded-lg bg-gray-50 p-6">
+                <h3 className="mb-4 text-lg font-semibold">Veículo</h3>
+                <div className="grid grid-cols-2 gap-4">
+                  <div>
+                    <label>Placa do Veículo</label>
+                    <Input.Root className="mt-2">
+                      <Input.Control {...register("placaVeiculo")} />
+                    </Input.Root>
+                  </div>
+                  <div>
+                    <label>Chassi do Veículo</label>
+                    <Input.Root className="mt-2">
+                      <Input.Control {...register("chassiVeiculo")} />
+                    </Input.Root>
+                  </div>
+                  <div>
+                    <label>Marca do Veículo</label>
+                    <Input.Root className="mt-2">
+                      <Input.Control {...register("marcaVeiculo")} />
+                    </Input.Root>
+                  </div>
+                  <div>
+                    <label>Modelo do Veículo</label>
+                    <Input.Root className="mt-2">
+                      <Input.Control {...register("modeloVeiculo")} />
+                    </Input.Root>
+                  </div>
+                  <div>
+                    <label>Ano de Fabricação</label>
+                    <Input.Root className="mt-2">
+                      <Input.Control
+                        type="number"
+                        {...register("anoFabricacaoVeiculo", { valueAsNumber: true })}
+                      />
+                    </Input.Root>
+                  </div>
+                  <div>
+                    <label>Ano do Modelo</label>
+                    <Input.Root className="mt-2">
+                      <Input.Control
+                        type="number"
+                        {...register("anoModeloVeiculo", { valueAsNumber: true })}
+                      />
+                    </Input.Root>
+                  </div>
+                  <div className="col-span-2">
+                    <label>Complemento</label>
+                    <Input.Root className="mt-2">
+                      <Input.Control {...register("complementoItem")} />
+                    </Input.Root>
+                  </div>
+                </div>
+              </div>
+            )}
 
             <div className="rounded-lg bg-gray-50 p-6">
               <h3 className="mb-4 text-lg font-semibold">Vigência</h3>

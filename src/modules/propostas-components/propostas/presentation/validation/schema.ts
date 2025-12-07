@@ -43,8 +43,12 @@ export const propostaFormSchema = z.object({
   anoFabricacaoVeiculo: z.number().optional(),
   anoModeloVeiculo: z.number().optional(),
   complementoItem: z.string().optional(),
-  tipoDocumento: z.enum(["Proposta", "Apólice", "Renovação", "Endosso"]),
-  origem: z.enum(["Manual", "Importação", "Integração"]),
+  tipoDocumento: z.enum(["Proposta", "Apólice", "Renovação", "Endosso"], {
+    errorMap: () => ({ message: "Tipo de documento é obrigatório" }),
+  }),
+  origem: z.enum(["Manual", "Importação", "Integração"], {
+    errorMap: () => ({ message: "Origem é obrigatória" }),
+  }),
   situacao: z.enum(["Ativo", "Inativo"]),
   inicioVigencia: z.string().min(1, "Início da vigência é obrigatório"),
   fimVigencia: z.string().min(1, "Fim da vigência é obrigatório"),
