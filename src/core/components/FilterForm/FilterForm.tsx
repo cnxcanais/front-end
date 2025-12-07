@@ -11,6 +11,7 @@ export interface FilterField {
   placeholder?: string
   type?: "text" | "select"
   options?: { label: string; value: string }[]
+  disabled?: boolean
 }
 
 interface FilterFormProps {
@@ -78,7 +79,7 @@ export function FilterForm({ fields, onFilter, defaultOpen = true, appliedFilter
         <form onSubmit={handleSubmit} className="border-t border-gray-200 p-4">
           <div className="grid grid-cols-1 gap-4 md:grid-cols-2 lg:grid-cols-3">
             {fields.map((field) => (
-              <div key={field.name}>
+              <div key={field.name} className={field.disabled ? "opacity-50 pointer-events-none" : ""}>
                 <label className="mb-1 block text-sm font-medium">
                   {field.label}
                 </label>
@@ -91,6 +92,7 @@ export function FilterForm({ fields, onFilter, defaultOpen = true, appliedFilter
                       onChange={(value) =>
                         setFilters((prev) => ({ ...prev, [field.name]: value || "" }))
                       }
+                      disabled={field.disabled}
                     />
                   ) : (
                     <Input.Control
@@ -99,6 +101,7 @@ export function FilterForm({ fields, onFilter, defaultOpen = true, appliedFilter
                       onChange={(e) =>
                         setFilters((prev) => ({ ...prev, [field.name]: e.target.value }))
                       }
+                      disabled={field.disabled}
                     />
                   )}
                 </Input.Root>

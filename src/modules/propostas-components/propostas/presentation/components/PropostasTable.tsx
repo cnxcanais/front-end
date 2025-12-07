@@ -8,11 +8,17 @@ import { Modal } from "@/core/components/Modals/Modal"
 import { Pagination } from "@/core/components/Pagination"
 import { Table } from "@/core/components/Table"
 import { exportNoPagination } from "@/core/utils/exportToExcel/exportNoPagination"
+import { useCorretoraQuery } from "@/modules/corretoras-components/corretora/infra/hooks/use-corretora-query"
+import { useProdutorQuery } from "@/modules/produtores-components/produtor/infra/hooks/use-produtor-query"
+import { useProdutoQuery } from "@/modules/produtos-components/produtos/infra/hooks/use-produto-query"
 import { useProposaQuery } from "@/modules/propostas-components/propostas/infra/hooks/use-proposta-query"
 import { removeProposta } from "@/modules/propostas-components/propostas/infra/remote"
+import { useRamoQuery } from "@/modules/ramos-components/ramos/infra/hooks/use-ramo-query"
+import { useSeguradoraQuery } from "@/modules/seguradoras-components/seguradora/infra/hooks/use-seguradora-query"
+import { useSeguradoQuery } from "@/modules/segurados-components/segurado/infra/hooks/use-segurado-query"
 import { FileXls, Pencil, Trash } from "@phosphor-icons/react"
 import { useRouter } from "next/navigation"
-import { useEffect, useState } from "react"
+import { useEffect, useMemo, useState } from "react"
 import { toast } from "sonner"
 
 export function PropostasTable() {
@@ -20,21 +26,94 @@ export function PropostasTable() {
   const [limit, setLimit] = useState(10)
   const [filters, setFilters] = useState<Record<string, string>>({})
   const { data, isLoading, refetch } = useProposaQuery(page, limit, filters)
+  const [ramoId, setRamoId] = useState("")
   const { push } = useRouter()
 
   const [open, setOpen] = useState(false)
   const [id, setId] = useState("")
   const [filteredResults, setFilteredResults] = useState([])
+  const [produtosOptions, setProdutosOptions] = useState([])
+
+  const { data: segurados } = useSeguradoQuery(1, 100)
+  const { data: corretoras } = useCorretoraQuery(1, 100)
+  const { data: produtores } = useProdutorQuery(1, 100)
+  const { data: seguradoras } = useSeguradoraQuery(1, 100)
+  const { data: ramos } = useRamoQuery(1, 100)
+  const { data: produtos, isLoading: isProdutosLoading } = useProdutoQuery(
+    1,
+    100
+  )
+
+  console.log("filters" + filters)
+
+  useEffect(() => {
+    console.log("Effect triggered with filters:", filters)
+    if (ramoId) {
+      console.log("ramoId => " + filters?.ramoId)
+      const filteredProdutos = produtos?.data.filter(
+        (p) => p.ramoId === filters.ramoId
+      )
+      const produtosOption = filteredProdutos?.map((p) => ({
+        label: p.descricao,
+        value: p.id,
+      }))
+      setProdutosOptions(produtosOption)
+    }
+  }, [filters, produtos?.data])
+
+  console.log(produtosOptions)
+
+  const seguradosOptions = useMemo(() => {
+    if (!segurados?.data) return []
+    return segurados.data.map((s) => ({
+      label: s.nomeRazaoSocial,
+      value: s.id,
+    }))
+  }, [segurados])
+
+  const corretorasOptions = useMemo(() => {
+    if (!corretoras?.data) return []
+    return corretoras.data.map((c) => ({
+      label: c.razaoSocial,
+      value: c.id,
+    }))
+  }, [corretoras])
+
+  const produtoresOptions = useMemo(() => {
+    if (!produtores?.data) return []
+    return produtores.data.map((p) => ({
+      label: p.nome,
+      value: p.id,
+    }))
+  }, [produtores])
+
+  const seguradoresOptions = useMemo(() => {
+    if (!seguradoras?.data) return []
+    return seguradoras.data.map((s) => ({
+      label: s.razaoSocial,
+      value: s.id,
+    }))
+  }, [seguradoras])
+
+  const ramosOptions = useMemo(() => {
+    if (!ramos?.data) return []
+    return ramos.data.map((r) => ({
+      label: r.descricao,
+      value: r.id,
+    }))
+  }, [ramos])
+
+  const isProdutoDisabled = !filters.ramoId || isProdutosLoading
+  const produtoPlaceholder =
+    !filters.ramoId ? "Selecione um ramo primeiro"
+    : isProdutosLoading ? "Carregando produtos..."
+    : "Buscar por produto"
 
   const propostas = data?.data || []
   const totalPages = data?.meta?.totalPages || 1
 
   const handleEdit = (id: string) => {
     push(`/propostas/edit/${id}`)
-  }
-
-  const handleRowAction = (row: any) => {
-    return row._id
   }
 
   const handleConfirmDelete = async () => {
@@ -83,40 +162,122 @@ export function PropostasTable() {
     },
   ]
 
-  const getIdFromRow = (row: any) => row._id
-
-  const filterFields: FilterField[] = [
-    {
-      name: "_numeroProposta",
-      label: "Número Proposta",
-      placeholder: "Buscar por número",
-    },
-    {
-      name: "_tipoDocumento",
-      label: "Tipo Documento",
-      placeholder: "Buscar por tipo",
-      type: "select",
-      options: [
-        { label: "Proposta", value: "Proposta" },
-        { label: "Apólice", value: "Apólice" },
-        { label: "Renovação", value: "Renovação" },
-        { label: "Endosso", value: "Endosso" },
-      ],
-    },
-    {
-      name: "_situacao",
-      label: "Situação",
-      placeholder: "Buscar por situação",
-      type: "select",
-      options: [
-        { label: "Ativo", value: "Ativo" },
-        { label: "Inativo", value: "Inativo" },
-      ],
-    },
-  ]
+  const filterFields: FilterField[] = useMemo(
+    () => [
+      {
+        name: "numeroProposta",
+        label: "Número Proposta",
+        placeholder: "Buscar por número",
+      },
+      {
+        name: "seguradoId",
+        label: "Segurado",
+        placeholder: "Buscar por segurado",
+        type: "select",
+        options: seguradosOptions,
+      },
+      {
+        name: "corretoraId",
+        label: "Corretora",
+        placeholder: "Buscar por corretora",
+        type: "select",
+        options: corretorasOptions,
+      },
+      {
+        name: "produtorId",
+        label: "Produtor",
+        placeholder: "Buscar por produtor",
+        type: "select",
+        options: produtoresOptions,
+      },
+      {
+        name: "seguradoraId",
+        label: "Seguradora",
+        placeholder: "Buscar por seguradora",
+        type: "select",
+        options: seguradoresOptions,
+      },
+      {
+        name: "ramoId",
+        label: "Ramo",
+        placeholder: "Buscar por ramo",
+        type: "select",
+        options: ramosOptions,
+      },
+      {
+        name: "produtoId",
+        label: "Produto",
+        placeholder: produtoPlaceholder,
+        type: "select",
+        options: produtosOptions,
+      },
+      {
+        name: "tipoDocumento",
+        label: "Tipo Documento",
+        placeholder: "Buscar por tipo",
+        type: "select",
+        options: [
+          { label: "Proposta", value: "Proposta" },
+          { label: "Apólice", value: "Apólice" },
+          { label: "Renovação", value: "Renovação" },
+          { label: "Endosso", value: "Endosso" },
+        ],
+      },
+      {
+        name: "origem",
+        label: "Origem",
+        placeholder: "Buscar por origem",
+        type: "select",
+        options: [
+          { label: "Manual", value: "Manual" },
+          { label: "Importação", value: "Importação" },
+          { label: "Integração", value: "Integração" },
+        ],
+      },
+      {
+        name: "situacao",
+        label: "Situação",
+        placeholder: "Buscar por situação",
+        type: "select",
+        options: [
+          { label: "Ativo", value: "Ativo" },
+          { label: "Inativo", value: "Inativo" },
+        ],
+      },
+      {
+        name: "placaVeiculo",
+        label: "Placa Veículo",
+        placeholder: "Buscar por placa",
+      },
+      {
+        name: "chassiVeiculo",
+        label: "Chassi Veículo",
+        placeholder: "Buscar por chassi",
+      },
+      {
+        name: "search",
+        label: "Complemento",
+        placeholder: "Buscar por complemento",
+      },
+    ],
+    [
+      seguradosOptions,
+      corretorasOptions,
+      produtoresOptions,
+      seguradoresOptions,
+      ramosOptions,
+      produtosOptions,
+      produtoPlaceholder,
+      isProdutoDisabled,
+    ]
+  )
 
   const handleFilter = (newFilters: Record<string, string>) => {
-    setFilters(newFilters)
+    const updatedFilters = { ...newFilters }
+    if (!newFilters.ramoId) {
+      delete updatedFilters.produtoId
+    }
+    setFilters(updatedFilters)
     setPage(1)
   }
 
@@ -151,9 +312,7 @@ export function PropostasTable() {
 
       <div className="mt-8 flex items-center justify-between">
         <div className="flex h-full gap-4">
-          <Button
-            onClick={() => push("/propostas/create")}
-            variant="secondary">
+          <Button onClick={() => push("/propostas/create")} variant="secondary">
             Cadastrar
           </Button>
         </div>
