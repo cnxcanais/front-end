@@ -46,8 +46,9 @@ export function Table<T>({
                 </thead>
                 <tbody className="divide-y divide-gray-200 bg-white">
                   {data.flatMap((row, rowIndex) => {
+                    const rowId = (row as any).id || (row as any)._id
                     const rows = [
-                      <tr key={`row-${rowIndex}-${(row as any)._id}`}>
+                      <tr key={`row-${rowIndex}-${rowId}`}>
                         {columns.map((column) => (
                           <td
                             key={column.header}
@@ -66,9 +67,9 @@ export function Table<T>({
                         ))}
                       </tr>,
                     ]
-                    if (expandedRowIds?.includes((row as any)._id) && expandedRowContent) {
+                    if (expandedRowIds?.includes(rowId) && expandedRowContent) {
                       rows.push(
-                        <tr key={`expanded-${rowIndex}-${(row as any)._id}`}>
+                        <tr key={`expanded-${rowIndex}-${rowId}`}>
                           <td colSpan={columns.length} className="bg-gray-50 px-3 py-3 pb-6">
                             {expandedRowContent(row)}
                           </td>

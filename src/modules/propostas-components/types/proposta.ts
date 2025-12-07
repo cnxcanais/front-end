@@ -11,64 +11,86 @@ import {
 } from "./enums"
 
 export interface Parcela {
+  id: string
+  propostaApoliceId: string
   numeroParcela: number
   dataVencimento: string
-  valor: number
-  valorLiquido: number
-  percentualCorretora: number
+  valor: string
+  valorLiquido: string
+  percentualCorretora: string
   previsaoRecebimento: string
   situacao: SituacaoParcelaEnum
+  createdAt: string
+  updatedAt: string
+  deletedAt: string | null
+  createdBy: string | null
+  updatedBy: string | null
+  deletedBy: string | null
 }
 
 export interface Repasse {
+  id: string
+  propostaApoliceId: string
   produtorId: string
-  percentualRepasse: number
+  percentualRepasse: string
   repasseSobre: RepasseSobreEnum
   formaRepasse: FormaRepasseEnum
+  createdAt: string
+  updatedAt: string
+  deletedAt: string | null
+  createdBy: string | null
+  updatedBy: string | null
+  deletedBy: string | null
 }
 
 export interface Proposta {
-  _id: string
-  _numeroProposta: string
-  _seguradoId: string
-  _corretoraId: string
-  _produtorId: string
-  _seguradoraId: string
-  _ramoId: string
-  _produtoId?: string
-  _placaVeiculo?: string
-  _chassiVeiculo?: string
-  _modeloVeiculo?: string
-  _marcaVeiculo?: string
-  _anoFabricacaoVeiculo?: number
-  _anoModeloVeiculo?: number
-  _complementoItem?: string
-  _tipoDocumento: TipoDocumentoEnum
-  _origem: OrigemEnum
-  _situacao: SituacaoEnum
-  _inicioVigencia: string
-  _fimVigencia: string
-  _dataEmissao?: string
-  _numeroApolice?: string
-  _numeroEndosso?: string
-  _renovacao?: RenovacaoEnum
-  _motivoNaoRenovacao?: string
-  _percentualComissao: string | number
-  _comissaoSobre: ComissaoSobreEnum
-  _formaComissao: FormaComissaoEnum
-  _valorComissao: string | number
-  _premioLiquido: string | number
-  _valoresAdicionais?: string | number
-  _iof?: string | number
-  _premioTotal?: string | number
-  _parcelas?: Parcela[]
-  _repasses?: Repasse[]
-  _createdAt: string
-  _updatedAt: string
-  _deletedAt?: string | null
-  _createdBy?: string | null
-  _updatedBy?: string | null
-  _deletedBy?: string | null
+  id: string
+  numeroProposta: string
+  seguradoId: string
+  corretoraId: string
+  produtorId: string
+  seguradoraId: string
+  ramoId: string
+  produtoId?: string
+  placaVeiculo?: string
+  chassiVeiculo?: string
+  modeloVeiculo?: string
+  marcaVeiculo?: string
+  anoFabricacaoVeiculo?: number
+  anoModeloVeiculo?: number
+  complementoItem?: string
+  tipoDocumento: TipoDocumentoEnum
+  origem: OrigemEnum
+  situacao: SituacaoEnum
+  inicioVigencia: string
+  fimVigencia: string
+  dataEmissao?: string
+  numeroApolice?: string
+  numeroEndosso?: string
+  renovacao?: RenovacaoEnum
+  motivoNaoRenovacao?: string
+  percentualComissao: number
+  comissaoSobre: ComissaoSobreEnum
+  formaComissao: FormaComissaoEnum
+  valorComissao: number
+  premioLiquido: number
+  valoresAdicionais?: number
+  iof?: number
+  premioTotal?: number
+  createdAt: string
+  updatedAt: string
+  deletedAt: string | null
+  createdBy: string | null
+  updatedBy: string | null
+  deletedBy: string | null
+  seguradoNome?: string
+  corretoraNome?: string
+  produtorNome?: string
+  seguradoraNome?: string
+  ramoNome?: string
+  produtoNome?: string
+  parcelas?: Parcela[]
+  repasses?: Repasse[]
 }
 
 export interface PropostasResponse {

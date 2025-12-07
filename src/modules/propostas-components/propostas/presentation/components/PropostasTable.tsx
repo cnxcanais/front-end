@@ -41,10 +41,7 @@ export function PropostasTable() {
   const { data: produtores } = useProdutorQuery(1, 100)
   const { data: seguradoras } = useSeguradoraQuery(1, 100)
   const { data: ramos } = useRamoQuery(1, 100)
-  const { data: produtos, isLoading: isProdutosLoading } = useProdutoQuery(
-    1,
-    100
-  )
+  const { data: produtos } = useProdutoQuery(1, 100)
 
   useEffect(() => {
     if (ramoId && produtos?.data) {
@@ -132,7 +129,7 @@ export function PropostasTable() {
   const columns = [
     {
       header: "",
-      accessor: "_id",
+      accessor: "id",
       render: (value: string) => (
         <button
           onClick={() =>
@@ -149,7 +146,7 @@ export function PropostasTable() {
     },
     {
       header: "Segurado",
-      accessor: "_seguradoId",
+      accessor: "seguradoId",
       render: (value: string) => (
         <span className="cursor-pointer text-red-600 hover:underline">
           {getSeguradoName(value)}
@@ -158,16 +155,19 @@ export function PropostasTable() {
     },
     {
       header: "Ramo",
-      accessor: "_ramoId",
+      accessor: "ramoId",
       render: (value: string, row: any) => (
         <div>
           <div>{getRamoName(value)}</div>
           <div className="text-sm text-gray-600">
-            Vigência: {row._inicioVigencia} a {row._fimVigencia}
+            Vigência: {row.inicioVigencia} a {row.fimVigencia}
           </div>
-          {row._primeiraParcela && (
+          {row.parcelas[0] && (
             <div className="text-sm text-gray-600">
-              1ª Parcela: {row._primeiraParcela}
+              1º Parcela:{" "}
+              {new Date(row.parcelas[0].dataVencimento).toLocaleDateString(
+                "pt-BR"
+              )}
             </div>
           )}
         </div>
@@ -175,7 +175,7 @@ export function PropostasTable() {
     },
     {
       header: "Status",
-      accessor: "_situacao",
+      accessor: "situacao",
       render: (value: string, row: any) => (
         <div className="flex items-center gap-2">
           <div
@@ -186,28 +186,25 @@ export function PropostasTable() {
             }`}
           />
           <div>
-            <div className="font-medium">{row._tipoDocumento}</div>
-            <div className="text-sm text-gray-600">{row._numeroProposta}</div>
-            <div className="text-xs text-gray-500">
-              {row._statusSecundario || ""}
-            </div>
+            <div className="font-medium">{row.tipoDocumento}</div>
+            <div className="text-sm text-gray-600">{row.numeroProposta}</div>
           </div>
         </div>
       ),
     },
     {
       header: "Produtor",
-      accessor: "_produtorId",
+      accessor: "produtorId",
       render: (value: string) => getProdutorName(value),
     },
     {
       header: "Seguradora",
-      accessor: "_seguradoraId",
+      accessor: "seguradoraId",
       render: (value: string) => getSeguradoraName(value),
     },
     {
       header: "Ação",
-      accessor: "_id",
+      accessor: "id",
       render: (value: string) => (
         <div className="flex gap-2">
           <Pencil
@@ -454,7 +451,7 @@ export function PropostasTable() {
                   </label>
                   <input
                     type="text"
-                    value={getCorretoraName(row._corretoraId)}
+                    value={getCorretoraName(row.corretoraId)}
                     disabled
                     className="w-full rounded border bg-white px-2 py-1"
                   />
@@ -465,7 +462,7 @@ export function PropostasTable() {
                   </label>
                   <input
                     type="text"
-                    value={row._premioLiquido || ""}
+                    value={row.premioLiquido || ""}
                     disabled
                     className="w-full rounded border bg-white px-2 py-1"
                   />
@@ -476,7 +473,7 @@ export function PropostasTable() {
                   </label>
                   <input
                     type="text"
-                    value={row._valorComissao || ""}
+                    value={row.valorComissao || ""}
                     disabled
                     className="w-full rounded border bg-white px-2 py-1"
                   />
@@ -487,7 +484,7 @@ export function PropostasTable() {
                   </label>
                   <input
                     type="text"
-                    value={row._origem || ""}
+                    value={row.origem || ""}
                     disabled
                     className="w-full rounded border bg-white px-2 py-1"
                   />
@@ -498,7 +495,7 @@ export function PropostasTable() {
                   </label>
                   <input
                     type="text"
-                    value={row._placaVeiculo || ""}
+                    value={row.placaVeiculo || ""}
                     disabled
                     className="w-full rounded border bg-white px-2 py-1"
                   />
@@ -509,7 +506,7 @@ export function PropostasTable() {
                   </label>
                   <input
                     type="text"
-                    value={row._chassiVeiculo || ""}
+                    value={row.chassiVeiculo || ""}
                     disabled
                     className="w-full rounded border bg-white px-2 py-1"
                   />

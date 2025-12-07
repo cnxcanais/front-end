@@ -27,22 +27,56 @@ export function DashboardIndicators({
     tipoDocumento: "Proposta",
   })
 
-  const propostasVigentes = propostasAtivas?.data?.data?.filter(
-    (p) =>
-      new Date(p._inicioVigencia) <= new Date() &&
-      new Date(p._fimVigencia) >= new Date()
-  ) || []
+  const propostasVigentes =
+    propostasAtivas?.data?.data?.filter(
+      (p) =>
+        new Date(p.inicioVigencia) <= new Date() &&
+        new Date(p.fimVigencia) >= new Date()
+    ) || []
+
+  const propostasPendentes =
+    propostasAtivas.data?.data?.filter(
+      (p) => !propostasVigentes.some((v) => v.id === p.id)
+    ) || []
 
   const apolicesAtivas = usePropostaQuery(1, 100, {
     situacao: "Ativo",
     tipoDocumento: "Apólice",
   })
 
-  const apolicesVigentes = apolicesAtivas?.data?.data?.filter(
-    (p) =>
-      new Date(p._inicioVigencia) <= new Date() &&
-      new Date(p._fimVigencia) >= new Date()
-  ) || []
+  const apolicesVigentes =
+    apolicesAtivas?.data?.data?.filter(
+      (p) =>
+        new Date(p.inicioVigencia) <= new Date() &&
+        new Date(p.fimVigencia) >= new Date()
+    ) || []
+
+  const apolicesPendentes =
+    apolicesAtivas.data?.data?.filter(
+      (p) => !apolicesVigentes.some((v) => v.id === p.id)
+    ) || []
+
+  const renovacoesHoje =
+    apolicesAtivas?.data?.data?.filter((p) => {
+      const fimVigencia = new Date(p.fimVigencia)
+      const hoje = new Date()
+      return (
+        fimVigencia.toDateString() === hoje.toDateString() &&
+        !apolicesVigentes.some((v) => v.id === p.id)
+      )
+    }) || []
+
+  const renovacoesProximos30 =
+    apolicesAtivas?.data?.data?.filter((p) => {
+      const fimVigencia = new Date(p.fimVigencia)
+      const hoje = new Date()
+      const dias30 = new Date(hoje.getTime() + 30 * 24 * 60 * 60 * 1000)
+      return (
+        fimVigencia > hoje &&
+        fimVigencia <= dias30 &&
+        !apolicesVigentes.some((v) => v.id === p.id)
+      )
+    }) || []
 
   const formatDate = (date: Date) => {
     return (
@@ -83,9 +117,11 @@ export function DashboardIndicators({
           </div>
           <div className="text-center">
             <button
-              onClick={() => onFilterChange?.("propostas", [])}
+              onClick={() => onFilterChange?.("propostas", propostasPendentes)}
               className="transition hover:opacity-80">
-              <div className="text-3xl font-bold text-red-600">0</div>
+              <div className="text-3xl font-bold text-red-600">
+                {propostasPendentes?.length}
+              </div>
               <div className="mt-1 text-xs text-gray-600">
                 Pendentes de emissão
               </div>
@@ -123,9 +159,11 @@ export function DashboardIndicators({
           </div>
           <div className="text-center">
             <button
-              onClick={() => onFilterChange?.("apolices", [])}
+              onClick={() => onFilterChange?.("apolices", apolicesPendentes)}
               className="transition hover:opacity-80">
-              <div className="text-3xl font-bold text-red-600">0</div>
+              <div className="text-3xl font-bold text-red-600">
+                {apolicesPendentes?.length}
+              </div>
               <div className="mt-1 text-xs text-gray-600">
                 Pendentes de renovação
               </div>
@@ -153,17 +191,23 @@ export function DashboardIndicators({
         <div className="grid grid-cols-2 gap-4">
           <div className="text-center">
             <button
-              onClick={() => onFilterChange?.("renovacoes", [])}
+              onClick={() => onFilterChange?.("renovacoes", renovacoesHoje)}
               className="transition hover:opacity-80">
-              <div className="text-3xl font-bold text-orange-600">0</div>
+              <div className="text-3xl font-bold text-orange-600">
+                {renovacoesHoje?.length}
+              </div>
               <div className="mt-1 text-xs text-gray-600">Hoje</div>
             </button>
           </div>
           <div className="text-center">
             <button
-              onClick={() => onFilterChange?.("renovacoes", [])}
+              onClick={() =>
+                onFilterChange?.("renovacoes", renovacoesProximos30)
+              }
               className="transition hover:opacity-80">
-              <div className="text-3xl font-bold text-orange-600">0</div>
+              <div className="text-3xl font-bold text-orange-600">
+                {renovacoesProximos30?.length}
+              </div>
               <div className="mt-1 text-xs text-gray-600">Próximos 30 dias</div>
             </button>
           </div>

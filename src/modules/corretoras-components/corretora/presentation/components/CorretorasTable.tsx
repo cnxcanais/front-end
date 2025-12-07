@@ -13,13 +13,7 @@ import { formatPhoneNumber } from "@/core/utils/formatPhoneNumber"
 import { useCorretoraQuery } from "@/modules/corretoras-components/corretora/infra/hooks/use-corretora-query"
 import { removeCorretora } from "@/modules/corretoras-components/corretora/infra/remote"
 import { useGrupoEconomicoQuery } from "@/modules/grupos-economicos-components/grupos-economicos/infra/hooks/use-grupo-economico-query"
-import {
-  FileXls,
-  Paperclip,
-  Pencil,
-  Trash,
-  VideoCamera,
-} from "@phosphor-icons/react"
+import { FileXls, Pencil, Trash, VideoCamera } from "@phosphor-icons/react"
 import { useRouter } from "next/navigation"
 import { useEffect, useState } from "react"
 import { toast } from "sonner"
@@ -119,10 +113,6 @@ export function CorretorasTable() {
               setId(value)
               setOpen(true)
             }}
-          />
-          <Paperclip
-            className="cursor-pointer duration-300 ease-in-out hover:text-blue-500"
-            size={24}
           />
         </div>
       ),
