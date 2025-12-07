@@ -4,6 +4,7 @@ import {
   Buildings,
   IdentificationBadge,
   Suitcase,
+  Tag,
   User,
 } from "@phosphor-icons/react/dist/ssr"
 
@@ -49,6 +50,12 @@ export const sidebar_options: SidebarOptionProps[] = [
     name: "Grupos Econômicos",
     href: "/grupos-economicos",
     Icon: Buildings,
+    group: "Cadastros",
+  },
+  {
+    name: "Ramos",
+    href: "/ramos",
+    Icon: Tag,
     group: "Cadastros",
   },
 ]
