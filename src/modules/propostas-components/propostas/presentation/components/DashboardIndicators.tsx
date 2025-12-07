@@ -10,7 +10,7 @@ import { useState } from "react"
 import { usePropostaQuery } from "../../infra/hooks/use-proposta-query"
 
 interface DashboardIndicatorsProps {
-  onFilterChange?: (filterType: string, value: string) => void
+  onFilterChange?: (filterType: string, data: any[]) => void
 }
 
 export function DashboardIndicators({
@@ -21,18 +21,17 @@ export function DashboardIndicators({
   const handleRefresh = () => {
     setLastUpdated(new Date())
   }
+
   const propostasAtivas = usePropostaQuery(1, 100, {
     situacao: "Ativo",
     tipoDocumento: "Proposta",
   })
 
-  console.log(propostasAtivas)
-
   const propostasVigentes = propostasAtivas?.data?.data?.filter(
     (p) =>
       new Date(p._inicioVigencia) <= new Date() &&
       new Date(p._fimVigencia) >= new Date()
-  )
+  ) || []
 
   const apolicesAtivas = usePropostaQuery(1, 100, {
     situacao: "Ativo",
@@ -43,18 +42,7 @@ export function DashboardIndicators({
     (p) =>
       new Date(p._inicioVigencia) <= new Date() &&
       new Date(p._fimVigencia) >= new Date()
-  )
-
-  const renovacoesAtivas = usePropostaQuery(1, 100, {
-    situacao: "Ativo",
-    tipoDocumento: "Apólice",
-  })
-
-  const renovacoesVigentes = renovacoesAtivas?.data?.data?.filter(
-    (p) =>
-      new Date(p._inicioVigencia) <= new Date() &&
-      new Date(p._fimVigencia) >= new Date()
-  )
+  ) || []
 
   const formatDate = (date: Date) => {
     return (
@@ -66,7 +54,6 @@ export function DashboardIndicators({
 
   return (
     <div className="mb-8 grid grid-cols-3 gap-4">
-      {/* Card Propostas */}
       <div className="rounded-lg border border-gray-200 bg-white p-6 shadow">
         <div className="mb-4 flex items-center justify-between">
           <div className="flex items-center gap-2">
@@ -86,7 +73,7 @@ export function DashboardIndicators({
         <div className="grid grid-cols-2 gap-4">
           <div className="text-center">
             <button
-              onClick={() => onFilterChange?.("propostas", "vigentes")}
+              onClick={() => onFilterChange?.("propostas", propostasVigentes)}
               className="transition hover:opacity-80">
               <div className="text-3xl font-bold text-green-600">
                 {propostasVigentes?.length}
@@ -96,7 +83,7 @@ export function DashboardIndicators({
           </div>
           <div className="text-center">
             <button
-              onClick={() => onFilterChange?.("propostas", "pendentes")}
+              onClick={() => onFilterChange?.("propostas", [])}
               className="transition hover:opacity-80">
               <div className="text-3xl font-bold text-red-600">0</div>
               <div className="mt-1 text-xs text-gray-600">
@@ -107,7 +94,6 @@ export function DashboardIndicators({
         </div>
       </div>
 
-      {/* Card Apólices */}
       <div className="rounded-lg border border-gray-200 bg-white p-6 shadow">
         <div className="mb-4 flex items-center justify-between">
           <div className="flex items-center gap-2">
@@ -127,7 +113,7 @@ export function DashboardIndicators({
         <div className="grid grid-cols-2 gap-4">
           <div className="text-center">
             <button
-              onClick={() => onFilterChange?.("apolices", "vigentes")}
+              onClick={() => onFilterChange?.("apolices", apolicesVigentes)}
               className="transition hover:opacity-80">
               <div className="text-3xl font-bold text-green-600">
                 {apolicesVigentes?.length}
@@ -137,7 +123,7 @@ export function DashboardIndicators({
           </div>
           <div className="text-center">
             <button
-              onClick={() => onFilterChange?.("apolices", "renovacao")}
+              onClick={() => onFilterChange?.("apolices", [])}
               className="transition hover:opacity-80">
               <div className="text-3xl font-bold text-red-600">0</div>
               <div className="mt-1 text-xs text-gray-600">
@@ -148,7 +134,6 @@ export function DashboardIndicators({
         </div>
       </div>
 
-      {/* Card Renovações */}
       <div className="rounded-lg border border-gray-200 bg-white p-6 shadow">
         <div className="mb-4 flex items-center justify-between">
           <div className="flex items-center gap-2">
@@ -168,17 +153,15 @@ export function DashboardIndicators({
         <div className="grid grid-cols-2 gap-4">
           <div className="text-center">
             <button
-              onClick={() => onFilterChange?.("renovacoes", "hoje")}
+              onClick={() => onFilterChange?.("renovacoes", [])}
               className="transition hover:opacity-80">
-              <div className="text-3xl font-bold text-orange-600">
-                {renovacoesVigentes?.length}
-              </div>
+              <div className="text-3xl font-bold text-orange-600">0</div>
               <div className="mt-1 text-xs text-gray-600">Hoje</div>
             </button>
           </div>
           <div className="text-center">
             <button
-              onClick={() => onFilterChange?.("renovacoes", "proximos30")}
+              onClick={() => onFilterChange?.("renovacoes", [])}
               className="transition hover:opacity-80">
               <div className="text-3xl font-bold text-orange-600">0</div>
               <div className="mt-1 text-xs text-gray-600">Próximos 30 dias</div>

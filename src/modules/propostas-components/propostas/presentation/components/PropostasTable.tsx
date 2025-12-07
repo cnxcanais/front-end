@@ -46,8 +46,6 @@ export function PropostasTable() {
     100
   )
 
-  console.log("filters" + filters)
-
   useEffect(() => {
     if (ramoId && produtos?.data) {
       const filteredProdutos = produtos.data.filter((p) => p.ramoId === ramoId)
@@ -58,8 +56,6 @@ export function PropostasTable() {
       setProdutosOptions(produtosOption)
     }
   }, [ramoId, produtos?.data])
-
-  console.log(produtosOptions)
 
   const seguradosOptions = useMemo(() => {
     if (!segurados?.data) return []
@@ -409,8 +405,9 @@ export function PropostasTable() {
       />
 
       <DashboardIndicators
-        onFilterChange={(filterType, value) => {
-          // Handle filter changes from dashboard
+        onFilterChange={(filterType, data) => {
+          setFilteredResults(data)
+          setPage(1)
         }}
       />
 
