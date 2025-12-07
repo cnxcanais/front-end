@@ -2,6 +2,7 @@ import { Icon } from "@phosphor-icons/react"
 import {
   BuildingOffice,
   Buildings,
+  FileText,
   IdentificationBadge,
   Package,
   Suitcase,
@@ -64,6 +65,12 @@ export const sidebar_options: SidebarOptionProps[] = [
     href: "/produtos",
     Icon: Package,
     group: "Cadastros",
+  },
+  {
+    name: "Propostas",
+    href: "/propostas",
+    Icon: FileText,
+    group: "Operações",
   },
 ]
 
