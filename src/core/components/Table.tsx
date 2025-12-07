@@ -12,14 +12,14 @@ export function Table<T>({
   data,
   className,
   ref,
-  expandedRowId,
+  expandedRowIds,
   expandedRowContent,
 }: {
   columns: Column[]
   data: T[]
   className?: string
   ref?: React.Ref<HTMLTableElement>
-  expandedRowId?: string
+  expandedRowIds?: string[]
   expandedRowContent?: (row: T) => ReactNode
 }) {
   return (
@@ -66,7 +66,7 @@ export function Table<T>({
                         ))}
                       </tr>,
                     ]
-                    if (expandedRowId === (row as any)._id && expandedRowContent) {
+                    if (expandedRowIds?.includes((row as any)._id) && expandedRowContent) {
                       rows.push(
                         <tr key={`expanded-${rowIndex}-${(row as any)._id}`}>
                           <td colSpan={columns.length} className="bg-gray-50 px-3 py-3 pb-6">

@@ -33,7 +33,7 @@ export function PropostasTable() {
   const [id, setId] = useState("")
   const [filteredResults, setFilteredResults] = useState([])
   const [produtosOptions, setProdutosOptions] = useState([])
-  const [expandedId, setExpandedId] = useState<string | null>(null)
+  const [expandedIds, setExpandedIds] = useState<string[]>([])
 
   const { data: segurados } = useSeguradoQuery(1, 100)
   const { data: corretoras } = useCorretoraQuery(1, 100)
@@ -138,9 +138,9 @@ export function PropostasTable() {
       accessor: "_id",
       render: (value: string) => (
         <button
-          onClick={() => setExpandedId(expandedId === value ? null : value)}
+          onClick={() => setExpandedIds(expandedIds.includes(value) ? expandedIds.filter(id => id !== value) : [...expandedIds, value])}
           className="font-bold text-blue-600">
-          {expandedId === value ? "v" : ">"}
+          {expandedIds.includes(value) ? "v" : ">"}
         </button>
       ),
     },
@@ -437,7 +437,7 @@ export function PropostasTable() {
           <Table
             columns={columns}
             data={filteredResults}
-            expandedRowId={expandedId}
+            expandedRowIds={expandedIds}
             expandedRowContent={(row: any) => (
               <div className="grid grid-cols-4 gap-3 text-xs">
                 <div>
