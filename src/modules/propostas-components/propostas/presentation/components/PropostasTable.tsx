@@ -158,7 +158,7 @@ export function PropostasTable() {
     },
   ]
 
-  const filterFields: FilterField[] = useMemo(
+  const quickSearchFields: FilterField[] = useMemo(
     () => [
       {
         name: "numeroProposta",
@@ -172,6 +172,22 @@ export function PropostasTable() {
         type: "select",
         options: [{ label: "Todos", value: "" }, ...seguradosOptions],
       },
+      {
+        name: "placaVeiculo",
+        label: "Placa Veículo",
+        placeholder: "Buscar por placa",
+      },
+      {
+        name: "chassiVeiculo",
+        label: "Chassi Veículo",
+        placeholder: "Buscar por chassi",
+      },
+    ],
+    [seguradosOptions]
+  )
+
+  const advancedSearchFields: FilterField[] = useMemo(
+    () => [
       {
         name: "corretoraId",
         label: "Corretora",
@@ -244,31 +260,35 @@ export function PropostasTable() {
         ],
       },
       {
-        name: "placaVeiculo",
-        label: "Placa Veículo",
-        placeholder: "Buscar por placa",
-      },
-      {
-        name: "chassiVeiculo",
-        label: "Chassi Veículo",
-        placeholder: "Buscar por chassi",
-      },
-      {
         name: "search",
         label: "Complemento",
         placeholder: "Buscar por complemento",
       },
     ],
     [
-      seguradosOptions,
       corretorasOptions,
       produtoresOptions,
       seguradoresOptions,
       ramosOptions,
       produtosOptions,
       produtoPlaceholder,
-      isProdutoDisabled,
     ]
+  )
+
+  const filterSections = useMemo(
+    () => [
+      {
+        title: "Busca Rápida",
+        fields: quickSearchFields,
+        defaultOpen: true,
+      },
+      {
+        title: "Busca Avançada",
+        fields: advancedSearchFields,
+        defaultOpen: false,
+      },
+    ],
+    [quickSearchFields, advancedSearchFields]
   )
 
   const handleFilter = (newFilters: Record<string, string>) => {
@@ -304,8 +324,10 @@ export function PropostasTable() {
       </Modal>
 
       <FilterForm
-        fields={filterFields}
+        sections={filterSections}
         onFilter={handleFilter}
+        defaultOpen={true}
+        title="Filtros"
         onSelectChange={(fieldName, value) => {
           if (fieldName === "ramoId") {
             setRamoId(value)
