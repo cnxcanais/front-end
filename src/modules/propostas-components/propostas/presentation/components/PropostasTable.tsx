@@ -11,7 +11,7 @@ import { exportNoPagination } from "@/core/utils/exportToExcel/exportNoPaginatio
 import { useCorretoraQuery } from "@/modules/corretoras-components/corretora/infra/hooks/use-corretora-query"
 import { useProdutorQuery } from "@/modules/produtores-components/produtor/infra/hooks/use-produtor-query"
 import { useProdutoQuery } from "@/modules/produtos-components/produtos/infra/hooks/use-produto-query"
-import { useProposaQuery } from "@/modules/propostas-components/propostas/infra/hooks/use-proposta-query"
+import { usePropostaQuery } from "@/modules/propostas-components/propostas/infra/hooks/use-proposta-query"
 import { removeProposta } from "@/modules/propostas-components/propostas/infra/remote"
 import { useRamoQuery } from "@/modules/ramos-components/ramos/infra/hooks/use-ramo-query"
 import { useSeguradoraQuery } from "@/modules/seguradoras-components/seguradora/infra/hooks/use-seguradora-query"
@@ -20,12 +20,13 @@ import { FileXls, Pencil, Trash } from "@phosphor-icons/react"
 import { useRouter } from "next/navigation"
 import { useEffect, useMemo, useState } from "react"
 import { toast } from "sonner"
+import { DashboardIndicators } from "./DashboardIndicators"
 
 export function PropostasTable() {
   const [page, setPage] = useState(1)
   const [limit, setLimit] = useState(10)
   const [filters, setFilters] = useState<Record<string, string>>({})
-  const { data, isLoading, refetch } = useProposaQuery(page, limit, filters)
+  const { data, isLoading, refetch } = usePropostaQuery(page, limit, filters)
   const [ramoId, setRamoId] = useState("")
   const { push } = useRouter()
 
@@ -138,7 +139,13 @@ export function PropostasTable() {
       accessor: "_id",
       render: (value: string) => (
         <button
-          onClick={() => setExpandedIds(expandedIds.includes(value) ? expandedIds.filter(id => id !== value) : [...expandedIds, value])}
+          onClick={() =>
+            setExpandedIds(
+              expandedIds.includes(value) ?
+                expandedIds.filter((id) => id !== value)
+              : [...expandedIds, value]
+            )
+          }
           className="font-bold text-blue-600">
           {expandedIds.includes(value) ? "v" : ">"}
         </button>
@@ -177,11 +184,9 @@ export function PropostasTable() {
         <div className="flex items-center gap-2">
           <div
             className={`h-3 w-3 rounded-full ${
-              value === "Ativo"
-                ? "bg-green-500"
-                : value === "Pendente"
-                ? "bg-yellow-500"
-                : "bg-red-500"
+              value === "Ativo" ? "bg-green-500"
+              : value === "Pendente" ? "bg-yellow-500"
+              : "bg-red-500"
             }`}
           />
           <div>
@@ -403,7 +408,13 @@ export function PropostasTable() {
         appliedFilters={filters}
       />
 
-      <div className="mt-8 flex items-center justify-between">
+      <DashboardIndicators
+        onFilterChange={(filterType, value) => {
+          // Handle filter changes from dashboard
+        }}
+      />
+
+      <div className="flex items-center justify-between">
         <div className="flex h-full gap-4">
           <Button onClick={() => push("/propostas/create")} variant="secondary">
             Cadastrar
@@ -441,28 +452,70 @@ export function PropostasTable() {
             expandedRowContent={(row: any) => (
               <div className="grid grid-cols-4 gap-3 text-xs">
                 <div>
-                  <label className="block text-gray-600 font-medium mb-1">Corretora</label>
-                  <input type="text" value={getCorretoraName(row._corretoraId)} disabled className="w-full px-2 py-1 border rounded bg-white" />
+                  <label className="mb-1 block font-medium text-gray-600">
+                    Corretora
+                  </label>
+                  <input
+                    type="text"
+                    value={getCorretoraName(row._corretoraId)}
+                    disabled
+                    className="w-full rounded border bg-white px-2 py-1"
+                  />
                 </div>
                 <div>
-                  <label className="block text-gray-600 font-medium mb-1">Prêmio Líquido</label>
-                  <input type="text" value={row._premioLiquido || ""} disabled className="w-full px-2 py-1 border rounded bg-white" />
+                  <label className="mb-1 block font-medium text-gray-600">
+                    Prêmio Líquido
+                  </label>
+                  <input
+                    type="text"
+                    value={row._premioLiquido || ""}
+                    disabled
+                    className="w-full rounded border bg-white px-2 py-1"
+                  />
                 </div>
                 <div>
-                  <label className="block text-gray-600 font-medium mb-1">Comissão</label>
-                  <input type="text" value={row._valorComissao || ""} disabled className="w-full px-2 py-1 border rounded bg-white" />
+                  <label className="mb-1 block font-medium text-gray-600">
+                    Comissão
+                  </label>
+                  <input
+                    type="text"
+                    value={row._valorComissao || ""}
+                    disabled
+                    className="w-full rounded border bg-white px-2 py-1"
+                  />
                 </div>
                 <div>
-                  <label className="block text-gray-600 font-medium mb-1">Origem</label>
-                  <input type="text" value={row._origem || ""} disabled className="w-full px-2 py-1 border rounded bg-white" />
+                  <label className="mb-1 block font-medium text-gray-600">
+                    Origem
+                  </label>
+                  <input
+                    type="text"
+                    value={row._origem || ""}
+                    disabled
+                    className="w-full rounded border bg-white px-2 py-1"
+                  />
                 </div>
                 <div>
-                  <label className="block text-gray-600 font-medium mb-1">Placa Veículo</label>
-                  <input type="text" value={row._placaVeiculo || ""} disabled className="w-full px-2 py-1 border rounded bg-white" />
+                  <label className="mb-1 block font-medium text-gray-600">
+                    Placa Veículo
+                  </label>
+                  <input
+                    type="text"
+                    value={row._placaVeiculo || ""}
+                    disabled
+                    className="w-full rounded border bg-white px-2 py-1"
+                  />
                 </div>
                 <div>
-                  <label className="block text-gray-600 font-medium mb-1">Chassi Veículo</label>
-                  <input type="text" value={row._chassiVeiculo || ""} disabled className="w-full px-2 py-1 border rounded bg-white" />
+                  <label className="mb-1 block font-medium text-gray-600">
+                    Chassi Veículo
+                  </label>
+                  <input
+                    type="text"
+                    value={row._chassiVeiculo || ""}
+                    disabled
+                    className="w-full rounded border bg-white px-2 py-1"
+                  />
                 </div>
               </div>
             )}

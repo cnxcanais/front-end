@@ -2,7 +2,7 @@ import { useQuery } from "@tanstack/react-query"
 import { toast } from "sonner"
 import { getPropostas } from "../remote"
 
-export function useProposaQuery(
+export function usePropostaQuery(
   page = 1,
   limit = 10,
   filters?: Record<string, string>
