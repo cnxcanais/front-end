@@ -25,12 +25,15 @@ interface PropostaFormProps {
 
 export function PropostaForm({ proposta, isEdit }: PropostaFormProps) {
   const [activeTab, setActiveTab] = useState(0)
+  const [showParcelasModal, setShowParcelasModal] = useState(false)
+  const [numParcelasInput, setNumParcelasInput] = useState("")
 
   const {
     register,
     handleSubmit: handleFormSubmit,
     watch,
     setValue,
+    trigger,
     formState: { errors },
   } = useForm<PropostaFormSchema>({
     resolver: zodResolver(propostaFormSchema),
@@ -46,8 +49,8 @@ export function PropostaForm({ proposta, isEdit }: PropostaFormProps) {
       chassiVeiculo: proposta?.chassiVeiculo || "",
       modeloVeiculo: proposta?.modeloVeiculo || "",
       marcaVeiculo: proposta?.marcaVeiculo || "",
-      anoFabricacaoVeiculo: proposta?.anoFabricacaoVeiculo,
-      anoModeloVeiculo: proposta?.anoModeloVeiculo,
+      anoFabricacaoVeiculo: proposta?.anoFabricacaoVeiculo || undefined,
+      anoModeloVeiculo: proposta?.anoModeloVeiculo || undefined,
       complementoItem: proposta?.complementoItem || "",
       tipoDocumento: proposta?.tipoDocumento || "Proposta",
       origem: proposta?.origem || "Manual",
@@ -64,8 +67,8 @@ export function PropostaForm({ proposta, isEdit }: PropostaFormProps) {
       formaComissao: proposta?.formaComissao || "Na Parcela",
       valorComissao: proposta?.valorComissao || 0,
       premioLiquido: proposta?.premioLiquido || 0,
-      valoresAdicionais: proposta?.valoresAdicionais,
-      iof: proposta?.iof,
+      valoresAdicionais: proposta?.valoresAdicionais || undefined,
+      iof: proposta?.iof || undefined,
       parcelas: proposta?.parcelas?.map(p => ({
         numeroParcela: p.numeroParcela,
         dataVencimento: p.dataVencimento,
@@ -118,8 +121,11 @@ export function PropostaForm({ proposta, isEdit }: PropostaFormProps) {
   }, [formData.premioLiquido, formData.percentualComissao])
 
   const handleGenerateParcelas = () => {
-    const numParcelas = Number(prompt("Quantidade de parcelas:"))
-    if (!numParcelas || numParcelas < 1) return
+    const numParcelas = Number(numParcelasInput)
+    if (!numParcelas || numParcelas < 1) {
+      toast.error("Informe um número válido de parcelas")
+      return
+    }
 
     const premioTotal =
       Number(formData.premioLiquido) +
@@ -139,16 +145,83 @@ export function PropostaForm({ proposta, isEdit }: PropostaFormProps) {
     }))
 
     setValue("parcelas", parcelas)
+    setShowParcelasModal(false)
+    setNumParcelasInput("")
     toast.success("Parcelas geradas com sucesso!")
+  }
+
+  const handleNextTab = async () => {
+    let fieldsToValidate: any[] = []
+    
+    switch (activeTab) {
+      case 0:
+        fieldsToValidate = [
+          "numeroProposta",
+          "seguradoId",
+          "corretoraId",
+          "produtorId",
+          "seguradoraId",
+          "ramoId",
+          "tipoDocumento",
+          "origem",
+        ]
+        break
+      case 1:
+        fieldsToValidate = ["inicioVigencia", "fimVigencia"]
+        break
+      case 2:
+        fieldsToValidate = []
+        break
+      case 3:
+        fieldsToValidate = ["premioLiquido"]
+        break
+      case 4:
+        fieldsToValidate = [
+          "percentualComissao",
+          "comissaoSobre",
+          "formaComissao",
+          "valorComissao",
+        ]
+        break
+      case 5:
+        fieldsToValidate = []
+        break
+      case 6:
+        fieldsToValidate = []
+        break
+    }
+
+    const isValid = await trigger(fieldsToValidate as any)
+    if (isValid) {
+      setActiveTab((prev) => Math.min(prev + 1, tabs.length - 1))
+    } else {
+      toast.error("Preencha todos os campos obrigatórios")
+    }
+  }
+
+  const handlePrevTab = () => {
+    setActiveTab((prev) => Math.max(prev - 1, 0))
   }
 
   const handleSubmit = async (data: PropostaFormSchema) => {
     try {
+      const payload = {
+        ...data,
+        inicioVigencia: data.inicioVigencia ? new Date(data.inicioVigencia).toISOString() : "",
+        fimVigencia: data.fimVigencia ? new Date(data.fimVigencia).toISOString() : "",
+        dataEmissao: data.dataEmissao ? new Date(data.dataEmissao).toISOString() : undefined,
+        parcelas: data.parcelas.map(p => ({
+          ...p,
+          dataVencimento: p.dataVencimento ? new Date(p.dataVencimento).toISOString() : "",
+          previsaoRecebimento: p.previsaoRecebimento ? new Date(p.previsaoRecebimento).toISOString() : "",
+        })),
+      }
+      
       if (isEdit && proposta?.id) {
-        await bffApi.put(`/propostas-apolices/${proposta.id}`, data)
+        await bffApi.put(`/propostas-apolices/${proposta.id}`, payload)
         toast.success("Proposta atualizada com sucesso!")
       } else {
-        await bffApi.post("/propostas-apolices", data)
+        await bffApi.post("/propostas-apolices", payload)
         toast.success("Proposta criada com sucesso!")
       }
       push("/propostas")
@@ -161,9 +234,10 @@ export function PropostaForm({ proposta, isEdit }: PropostaFormProps) {
     "Proposta",
     "Vigência",
     "Apólice e Endosso",
-    "Comissão",
     "Prêmio e Parcelas",
+    "Comissão",
     "Repasses",
+    "Revisão",
   ]
 
   const segurado = segurados?.data?.find((s) => s.id === formData.seguradoId)
@@ -200,7 +274,7 @@ export function PropostaForm({ proposta, isEdit }: PropostaFormProps) {
         ))}
       </div>
 
-      <div>
+      <div className="rounded-lg bg-gray-50 p-6">
         {activeTab === 0 && (
           <div className="grid grid-cols-2 gap-4">
             <div>
@@ -380,60 +454,6 @@ export function PropostaForm({ proposta, isEdit }: PropostaFormProps) {
         )}
 
         {activeTab === 3 && (
-          <div className="grid grid-cols-2 gap-4">
-            <div>
-              <label>% Comissão *</label>
-              <Input.Root className="mt-2">
-                <Input.Control
-                  type="number"
-                  {...register("percentualComissao", { valueAsNumber: true })}
-                  required
-                />
-              </Input.Root>
-              {errors.percentualComissao && (
-                <span className="text-xs text-red-500">
-                  {errors.percentualComissao.message}
-                </span>
-              )}
-            </div>
-            <SelectInput
-              label="Comissão Sobre *"
-              field_name="comissaoSobre"
-              value={formData.comissaoSobre}
-              onChange={(e) => setValue("comissaoSobre", e.target.value as any)}
-              options={[
-                { text: "Prêmio Líquido", value: "Premio Liquido" },
-                { text: "Prêmio Comercial", value: "Premio Comercial" },
-                { text: "Prêmio Total", value: "Premio Total" },
-              ]}
-              required
-            />
-            <SelectInput
-              label="Forma de Comissão *"
-              field_name="formaComissao"
-              value={formData.formaComissao}
-              onChange={(e) => setValue("formaComissao", e.target.value as any)}
-              options={[
-                { text: "Na Parcela", value: "Na Parcela" },
-                { text: "Antecipado", value: "Antecipado" },
-                { text: "Recorrência", value: "Recorrencia" },
-              ]}
-              required
-            />
-            <div>
-              <label>Valor de Comissão</label>
-              <Input.Root className="mt-2">
-                <Input.Control
-                  type="number"
-                  value={formData.valorComissao}
-                  disabled
-                />
-              </Input.Root>
-            </div>
-          </div>
-        )}
-
-        {activeTab === 4 && (
           <div className="space-y-4">
             <div className="grid grid-cols-3 gap-4">
               <div>
@@ -470,7 +490,7 @@ export function PropostaForm({ proposta, isEdit }: PropostaFormProps) {
                 </Input.Root>
               </div>
             </div>
-            <Button onClick={handleGenerateParcelas}>Gerar Parcelas</Button>
+            <Button onClick={() => setShowParcelasModal(true)}>Gerar Parcelas</Button>
             {formData.parcelas.length > 0 && (
               <div className="mt-4">
                 <h4 className="mb-2 font-semibold">Parcelas</h4>
@@ -529,24 +549,490 @@ export function PropostaForm({ proposta, isEdit }: PropostaFormProps) {
           </div>
         )}
 
+        {activeTab === 4 && (
+          <div className="grid grid-cols-2 gap-4">
+            <div>
+              <label>% Comissão *</label>
+              <Input.Root className="mt-2">
+                <Input.Control
+                  type="number"
+                  {...register("percentualComissao", { valueAsNumber: true })}
+                  required
+                />
+              </Input.Root>
+              {errors.percentualComissao && (
+                <span className="text-xs text-red-500">
+                  {errors.percentualComissao.message}
+                </span>
+              )}
+            </div>
+            <SelectInput
+              label="Comissão Sobre *"
+              field_name="comissaoSobre"
+              value={formData.comissaoSobre}
+              onChange={(e) => setValue("comissaoSobre", e.target.value as any)}
+              options={[
+                { text: "Prêmio Líquido", value: "Premio Liquido" },
+                { text: "Prêmio Comercial", value: "Premio Comercial" },
+                { text: "Prêmio Total", value: "Premio Total" },
+              ]}
+              required
+            />
+            <SelectInput
+              label="Forma de Comissão *"
+              field_name="formaComissao"
+              value={formData.formaComissao}
+              onChange={(e) => setValue("formaComissao", e.target.value as any)}
+              options={[
+                { text: "Na Parcela", value: "Na Parcela" },
+                { text: "Antecipado", value: "Antecipado" },
+                { text: "Recorrência", value: "Recorrencia" },
+              ]}
+              required
+            />
+            <div>
+              <label>Valor de Comissão</label>
+              <Input.Root className="mt-2">
+                <Input.Control
+                  type="number"
+                  value={formData.valorComissao}
+                  disabled
+                />
+              </Input.Root>
+            </div>
+          </div>
+        )}
+
+
+
         {activeTab === 5 && (
-          <div>
-            <h4 className="mb-2 font-semibold">Repasses</h4>
-            <p className="text-sm text-gray-600">
-              Funcionalidade em desenvolvimento
-            </p>
+          <div className="space-y-4">
+            <div className="flex justify-between items-center">
+              <h4 className="font-semibold">Repasses</h4>
+              <Button
+                onClick={() => {
+                  const newRepasse = {
+                    produtorId: "",
+                    percentualRepasse: 0,
+                    repasseSobre: "Premio Liquido" as const,
+                    formaRepasse: "No recebimento" as const,
+                  }
+                  setValue("repasses", [...formData.repasses, newRepasse])
+                }}>
+                Adicionar Repasse
+              </Button>
+            </div>
+            {formData.repasses.length === 0 ? (
+              <p className="text-sm text-gray-600">Nenhum repasse cadastrado</p>
+            ) : (
+              formData.repasses.map((repasse: any, index: number) => (
+                <div key={index} className="rounded border bg-white p-4">
+                  <div className="mb-2 flex justify-between items-center">
+                    <h5 className="font-medium">Repasse {index + 1}</h5>
+                    <button
+                      type="button"
+                      onClick={() => {
+                        const newRepasses = formData.repasses.filter((_, i) => i !== index)
+                        setValue("repasses", newRepasses)
+                      }}
+                      className="text-red-600 text-sm hover:underline">
+                      Remover
+                    </button>
+                  </div>
+                  <div className="grid grid-cols-2 gap-4">
+                    <SelectInput
+                      label="Produtor *"
+                      field_name={`repasses.${index}.produtorId`}
+                      value={repasse.produtorId}
+                      onChange={(e) => {
+                        const newRepasses = [...formData.repasses]
+                        newRepasses[index].produtorId = e.target.value
+                        setValue("repasses", newRepasses)
+                      }}
+                      options={produtores?.data?.map((p) => ({ text: p.nome, value: p.id })) || []}
+                    />
+                    <div>
+                      <label>% Repasse *</label>
+                      <Input.Root className="mt-2">
+                        <Input.Control
+                          type="number"
+                          {...register(`repasses.${index}.percentualRepasse` as any, { valueAsNumber: true })}
+                        />
+                      </Input.Root>
+                    </div>
+                    <SelectInput
+                      label="Repasse Sobre *"
+                      field_name={`repasses.${index}.repasseSobre`}
+                      value={repasse.repasseSobre}
+                      onChange={(e) => {
+                        const newRepasses = [...formData.repasses]
+                        newRepasses[index].repasseSobre = e.target.value as any
+                        setValue("repasses", newRepasses)
+                      }}
+                      options={[
+                        { text: "Prêmio Líquido", value: "Premio Liquido" },
+                        { text: "Comissão da Corretora", value: "Comissão da Corretora" },
+                        { text: "Valor Fixo", value: "Valor Fixo" },
+                      ]}
+                    />
+                    <SelectInput
+                      label="Forma de Repasse *"
+                      field_name={`repasses.${index}.formaRepasse`}
+                      value={repasse.formaRepasse}
+                      onChange={(e) => {
+                        const newRepasses = [...formData.repasses]
+                        newRepasses[index].formaRepasse = e.target.value as any
+                        setValue("repasses", newRepasses)
+                      }}
+                      options={[
+                        { text: "No recebimento", value: "No recebimento" },
+                        { text: "Antecipado 1a parcela", value: "Antecipado 1a parcela" },
+                        { text: "Antecipado parcela", value: "Antecipado parcela" },
+                        { text: "Antecipado emissão", value: "Antecipado emissão" },
+                      ]}
+                    />
+                  </div>
+                </div>
+              ))
+            )}
           </div>
         )}
       </div>
 
-      <div className="flex gap-2">
-        <Button onClick={handleFormSubmit(handleSubmit)}>
-          {isEdit ? "Atualizar" : "Criar"} Proposta
-        </Button>
-        <Button variant="secondary" onClick={() => push("/propostas")}>
-          Cancelar
-        </Button>
+      {activeTab === 6 && (
+        <div className="space-y-4">
+          <div className="rounded-lg bg-gray-50 p-6">
+              <h3 className="mb-4 text-lg font-semibold">Proposta</h3>
+              <div className="grid grid-cols-2 gap-4">
+                <div>
+                  <label>Número da Proposta *</label>
+                  <Input.Root className="mt-2">
+                    <Input.Control {...register("numeroProposta")} />
+                  </Input.Root>
+                </div>
+                <SelectInput
+                  label="Segurado *"
+                  field_name="seguradoId"
+                  value={formData.seguradoId}
+                  onChange={(e) => setValue("seguradoId", e.target.value)}
+                  options={segurados?.data?.map((s) => ({ text: s.nomeRazaoSocial, value: s.id })) || []}
+                />
+                <SelectInput
+                  label="Seguradora *"
+                  field_name="seguradoraId"
+                  value={formData.seguradoraId}
+                  onChange={(e) => setValue("seguradoraId", e.target.value)}
+                  options={seguradoras?.data?.map((s) => ({ text: s.razaoSocial, value: s.id })) || []}
+                />
+                <SelectInput
+                  label="Produtor *"
+                  field_name="produtorId"
+                  value={formData.produtorId}
+                  onChange={(e) => setValue("produtorId", e.target.value)}
+                  options={produtores?.data?.map((p) => ({ text: p.nome, value: p.id })) || []}
+                />
+                <SelectInput
+                  label="Corretora *"
+                  field_name="corretoraId"
+                  value={formData.corretoraId}
+                  onChange={(e) => setValue("corretoraId", e.target.value)}
+                  options={corretoras?.data?.map((c) => ({ text: c.razaoSocial, value: c.id })) || []}
+                />
+                <SelectInput
+                  label="Ramo *"
+                  field_name="ramoId"
+                  value={formData.ramoId}
+                  onChange={(e) => setValue("ramoId", e.target.value)}
+                  options={ramos?.data?.map((r) => ({ text: r.descricao, value: r.id })) || []}
+                />
+                <SelectInput
+                  label="Produto"
+                  field_name="produtoId"
+                  value={formData.produtoId}
+                  onChange={(e) => setValue("produtoId", e.target.value)}
+                  options={produtosOptions}
+                />
+                <SelectInput
+                  label="Tipo de Documento *"
+                  field_name="tipoDocumento"
+                  value={formData.tipoDocumento}
+                  onChange={(e) => setValue("tipoDocumento", e.target.value as any)}
+                  options={[
+                    { text: "Proposta", value: "Proposta" },
+                    { text: "Apólice", value: "Apólice" },
+                    { text: "Renovação", value: "Renovação" },
+                    { text: "Endosso", value: "Endosso" },
+                  ]}
+                />
+                <SelectInput
+                  label="Origem *"
+                  field_name="origem"
+                  value={formData.origem}
+                  onChange={(e) => setValue("origem", e.target.value as any)}
+                  options={[
+                    { text: "Manual", value: "Manual" },
+                    { text: "Importação", value: "Importação" },
+                    { text: "Integração", value: "Integração" },
+                  ]}
+                />
+              </div>
+            </div>
+
+            <div className="rounded-lg bg-gray-50 p-6">
+              <h3 className="mb-4 text-lg font-semibold">Vigência</h3>
+              <div className="grid grid-cols-2 gap-4">
+                <div>
+                  <label>Início da Vigência *</label>
+                  <Input.Root className="mt-2">
+                    <Input.Control type="date" {...register("inicioVigencia")} />
+                  </Input.Root>
+                </div>
+                <div>
+                  <label>Fim da Vigência *</label>
+                  <Input.Root className="mt-2">
+                    <Input.Control type="date" {...register("fimVigencia")} />
+                  </Input.Root>
+                </div>
+              </div>
+            </div>
+
+            <div className="rounded-lg bg-gray-50 p-6">
+              <h3 className="mb-4 text-lg font-semibold">Apólice e Endosso</h3>
+              <div className="grid grid-cols-2 gap-4">
+                <div>
+                  <label>Número da Apólice</label>
+                  <Input.Root className="mt-2">
+                    <Input.Control {...register("numeroApolice")} />
+                  </Input.Root>
+                </div>
+                <div>
+                  <label>Número do Endosso</label>
+                  <Input.Root className="mt-2">
+                    <Input.Control {...register("numeroEndosso")} />
+                  </Input.Root>
+                </div>
+              </div>
+            </div>
+
+            <div className="rounded-lg bg-gray-50 p-6">
+              <h3 className="mb-4 text-lg font-semibold">Comissão</h3>
+              <div className="grid grid-cols-2 gap-4">
+                <div>
+                  <label>% Comissão *</label>
+                  <Input.Root className="mt-2">
+                    <Input.Control type="number" {...register("percentualComissao", { valueAsNumber: true })} />
+                  </Input.Root>
+                </div>
+                <SelectInput
+                  label="Comissão Sobre *"
+                  field_name="comissaoSobre"
+                  value={formData.comissaoSobre}
+                  onChange={(e) => setValue("comissaoSobre", e.target.value as any)}
+                  options={[
+                    { text: "Prêmio Líquido", value: "Premio Liquido" },
+                    { text: "Prêmio Comercial", value: "Premio Comercial" },
+                    { text: "Prêmio Total", value: "Premio Total" },
+                  ]}
+                />
+                <SelectInput
+                  label="Forma de Comissão *"
+                  field_name="formaComissao"
+                  value={formData.formaComissao}
+                  onChange={(e) => setValue("formaComissao", e.target.value as any)}
+                  options={[
+                    { text: "Na Parcela", value: "Na Parcela" },
+                    { text: "Antecipado", value: "Antecipado" },
+                    { text: "Recorrência", value: "Recorrencia" },
+                  ]}
+                />
+                <div>
+                  <label>Valor de Comissão</label>
+                  <Input.Root className="mt-2">
+                    <Input.Control type="number" value={formData.valorComissao} disabled />
+                  </Input.Root>
+                </div>
+              </div>
+            </div>
+
+            <div className="rounded-lg bg-gray-50 p-6">
+              <h3 className="mb-4 text-lg font-semibold">Prêmio e Parcelas</h3>
+              <div className="grid grid-cols-3 gap-4">
+                <div>
+                  <label>Prêmio Líquido *</label>
+                  <Input.Root className="mt-2">
+                    <Input.Control type="number" {...register("premioLiquido", { valueAsNumber: true })} />
+                  </Input.Root>
+                </div>
+                <div>
+                  <label>Valores Adicionais</label>
+                  <Input.Root className="mt-2">
+                    <Input.Control type="number" {...register("valoresAdicionais", { valueAsNumber: true })} />
+                  </Input.Root>
+                </div>
+                <div>
+                  <label>IOF</label>
+                  <Input.Root className="mt-2">
+                    <Input.Control type="number" {...register("iof", { valueAsNumber: true })} />
+                  </Input.Root>
+                </div>
+              </div>
+              {formData.parcelas.length > 0 && (
+                <div className="mt-4">
+                  <p className="font-medium">{formData.parcelas.length} parcela(s) gerada(s)</p>
+                </div>
+              )}
+            </div>
+
+          <div className="rounded-lg bg-gray-50 p-6">
+            <div className="flex justify-between items-center mb-4">
+              <h3 className="text-lg font-semibold">Repasses</h3>
+              <Button
+                onClick={() => {
+                  const newRepasse = {
+                    produtorId: "",
+                    percentualRepasse: 0,
+                    repasseSobre: "Premio Liquido" as const,
+                    formaRepasse: "No recebimento" as const,
+                  }
+                  setValue("repasses", [...formData.repasses, newRepasse])
+                }}>
+                Adicionar Repasse
+              </Button>
+            </div>
+            {formData.repasses.length === 0 ? (
+              <p className="text-gray-500">Nenhum repasse cadastrado</p>
+            ) : (
+              <div className="space-y-4">
+                {formData.repasses.map((repasse: any, index: number) => (
+                  <div key={index} className="rounded border bg-white p-4">
+                    <div className="mb-2 flex justify-between items-center">
+                      <h5 className="font-medium">Repasse {index + 1}</h5>
+                      <button
+                        type="button"
+                        onClick={() => {
+                          const newRepasses = formData.repasses.filter((_, i) => i !== index)
+                          setValue("repasses", newRepasses)
+                        }}
+                        className="text-red-600 text-sm hover:underline">
+                        Remover
+                      </button>
+                    </div>
+                    <div className="grid grid-cols-2 gap-4">
+                      <SelectInput
+                        label="Produtor *"
+                        field_name={`repasses.${index}.produtorId`}
+                        value={repasse.produtorId}
+                        onChange={(e) => {
+                          const newRepasses = [...formData.repasses]
+                          newRepasses[index].produtorId = e.target.value
+                          setValue("repasses", newRepasses)
+                        }}
+                        options={produtores?.data?.map((p) => ({ text: p.nome, value: p.id })) || []}
+                      />
+                      <div>
+                        <label>% Repasse *</label>
+                        <Input.Root className="mt-2">
+                          <Input.Control
+                            type="number"
+                            {...register(`repasses.${index}.percentualRepasse` as any, { valueAsNumber: true })}
+                          />
+                        </Input.Root>
+                      </div>
+                      <SelectInput
+                        label="Repasse Sobre *"
+                        field_name={`repasses.${index}.repasseSobre`}
+                        value={repasse.repasseSobre}
+                        onChange={(e) => {
+                          const newRepasses = [...formData.repasses]
+                          newRepasses[index].repasseSobre = e.target.value as any
+                          setValue("repasses", newRepasses)
+                        }}
+                        options={[
+                          { text: "Prêmio Líquido", value: "Premio Liquido" },
+                          { text: "Comissão da Corretora", value: "Comissão da Corretora" },
+                          { text: "Valor Fixo", value: "Valor Fixo" },
+                        ]}
+                      />
+                      <SelectInput
+                        label="Forma de Repasse *"
+                        field_name={`repasses.${index}.formaRepasse`}
+                        value={repasse.formaRepasse}
+                        onChange={(e) => {
+                          const newRepasses = [...formData.repasses]
+                          newRepasses[index].formaRepasse = e.target.value as any
+                          setValue("repasses", newRepasses)
+                        }}
+                        options={[
+                          { text: "No recebimento", value: "No recebimento" },
+                          { text: "Antecipado 1a parcela", value: "Antecipado 1a parcela" },
+                          { text: "Antecipado parcela", value: "Antecipado parcela" },
+                          { text: "Antecipado emissão", value: "Antecipado emissão" },
+                        ]}
+                      />
+                    </div>
+                  </div>
+                ))}
+              </div>
+            )}
+          </div>
+        </div>
+      )}
+
+      <div className="flex justify-between">
+        <div className="flex gap-2">
+          {activeTab > 0 && (
+            <Button variant="secondary" onClick={handlePrevTab}>
+              Voltar
+            </Button>
+          )}
+          <Button variant="secondary" onClick={() => push("/propostas")}>
+            Cancelar
+          </Button>
+        </div>
+        <div>
+          {activeTab < tabs.length - 1 ? (
+            <Button onClick={handleNextTab}>Avançar</Button>
+          ) : (
+            <Button onClick={handleFormSubmit(handleSubmit)}>
+              {isEdit ? "Atualizar" : "Criar"} Proposta
+            </Button>
+          )}
+        </div>
       </div>
+
+      {showParcelasModal && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50">
+          <div className="w-full max-w-md rounded-lg bg-white p-6 shadow-xl">
+            <h3 className="mb-4 text-lg font-semibold">Gerar Parcelas</h3>
+            <div>
+              <label className="mb-2 block text-sm font-medium">
+                Quantidade de parcelas
+              </label>
+              <Input.Root className="mt-2">
+                <Input.Control
+                  type="number"
+                  min="1"
+                  value={numParcelasInput}
+                  onChange={(e) => setNumParcelasInput(e.target.value)}
+                  placeholder="Digite o número de parcelas"
+                  autoFocus
+                />
+              </Input.Root>
+            </div>
+            <div className="mt-6 flex justify-end gap-2">
+              <Button
+                variant="secondary"
+                onClick={() => {
+                  setShowParcelasModal(false)
+                  setNumParcelasInput("")
+                }}>
+                Cancelar
+              </Button>
+              <Button onClick={handleGenerateParcelas}>Gerar</Button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   )
 }
