@@ -33,6 +33,7 @@ export function PropostasTable() {
   const [id, setId] = useState("")
   const [filteredResults, setFilteredResults] = useState([])
   const [produtosOptions, setProdutosOptions] = useState([])
+  const [expandedId, setExpandedId] = useState<string | null>(null)
 
   const { data: segurados } = useSeguradoQuery(1, 100)
   const { data: corretoras } = useCorretoraQuery(1, 100)
@@ -110,6 +111,8 @@ export function PropostasTable() {
     ramos?.data.find((r) => r.id === id)?.descricao || ""
   const getSeguradoraName = (id: string) =>
     seguradoras?.data?.find((s) => s.id === id)?.razaoSocial || ""
+  const getCorretoraName = (id: string) =>
+    corretoras?.data?.find((c) => c.id === id)?.razaoSocial || ""
 
   const handleEdit = (id: string) => {
     push(`/propostas/edit/${id}`)
@@ -135,9 +138,9 @@ export function PropostasTable() {
       accessor: "_id",
       render: (value: string) => (
         <button
-          onClick={() => push(`/propostas/edit/${value}`)}
+          onClick={() => setExpandedId(expandedId === value ? null : value)}
           className="font-bold text-blue-600">
-          &gt;
+          {expandedId === value ? "v" : ">"}
         </button>
       ),
     },
@@ -431,7 +434,39 @@ export function PropostasTable() {
           Nenhuma proposta cadastrada.
         </h2>
       : <>
-          <Table columns={columns} data={filteredResults} />
+          <Table
+            columns={columns}
+            data={filteredResults}
+            expandedRowId={expandedId}
+            expandedRowContent={(row: any) => (
+              <div className="grid grid-cols-4 gap-3 text-xs">
+                <div>
+                  <label className="block text-gray-600 font-medium mb-1">Corretora</label>
+                  <input type="text" value={getCorretoraName(row._corretoraId)} disabled className="w-full px-2 py-1 border rounded bg-white" />
+                </div>
+                <div>
+                  <label className="block text-gray-600 font-medium mb-1">Prêmio Líquido</label>
+                  <input type="text" value={row._premioLiquido || ""} disabled className="w-full px-2 py-1 border rounded bg-white" />
+                </div>
+                <div>
+                  <label className="block text-gray-600 font-medium mb-1">Comissão</label>
+                  <input type="text" value={row._valorComissao || ""} disabled className="w-full px-2 py-1 border rounded bg-white" />
+                </div>
+                <div>
+                  <label className="block text-gray-600 font-medium mb-1">Origem</label>
+                  <input type="text" value={row._origem || ""} disabled className="w-full px-2 py-1 border rounded bg-white" />
+                </div>
+                <div>
+                  <label className="block text-gray-600 font-medium mb-1">Placa Veículo</label>
+                  <input type="text" value={row._placaVeiculo || ""} disabled className="w-full px-2 py-1 border rounded bg-white" />
+                </div>
+                <div>
+                  <label className="block text-gray-600 font-medium mb-1">Chassi Veículo</label>
+                  <input type="text" value={row._chassiVeiculo || ""} disabled className="w-full px-2 py-1 border rounded bg-white" />
+                </div>
+              </div>
+            )}
+          />
           <Pagination
             page={page}
             totalPages={totalPages}

@@ -12,11 +12,15 @@ export function Table<T>({
   data,
   className,
   ref,
+  expandedRowId,
+  expandedRowContent,
 }: {
   columns: Column[]
   data: T[]
   className?: string
   ref?: React.Ref<HTMLTableElement>
+  expandedRowId?: string
+  expandedRowContent?: (row: T) => ReactNode
 }) {
   return (
     <div className="">
@@ -61,6 +65,19 @@ export function Table<T>({
                       ))}
                     </tr>
                   ))}
+                  {expandedRowId && expandedRowContent && (
+                    <>
+                      {data.map((row, rowIndex) =>
+                        expandedRowId === (row as any)._id ? (
+                          <tr key={`expanded-${rowIndex}`}>
+                            <td colSpan={columns.length} className="px-3 py-3 bg-gray-50">
+                              {expandedRowContent(row)}
+                            </td>
+                          </tr>
+                        ) : null
+                      )}
+                    </>
+                  )}
                 </tbody>
               </table>
             </div>
