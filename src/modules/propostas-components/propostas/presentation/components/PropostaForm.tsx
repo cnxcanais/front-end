@@ -3,7 +3,6 @@
 import { Button } from "@/core/components/Button"
 import * as Input from "@/core/components/Input"
 import { SelectInput } from "@/core/components/SelectInput"
-import { bffApi } from "@/lib/axios"
 import { useCorretoraQuery } from "@/modules/corretoras-components/corretora/infra/hooks/use-corretora-query"
 import { useProdutorQuery } from "@/modules/produtores-components/produtor/infra/hooks/use-produtor-query"
 import { useProdutoQuery } from "@/modules/produtos-components/produtos/infra/hooks/use-produto-query"
@@ -16,6 +15,7 @@ import { useEffect, useMemo, useState } from "react"
 import { useForm } from "react-hook-form"
 import { toast } from "sonner"
 import { Proposta } from "../../../types/proposta"
+import { createProposta, updateProposta } from "../../infra/remote"
 import { propostaFormSchema, PropostaFormSchema } from "../validation/schema"
 
 interface PropostaFormProps {
@@ -264,10 +264,11 @@ export function PropostaForm({ proposta, isEdit }: PropostaFormProps) {
       }
       
       if (isEdit && proposta?.id) {
-        await bffApi.put(`/propostas-apolices/${proposta.id}`, payload)
+        const { numeroProposta, ...updatePayload } = payload
+        await updateProposta(proposta.id, updatePayload)
         toast.success("Proposta atualizada com sucesso!")
       } else {
-        await bffApi.post("/propostas-apolices", payload)
+        await createProposta(payload)
         toast.success("Proposta criada com sucesso!")
       }
       push("/propostas")

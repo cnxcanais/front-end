@@ -9,7 +9,7 @@ export interface FilterField {
   name: string
   label: string
   placeholder?: string
-  type?: "text" | "select"
+  type?: "text" | "select" | "date"
   options?: { label: string; value: string }[]
   disabled?: boolean
   onSelectChange?: (fieldName: string, value: string) => void
@@ -127,6 +127,7 @@ export function FilterForm({ fields, sections, onFilter, onSelectChange, default
                               />
                             ) : (
                               <Input.Control
+                                type={field.type === "date" ? "date" : "text"}
                                 placeholder={field.placeholder}
                                 value={filters[field.name] || ""}
                                 onChange={(e) =>
@@ -164,6 +165,7 @@ export function FilterForm({ fields, sections, onFilter, onSelectChange, default
                       />
                     ) : (
                       <Input.Control
+                        type={field.type === "date" ? "date" : "text"}
                         placeholder={field.placeholder}
                         value={filters[field.name] || ""}
                         onChange={(e) =>

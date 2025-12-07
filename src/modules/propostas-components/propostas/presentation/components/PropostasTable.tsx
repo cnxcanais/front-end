@@ -332,6 +332,16 @@ export function PropostasTable() {
         label: "Complemento",
         placeholder: "Buscar por complemento",
       },
+      {
+        name: "inicioVigenciaMin",
+        label: "Vigência Inicial (De)",
+        type: "date",
+      },
+      {
+        name: "inicioVigenciaMax",
+        label: "Vigência Inicial (Até)",
+        type: "date",
+      },
     ],
     [
       corretorasOptions,
@@ -491,28 +501,84 @@ export function PropostasTable() {
                     className="w-full rounded border bg-white px-2 py-1"
                   />
                 </div>
-                <div>
-                  <label className="mb-1 block font-medium text-gray-600">
-                    Placa Veículo
-                  </label>
-                  <input
-                    type="text"
-                    value={row.placaVeiculo || ""}
-                    disabled
-                    className="w-full rounded border bg-white px-2 py-1"
-                  />
-                </div>
-                <div>
-                  <label className="mb-1 block font-medium text-gray-600">
-                    Chassi Veículo
-                  </label>
-                  <input
-                    type="text"
-                    value={row.chassiVeiculo || ""}
-                    disabled
-                    className="w-full rounded border bg-white px-2 py-1"
-                  />
-                </div>
+                {row.placaVeiculo && (
+                  <div>
+                    <label className="mb-1 block font-medium text-gray-600">
+                      Placa Veículo
+                    </label>
+                    <input
+                      type="text"
+                      value={row.placaVeiculo}
+                      disabled
+                      className="w-full rounded border bg-white px-2 py-1"
+                    />
+                  </div>
+                )}
+                {row.chassiVeiculo && (
+                  <div>
+                    <label className="mb-1 block font-medium text-gray-600">
+                      Chassi Veículo
+                    </label>
+                    <input
+                      type="text"
+                      value={row.chassiVeiculo}
+                      disabled
+                      className="w-full rounded border bg-white px-2 py-1"
+                    />
+                  </div>
+                )}
+                {row.marcaVeiculo && (
+                  <div>
+                    <label className="mb-1 block font-medium text-gray-600">
+                      Marca Veículo
+                    </label>
+                    <input
+                      type="text"
+                      value={row.marcaVeiculo}
+                      disabled
+                      className="w-full rounded border bg-white px-2 py-1"
+                    />
+                  </div>
+                )}
+                {row.modeloVeiculo && (
+                  <div>
+                    <label className="mb-1 block font-medium text-gray-600">
+                      Modelo Veículo
+                    </label>
+                    <input
+                      type="text"
+                      value={row.modeloVeiculo}
+                      disabled
+                      className="w-full rounded border bg-white px-2 py-1"
+                    />
+                  </div>
+                )}
+                {row.anoFabricacaoVeiculo && (
+                  <div>
+                    <label className="mb-1 block font-medium text-gray-600">
+                      Ano Fabricação
+                    </label>
+                    <input
+                      type="text"
+                      value={row.anoFabricacaoVeiculo}
+                      disabled
+                      className="w-full rounded border bg-white px-2 py-1"
+                    />
+                  </div>
+                )}
+                {row.anoModeloVeiculo && (
+                  <div>
+                    <label className="mb-1 block font-medium text-gray-600">
+                      Ano Modelo
+                    </label>
+                    <input
+                      type="text"
+                      value={row.anoModeloVeiculo}
+                      disabled
+                      className="w-full rounded border bg-white px-2 py-1"
+                    />
+                  </div>
+                )}
               </div>
             )}
           />

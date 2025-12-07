@@ -17,6 +17,19 @@ export async function getProposta(id: string) {
   return response.data
 }
 
+export async function createProposta(data: any) {
+  const response = await bffApi.post<Proposta>("/propostas-apolices", data)
+  return response.data
+}
+
+export async function updateProposta(id: string, data: any) {
+  const response = await bffApi.patch<Proposta>(
+    `/propostas-apolices/${id}`,
+    data
+  )
+  return response.data
+}
+
 export async function removeProposta(id: string) {
   const response = await bffApi.delete(`/propostas-apolices/${id}`)
   return response.data
