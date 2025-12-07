@@ -1,5 +1,6 @@
 import { Corretora } from "@/@types/corretora"
 import { bffApi } from "@/lib/axios"
+import { toast } from "sonner"
 
 export async function getCorretoras(
   page = 1,
@@ -12,6 +13,7 @@ export async function getCorretoras(
     })
     return data
   } catch (error) {
+    toast.error("Erro ao buscar corretoras: " + error.response.data.message)
     console.info(error)
   }
 }

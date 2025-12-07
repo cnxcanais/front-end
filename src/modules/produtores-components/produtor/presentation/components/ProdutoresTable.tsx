@@ -106,7 +106,7 @@ export function ProdutoresTable() {
   const filterFields: FilterField[] = [
     { name: "nome", label: "Nome", placeholder: "Buscar por Nome" },
     {
-      name: "cpfCnpj",
+      name: "cnpjCpf",
       label: "CPF/CNPJ",
       placeholder: "Buscar por CPF ou CNPJ",
     },

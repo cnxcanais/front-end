@@ -1,5 +1,6 @@
 import { Produtor } from "@/@types/produtor"
 import { bffApi } from "@/lib/axios"
+import { toast } from "sonner"
 
 export async function getProdutores(
   page = 1,
@@ -12,6 +13,7 @@ export async function getProdutores(
     })
     return data
   } catch (error) {
+    toast.error("Erro ao buscar produtores " + error.response.data.message)
     console.info(error)
   }
 }

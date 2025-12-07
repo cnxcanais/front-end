@@ -52,7 +52,7 @@ export function CorretorasTable() {
       label: "Nome Fantasia",
       placeholder: "Buscar por rome fantasia",
     },
-    { name: "cnpj", label: "CNPJ", placeholder: "Buscar por CNPJ" },
+    { name: "cnpjCpf", label: "CNPJ", placeholder: "Buscar por CNPJ" },
     { name: "uf", label: "UF", placeholder: "Buscar por UF" },
   ]
 
