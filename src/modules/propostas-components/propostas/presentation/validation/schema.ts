@@ -57,7 +57,7 @@ export const propostaFormSchema = z.object({
     .number()
     .min(0, "Percentual deve ser maior ou igual a 0")
     .max(100, "Percentual deve ser menor ou igual a 100"),
-  comissaoSobre: z.enum(["Premio Liquido", "Premio Comercial", "Premio Total"]),
+  comissaoSobre: z.enum(["Premio Liquido", "Comissão da Corretora", "Valor Fixo"]),
   formaComissao: z.enum(["Na Parcela", "Antecipado", "Recorrencia"]),
   valorComissao: z.number().min(0, "Valor de comissão deve ser maior ou igual a 0"),
   premioLiquido: z.number().min(0, "Prêmio líquido deve ser maior ou igual a 0"),

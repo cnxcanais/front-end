@@ -60,14 +60,27 @@ export function PropostaForm({ proposta, isEdit }: PropostaFormProps) {
       renovacao: proposta?.renovacao || "Renovável",
       motivoNaoRenovacao: proposta?.motivoNaoRenovacao || "",
       percentualComissao: proposta?.percentualComissao || 0,
-      comissaoSobre: proposta?.comissaoSobre || "Premio Liquido",
+      comissaoSobre: (proposta?.comissaoSobre as any) || "Premio Liquido",
       formaComissao: proposta?.formaComissao || "Na Parcela",
       valorComissao: proposta?.valorComissao || 0,
       premioLiquido: proposta?.premioLiquido || 0,
       valoresAdicionais: proposta?.valoresAdicionais,
       iof: proposta?.iof,
-      parcelas: proposta?.parcelas || [],
-      repasses: proposta?.repasses || [],
+      parcelas: proposta?.parcelas?.map(p => ({
+        numeroParcela: p.numeroParcela,
+        dataVencimento: p.dataVencimento,
+        valor: Number(p.valor),
+        valorLiquido: Number(p.valorLiquido),
+        percentualCorretora: Number(p.percentualCorretora),
+        previsaoRecebimento: p.previsaoRecebimento,
+        situacao: p.situacao,
+      })) || [],
+      repasses: proposta?.repasses?.map(r => ({
+        produtorId: r.produtorId,
+        percentualRepasse: Number(r.percentualRepasse),
+        repasseSobre: r.repasseSobre as any,
+        formaRepasse: r.formaRepasse as any,
+      })) || [],
     },
   })
 
@@ -125,7 +138,7 @@ export function PropostaForm({ proposta, isEdit }: PropostaFormProps) {
       situacao: "Pendente",
     }))
 
-    setValue("parcelas", parcelas as any)
+    setValue("parcelas", parcelas)
     toast.success("Parcelas geradas com sucesso!")
   }
 
@@ -192,25 +205,37 @@ export function PropostaForm({ proposta, isEdit }: PropostaFormProps) {
           <div className="grid grid-cols-2 gap-4">
             <div>
               <label>Número da Proposta *</label>
-              <Input.Root>
+              <Input.Root className="mt-2">
                 <Input.Control {...register("numeroProposta")} />
               </Input.Root>
+              {errors.numeroProposta && (
+                <span className="text-xs text-red-500">
+                  {errors.numeroProposta.message}
+                </span>
+              )}
+            </div>
+            <div>
+              <SelectInput
+                label="Segurado *"
+                field_name="seguradoId"
+                value={formData.seguradoId}
+                onChange={(e) => setValue("seguradoId", e.target.value)}
+                options={
+                  segurados?.data?.map((s) => ({
+                    text: s.nomeRazaoSocial,
+                    value: s.id,
+                  })) || []
+                }
+                required
+              />
+              {errors.seguradoId && (
+                <span className="text-xs text-red-500">
+                  {errors.seguradoId.message}
+                </span>
+              )}
             </div>
             <SelectInput
-              label="Segurado"
-              field_name="seguradoId"
-              value={formData.seguradoId}
-              onChange={(e) => setValue("seguradoId", e.target.value)}
-              options={
-                segurados?.data?.map((s) => ({
-                  text: s.nomeRazaoSocial,
-                  value: s.id,
-                })) || []
-              }
-              required
-            />
-            <SelectInput
-              label="Seguradora"
+              label="Seguradora *"
               field_name="seguradoraId"
               value={formData.seguradoraId}
               onChange={(e) => setValue("seguradoraId", e.target.value)}
@@ -223,7 +248,7 @@ export function PropostaForm({ proposta, isEdit }: PropostaFormProps) {
               required
             />
             <SelectInput
-              label="Produtor"
+              label="Produtor *"
               field_name="produtorId"
               value={formData.produtorId}
               onChange={(e) => setValue("produtorId", e.target.value)}
@@ -234,7 +259,7 @@ export function PropostaForm({ proposta, isEdit }: PropostaFormProps) {
               required
             />
             <SelectInput
-              label="Corretora"
+              label="Corretora *"
               field_name="corretoraId"
               value={formData.corretoraId}
               onChange={(e) => setValue("corretoraId", e.target.value)}
@@ -247,7 +272,7 @@ export function PropostaForm({ proposta, isEdit }: PropostaFormProps) {
               required
             />
             <SelectInput
-              label="Ramo"
+              label="Ramo *"
               field_name="ramoId"
               value={formData.ramoId}
               onChange={(e) => setValue("ramoId", e.target.value)}
@@ -265,7 +290,7 @@ export function PropostaForm({ proposta, isEdit }: PropostaFormProps) {
               options={produtosOptions}
             />
             <SelectInput
-              label="Tipo de Documento"
+              label="Tipo de Documento *"
               field_name="tipoDocumento"
               value={formData.tipoDocumento}
               onChange={(e) => setValue("tipoDocumento", e.target.value as any)}
@@ -278,7 +303,7 @@ export function PropostaForm({ proposta, isEdit }: PropostaFormProps) {
               required
             />
             <SelectInput
-              label="Origem"
+              label="Origem *"
               field_name="origem"
               value={formData.origem}
               onChange={(e) => setValue("origem", e.target.value as any)}
@@ -296,15 +321,25 @@ export function PropostaForm({ proposta, isEdit }: PropostaFormProps) {
           <div className="grid grid-cols-2 gap-4">
             <div>
               <label>Início da Vigência *</label>
-              <Input.Root>
+              <Input.Root className="mt-2">
                 <Input.Control type="date" {...register("inicioVigencia")} />
               </Input.Root>
+              {errors.inicioVigencia && (
+                <span className="text-xs text-red-500">
+                  {errors.inicioVigencia.message}
+                </span>
+              )}
             </div>
             <div>
               <label>Fim da Vigência *</label>
-              <Input.Root>
+              <Input.Root className="mt-2">
                 <Input.Control type="date" {...register("fimVigencia")} />
               </Input.Root>
+              {errors.fimVigencia && (
+                <span className="text-xs text-red-500">
+                  {errors.fimVigencia.message}
+                </span>
+              )}
             </div>
           </div>
         )}
@@ -313,31 +348,21 @@ export function PropostaForm({ proposta, isEdit }: PropostaFormProps) {
           <div className="grid grid-cols-2 gap-4">
             <div>
               <label>Número da Apólice</label>
-              <Input.Root>
-                <Input.Control
-                  value={formData.numeroApolice}
-                  onChange={(e) =>
-                    handleChange("numeroApolice", e.target.value)
-                  }
-                />
+              <Input.Root className="mt-2">
+                <Input.Control {...register("numeroApolice")} />
               </Input.Root>
             </div>
             <div>
               <label>Número do Endosso</label>
-              <Input.Root>
-                <Input.Control
-                  value={formData.numeroEndosso}
-                  onChange={(e) =>
-                    handleChange("numeroEndosso", e.target.value)
-                  }
-                />
+              <Input.Root className="mt-2">
+                <Input.Control {...register("numeroEndosso")} />
               </Input.Root>
             </div>
             <SelectInput
               label="Renovação"
               field_name="renovacao"
               value={formData.renovacao}
-              onChange={(e) => handleChange("renovacao", e.target.value)}
+              onChange={(e) => setValue("renovacao", e.target.value as any)}
               options={[
                 { text: "Renovável", value: "Renovável" },
                 { text: "Não Renovável", value: "Não Renovável" },
@@ -346,13 +371,8 @@ export function PropostaForm({ proposta, isEdit }: PropostaFormProps) {
             {formData.renovacao === "Não Renovável" && (
               <div>
                 <label>Motivo da Não Renovação</label>
-                <Input.Root>
-                  <Input.Control
-                    value={formData.motivoNaoRenovacao}
-                    onChange={(e) =>
-                      handleChange("motivoNaoRenovacao", e.target.value)
-                    }
-                  />
+                <Input.Root className="mt-2">
+                  <Input.Control {...register("motivoNaoRenovacao")} />
                 </Input.Root>
               </div>
             )}
@@ -363,22 +383,24 @@ export function PropostaForm({ proposta, isEdit }: PropostaFormProps) {
           <div className="grid grid-cols-2 gap-4">
             <div>
               <label>% Comissão *</label>
-              <Input.Root>
+              <Input.Root className="mt-2">
                 <Input.Control
                   type="number"
-                  value={formData.percentualComissao}
-                  onChange={(e) =>
-                    handleChange("percentualComissao", e.target.value)
-                  }
+                  {...register("percentualComissao", { valueAsNumber: true })}
                   required
                 />
               </Input.Root>
+              {errors.percentualComissao && (
+                <span className="text-xs text-red-500">
+                  {errors.percentualComissao.message}
+                </span>
+              )}
             </div>
             <SelectInput
-              label="Comissão Sobre"
+              label="Comissão Sobre *"
               field_name="comissaoSobre"
               value={formData.comissaoSobre}
-              onChange={(e) => handleChange("comissaoSobre", e.target.value)}
+              onChange={(e) => setValue("comissaoSobre", e.target.value as any)}
               options={[
                 { text: "Prêmio Líquido", value: "Premio Liquido" },
                 { text: "Prêmio Comercial", value: "Premio Comercial" },
@@ -387,10 +409,10 @@ export function PropostaForm({ proposta, isEdit }: PropostaFormProps) {
               required
             />
             <SelectInput
-              label="Forma de Comissão"
+              label="Forma de Comissão *"
               field_name="formaComissao"
               value={formData.formaComissao}
-              onChange={(e) => handleChange("formaComissao", e.target.value)}
+              onChange={(e) => setValue("formaComissao", e.target.value as any)}
               options={[
                 { text: "Na Parcela", value: "Na Parcela" },
                 { text: "Antecipado", value: "Antecipado" },
@@ -400,7 +422,7 @@ export function PropostaForm({ proposta, isEdit }: PropostaFormProps) {
             />
             <div>
               <label>Valor de Comissão</label>
-              <Input.Root>
+              <Input.Root className="mt-2">
                 <Input.Control
                   type="number"
                   value={formData.valorComissao}
@@ -416,36 +438,34 @@ export function PropostaForm({ proposta, isEdit }: PropostaFormProps) {
             <div className="grid grid-cols-3 gap-4">
               <div>
                 <label>Prêmio Líquido *</label>
-                <Input.Root>
+                <Input.Root className="mt-2">
                   <Input.Control
                     type="number"
-                    value={formData.premioLiquido}
-                    onChange={(e) =>
-                      handleChange("premioLiquido", e.target.value)
-                    }
+                    {...register("premioLiquido", { valueAsNumber: true })}
                     required
                   />
                 </Input.Root>
+                {errors.premioLiquido && (
+                  <span className="text-xs text-red-500">
+                    {errors.premioLiquido.message}
+                  </span>
+                )}
               </div>
               <div>
                 <label>Valores Adicionais</label>
-                <Input.Root>
+                <Input.Root className="mt-2">
                   <Input.Control
                     type="number"
-                    value={formData.valoresAdicionais}
-                    onChange={(e) =>
-                      handleChange("valoresAdicionais", e.target.value)
-                    }
+                    {...register("valoresAdicionais", { valueAsNumber: true })}
                   />
                 </Input.Root>
               </div>
               <div>
                 <label>IOF</label>
-                <Input.Root>
+                <Input.Root className="mt-2">
                   <Input.Control
                     type="number"
-                    value={formData.iof}
-                    onChange={(e) => handleChange("iof", e.target.value)}
+                    {...register("iof", { valueAsNumber: true })}
                   />
                 </Input.Root>
               </div>
@@ -481,7 +501,7 @@ export function PropostaForm({ proposta, isEdit }: PropostaFormProps) {
                             onChange={(e) => {
                               const newParcelas = [...formData.parcelas]
                               newParcelas[index].dataVencimento = e.target.value
-                              handleChange("parcelas", newParcelas)
+                              setValue("parcelas", newParcelas)
                             }}
                           />
                         </Input.Root>
@@ -496,7 +516,7 @@ export function PropostaForm({ proposta, isEdit }: PropostaFormProps) {
                               const newParcelas = [...formData.parcelas]
                               newParcelas[index].previsaoRecebimento =
                                 e.target.value
-                              handleChange("parcelas", newParcelas)
+                              setValue("parcelas", newParcelas)
                             }}
                           />
                         </Input.Root>
