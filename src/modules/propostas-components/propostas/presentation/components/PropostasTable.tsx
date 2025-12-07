@@ -47,19 +47,17 @@ export function PropostasTable() {
   console.log("filters" + filters)
 
   useEffect(() => {
-    console.log("Effect triggered with filters:", filters)
-    if (ramoId) {
-      console.log("ramoId => " + filters?.ramoId)
-      const filteredProdutos = produtos?.data.filter(
-        (p) => p.ramoId === filters.ramoId
+    if (ramoId && produtos?.data) {
+      const filteredProdutos = produtos.data.filter(
+        (p) => p.ramoId === ramoId
       )
-      const produtosOption = filteredProdutos?.map((p) => ({
+      const produtosOption = filteredProdutos.map((p) => ({
         label: p.descricao,
         value: p.id,
       }))
       setProdutosOptions(produtosOption)
     }
-  }, [filters, produtos?.data])
+  }, [ramoId, produtos?.data])
 
   console.log(produtosOptions)
 
@@ -307,6 +305,11 @@ export function PropostasTable() {
       <FilterForm
         fields={filterFields}
         onFilter={handleFilter}
+        onSelectChange={(fieldName, value) => {
+          if (fieldName === "ramoId") {
+            setRamoId(value)
+          }
+        }}
         appliedFilters={filters}
       />
 

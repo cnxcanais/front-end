@@ -12,16 +12,18 @@ export interface FilterField {
   type?: "text" | "select"
   options?: { label: string; value: string }[]
   disabled?: boolean
+  onSelectChange?: (fieldName: string, value: string) => void
 }
 
 interface FilterFormProps {
   fields: FilterField[]
   onFilter: (filters: Record<string, string>) => void
+  onSelectChange?: (fieldName: string, value: string) => void
   defaultOpen?: boolean
   appliedFilters?: Record<string, string>
 }
 
-export function FilterForm({ fields, onFilter, defaultOpen = true, appliedFilters: externalAppliedFilters }: FilterFormProps) {
+export function FilterForm({ fields, onFilter, onSelectChange, defaultOpen = true, appliedFilters: externalAppliedFilters }: FilterFormProps) {
   const [isOpen, setIsOpen] = useState(defaultOpen)
   const [filters, setFilters] = useState<Record<string, string>>({})
   const [appliedFilters, setAppliedFilters] = useState<Record<string, string>>({})
@@ -89,9 +91,10 @@ export function FilterForm({ fields, onFilter, defaultOpen = true, appliedFilter
                       options={field.options}
                       placeholder={field.placeholder}
                       value={filters[field.name] || ""}
-                      onChange={(value) =>
+                      onChange={(value) => {
                         setFilters((prev) => ({ ...prev, [field.name]: value || "" }))
-                      }
+                        onSelectChange?.(field.name, value || "")
+                      }}
                       disabled={field.disabled}
                     />
                   ) : (
