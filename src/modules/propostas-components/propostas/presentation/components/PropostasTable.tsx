@@ -48,9 +48,7 @@ export function PropostasTable() {
 
   useEffect(() => {
     if (ramoId && produtos?.data) {
-      const filteredProdutos = produtos.data.filter(
-        (p) => p.ramoId === ramoId
-      )
+      const filteredProdutos = produtos.data.filter((p) => p.ramoId === ramoId)
       const produtosOption = filteredProdutos.map((p) => ({
         label: p.descricao,
         value: p.id,
@@ -101,9 +99,9 @@ export function PropostasTable() {
     }))
   }, [ramos])
 
-  const isProdutoDisabled = !filters.ramoId || isProdutosLoading
+  const isProdutoDisabled = !ramoId || isProdutosLoading
   const produtoPlaceholder =
-    !filters.ramoId ? "Selecione um ramo primeiro"
+    !ramoId ? "Selecione um ramo primeiro"
     : isProdutosLoading ? "Carregando produtos..."
     : "Buscar por produto"
 
@@ -172,42 +170,42 @@ export function PropostasTable() {
         label: "Segurado",
         placeholder: "Buscar por segurado",
         type: "select",
-        options: seguradosOptions,
+        options: [{ label: "Todos", value: "" }, ...seguradosOptions],
       },
       {
         name: "corretoraId",
         label: "Corretora",
         placeholder: "Buscar por corretora",
         type: "select",
-        options: corretorasOptions,
+        options: [{ label: "Todos", value: "" }, ...corretorasOptions],
       },
       {
         name: "produtorId",
         label: "Produtor",
         placeholder: "Buscar por produtor",
         type: "select",
-        options: produtoresOptions,
+        options: [{ label: "Todos", value: "" }, ...produtoresOptions],
       },
       {
         name: "seguradoraId",
         label: "Seguradora",
         placeholder: "Buscar por seguradora",
         type: "select",
-        options: seguradoresOptions,
+        options: [{ label: "Todos", value: "" }, ...seguradoresOptions],
       },
       {
         name: "ramoId",
         label: "Ramo",
         placeholder: "Buscar por ramo",
         type: "select",
-        options: ramosOptions,
+        options: [{ label: "Todos", value: "" }, ...ramosOptions],
       },
       {
         name: "produtoId",
         label: "Produto",
         placeholder: produtoPlaceholder,
         type: "select",
-        options: produtosOptions,
+        options: [{ label: "Todos", value: "" }, ...produtosOptions],
       },
       {
         name: "tipoDocumento",
@@ -215,6 +213,7 @@ export function PropostasTable() {
         placeholder: "Buscar por tipo",
         type: "select",
         options: [
+          { label: "Todos", value: "" },
           { label: "Proposta", value: "Proposta" },
           { label: "Apólice", value: "Apólice" },
           { label: "Renovação", value: "Renovação" },
@@ -227,6 +226,7 @@ export function PropostasTable() {
         placeholder: "Buscar por origem",
         type: "select",
         options: [
+          { label: "Todos", value: "" },
           { label: "Manual", value: "Manual" },
           { label: "Importação", value: "Importação" },
           { label: "Integração", value: "Integração" },
@@ -238,6 +238,7 @@ export function PropostasTable() {
         placeholder: "Buscar por situação",
         type: "select",
         options: [
+          { label: "Todos", value: "" },
           { label: "Ativo", value: "Ativo" },
           { label: "Inativo", value: "Inativo" },
         ],
