@@ -99,14 +99,17 @@ export function PropostasTable() {
     }))
   }, [ramos])
 
-  const isProdutoDisabled = !ramoId || isProdutosLoading
-  const produtoPlaceholder =
-    !ramoId ? "Selecione um ramo primeiro"
-    : isProdutosLoading ? "Carregando produtos..."
-    : "Buscar por produto"
-
   const propostas = data?.data || []
   const totalPages = data?.meta?.totalPages || 1
+
+  const getSeguradoName = (id: string) =>
+    segurados?.data?.find((s) => s.id === id)?.nomeRazaoSocial || ""
+  const getProdutorName = (id: string) =>
+    produtores?.data?.find((p) => p.id === id)?.nome || ""
+  const getRamoName = (id: string) =>
+    ramos?.data.find((r) => r.id === id)?.descricao || ""
+  const getSeguradoraName = (id: string) =>
+    seguradoras?.data?.find((s) => s.id === id)?.razaoSocial || ""
 
   const handleEdit = (id: string) => {
     push(`/propostas/edit/${id}`)
@@ -127,26 +130,89 @@ export function PropostasTable() {
   }
 
   const columns = [
-    { header: "Número Proposta", accessor: "_numeroProposta" },
-    { header: "Tipo Documento", accessor: "_tipoDocumento" },
-    { header: "Origem", accessor: "_origem" },
-    { header: "Situação", accessor: "_situacao" },
-    { header: "Prêmio Líquido", accessor: "_premioLiquido" },
-    { header: "Comissão", accessor: "_valorComissao" },
-    { header: "Vigência Início", accessor: "_inicioVigencia" },
-    { header: "Vigência Fim", accessor: "_fimVigencia" },
     {
-      header: "Ações",
+      header: "",
       accessor: "_id",
       render: (value: string) => (
-        <div className="flex space-x-4">
+        <button
+          onClick={() => push(`/propostas/edit/${value}`)}
+          className="font-bold text-blue-600">
+          &gt;
+        </button>
+      ),
+    },
+    {
+      header: "Segurado",
+      accessor: "_seguradoId",
+      render: (value: string) => (
+        <span className="cursor-pointer text-red-600 hover:underline">
+          {getSeguradoName(value)}
+        </span>
+      ),
+    },
+    {
+      header: "Ramo",
+      accessor: "_ramoId",
+      render: (value: string, row: any) => (
+        <div>
+          <div>{getRamoName(value)}</div>
+          <div className="text-sm text-gray-600">
+            Vigência: {row._inicioVigencia} a {row._fimVigencia}
+          </div>
+          {row._primeiraParcela && (
+            <div className="text-sm text-gray-600">
+              1ª Parcela: {row._primeiraParcela}
+            </div>
+          )}
+        </div>
+      ),
+    },
+    {
+      header: "Status",
+      accessor: "_situacao",
+      render: (value: string, row: any) => (
+        <div className="flex items-center gap-2">
+          <div
+            className={`h-3 w-3 rounded-full ${
+              value === "Ativo"
+                ? "bg-green-500"
+                : value === "Pendente"
+                ? "bg-yellow-500"
+                : "bg-red-500"
+            }`}
+          />
+          <div>
+            <div className="font-medium">{row._tipoDocumento}</div>
+            <div className="text-sm text-gray-600">{row._numeroProposta}</div>
+            <div className="text-xs text-gray-500">
+              {row._statusSecundario || ""}
+            </div>
+          </div>
+        </div>
+      ),
+    },
+    {
+      header: "Produtor",
+      accessor: "_produtorId",
+      render: (value: string) => getProdutorName(value),
+    },
+    {
+      header: "Seguradora",
+      accessor: "_seguradoraId",
+      render: (value: string) => getSeguradoraName(value),
+    },
+    {
+      header: "Ação",
+      accessor: "_id",
+      render: (value: string) => (
+        <div className="flex gap-2">
           <Pencil
-            className="cursor-pointer duration-300 ease-in-out hover:text-blue-500"
+            className="cursor-pointer hover:text-blue-500"
             size={24}
             onClick={() => handleEdit(value)}
           />
           <Trash
-            className="cursor-pointer duration-300 ease-in-out hover:text-blue-500"
+            className="cursor-pointer hover:text-red-500"
             size={24}
             onClick={() => {
               setId(value)
@@ -219,7 +285,6 @@ export function PropostasTable() {
       {
         name: "produtoId",
         label: "Produto",
-        placeholder: produtoPlaceholder,
         type: "select",
         options: [{ label: "Todos", value: "" }, ...produtosOptions],
       },
@@ -271,7 +336,6 @@ export function PropostasTable() {
       seguradoresOptions,
       ramosOptions,
       produtosOptions,
-      produtoPlaceholder,
     ]
   )
 
