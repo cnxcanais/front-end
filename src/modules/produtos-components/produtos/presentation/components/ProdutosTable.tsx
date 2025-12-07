@@ -8,9 +8,9 @@ import { Modal } from "@/core/components/Modals/Modal"
 import { Pagination } from "@/core/components/Pagination"
 import { Table } from "@/core/components/Table"
 import { exportNoPagination } from "@/core/utils/exportToExcel/exportNoPagination"
-import { useRamoQuery } from "@/modules/ramos-components/ramos/infra/hooks/use-ramo-query"
 import { useProdutoQuery } from "@/modules/produtos-components/produtos/infra/hooks/use-produto-query"
 import { removeProduto } from "@/modules/produtos-components/produtos/infra/remote"
+import { useRamoQuery } from "@/modules/ramos-components/ramos/infra/hooks/use-ramo-query"
 import { FileXls, Pencil, Trash } from "@phosphor-icons/react"
 import { useRouter } from "next/navigation"
 import { useEffect, useMemo, useState } from "react"
@@ -138,9 +138,7 @@ export function ProdutosTable() {
 
       <div className="mt-8 flex items-center justify-between">
         <div className="flex h-full gap-4">
-          <Button
-            onClick={() => push("/produtos/create")}
-            variant="secondary">
+          <Button onClick={() => push("/produtos/create")} variant="secondary">
             Cadastrar
           </Button>
         </div>
