@@ -16,16 +16,21 @@ const parcelaSchema = z.object({
 const repasseSchema = z.object({
   produtorId: z.string().min(1, "Produtor é obrigatório"),
   percentualRepasse: z
-    .number()
+    .number({ invalid_type_error: "Percentual de repasse deve ser um número válido" })
     .min(0, "Percentual deve ser maior ou igual a 0")
-    .max(100, "Percentual deve ser menor ou igual a 100"),
-  repasseSobre: z.enum(["Premio Liquido", "Comissão da Corretora", "Valor Fixo"]),
+    .max(100, "Percentual deve ser menor ou igual a 100")
+    .nullable(),
+  repasseSobre: z.enum(["Premio Liquido", "Comissão da Corretora", "Valor Fixo"], {
+    errorMap: () => ({ message: "Repasse sobre é obrigatório" }),
+  }),
   formaRepasse: z.enum([
     "No recebimento",
     "Antecipado 1a parcela",
     "Antecipado parcela",
     "Antecipado emissão",
-  ]),
+  ], {
+    errorMap: () => ({ message: "Forma de repasse é obrigatória" }),
+  }),
 })
 
 export const propostaFormSchema = z.object({
@@ -58,13 +63,18 @@ export const propostaFormSchema = z.object({
   renovacao: z.enum(["Renovável", "Não Renovável"]).optional(),
   motivoNaoRenovacao: z.string().optional(),
   percentualComissao: z
-    .number()
+    .number({ invalid_type_error: "Percentual de comissão deve ser um número válido" })
     .min(0, "Percentual deve ser maior ou igual a 0")
-    .max(100, "Percentual deve ser menor ou igual a 100"),
-  comissaoSobre: z.enum(["Premio Liquido", "Comissão da Corretora", "Valor Fixo"]),
-  formaComissao: z.enum(["Na Parcela", "Antecipado", "Recorrencia"]),
-  valorComissao: z.number().min(0, "Valor de comissão deve ser maior ou igual a 0"),
-  premioLiquido: z.number().min(0, "Prêmio líquido deve ser maior ou igual a 0"),
+    .max(100, "Percentual deve ser menor ou igual a 100")
+    .nullable(),
+  comissaoSobre: z.enum(["Premio Liquido", "Comissão da Corretora", "Valor Fixo"], {
+    errorMap: () => ({ message: "Comissão sobre é obrigatória" }),
+  }),
+  formaComissao: z.enum(["Na Parcela", "Antecipado", "Recorrencia"], {
+    errorMap: () => ({ message: "Forma de comissão é obrigatória" }),
+  }),
+  valorComissao: z.number({ invalid_type_error: "Valor de comissão deve ser um número válido" }).min(0, "Valor de comissão deve ser maior ou igual a 0").nullable(),
+  premioLiquido: z.number({ invalid_type_error: "Prêmio líquido deve ser um número válido" }).min(0, "Prêmio líquido deve ser maior ou igual a 0").nullable(),
   valoresAdicionais: z.number().optional(),
   iof: z.number().optional(),
   parcelas: z.array(parcelaSchema),

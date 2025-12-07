@@ -62,11 +62,11 @@ export function PropostaForm({ proposta, isEdit }: PropostaFormProps) {
       numeroEndosso: proposta?.numeroEndosso || "",
       renovacao: proposta?.renovacao || "Renovável",
       motivoNaoRenovacao: proposta?.motivoNaoRenovacao || "",
-      percentualComissao: proposta?.percentualComissao || 0,
+      percentualComissao: proposta?.percentualComissao || undefined,
       comissaoSobre: (proposta?.comissaoSobre as any) || "Premio Liquido",
       formaComissao: proposta?.formaComissao || "Na Parcela",
-      valorComissao: proposta?.valorComissao || 0,
-      premioLiquido: proposta?.premioLiquido || 0,
+      valorComissao: proposta?.valorComissao || undefined,
+      premioLiquido: proposta?.premioLiquido || undefined,
       valoresAdicionais: proposta?.valoresAdicionais || undefined,
       iof: proposta?.iof || undefined,
       parcelas: proposta?.parcelas?.map(p => ({
@@ -226,11 +226,31 @@ export function PropostaForm({ proposta, isEdit }: PropostaFormProps) {
             "valorComissao",
           ]
         } else {
-          fieldsToValidate = []
+          if (formData.repasses.length > 0) {
+            const hasInvalidRepasse = formData.repasses.some(
+              (r: any) => !r.produtorId || r.percentualRepasse === undefined || r.percentualRepasse === null || !r.repasseSobre || !r.formaRepasse
+            )
+            if (hasInvalidRepasse) {
+              toast.error("Preencha todos os campos obrigatórios dos repasses")
+            }
+          }
+          fieldsToValidate = ["repasses"]
         }
         break
       case 6:
-        fieldsToValidate = []
+        if (isAutomovelRamo) {
+          if (formData.repasses.length > 0) {
+            const hasInvalidRepasse = formData.repasses.some(
+              (r: any) => !r.produtorId || r.percentualRepasse === undefined || r.percentualRepasse === null || !r.repasseSobre || !r.formaRepasse
+            )
+            if (hasInvalidRepasse) {
+              toast.error("Preencha todos os campos obrigatórios dos repasses")
+            }
+          }
+          fieldsToValidate = ["repasses"]
+        } else {
+          fieldsToValidate = []
+        }
         break
       case 7:
         fieldsToValidate = []
@@ -722,30 +742,44 @@ export function PropostaForm({ proposta, isEdit }: PropostaFormProps) {
                 </span>
               )}
             </div>
-            <SelectInput
-              label="Comissão Sobre *"
-              field_name="comissaoSobre"
-              value={formData.comissaoSobre}
-              onChange={(e) => setValue("comissaoSobre", e.target.value as any)}
-              options={[
-                { text: "Prêmio Líquido", value: "Premio Liquido" },
-                { text: "Prêmio Comercial", value: "Premio Comercial" },
-                { text: "Prêmio Total", value: "Premio Total" },
-              ]}
-              required
-            />
-            <SelectInput
-              label="Forma de Comissão *"
-              field_name="formaComissao"
-              value={formData.formaComissao}
-              onChange={(e) => setValue("formaComissao", e.target.value as any)}
-              options={[
-                { text: "Na Parcela", value: "Na Parcela" },
-                { text: "Antecipado", value: "Antecipado" },
-                { text: "Recorrência", value: "Recorrencia" },
-              ]}
-              required
-            />
+            <div>
+              <SelectInput
+                label="Comissão Sobre *"
+                field_name="comissaoSobre"
+                value={formData.comissaoSobre}
+                onChange={(e) => setValue("comissaoSobre", e.target.value as any)}
+                options={[
+                  { text: "Prêmio Líquido", value: "Premio Liquido" },
+                  { text: "Prêmio Comercial", value: "Premio Comercial" },
+                  { text: "Prêmio Total", value: "Premio Total" },
+                ]}
+                required
+              />
+              {errors.comissaoSobre && (
+                <span className="text-xs text-red-500">
+                  {errors.comissaoSobre.message}
+                </span>
+              )}
+            </div>
+            <div>
+              <SelectInput
+                label="Forma de Comissão *"
+                field_name="formaComissao"
+                value={formData.formaComissao}
+                onChange={(e) => setValue("formaComissao", e.target.value as any)}
+                options={[
+                  { text: "Na Parcela", value: "Na Parcela" },
+                  { text: "Antecipado", value: "Antecipado" },
+                  { text: "Recorrência", value: "Recorrencia" },
+                ]}
+                required
+              />
+              {errors.formaComissao && (
+                <span className="text-xs text-red-500">
+                  {errors.formaComissao.message}
+                </span>
+              )}
+            </div>
             <div>
               <label>Valor de Comissão</label>
               <Input.Root className="mt-2">
@@ -753,8 +787,14 @@ export function PropostaForm({ proposta, isEdit }: PropostaFormProps) {
                   type="number"
                   value={formData.valorComissao}
                   disabled
+                  variant="disabled"
                 />
               </Input.Root>
+              {errors.valorComissao && (
+                <span className="text-xs text-red-500">
+                  {errors.valorComissao.message}
+                </span>
+              )}
             </div>
           </div>
         )}
@@ -769,7 +809,7 @@ export function PropostaForm({ proposta, isEdit }: PropostaFormProps) {
                 onClick={() => {
                   const newRepasse = {
                     produtorId: "",
-                    percentualRepasse: 0,
+                    percentualRepasse: undefined,
                     repasseSobre: "Premio Liquido" as const,
                     formaRepasse: "No recebimento" as const,
                   }
@@ -796,17 +836,24 @@ export function PropostaForm({ proposta, isEdit }: PropostaFormProps) {
                     </button>
                   </div>
                   <div className="grid grid-cols-2 gap-4">
-                    <SelectInput
-                      label="Produtor *"
-                      field_name={`repasses.${index}.produtorId`}
-                      value={repasse.produtorId}
-                      onChange={(e) => {
-                        const newRepasses = [...formData.repasses]
-                        newRepasses[index].produtorId = e.target.value
-                        setValue("repasses", newRepasses)
-                      }}
-                      options={produtores?.data?.map((p) => ({ text: p.nome, value: p.id })) || []}
-                    />
+                    <div>
+                      <SelectInput
+                        label="Produtor *"
+                        field_name={`repasses.${index}.produtorId`}
+                        value={repasse.produtorId}
+                        onChange={(e) => {
+                          const newRepasses = [...formData.repasses]
+                          newRepasses[index].produtorId = e.target.value
+                          setValue("repasses", newRepasses)
+                        }}
+                        options={produtores?.data?.map((p) => ({ text: p.nome, value: p.id })) || []}
+                      />
+                      {errors.repasses?.[index]?.produtorId && (
+                        <span className="text-xs text-red-500">
+                          {errors.repasses[index].produtorId.message}
+                        </span>
+                      )}
+                    </div>
                     <div>
                       <label>% Repasse *</label>
                       <Input.Root className="mt-2">
@@ -815,38 +862,57 @@ export function PropostaForm({ proposta, isEdit }: PropostaFormProps) {
                           {...register(`repasses.${index}.percentualRepasse` as any, { valueAsNumber: true })}
                         />
                       </Input.Root>
+                      {errors.repasses?.[index]?.percentualRepasse && (
+                        <span className="text-xs text-red-500">
+                          {errors.repasses[index].percentualRepasse.message}
+                        </span>
+                      )}
                     </div>
-                    <SelectInput
-                      label="Repasse Sobre *"
-                      field_name={`repasses.${index}.repasseSobre`}
-                      value={repasse.repasseSobre}
-                      onChange={(e) => {
-                        const newRepasses = [...formData.repasses]
-                        newRepasses[index].repasseSobre = e.target.value as any
-                        setValue("repasses", newRepasses)
-                      }}
-                      options={[
-                        { text: "Prêmio Líquido", value: "Premio Liquido" },
-                        { text: "Comissão da Corretora", value: "Comissão da Corretora" },
-                        { text: "Valor Fixo", value: "Valor Fixo" },
-                      ]}
-                    />
-                    <SelectInput
-                      label="Forma de Repasse *"
-                      field_name={`repasses.${index}.formaRepasse`}
-                      value={repasse.formaRepasse}
-                      onChange={(e) => {
-                        const newRepasses = [...formData.repasses]
-                        newRepasses[index].formaRepasse = e.target.value as any
-                        setValue("repasses", newRepasses)
-                      }}
-                      options={[
-                        { text: "No recebimento", value: "No recebimento" },
-                        { text: "Antecipado 1a parcela", value: "Antecipado 1a parcela" },
-                        { text: "Antecipado parcela", value: "Antecipado parcela" },
-                        { text: "Antecipado emissão", value: "Antecipado emissão" },
-                      ]}
-                    />
+                    <div>
+                      <SelectInput
+                        label="Repasse Sobre *"
+                        field_name={`repasses.${index}.repasseSobre`}
+                        value={repasse.repasseSobre}
+                        onChange={(e) => {
+                          const newRepasses = [...formData.repasses]
+                          newRepasses[index].repasseSobre = e.target.value as any
+                          setValue("repasses", newRepasses)
+                        }}
+                        options={[
+                          { text: "Prêmio Líquido", value: "Premio Liquido" },
+                          { text: "Comissão da Corretora", value: "Comissão da Corretora" },
+                          { text: "Valor Fixo", value: "Valor Fixo" },
+                        ]}
+                      />
+                      {errors.repasses?.[index]?.repasseSobre && (
+                        <span className="text-xs text-red-500">
+                          {errors.repasses[index].repasseSobre.message}
+                        </span>
+                      )}
+                    </div>
+                    <div>
+                      <SelectInput
+                        label="Forma de Repasse *"
+                        field_name={`repasses.${index}.formaRepasse`}
+                        value={repasse.formaRepasse}
+                        onChange={(e) => {
+                          const newRepasses = [...formData.repasses]
+                          newRepasses[index].formaRepasse = e.target.value as any
+                          setValue("repasses", newRepasses)
+                        }}
+                        options={[
+                          { text: "No recebimento", value: "No recebimento" },
+                          { text: "Antecipado 1a parcela", value: "Antecipado 1a parcela" },
+                          { text: "Antecipado parcela", value: "Antecipado parcela" },
+                          { text: "Antecipado emissão", value: "Antecipado emissão" },
+                        ]}
+                      />
+                      {errors.repasses?.[index]?.formaRepasse && (
+                        <span className="text-xs text-red-500">
+                          {errors.repasses[index].formaRepasse.message}
+                        </span>
+                      )}
+                    </div>
                   </div>
                 </div>
               ))
@@ -865,72 +931,133 @@ export function PropostaForm({ proposta, isEdit }: PropostaFormProps) {
                   <Input.Root className="mt-2">
                     <Input.Control {...register("numeroProposta")} />
                   </Input.Root>
+                  {errors.numeroProposta && (
+                    <span className="text-xs text-red-500">
+                      {errors.numeroProposta.message}
+                    </span>
+                  )}
                 </div>
-                <SelectInput
-                  label="Segurado *"
-                  field_name="seguradoId"
-                  value={formData.seguradoId}
-                  onChange={(e) => setValue("seguradoId", e.target.value)}
-                  options={segurados?.data?.map((s) => ({ text: s.nomeRazaoSocial, value: s.id })) || []}
-                />
-                <SelectInput
-                  label="Seguradora *"
-                  field_name="seguradoraId"
-                  value={formData.seguradoraId}
-                  onChange={(e) => setValue("seguradoraId", e.target.value)}
-                  options={seguradoras?.data?.map((s) => ({ text: s.razaoSocial, value: s.id })) || []}
-                />
-                <SelectInput
-                  label="Produtor *"
-                  field_name="produtorId"
-                  value={formData.produtorId}
-                  onChange={(e) => setValue("produtorId", e.target.value)}
-                  options={produtores?.data?.map((p) => ({ text: p.nome, value: p.id })) || []}
-                />
-                <SelectInput
-                  label="Corretora *"
-                  field_name="corretoraId"
-                  value={formData.corretoraId}
-                  onChange={(e) => setValue("corretoraId", e.target.value)}
-                  options={corretoras?.data?.map((c) => ({ text: c.razaoSocial, value: c.id })) || []}
-                />
-                <SelectInput
-                  label="Ramo *"
-                  field_name="ramoId"
-                  value={formData.ramoId}
-                  onChange={(e) => setValue("ramoId", e.target.value)}
-                  options={ramos?.data?.map((r) => ({ text: r.descricao, value: r.id })) || []}
-                />
-                <SelectInput
-                  label="Produto"
-                  field_name="produtoId"
-                  value={formData.produtoId}
-                  onChange={(e) => setValue("produtoId", e.target.value)}
-                  options={produtosOptions}
-                />
-                <SelectInput
-                  label="Tipo de Documento *"
-                  field_name="tipoDocumento"
-                  value={formData.tipoDocumento}
-                  onChange={(e) => setValue("tipoDocumento", e.target.value as any)}
-                  options={[
-                    { text: "Proposta", value: "Proposta" },
-                    { text: "Apólice", value: "Apólice" },
-                    { text: "Renovação", value: "Renovação" },
-                    { text: "Endosso", value: "Endosso" },
-                  ]}
-                />
-                <SelectInput
-                  label="Origem *"
-                  field_name="origem"
-                  value={formData.origem}
-                  onChange={(e) => setValue("origem", e.target.value as any)}
-                  options={[
-                    { text: "Manual", value: "Manual" },
-                    { text: "Importação", value: "Importação" },
-                    { text: "Integração", value: "Integração" },
-                  ]}
-                />
+                <div>
+                  <SelectInput
+                    label="Segurado *"
+                    field_name="seguradoId"
+                    value={formData.seguradoId}
+                    onChange={(e) => setValue("seguradoId", e.target.value)}
+                    options={segurados?.data?.map((s) => ({ text: s.nomeRazaoSocial, value: s.id })) || []}
+                  />
+                  {errors.seguradoId && (
+                    <span className="text-xs text-red-500">
+                      {errors.seguradoId.message}
+                    </span>
+                  )}
+                </div>
+                <div>
+                  <SelectInput
+                    label="Seguradora *"
+                    field_name="seguradoraId"
+                    value={formData.seguradoraId}
+                    onChange={(e) => setValue("seguradoraId", e.target.value)}
+                    options={seguradoras?.data?.map((s) => ({ text: s.razaoSocial, value: s.id })) || []}
+                  />
+                  {errors.seguradoraId && (
+                    <span className="text-xs text-red-500">
+                      {errors.seguradoraId.message}
+                    </span>
+                  )}
+                </div>
+                <div>
+                  <SelectInput
+                    label="Produtor *"
+                    field_name="produtorId"
+                    value={formData.produtorId}
+                    onChange={(e) => setValue("produtorId", e.target.value)}
+                    options={produtores?.data?.map((p) => ({ text: p.nome, value: p.id })) || []}
+                  />
+                  {errors.produtorId && (
+                    <span className="text-xs text-red-500">
+                      {errors.produtorId.message}
+                    </span>
+                  )}
+                </div>
+                <div>
+                  <SelectInput
+                    label="Corretora *"
+                    field_name="corretoraId"
+                    value={formData.corretoraId}
+                    onChange={(e) => setValue("corretoraId", e.target.value)}
+                    options={corretoras?.data?.map((c) => ({ text: c.razaoSocial, value: c.id })) || []}
+                  />
+                  {errors.corretoraId && (
+                    <span className="text-xs text-red-500">
+                      {errors.corretoraId.message}
+                    </span>
+                  )}
+                </div>
+                <div>
+                  <SelectInput
+                    label="Ramo *"
+                    field_name="ramoId"
+                    value={formData.ramoId}
+                    onChange={(e) => setValue("ramoId", e.target.value)}
+                    options={ramos?.data?.map((r) => ({ text: r.descricao, value: r.id })) || []}
+                  />
+                  {errors.ramoId && (
+                    <span className="text-xs text-red-500">
+                      {errors.ramoId.message}
+                    </span>
+                  )}
+                </div>
+                <div>
+                  <SelectInput
+                    label="Produto"
+                    field_name="produtoId"
+                    value={formData.produtoId}
+                    onChange={(e) => setValue("produtoId", e.target.value)}
+                    options={produtosOptions}
+                  />
+                  {errors.produtoId && (
+                    <span className="text-xs text-red-500">
+                      {errors.produtoId.message}
+                    </span>
+                  )}
+                </div>
+                <div>
+                  <SelectInput
+                    label="Tipo de Documento *"
+                    field_name="tipoDocumento"
+                    value={formData.tipoDocumento}
+                    onChange={(e) => setValue("tipoDocumento", e.target.value as any)}
+                    options={[
+                      { text: "Proposta", value: "Proposta" },
+                      { text: "Apólice", value: "Apólice" },
+                      { text: "Renovação", value: "Renovação" },
+                      { text: "Endosso", value: "Endosso" },
+                    ]}
+                  />
+                  {errors.tipoDocumento && (
+                    <span className="text-xs text-red-500">
+                      {errors.tipoDocumento.message}
+                    </span>
+                  )}
+                </div>
+                <div>
+                  <SelectInput
+                    label="Origem *"
+                    field_name="origem"
+                    value={formData.origem}
+                    onChange={(e) => setValue("origem", e.target.value as any)}
+                    options={[
+                      { text: "Manual", value: "Manual" },
+                      { text: "Importação", value: "Importação" },
+                      { text: "Integração", value: "Integração" },
+                    ]}
+                  />
+                  {errors.origem && (
+                    <span className="text-xs text-red-500">
+                      {errors.origem.message}
+                    </span>
+                  )}
+                </div>
               </div>
             </div>
 
@@ -943,24 +1070,44 @@ export function PropostaForm({ proposta, isEdit }: PropostaFormProps) {
                     <Input.Root className="mt-2">
                       <Input.Control {...register("placaVeiculo")} />
                     </Input.Root>
+                    {errors.placaVeiculo && (
+                      <span className="text-xs text-red-500">
+                        {errors.placaVeiculo.message}
+                      </span>
+                    )}
                   </div>
                   <div>
                     <label>Chassi do Veículo</label>
                     <Input.Root className="mt-2">
                       <Input.Control {...register("chassiVeiculo")} />
                     </Input.Root>
+                    {errors.chassiVeiculo && (
+                      <span className="text-xs text-red-500">
+                        {errors.chassiVeiculo.message}
+                      </span>
+                    )}
                   </div>
                   <div>
                     <label>Marca do Veículo</label>
                     <Input.Root className="mt-2">
                       <Input.Control {...register("marcaVeiculo")} />
                     </Input.Root>
+                    {errors.marcaVeiculo && (
+                      <span className="text-xs text-red-500">
+                        {errors.marcaVeiculo.message}
+                      </span>
+                    )}
                   </div>
                   <div>
                     <label>Modelo do Veículo</label>
                     <Input.Root className="mt-2">
                       <Input.Control {...register("modeloVeiculo")} />
                     </Input.Root>
+                    {errors.modeloVeiculo && (
+                      <span className="text-xs text-red-500">
+                        {errors.modeloVeiculo.message}
+                      </span>
+                    )}
                   </div>
                   <div>
                     <label>Ano de Fabricação</label>
@@ -970,6 +1117,11 @@ export function PropostaForm({ proposta, isEdit }: PropostaFormProps) {
                         {...register("anoFabricacaoVeiculo", { valueAsNumber: true })}
                       />
                     </Input.Root>
+                    {errors.anoFabricacaoVeiculo && (
+                      <span className="text-xs text-red-500">
+                        {errors.anoFabricacaoVeiculo.message}
+                      </span>
+                    )}
                   </div>
                   <div>
                     <label>Ano do Modelo</label>
@@ -979,12 +1131,22 @@ export function PropostaForm({ proposta, isEdit }: PropostaFormProps) {
                         {...register("anoModeloVeiculo", { valueAsNumber: true })}
                       />
                     </Input.Root>
+                    {errors.anoModeloVeiculo && (
+                      <span className="text-xs text-red-500">
+                        {errors.anoModeloVeiculo.message}
+                      </span>
+                    )}
                   </div>
                   <div className="col-span-2">
                     <label>Complemento</label>
                     <Input.Root className="mt-2">
                       <Input.Control {...register("complementoItem")} />
                     </Input.Root>
+                    {errors.complementoItem && (
+                      <span className="text-xs text-red-500">
+                        {errors.complementoItem.message}
+                      </span>
+                    )}
                   </div>
                 </div>
               </div>
@@ -998,12 +1160,22 @@ export function PropostaForm({ proposta, isEdit }: PropostaFormProps) {
                   <Input.Root className="mt-2">
                     <Input.Control type="date" {...register("inicioVigencia")} />
                   </Input.Root>
+                  {errors.inicioVigencia && (
+                    <span className="text-xs text-red-500">
+                      {errors.inicioVigencia.message}
+                    </span>
+                  )}
                 </div>
                 <div>
                   <label>Fim da Vigência *</label>
                   <Input.Root className="mt-2">
                     <Input.Control type="date" {...register("fimVigencia")} />
                   </Input.Root>
+                  {errors.fimVigencia && (
+                    <span className="text-xs text-red-500">
+                      {errors.fimVigencia.message}
+                    </span>
+                  )}
                 </div>
               </div>
             </div>
@@ -1016,12 +1188,22 @@ export function PropostaForm({ proposta, isEdit }: PropostaFormProps) {
                   <Input.Root className="mt-2">
                     <Input.Control {...register("numeroApolice")} />
                   </Input.Root>
+                  {errors.numeroApolice && (
+                    <span className="text-xs text-red-500">
+                      {errors.numeroApolice.message}
+                    </span>
+                  )}
                 </div>
                 <div>
                   <label>Número do Endosso</label>
                   <Input.Root className="mt-2">
                     <Input.Control {...register("numeroEndosso")} />
                   </Input.Root>
+                  {errors.numeroEndosso && (
+                    <span className="text-xs text-red-500">
+                      {errors.numeroEndosso.message}
+                    </span>
+                  )}
                 </div>
               </div>
             </div>
@@ -1034,34 +1216,58 @@ export function PropostaForm({ proposta, isEdit }: PropostaFormProps) {
                   <Input.Root className="mt-2">
                     <Input.Control type="number" {...register("percentualComissao", { valueAsNumber: true })} />
                   </Input.Root>
+                  {errors.percentualComissao && (
+                    <span className="text-xs text-red-500">
+                      {errors.percentualComissao.message}
+                    </span>
+                  )}
                 </div>
-                <SelectInput
-                  label="Comissão Sobre *"
-                  field_name="comissaoSobre"
-                  value={formData.comissaoSobre}
-                  onChange={(e) => setValue("comissaoSobre", e.target.value as any)}
-                  options={[
-                    { text: "Prêmio Líquido", value: "Premio Liquido" },
-                    { text: "Prêmio Comercial", value: "Premio Comercial" },
-                    { text: "Prêmio Total", value: "Premio Total" },
-                  ]}
-                />
-                <SelectInput
-                  label="Forma de Comissão *"
-                  field_name="formaComissao"
-                  value={formData.formaComissao}
-                  onChange={(e) => setValue("formaComissao", e.target.value as any)}
-                  options={[
-                    { text: "Na Parcela", value: "Na Parcela" },
-                    { text: "Antecipado", value: "Antecipado" },
-                    { text: "Recorrência", value: "Recorrencia" },
-                  ]}
-                />
+                <div>
+                  <SelectInput
+                    label="Comissão Sobre *"
+                    field_name="comissaoSobre"
+                    value={formData.comissaoSobre}
+                    onChange={(e) => setValue("comissaoSobre", e.target.value as any)}
+                    options={[
+                      { text: "Prêmio Líquido", value: "Premio Liquido" },
+                      { text: "Prêmio Comercial", value: "Premio Comercial" },
+                      { text: "Prêmio Total", value: "Premio Total" },
+                    ]}
+                  />
+                  {errors.comissaoSobre && (
+                    <span className="text-xs text-red-500">
+                      {errors.comissaoSobre.message}
+                    </span>
+                  )}
+                </div>
+                <div>
+                  <SelectInput
+                    label="Forma de Comissão *"
+                    field_name="formaComissao"
+                    value={formData.formaComissao}
+                    onChange={(e) => setValue("formaComissao", e.target.value as any)}
+                    options={[
+                      { text: "Na Parcela", value: "Na Parcela" },
+                      { text: "Antecipado", value: "Antecipado" },
+                      { text: "Recorrência", value: "Recorrencia" },
+                    ]}
+                  />
+                  {errors.formaComissao && (
+                    <span className="text-xs text-red-500">
+                      {errors.formaComissao.message}
+                    </span>
+                  )}
+                </div>
                 <div>
                   <label>Valor de Comissão</label>
                   <Input.Root className="mt-2">
-                    <Input.Control type="number" value={formData.valorComissao} disabled />
+                    <Input.Control type="number" value={formData.valorComissao} disabled variant="disabled" />
                   </Input.Root>
+                  {errors.valorComissao && (
+                    <span className="text-xs text-red-500">
+                      {errors.valorComissao.message}
+                    </span>
+                  )}
                 </div>
               </div>
             </div>
@@ -1074,18 +1280,33 @@ export function PropostaForm({ proposta, isEdit }: PropostaFormProps) {
                   <Input.Root className="mt-2">
                     <Input.Control type="number" {...register("premioLiquido", { valueAsNumber: true })} />
                   </Input.Root>
+                  {errors.premioLiquido && (
+                    <span className="text-xs text-red-500">
+                      {errors.premioLiquido.message}
+                    </span>
+                  )}
                 </div>
                 <div>
                   <label>Valores Adicionais</label>
                   <Input.Root className="mt-2">
                     <Input.Control type="number" {...register("valoresAdicionais", { valueAsNumber: true })} />
                   </Input.Root>
+                  {errors.valoresAdicionais && (
+                    <span className="text-xs text-red-500">
+                      {errors.valoresAdicionais.message}
+                    </span>
+                  )}
                 </div>
                 <div>
                   <label>IOF</label>
                   <Input.Root className="mt-2">
                     <Input.Control type="number" {...register("iof", { valueAsNumber: true })} />
                   </Input.Root>
+                  {errors.iof && (
+                    <span className="text-xs text-red-500">
+                      {errors.iof.message}
+                    </span>
+                  )}
                 </div>
               </div>
               {formData.parcelas.length > 0 && (
@@ -1102,7 +1323,7 @@ export function PropostaForm({ proposta, isEdit }: PropostaFormProps) {
                 onClick={() => {
                   const newRepasse = {
                     produtorId: "",
-                    percentualRepasse: 0,
+                    percentualRepasse: undefined,
                     repasseSobre: "Premio Liquido" as const,
                     formaRepasse: "No recebimento" as const,
                   }
@@ -1130,17 +1351,24 @@ export function PropostaForm({ proposta, isEdit }: PropostaFormProps) {
                       </button>
                     </div>
                     <div className="grid grid-cols-2 gap-4">
-                      <SelectInput
-                        label="Produtor *"
-                        field_name={`repasses.${index}.produtorId`}
-                        value={repasse.produtorId}
-                        onChange={(e) => {
-                          const newRepasses = [...formData.repasses]
-                          newRepasses[index].produtorId = e.target.value
-                          setValue("repasses", newRepasses)
-                        }}
-                        options={produtores?.data?.map((p) => ({ text: p.nome, value: p.id })) || []}
-                      />
+                      <div>
+                        <SelectInput
+                          label="Produtor *"
+                          field_name={`repasses.${index}.produtorId`}
+                          value={repasse.produtorId}
+                          onChange={(e) => {
+                            const newRepasses = [...formData.repasses]
+                            newRepasses[index].produtorId = e.target.value
+                            setValue("repasses", newRepasses)
+                          }}
+                          options={produtores?.data?.map((p) => ({ text: p.nome, value: p.id })) || []}
+                        />
+                        {errors.repasses?.[index]?.produtorId && (
+                          <span className="text-xs text-red-500">
+                            {errors.repasses[index].produtorId.message}
+                          </span>
+                        )}
+                      </div>
                       <div>
                         <label>% Repasse *</label>
                         <Input.Root className="mt-2">
@@ -1149,38 +1377,57 @@ export function PropostaForm({ proposta, isEdit }: PropostaFormProps) {
                             {...register(`repasses.${index}.percentualRepasse` as any, { valueAsNumber: true })}
                           />
                         </Input.Root>
+                        {errors.repasses?.[index]?.percentualRepasse && (
+                          <span className="text-xs text-red-500">
+                            {errors.repasses[index].percentualRepasse.message}
+                          </span>
+                        )}
                       </div>
-                      <SelectInput
-                        label="Repasse Sobre *"
-                        field_name={`repasses.${index}.repasseSobre`}
-                        value={repasse.repasseSobre}
-                        onChange={(e) => {
-                          const newRepasses = [...formData.repasses]
-                          newRepasses[index].repasseSobre = e.target.value as any
-                          setValue("repasses", newRepasses)
-                        }}
-                        options={[
-                          { text: "Prêmio Líquido", value: "Premio Liquido" },
-                          { text: "Comissão da Corretora", value: "Comissão da Corretora" },
-                          { text: "Valor Fixo", value: "Valor Fixo" },
-                        ]}
-                      />
-                      <SelectInput
-                        label="Forma de Repasse *"
-                        field_name={`repasses.${index}.formaRepasse`}
-                        value={repasse.formaRepasse}
-                        onChange={(e) => {
-                          const newRepasses = [...formData.repasses]
-                          newRepasses[index].formaRepasse = e.target.value as any
-                          setValue("repasses", newRepasses)
-                        }}
-                        options={[
-                          { text: "No recebimento", value: "No recebimento" },
-                          { text: "Antecipado 1a parcela", value: "Antecipado 1a parcela" },
-                          { text: "Antecipado parcela", value: "Antecipado parcela" },
-                          { text: "Antecipado emissão", value: "Antecipado emissão" },
-                        ]}
-                      />
+                      <div>
+                        <SelectInput
+                          label="Repasse Sobre *"
+                          field_name={`repasses.${index}.repasseSobre`}
+                          value={repasse.repasseSobre}
+                          onChange={(e) => {
+                            const newRepasses = [...formData.repasses]
+                            newRepasses[index].repasseSobre = e.target.value as any
+                            setValue("repasses", newRepasses)
+                          }}
+                          options={[
+                            { text: "Prêmio Líquido", value: "Premio Liquido" },
+                            { text: "Comissão da Corretora", value: "Comissão da Corretora" },
+                            { text: "Valor Fixo", value: "Valor Fixo" },
+                          ]}
+                        />
+                        {errors.repasses?.[index]?.repasseSobre && (
+                          <span className="text-xs text-red-500">
+                            {errors.repasses[index].repasseSobre.message}
+                          </span>
+                        )}
+                      </div>
+                      <div>
+                        <SelectInput
+                          label="Forma de Repasse *"
+                          field_name={`repasses.${index}.formaRepasse`}
+                          value={repasse.formaRepasse}
+                          onChange={(e) => {
+                            const newRepasses = [...formData.repasses]
+                            newRepasses[index].formaRepasse = e.target.value as any
+                            setValue("repasses", newRepasses)
+                          }}
+                          options={[
+                            { text: "No recebimento", value: "No recebimento" },
+                            { text: "Antecipado 1a parcela", value: "Antecipado 1a parcela" },
+                            { text: "Antecipado parcela", value: "Antecipado parcela" },
+                            { text: "Antecipado emissão", value: "Antecipado emissão" },
+                          ]}
+                        />
+                        {errors.repasses?.[index]?.formaRepasse && (
+                          <span className="text-xs text-red-500">
+                            {errors.repasses[index].formaRepasse.message}
+                          </span>
+                        )}
+                      </div>
                     </div>
                   </div>
                 ))}
