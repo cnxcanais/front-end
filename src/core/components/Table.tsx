@@ -45,39 +45,38 @@ export function Table<T>({
                   </tr>
                 </thead>
                 <tbody className="divide-y divide-gray-200 bg-white">
-                  {data.map((row, rowIndex) => (
-                    <tr key={rowIndex}>
-                      {columns.map((column) => (
-                        <td
-                          key={column.header}
-                          className="no-scrollbar max-w-96 overflow-x-auto whitespace-nowrap px-3 py-4 text-sm text-gray-500">
-                          {column.render ?
-                            column.render(
-                              column.accessor2 && row[column.accessor] ?
-                                row[column.accessor][column.accessor2]
-                              : row[column.accessor],
-                              row
-                            )
-                          : column.accessor2 && row[column.accessor] ?
-                            row[column.accessor][column.accessor2]
-                          : row[column.accessor]}
-                        </td>
-                      ))}
-                    </tr>
-                  ))}
-                  {expandedRowId && expandedRowContent && (
-                    <>
-                      {data.map((row, rowIndex) =>
-                        expandedRowId === (row as any)._id ? (
-                          <tr key={`expanded-${rowIndex}`}>
-                            <td colSpan={columns.length} className="px-3 py-3 bg-gray-50">
-                              {expandedRowContent(row)}
-                            </td>
-                          </tr>
-                        ) : null
-                      )}
-                    </>
-                  )}
+                  {data.flatMap((row, rowIndex) => {
+                    const rows = [
+                      <tr key={`row-${rowIndex}-${(row as any)._id}`}>
+                        {columns.map((column) => (
+                          <td
+                            key={column.header}
+                            className="no-scrollbar max-w-96 overflow-x-auto whitespace-nowrap px-3 py-4 text-sm text-gray-500">
+                            {column.render ?
+                              column.render(
+                                column.accessor2 && row[column.accessor] ?
+                                  row[column.accessor][column.accessor2]
+                                : row[column.accessor],
+                                row
+                              )
+                            : column.accessor2 && row[column.accessor] ?
+                              row[column.accessor][column.accessor2]
+                            : row[column.accessor]}
+                          </td>
+                        ))}
+                      </tr>,
+                    ]
+                    if (expandedRowId === (row as any)._id && expandedRowContent) {
+                      rows.push(
+                        <tr key={`expanded-${rowIndex}-${(row as any)._id}`}>
+                          <td colSpan={columns.length} className="bg-gray-50 px-3 py-3 pb-6">
+                            {expandedRowContent(row)}
+                          </td>
+                        </tr>
+                      )
+                    }
+                    return rows
+                  })}
                 </tbody>
               </table>
             </div>
