@@ -273,8 +273,8 @@ export const exportNoPagination = (filename?: string) => {
 
   const fileName =
     filename ?
-      `${filename}-${new Date().toLocaleDateString("pt-BR").replace(/\//g, "-")}`
-    : "Tabela exportada"
+      `${filename}-${new Date().toLocaleDateString("pt-BR").replace(/\//g, "-")}.xlsx`
+    : "Tabela exportada.xlsx"
 
   const wb = XLSX.utils.book_new()
   XLSX.utils.book_append_sheet(wb, ws, "Tabela 1")
