@@ -3,6 +3,7 @@ import {
   BuildingOffice,
   Buildings,
   IdentificationBadge,
+  Package,
   Suitcase,
   Tag,
   User,
@@ -56,6 +57,12 @@ export const sidebar_options: SidebarOptionProps[] = [
     name: "Ramos",
     href: "/ramos",
     Icon: Tag,
+    group: "Cadastros",
+  },
+  {
+    name: "Produtos",
+    href: "/produtos",
+    Icon: Package,
     group: "Cadastros",
   },
 ]
