@@ -290,9 +290,6 @@ export function PropostaForm({ proposta, isEdit }: PropostaFormProps) {
     }
   }
 
-  console.log(errors)
-  console.log(getValues())
-
   const handlePrevTab = () => {
     setActiveTab((prev) => Math.max(prev - 1, 0))
   }
@@ -704,7 +701,9 @@ export function PropostaForm({ proposta, isEdit }: PropostaFormProps) {
                 <Input.Root className="mt-2">
                   <Input.Control
                     type="number"
-                    {...register("valoresAdicionais", { setValueAs: v => v === "" ? null : Number(v) })}
+                    {...register("valoresAdicionais", {
+                      setValueAs: (v) => (v === "" ? null : Number(v)),
+                    })}
                   />
                 </Input.Root>
               </div>
@@ -713,7 +712,9 @@ export function PropostaForm({ proposta, isEdit }: PropostaFormProps) {
                 <Input.Root className="mt-2">
                   <Input.Control
                     type="number"
-                    {...register("iof", { setValueAs: v => v === "" ? null : Number(v) })}
+                    {...register("iof", {
+                      setValueAs: (v) => (v === "" ? null : Number(v)),
+                    })}
                   />
                 </Input.Root>
               </div>
@@ -1003,7 +1004,7 @@ export function PropostaForm({ proposta, isEdit }: PropostaFormProps) {
 
       {((activeTab === 6 && !isAutomovelRamo) ||
         (activeTab === 7 && isAutomovelRamo)) && (
-        <div className="space-y-4">
+        <>
           <div className="rounded-lg bg-gray-50 p-6">
             <h3 className="mb-4 text-lg font-semibold">Proposta</h3>
             <div className="grid grid-cols-2 gap-4">
@@ -1415,7 +1416,9 @@ export function PropostaForm({ proposta, isEdit }: PropostaFormProps) {
                 <Input.Root className="mt-2">
                   <Input.Control
                     type="number"
-                    {...register("valoresAdicionais", { setValueAs: v => v === "" ? null : Number(v) })}
+                    {...register("valoresAdicionais", {
+                      setValueAs: (v) => (v === "" ? null : Number(v)),
+                    })}
                   />
                 </Input.Root>
                 {errors.valoresAdicionais && (
@@ -1429,7 +1432,9 @@ export function PropostaForm({ proposta, isEdit }: PropostaFormProps) {
                 <Input.Root className="mt-2">
                   <Input.Control
                     type="number"
-                    {...register("iof", { setValueAs: v => v === "" ? null : Number(v) })}
+                    {...register("iof", {
+                      setValueAs: (v) => (v === "" ? null : Number(v)),
+                    })}
                   />
                 </Input.Root>
                 {errors.iof && (
@@ -1589,7 +1594,7 @@ export function PropostaForm({ proposta, isEdit }: PropostaFormProps) {
               </div>
             }
           </div>
-        </div>
+        </>
       )}
 
       <div className="flex justify-between">
