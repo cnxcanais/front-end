@@ -1,0 +1,8 @@
+export { PropostaTab } from "./PropostaTab"
+export { VeiculoTab } from "./VeiculoTab"
+export { VigenciaTab } from "./VigenciaTab"
+export { ApoliceEndossoTab } from "./ApoliceEndossoTab"
+export { PremioParcelasTab } from "./PremioParcelasTab"
+export { ComissaoTab } from "./ComissaoTab"
+export { RepassesTab } from "./RepassesTab"
+export { RevisaoTab } from "./RevisaoTab"
