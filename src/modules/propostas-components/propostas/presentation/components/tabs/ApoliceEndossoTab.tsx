@@ -1,5 +1,5 @@
-import { Input } from "@/components/ui/input"
-import { SelectInput } from "@/components/ui/select-input"
+import * as Input from "@/core/components/Input"
+import { SelectInput } from "@/core/components/SelectInput"
 
 interface ApoliceEndossoTabProps {
   register: any

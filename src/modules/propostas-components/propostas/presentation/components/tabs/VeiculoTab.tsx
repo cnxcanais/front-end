@@ -1,4 +1,4 @@
-import { Input } from "@/components/ui/input"
+import * as Input from "@/core/components/Input"
 
 interface VeiculoTabProps {
   register: any
