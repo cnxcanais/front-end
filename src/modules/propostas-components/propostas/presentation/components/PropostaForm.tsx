@@ -153,7 +153,6 @@ export function PropostaForm({ proposta, isEdit }: PropostaFormProps) {
       const dataVencimento = addMonthsToDate(vencimentoPrimeiraParcela, i)
         .toISOString()
         .slice(0, 10)
-      console.log("loop:" + i + " " + dataPrimeiroVencimento)
 
       return {
         numeroParcela: i + 1,
@@ -165,8 +164,6 @@ export function PropostaForm({ proposta, isEdit }: PropostaFormProps) {
         situacao: "Pendente",
       }
     })
-
-    console.log(parcelas)
 
     setValue("parcelas", parcelas)
     setShowParcelasModal(false)
