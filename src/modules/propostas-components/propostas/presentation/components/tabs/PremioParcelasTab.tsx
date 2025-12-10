@@ -1,12 +1,16 @@
 import { Button } from "@/core/components/Button"
 import * as Input from "@/core/components/Input"
+import { FieldErrors, UseFormRegister, UseFormSetValue } from "react-hook-form"
+import { toast } from "sonner"
+import { PropostaFormSchema } from "../../validation/schema"
 
 interface PremioParcelasTabProps {
-  register: any
-  errors: any
-  formData: any
-  setValue: any
+  register: UseFormRegister<PropostaFormSchema>
+  errors: FieldErrors<PropostaFormSchema>
+  formData: PropostaFormSchema
+  setValue: UseFormSetValue<PropostaFormSchema>
   setShowParcelasModal: (show: boolean) => void
+  premioLiquido: number
 }
 
 export function PremioParcelasTab({
@@ -15,7 +19,17 @@ export function PremioParcelasTab({
   formData,
   setValue,
   setShowParcelasModal,
+  premioLiquido,
 }: PremioParcelasTabProps) {
+  const handleOpenParcelaModal = () => {
+    console.log(premioLiquido)
+    if (!premioLiquido) {
+      toast.error("Defina o valor do prêmio líquido")
+      return
+    }
+    setShowParcelasModal(true)
+  }
+
   return (
     <div className="space-y-4">
       <div className="grid grid-cols-3 gap-4">
@@ -57,9 +71,7 @@ export function PremioParcelasTab({
           </Input.Root>
         </div>
       </div>
-      <Button onClick={() => setShowParcelasModal(true)}>
-        Gerar Parcelas
-      </Button>
+      <Button onClick={handleOpenParcelaModal}>Gerar Parcelas</Button>
       {formData.parcelas.length > 0 && (
         <div className="mt-4">
           <h4 className="mb-2 font-semibold">Parcelas</h4>

@@ -456,6 +456,7 @@ export function PropostaForm({ proposta, isEdit }: PropostaFormProps) {
             formData={formData}
             setValue={setValue}
             setShowParcelasModal={setShowParcelasModal}
+            premioLiquido={getValues("premioLiquido")}
           />
         )}
 
