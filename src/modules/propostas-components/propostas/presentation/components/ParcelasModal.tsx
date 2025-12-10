@@ -6,7 +6,9 @@ import { Dispatch, SetStateAction } from "react"
 
 type Props = {
   numParcelasInput: string
+  dataPrimeiroVencimento: string
   setNumParcelasInput: Dispatch<SetStateAction<string>>
+  setDataPrimeiroVencimento: Dispatch<SetStateAction<string>>
   setShowParcelasModal: Dispatch<SetStateAction<boolean>>
   handleGenerateParcelas: () => void
 }
@@ -16,6 +18,8 @@ export function ParcelasModal({
   setNumParcelasInput,
   setShowParcelasModal,
   handleGenerateParcelas,
+  dataPrimeiroVencimento,
+  setDataPrimeiroVencimento,
 }: Props) {
   return (
     <div className="bg-black fixed inset-0 z-50 flex items-center justify-center bg-opacity-50">
@@ -32,6 +36,17 @@ export function ParcelasModal({
               value={numParcelasInput}
               onChange={(e) => setNumParcelasInput(e.target.value)}
               placeholder="Digite o número de parcelas"
+              autoFocus
+            />
+          </Input.Root>
+          <label className="mb-2 mt-2 block text-sm font-medium">
+            Vencimento da primeira parcela
+          </label>
+          <Input.Root className="mt-2">
+            <Input.Control
+              type="date"
+              value={dataPrimeiroVencimento}
+              onChange={(e) => setDataPrimeiroVencimento(e.target.value)}
               autoFocus
             />
           </Input.Root>

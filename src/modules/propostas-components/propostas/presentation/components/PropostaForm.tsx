@@ -1,6 +1,7 @@
 "use client"
 
 import { Button } from "@/core/components/Button"
+import { addMonthsToDate } from "@/core/utils/dateFunctions"
 import { useCorretoraQuery } from "@/modules/corretoras-components/corretora/infra/hooks/use-corretora-query"
 import { useProdutorQuery } from "@/modules/produtores-components/produtor/infra/hooks/use-produtor-query"
 import { useProdutoQuery } from "@/modules/produtos-components/produtos/infra/hooks/use-produto-query"
@@ -36,6 +37,7 @@ export function PropostaForm({ proposta, isEdit }: PropostaFormProps) {
   const [activeTab, setActiveTab] = useState(0)
   const [showParcelasModal, setShowParcelasModal] = useState(false)
   const [numParcelasInput, setNumParcelasInput] = useState("")
+  const [dataPrimeiroVencimento, setDataPrimeiroVencimento] = useState("")
 
   const {
     register,
@@ -134,6 +136,7 @@ export function PropostaForm({ proposta, isEdit }: PropostaFormProps) {
 
   const handleGenerateParcelas = () => {
     const numParcelas = Number(numParcelasInput)
+    const vencimentoPrimeiraParcela = new Date(dataPrimeiroVencimento)
     if (!numParcelas || numParcelas < 1) {
       toast.error("Informe um número válido de parcelas")
       return
@@ -146,15 +149,24 @@ export function PropostaForm({ proposta, isEdit }: PropostaFormProps) {
     const valorParcela = premioTotal / numParcelas
     const valorLiquido = Number(formData.premioLiquido) / numParcelas
 
-    const parcelas = Array.from({ length: numParcelas }, (_, i) => ({
-      numeroParcela: i + 1,
-      valor: valorParcela,
-      valorLiquido: valorLiquido,
-      dataVencimento: "",
-      percentualCorretora: formData.percentualComissao ?? null,
-      previsaoRecebimento: "",
-      situacao: "Pendente",
-    }))
+    const parcelas = Array.from({ length: numParcelas }, (_, i) => {
+      const dataVencimento = addMonthsToDate(vencimentoPrimeiraParcela, i)
+        .toISOString()
+        .slice(0, 10)
+      console.log("loop:" + i + " " + dataPrimeiroVencimento)
+
+      return {
+        numeroParcela: i + 1,
+        valor: valorParcela,
+        valorLiquido: valorLiquido,
+        dataVencimento: dataVencimento,
+        percentualCorretora: formData.percentualComissao ?? null,
+        previsaoRecebimento: dataVencimento,
+        situacao: "Pendente",
+      }
+    })
+
+    console.log(parcelas)
 
     setValue("parcelas", parcelas)
     setShowParcelasModal(false)
@@ -516,6 +528,8 @@ export function PropostaForm({ proposta, isEdit }: PropostaFormProps) {
           setNumParcelasInput={setNumParcelasInput}
           setShowParcelasModal={setShowParcelasModal}
           handleGenerateParcelas={handleGenerateParcelas}
+          setDataPrimeiroVencimento={setDataPrimeiroVencimento}
+          dataPrimeiroVencimento={dataPrimeiroVencimento}
         />
       )}
     </div>
