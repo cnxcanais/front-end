@@ -4,6 +4,7 @@ import { Button } from "@/core/components/Button"
 import { FilterField, FilterForm } from "@/core/components/FilterForm"
 import { LoadingScreen } from "@/core/components/LoadingScreen"
 import { Modal } from "@/core/components/Modals/Modal"
+import { ModalFilesTrigger } from "@/core/components/Modals/ModalFiles/ModalFilesTrigger"
 import { Pagination } from "@/core/components/Pagination"
 import { Table } from "@/core/components/Table"
 import { useCorretoraQuery } from "@/modules/corretoras-components/corretora/infra/hooks/use-corretora-query"
@@ -252,6 +253,13 @@ export function PropostasTable() {
           : <div className="h-8 w-8" />}
           <span>{getSeguradoraName(value)}</span>
         </div>
+      ),
+    },
+    {
+      header: "Arquivos",
+      accessor: "id",
+      render: (value: string) => (
+        <ModalFilesTrigger entityId={value} entityType={"proposta-apolice"} />
       ),
     },
     {

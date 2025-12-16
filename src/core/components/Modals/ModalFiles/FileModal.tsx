@@ -12,7 +12,12 @@ type FileModalProps = {
   open: boolean
   onClose: (open: boolean) => void
   entityId: string
-  entityType: "seguradora" | "produtor" | "corretora" | "segurado"
+  entityType:
+    | "seguradora"
+    | "produtor"
+    | "corretora"
+    | "segurado"
+    | "proposta-apolice"
 }
 
 export function FileModal({

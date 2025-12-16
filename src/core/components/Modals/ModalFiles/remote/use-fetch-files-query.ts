@@ -3,7 +3,12 @@ import { fetchFiles } from "./fetch-files"
 
 type UseFetchFilesQueryProps = {
   entityId: string
-  entityType: "seguradora" | "produtor" | "corretora" | "segurado"
+  entityType:
+    | "seguradora"
+    | "produtor"
+    | "corretora"
+    | "segurado"
+    | "proposta-apolice"
 }
 
 export function useFetchFilesQuery({

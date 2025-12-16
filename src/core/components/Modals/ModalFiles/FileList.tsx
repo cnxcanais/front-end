@@ -8,7 +8,12 @@ import { toast } from "sonner"
 import { useFetchFilesQuery } from "./remote/use-fetch-files-query"
 
 type FileListProps = {
-  entityType: "seguradora" | "produtor" | "corretora" | "segurado"
+  entityType:
+    | "seguradora"
+    | "produtor"
+    | "corretora"
+    | "segurado"
+    | "proposta-apolice"
   entityId: string
 }
 
