@@ -78,3 +78,19 @@ export async function removeProposta(id: string) {
     throw error
   }
 }
+
+export async function exportPropostas(filters?: Record<string, string>) {
+  try {
+    const response = await bffApi.get("/propostas-apolices/export", {
+      params: filters,
+      responseType: "blob",
+    })
+    return response.data
+  } catch (error: any) {
+    toast.error(
+      "Erro ao exportar propostas: " + error?.response?.data?.message ||
+        "Erro ao exportar propostas"
+    )
+    throw error
+  }
+}

@@ -88,7 +88,12 @@ export function RevisaoTab({
               label="Produtor *"
               field_name="produtorId"
               value={formData.produtorId}
-              onChange={(e) => setValue("produtorId", e.target.value)}
+              onChange={(e) => {
+                const produtorId = e.target.value
+                setValue("produtorId", produtorId)
+                const corretoraId = produtores?.data?.find((p: any) => p.id === produtorId)?.corretoraId
+                if (corretoraId) setValue("corretoraId", corretoraId)
+              }}
               options={
                 produtores?.data?.map((p: any) => ({
                   text: p.nome,
@@ -105,8 +110,12 @@ export function RevisaoTab({
           <div>
             <SelectInput
               label="Corretora *"
+              disabled
               field_name="corretoraId"
-              value={formData.corretoraId}
+              value={
+                produtores?.data?.find((p: any) => p.id === formData.produtorId)
+                  ?.corretoraId || ""
+              }
               onChange={(e) => setValue("corretoraId", e.target.value)}
               options={
                 corretoras?.data?.map((c: any) => ({

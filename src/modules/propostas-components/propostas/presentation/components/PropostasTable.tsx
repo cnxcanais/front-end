@@ -12,7 +12,7 @@ import { useCorretoraQuery } from "@/modules/corretoras-components/corretora/inf
 import { useProdutorQuery } from "@/modules/produtores-components/produtor/infra/hooks/use-produtor-query"
 import { useProdutoQuery } from "@/modules/produtos-components/produtos/infra/hooks/use-produto-query"
 import { usePropostaQuery } from "@/modules/propostas-components/propostas/infra/hooks/use-proposta-query"
-import { removeProposta } from "@/modules/propostas-components/propostas/infra/remote"
+import { removeProposta, exportPropostas } from "@/modules/propostas-components/propostas/infra/remote"
 import { useRamoQuery } from "@/modules/ramos-components/ramos/infra/hooks/use-ramo-query"
 import { useSeguradoraQuery } from "@/modules/seguradoras-components/seguradora/infra/hooks/use-seguradora-query"
 import { useSeguradoQuery } from "@/modules/segurados-components/segurado/infra/hooks/use-segurado-query"
@@ -21,6 +21,7 @@ import { useRouter } from "next/navigation"
 import { useEffect, useMemo, useState } from "react"
 import { toast } from "sonner"
 import { DashboardIndicators } from "./DashboardIndicators"
+import { ExportPropostasModal } from "./ExportPropostasModal"
 
 export function PropostasTable() {
   const [page, setPage] = useState(1)
@@ -35,6 +36,7 @@ export function PropostasTable() {
   const [filteredResults, setFilteredResults] = useState([])
   const [produtosOptions, setProdutosOptions] = useState([])
   const [expandedIds, setExpandedIds] = useState<string[]>([])
+  const [openExportModal, setOpenExportModal] = useState(false)
 
   const { data: segurados } = useSeguradoQuery(1, 100)
   const { data: corretoras } = useCorretoraQuery(1, 100)
@@ -123,6 +125,27 @@ export function PropostasTable() {
       toast.error(message)
     } finally {
       setOpen(false)
+    }
+  }
+
+  const handleExport = async (exportFilters: Record<string, string>) => {
+    try {
+      const blob = await exportPropostas(exportFilters)
+      const csvBlob = new Blob([blob], { type: "text/csv;charset=utf-8;" })
+      const url = window.URL.createObjectURL(csvBlob)
+      const link = document.createElement("a")
+      link.href = url
+      link.setAttribute(
+        "download",
+        `propostas-${new Date().toLocaleDateString("pt-BR").replace(/\//g, "-")}.csv`
+      )
+      document.body.appendChild(link)
+      link.click()
+      link.remove()
+      window.URL.revokeObjectURL(url)
+      toast.success("Propostas exportadas com sucesso!")
+    } catch (error) {
+      console.error("Erro ao exportar propostas:", error)
     }
   }
 
@@ -438,13 +461,25 @@ export function PropostasTable() {
             <Button
               className="flex items-center gap-1"
               variant="secondary"
-              onClick={() => exportNoPagination("propostas")}>
+              onClick={() => setOpenExportModal(true)}>
               <FileXls size={22} />
               Exportar
             </Button>
           </div>
         )}
       </div>
+
+      <ExportPropostasModal
+        open={openExportModal}
+        onClose={() => setOpenExportModal(false)}
+        onExport={handleExport}
+        seguradosOptions={seguradosOptions}
+        corretorasOptions={corretorasOptions}
+        produtoresOptions={produtoresOptions}
+        seguradoresOptions={seguradoresOptions}
+        ramosOptions={ramosOptions}
+        produtosOptions={produtosOptions}
+      />
 
       {propostas.length == 0 ?
         <h2 className="mt-6 text-xl font-semibold">
