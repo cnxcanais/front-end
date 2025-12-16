@@ -6,8 +6,16 @@ const parcelaSchema = z.object({
   valor: z.number().min(0, "Valor deve ser maior ou igual a 0"),
   valorLiquido: z.number().min(0, "Valor líquido deve ser maior ou igual a 0"),
   percentualCorretora: z.preprocess(
-    (val) => (val === "" || val === null || (typeof val === "number" && isNaN(val))) ? null : val,
-    z.number().min(0, "Percentual deve ser maior ou igual a 0").max(100, "Percentual deve ser menor ou igual a 100").nullable().optional()
+    (val) =>
+      val === "" || val === null || (typeof val === "number" && isNaN(val)) ?
+        null
+      : val,
+    z
+      .number()
+      .min(0, "Percentual deve ser maior ou igual a 0")
+      .max(100, "Percentual deve ser menor ou igual a 100")
+      .nullable()
+      .optional()
   ),
   previsaoRecebimento: z
     .string()
@@ -80,7 +88,7 @@ export const propostaFormSchema = z.object({
     .max(100, "Percentual deve ser menor ou igual a 100")
     .nullable(),
   comissaoSobre: z.enum(
-    ["Premio Liquido", "Comissão da Corretora", "Valor Fixo"],
+    ["Premio Liquido", "Premio Comercial", "Premio Total"],
     {
       errorMap: () => ({ message: "Comissão sobre é obrigatória" }),
     }

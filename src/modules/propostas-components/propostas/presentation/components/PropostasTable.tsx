@@ -155,8 +155,8 @@ export function PropostasTable() {
 
   const handleImport = async (file: File) => {
     try {
-      await importPropostas(file)
-      toast.success("Propostas importadas com sucesso!")
+      const response = await importPropostas(file)
+      if (response.erros) toast.success("Propostas importadas com sucesso!")
       refetch()
     } catch (error) {
       console.error("Erro ao importar propostas:", error)
