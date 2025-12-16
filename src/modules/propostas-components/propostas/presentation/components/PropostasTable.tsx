@@ -1,18 +1,20 @@
 "use client"
 
 import { Button } from "@/core/components/Button"
-import { ExportTableToPDFButton } from "@/core/components/ExportPDFButton"
 import { FilterField, FilterForm } from "@/core/components/FilterForm"
 import { LoadingScreen } from "@/core/components/LoadingScreen"
 import { Modal } from "@/core/components/Modals/Modal"
 import { Pagination } from "@/core/components/Pagination"
 import { Table } from "@/core/components/Table"
-import { exportNoPagination } from "@/core/utils/exportToExcel/exportNoPagination"
 import { useCorretoraQuery } from "@/modules/corretoras-components/corretora/infra/hooks/use-corretora-query"
 import { useProdutorQuery } from "@/modules/produtores-components/produtor/infra/hooks/use-produtor-query"
 import { useProdutoQuery } from "@/modules/produtos-components/produtos/infra/hooks/use-produto-query"
 import { usePropostaQuery } from "@/modules/propostas-components/propostas/infra/hooks/use-proposta-query"
-import { removeProposta, exportPropostas } from "@/modules/propostas-components/propostas/infra/remote"
+import {
+  exportPropostas,
+  importPropostas,
+  removeProposta,
+} from "@/modules/propostas-components/propostas/infra/remote"
 import { useRamoQuery } from "@/modules/ramos-components/ramos/infra/hooks/use-ramo-query"
 import { useSeguradoraQuery } from "@/modules/seguradoras-components/seguradora/infra/hooks/use-seguradora-query"
 import { useSeguradoQuery } from "@/modules/segurados-components/segurado/infra/hooks/use-segurado-query"
@@ -22,6 +24,7 @@ import { useEffect, useMemo, useState } from "react"
 import { toast } from "sonner"
 import { DashboardIndicators } from "./DashboardIndicators"
 import { ExportPropostasModal } from "./ExportPropostasModal"
+import { ImportPropostasModal } from "./ImportPropostasModal"
 
 export function PropostasTable() {
   const [page, setPage] = useState(1)
@@ -37,6 +40,7 @@ export function PropostasTable() {
   const [produtosOptions, setProdutosOptions] = useState([])
   const [expandedIds, setExpandedIds] = useState<string[]>([])
   const [openExportModal, setOpenExportModal] = useState(false)
+  const [openImportModal, setOpenImportModal] = useState(false)
 
   const { data: segurados } = useSeguradoQuery(1, 100)
   const { data: corretoras } = useCorretoraQuery(1, 100)
@@ -146,6 +150,16 @@ export function PropostasTable() {
       toast.success("Propostas exportadas com sucesso!")
     } catch (error) {
       console.error("Erro ao exportar propostas:", error)
+    }
+  }
+
+  const handleImport = async (file: File) => {
+    try {
+      await importPropostas(file)
+      toast.success("Propostas importadas com sucesso!")
+      refetch()
+    } catch (error) {
+      console.error("Erro ao importar propostas:", error)
     }
   }
 
@@ -451,13 +465,13 @@ export function PropostasTable() {
         </div>
         {propostas.length > 0 && (
           <div className="flex items-center gap-2">
-            <ExportTableToPDFButton
-              filename={`propostas.${new Date().toLocaleDateString("pt-BR").replace(/\//g, "-")}`}
-              options={{ orientation: "landscape" }}
-              title="Propostas"
-              className="bg-red-500">
-              Exportar PDF
-            </ExportTableToPDFButton>
+            <Button
+              className="flex items-center gap-1"
+              variant="secondary"
+              onClick={() => setOpenImportModal(true)}>
+              <FileXls size={22} />
+              Importar
+            </Button>
             <Button
               className="flex items-center gap-1"
               variant="secondary"
@@ -479,6 +493,12 @@ export function PropostasTable() {
         seguradoresOptions={seguradoresOptions}
         ramosOptions={ramosOptions}
         produtosOptions={produtosOptions}
+      />
+
+      <ImportPropostasModal
+        open={openImportModal}
+        onClose={() => setOpenImportModal(false)}
+        onImport={handleImport}
       />
 
       {propostas.length == 0 ?

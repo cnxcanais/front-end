@@ -94,3 +94,23 @@ export async function exportPropostas(filters?: Record<string, string>) {
     throw error
   }
 }
+
+export async function importPropostas(file: File) {
+  try {
+    const formData = new FormData()
+    formData.append("file", file)
+    formData.append("behavior", "SKIP")
+    const response = await bffApi.post("/propostas-apolices/import", formData, {
+      headers: {
+        "Content-Type": "multipart/form-data",
+      },
+    })
+    return response.data
+  } catch (error: any) {
+    toast.error(
+      "Erro ao importar propostas: " + error?.response?.data?.message ||
+        "Erro ao importar propostas"
+    )
+    throw error
+  }
+}
