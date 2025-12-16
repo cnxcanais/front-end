@@ -111,6 +111,8 @@ export function PropostasTable() {
     ramos?.data.find((r) => r.id === id)?.descricao || ""
   const getSeguradoraName = (id: string) =>
     seguradoras?.data?.find((s) => s.id === id)?.razaoSocial || ""
+  const getSeguradoraLogo = (id: string) =>
+    seguradoras?.data?.find((s) => s.id === id)?.logoUrl || ""
   const getCorretoraName = (id: string) =>
     corretoras?.data?.find((c) => c.id === id)?.razaoSocial || ""
 
@@ -239,7 +241,16 @@ export function PropostasTable() {
     {
       header: "Seguradora",
       accessor: "seguradoraId",
-      render: (value: string) => getSeguradoraName(value),
+      render: (value: string) => (
+        <div className="flex items-center gap-2">
+          {getSeguradoraLogo(value) ? (
+            <img src={getSeguradoraLogo(value)} alt="Logo" className="h-8 w-8 object-contain" />
+          ) : (
+            <div className="h-8 w-8" />
+          )}
+          <span>{getSeguradoraName(value)}</span>
+        </div>
+      ),
     },
     {
       header: "Ação",

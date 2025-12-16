@@ -15,11 +15,12 @@ import { useGrupoEconomicoQuery } from "@/modules/grupos-economicos-components/g
 import { useSeguradoraByIdQuery } from "@/modules/seguradoras-components/edit-seguradora/infra/hooks/use-seguradora-by-id-query"
 import { editSeguradora } from "@/modules/seguradoras-components/edit-seguradora/infra/remote"
 import { zodResolver } from "@hookform/resolvers/zod"
-import { MagnifyingGlass, MapPin } from "@phosphor-icons/react"
+import { Image, MagnifyingGlass, MapPin, X } from "@phosphor-icons/react"
 import { useRouter } from "next/navigation"
-import { useMemo, useState } from "react"
+import { useMemo, useRef, useState } from "react"
 import { useForm } from "react-hook-form"
 import { toast } from "sonner"
+import { uploadLogoSeguradora } from "@/modules/seguradoras-components/seguradora/infra/remote/upload-logo-seguradora"
 import {
   EditSeguradoraSchema,
   editSeguradoraFormSchema,
@@ -30,6 +31,9 @@ export function EditSeguradoraForm({ id }: { id: string }) {
 
   const [isCepSearched, setIsCepSearched] = useState(false)
   const [showMapModal, setShowMapModal] = useState(false)
+  const [logoFile, setLogoFile] = useState<File | null>(null)
+  const [logoPreview, setLogoPreview] = useState<string | null>(null)
+  const fileInputRef = useRef<HTMLInputElement>(null)
 
   const { data: gruposEconomicos } = useGrupoEconomicoQuery()
 
@@ -82,9 +86,39 @@ export function EditSeguradoraForm({ id }: { id: string }) {
     },
   })
 
+  const handleLogoChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0]
+    if (file) {
+      setLogoFile(file)
+      const reader = new FileReader()
+      reader.onloadend = () => {
+        setLogoPreview(reader.result as string)
+      }
+      reader.readAsDataURL(file)
+    }
+  }
+
+  const handleRemoveLogo = () => {
+    setLogoFile(null)
+    setLogoPreview(null)
+    if (fileInputRef.current) {
+      fileInputRef.current.value = ""
+    }
+  }
+
   async function onSubmit(data: any) {
+    if (logoFile && logoFile.size > 500 * 1024) {
+      toast.error("O logo deve ter no máximo 500KB")
+      return
+    }
+
     try {
       await editSeguradora(data as Seguradora.UpdateRequest)
+      
+      if (logoFile) {
+        await uploadLogoSeguradora(id, logoFile)
+      }
+      
       toast.success("Seguradora editada com sucesso!")
       setTimeout(() => push("/seguradoras"), 2000)
     } catch (error) {
@@ -104,6 +138,38 @@ export function EditSeguradoraForm({ id }: { id: string }) {
       <div className="flex flex-col gap-4 bg-gray-50 p-4 shadow-md">
         <h3 className="text-lg font-semibold">Dados Cadastrais</h3>
         <div className="flex gap-4">
+          <div className="flex flex-col gap-2">
+            <label>Logo</label>
+            <div className="relative">
+              <label className="flex h-32 w-32 cursor-pointer items-center justify-center rounded border-2 border-dashed border-gray-300 bg-white hover:border-blue-500">
+                {logoPreview ? (
+                  <img src={logoPreview} alt="Logo preview" className="h-full w-full object-contain" />
+                ) : seguradora.logoUrl ? (
+                  <img src={seguradora.logoUrl} alt="Logo" className="h-full w-full object-contain" />
+                ) : (
+                  <Image size={48} className="text-gray-400" />
+                )}
+                <input
+                  ref={fileInputRef}
+                  type="file"
+                  accept="image/*"
+                  onChange={handleLogoChange}
+                  className="hidden"
+                />
+              </label>
+              {(logoPreview || seguradora.logoUrl) && (
+                <button
+                  type="button"
+                  onClick={handleRemoveLogo}
+                  className="absolute -right-2 -top-2 rounded-full bg-red-500 p-1 text-white hover:bg-red-600">
+                  <X size={16} />
+                </button>
+              )}
+            </div>
+            <span className="text-xs text-gray-500">Máx: 500KB</span>
+          </div>
+          <div className="flex flex-1 flex-col gap-4">
+            <div className="flex gap-4">
           <div className="flex flex-1 flex-col gap-2">
             <label htmlFor="razaoSocial">Nome</label>
             <Input.Root variant={errors.razaoSocial ? "error" : "primary"}>
@@ -165,6 +231,8 @@ export function EditSeguradoraForm({ id }: { id: string }) {
                 {errors.grupoEconomicoId.message}
               </span>
             )}
+          </div>
+        </div>
           </div>
         </div>
       </div>
