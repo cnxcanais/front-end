@@ -1,5 +1,6 @@
 "use client"
 
+import { Segurado } from "@/@types/segurado"
 import { Button } from "@/core/components/Button"
 import { FilterField, FilterForm } from "@/core/components/FilterForm"
 import { LoadingScreen } from "@/core/components/LoadingScreen"
@@ -20,6 +21,7 @@ import { useRouter } from "next/navigation"
 import { useEffect, useMemo, useState } from "react"
 import { toast } from "sonner"
 import { ImportSeguradosModal } from "./ImportSeguradosModal"
+import { SeguradosDashboard } from "./SeguradosDashboard"
 
 export function SeguradosTable() {
   const [page, setPage] = useState(1)
@@ -35,7 +37,10 @@ export function SeguradosTable() {
   const [id, setId] = useState("")
   const [openImportModal, setOpenImportModal] = useState(false)
 
-  const [filteredResults, setFilteredResults] = useState([])
+  const [filteredResults, setFilteredResults] = useState<Segurado.Type[]>([])
+  const [dashboardFilter, setDashboardFilter] = useState<
+    Segurado.Type[] | null
+  >(null)
 
   const corretorasOptions = useMemo(() => {
     if (isLoadingCorretoras || !corretoras) return []
@@ -192,8 +197,19 @@ export function SeguradosTable() {
   }
 
   useEffect(() => {
-    if (segurados.length > 0) setFilteredResults(segurados)
-  }, [segurados])
+    if (dashboardFilter) {
+      setFilteredResults(dashboardFilter)
+    } else if (segurados.length > 0) {
+      setFilteredResults(segurados)
+    }
+  }, [segurados, dashboardFilter])
+
+  const handleDashboardFilterChange = (
+    _filterType: string,
+    data: Segurado.Type[]
+  ) => {
+    setDashboardFilter(data)
+  }
 
   if (isLoading) return <LoadingScreen />
 
@@ -219,6 +235,8 @@ export function SeguradosTable() {
         onFilter={handleFilter}
         appliedFilters={filters}
       />
+
+      <SeguradosDashboard onFilterChange={handleDashboardFilterChange} />
 
       <div className="mt-8 flex items-center justify-between">
         <div className="flex h-full gap-4">
