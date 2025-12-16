@@ -28,6 +28,7 @@ export namespace Seguradora {
     complemento: string
     createdAt: string
     updatedAt: string
+    logoUrl: string
   }
 
   export type GetResponse = {

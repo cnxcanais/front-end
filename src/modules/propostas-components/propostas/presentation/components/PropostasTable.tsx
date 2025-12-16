@@ -243,11 +243,13 @@ export function PropostasTable() {
       accessor: "seguradoraId",
       render: (value: string) => (
         <div className="flex items-center gap-2">
-          {getSeguradoraLogo(value) ? (
-            <img src={getSeguradoraLogo(value)} alt="Logo" className="h-8 w-8 object-contain" />
-          ) : (
-            <div className="h-8 w-8" />
-          )}
+          {getSeguradoraLogo(value) ?
+            <img
+              src={getSeguradoraLogo(value)}
+              alt="Logo"
+              className="h-8 w-8 object-contain"
+            />
+          : <div className="h-8 w-8" />}
           <span>{getSeguradoraName(value)}</span>
         </div>
       ),
