@@ -1,3 +1,7 @@
+import { Corretora } from "@/@types/corretora"
+import { Produtor } from "@/@types/produtor"
+import { Segurado } from "@/@types/segurado"
+import { Seguradora } from "@/@types/seguradora"
 import * as Input from "@/core/components/Input"
 import { SelectInput } from "@/core/components/SelectInput"
 
@@ -6,10 +10,10 @@ interface PropostaTabProps {
   errors: any
   formData: any
   setValue: any
-  segurados: any
-  seguradoras: any
-  produtores: any
-  corretoras: any
+  segurados: Segurado.GetResponse
+  seguradoras: Seguradora.GetResponse
+  produtores: Produtor.GetResponse
+  corretoras: Corretora.GetResponse
   ramos: any
   produtosOptions: any
 }
@@ -84,7 +88,12 @@ export function PropostaTab({
           label="Produtor *"
           field_name="produtorId"
           value={formData.produtorId}
-          onChange={(e) => setValue("produtorId", e.target.value)}
+          onChange={(e) => {
+            const produtorId = e.target.value
+            setValue("produtorId", produtorId)
+            const corretoraId = produtores?.data?.find((p) => p.id === produtorId)?.corretoraId
+            if (corretoraId) setValue("corretoraId", corretoraId)
+          }}
           options={
             produtores?.data?.map((p: any) => ({
               text: p.nome,
@@ -102,8 +111,12 @@ export function PropostaTab({
       <div>
         <SelectInput
           label="Corretora *"
+          disabled
           field_name="corretoraId"
-          value={formData.corretoraId}
+          value={
+            produtores?.data?.find((prod) => prod.id === formData.produtorId)
+              ?.corretoraId || ""
+          }
           onChange={(e) => setValue("corretoraId", e.target.value)}
           options={
             corretoras?.data?.map((c: any) => ({
