@@ -1,5 +1,6 @@
 "use client"
 
+import { Proposta } from "@/modules/propostas-components/types/proposta"
 import {
   ArrowClockwise,
   CheckCircle,
@@ -17,10 +18,52 @@ export function DashboardIndicators({
   onFilterChange,
 }: DashboardIndicatorsProps) {
   const [lastUpdated, setLastUpdated] = useState(new Date())
+  const [clickedAttribute, setClickedAttribute] = useState({
+    propostasVigentes: false,
+    propostasPendentes: false,
+    apolicesVigentes: false,
+    apolicesPendentes: false,
+    renovacoesHoje: false,
+    renovacoesProximos30: false,
+    renovacoesVencidas: false,
+  })
+
+  const handleAttributeClick = (
+    filterName: string,
+    filteredPropostas: Proposta[],
+    propostaAttribute: string
+  ) => {
+    if (clickedAttribute[propostaAttribute]) {
+      onFilterChange?.(filterName, allPropostas.data.data)
+    } else {
+      onFilterChange?.(filterName, filteredPropostas)
+    }
+    const attributeArray = Object.entries(clickedAttribute)
+    const updatedClickedState = clickedAttribute
+    for (const obj of attributeArray) {
+      console.log(`obj[0]: ${obj[0]} propostaAttribute: ${propostaAttribute}`)
+      if (obj[0] === propostaAttribute) {
+        console.log("entered truthy block")
+        console.log(
+          "I'll update this state " + JSON.stringify(updatedClickedState)
+        )
+        updatedClickedState[propostaAttribute] =
+          !clickedAttribute[propostaAttribute]
+
+        console.log("updated state: " + JSON.stringify(updatedClickedState))
+      } else {
+        updatedClickedState[propostaAttribute] = false
+      }
+    }
+
+    setClickedAttribute(updatedClickedState)
+  }
 
   const handleRefresh = () => {
     setLastUpdated(new Date())
   }
+
+  const allPropostas = usePropostaQuery(1, 100)
 
   const propostasAtivas = usePropostaQuery(1, 100, {
     situacao: "Ativo",
@@ -107,7 +150,13 @@ export function DashboardIndicators({
         <div className="grid grid-cols-2 gap-4">
           <div className="text-center">
             <button
-              onClick={() => onFilterChange?.("propostas", propostasVigentes)}
+              onClick={() =>
+                handleAttributeClick(
+                  "propostas",
+                  propostasVigentes,
+                  "propostasVigentes"
+                )
+              }
               className="transition hover:opacity-80">
               <div className="text-3xl font-bold text-green-600">
                 {propostasVigentes?.length}
@@ -117,7 +166,13 @@ export function DashboardIndicators({
           </div>
           <div className="text-center">
             <button
-              onClick={() => onFilterChange?.("propostas", propostasPendentes)}
+              onClick={() =>
+                handleAttributeClick(
+                  "propostas",
+                  propostasPendentes,
+                  "propostasPendentes"
+                )
+              }
               className="transition hover:opacity-80">
               <div className="text-3xl font-bold text-red-600">
                 {propostasPendentes?.length}
