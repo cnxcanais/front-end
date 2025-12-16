@@ -33,30 +33,20 @@ export function DashboardIndicators({
     filteredPropostas: Proposta[],
     propostaAttribute: string
   ) => {
-    if (clickedAttribute[propostaAttribute]) {
+    const isCurrentlyActive = clickedAttribute[propostaAttribute]
+    
+    if (isCurrentlyActive) {
       onFilterChange?.(filterName, allPropostas.data.data)
+      setClickedAttribute({ ...clickedAttribute, [propostaAttribute]: false })
     } else {
       onFilterChange?.(filterName, filteredPropostas)
-    }
-    const attributeArray = Object.entries(clickedAttribute)
-    const updatedClickedState = clickedAttribute
-    for (const obj of attributeArray) {
-      console.log(`obj[0]: ${obj[0]} propostaAttribute: ${propostaAttribute}`)
-      if (obj[0] === propostaAttribute) {
-        console.log("entered truthy block")
-        console.log(
-          "I'll update this state " + JSON.stringify(updatedClickedState)
+      setClickedAttribute(
+        Object.keys(clickedAttribute).reduce(
+          (acc, key) => ({ ...acc, [key]: key === propostaAttribute }),
+          {} as typeof clickedAttribute
         )
-        updatedClickedState[propostaAttribute] =
-          !clickedAttribute[propostaAttribute]
-
-        console.log("updated state: " + JSON.stringify(updatedClickedState))
-      } else {
-        updatedClickedState[propostaAttribute] = false
-      }
+      )
     }
-
-    setClickedAttribute(updatedClickedState)
   }
 
   const handleRefresh = () => {
@@ -204,7 +194,13 @@ export function DashboardIndicators({
         <div className="grid grid-cols-2 gap-4">
           <div className="text-center">
             <button
-              onClick={() => onFilterChange?.("apolices", apolicesVigentes)}
+              onClick={() =>
+                handleAttributeClick(
+                  "apolices",
+                  apolicesVigentes,
+                  "apolicesVigentes"
+                )
+              }
               className="transition hover:opacity-80">
               <div className="text-3xl font-bold text-green-600">
                 {apolicesVigentes?.length}
@@ -214,7 +210,13 @@ export function DashboardIndicators({
           </div>
           <div className="text-center">
             <button
-              onClick={() => onFilterChange?.("apolices", apolicesPendentes)}
+              onClick={() =>
+                handleAttributeClick(
+                  "apolices",
+                  apolicesPendentes,
+                  "apolicesPendentes"
+                )
+              }
               className="transition hover:opacity-80">
               <div className="text-3xl font-bold text-red-600">
                 {apolicesPendentes?.length}
@@ -246,7 +248,13 @@ export function DashboardIndicators({
         <div className="grid grid-cols-2 gap-4">
           <div className="text-center">
             <button
-              onClick={() => onFilterChange?.("renovacoes", renovacoesHoje)}
+              onClick={() =>
+                handleAttributeClick(
+                  "renovacoes",
+                  renovacoesHoje,
+                  "renovacoesHoje"
+                )
+              }
               className="transition hover:opacity-80">
               <div className="text-3xl font-bold text-orange-600">
                 {renovacoesHoje?.length}
@@ -257,7 +265,11 @@ export function DashboardIndicators({
           <div className="text-center">
             <button
               onClick={() =>
-                onFilterChange?.("renovacoes", renovacoesProximos30)
+                handleAttributeClick(
+                  "renovacoes",
+                  renovacoesProximos30,
+                  "renovacoesProximos30"
+                )
               }
               className="transition hover:opacity-80">
               <div className="text-3xl font-bold text-orange-600">
