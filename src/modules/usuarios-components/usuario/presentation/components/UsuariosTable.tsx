@@ -8,7 +8,7 @@ import { Pagination } from "@/core/components/Pagination"
 import { Table } from "@/core/components/Table"
 import { useCorretoraQuery } from "@/modules/corretoras-components/corretora/infra/hooks/use-corretora-query"
 import { usePerfilQuery } from "@/modules/perfis-components/perfis/infra/hooks/use-perfil-query"
-import { LockKey, LockKeyOpen, Pencil, Trash } from "@phosphor-icons/react"
+import { LockKey, Pencil, Trash } from "@phosphor-icons/react"
 import { useRouter } from "next/navigation"
 import { useMemo, useState } from "react"
 import { toast } from "sonner"
@@ -25,9 +25,11 @@ export function UsuariosTable() {
   const { push } = useRouter()
 
   const [open, setOpen] = useState(false)
+  const [openBlockModal, setOpenBlockModal] = useState(false)
   const [id, setId] = useState("")
+  const [userStatus, setUserStatus] = useState("")
 
-  const usuarios = data?.data?.map(item => item.props) || []
+  const usuarios = data?.data?.map((item) => item.props) || []
   const totalPages = data?.totalPages || 1
 
   const corretorasOptions = useMemo(() => {
@@ -64,23 +66,22 @@ export function UsuariosTable() {
     }
   }
 
-  const handleBlock = async (id: string) => {
+  const handleConfirmBlock = async () => {
     try {
-      await blockUsuario(id)
-      toast.success("Usuário bloqueado com sucesso!")
+      if (userStatus === "ATIVO") {
+        await blockUsuario(id)
+        toast.success("Usuário bloqueado com sucesso!")
+      } else {
+        await unblockUsuario(id)
+        toast.success("Usuário desbloqueado com sucesso!")
+      }
       refetch()
     } catch (error) {
-      toast.error("Erro ao bloquear usuário")
-    }
-  }
-
-  const handleUnblock = async (id: string) => {
-    try {
-      await unblockUsuario(id)
-      toast.success("Usuário desbloqueado com sucesso!")
-      refetch()
-    } catch (error) {
-      toast.error("Erro ao desbloquear usuário")
+      toast.error(
+        `Erro ao ${userStatus === "ATIVO" ? "bloquear" : "desbloquear"} usuário`
+      )
+    } finally {
+      setOpenBlockModal(false)
     }
   }
 
@@ -125,18 +126,15 @@ export function UsuariosTable() {
             size={24}
             onClick={() => handleEdit(value)}
           />
-          {row.bloqueadoAte ?
-            <LockKeyOpen
-              className="cursor-pointer hover:text-green-500"
-              size={24}
-              onClick={() => handleUnblock(value)}
-            />
-          : <LockKey
-              className="cursor-pointer hover:text-yellow-500"
-              size={24}
-              onClick={() => handleBlock(value)}
-            />
-          }
+          <LockKey
+            className={`cursor-pointer ${row.status === "ATIVO" ? "hover:text-yellow-500" : "text-red-500 hover:text-red-600"}`}
+            size={24}
+            onClick={() => {
+              setId(value)
+              setUserStatus(row.status)
+              setOpenBlockModal(true)
+            }}
+          />
           <Trash
             className="cursor-pointer hover:text-red-500"
             size={24}
@@ -194,6 +192,23 @@ export function UsuariosTable() {
             Confirmar
           </Button>
           <Button onClick={() => setOpen(false)} variant="tertiary">
+            Cancelar
+          </Button>
+        </div>
+      </Modal>
+
+      <Modal
+        title={
+          userStatus === "ATIVO" ? "Bloquear Usuário" : "Desbloquear Usuário"
+        }
+        content={`Você tem certeza de que deseja ${userStatus === "ATIVO" ? "bloquear" : "desbloquear"} este usuário?`}
+        onClose={() => setOpenBlockModal(false)}
+        open={openBlockModal}>
+        <div className="flex items-center justify-center gap-4">
+          <Button onClick={handleConfirmBlock} variant="secondary">
+            Confirmar
+          </Button>
+          <Button onClick={() => setOpenBlockModal(false)} variant="tertiary">
             Cancelar
           </Button>
         </div>
