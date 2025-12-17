@@ -8,6 +8,7 @@ import {
   Suitcase,
   Tag,
   User,
+  UsersFour,
 } from "@phosphor-icons/react/dist/ssr"
 
 type SidebarOptionProps = {
@@ -71,6 +72,12 @@ export const sidebar_options: SidebarOptionProps[] = [
     href: "/propostas",
     Icon: FileText,
     group: "Operações",
+  },
+  {
+    name: "Perfil de Usuário",
+    href: "/perfis",
+    Icon: UsersFour,
+    group: "Configurações",
   },
 ]
 
