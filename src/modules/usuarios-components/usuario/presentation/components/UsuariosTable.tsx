@@ -1,0 +1,234 @@
+"use client"
+
+import { Button } from "@/core/components/Button"
+import { FilterField, FilterForm } from "@/core/components/FilterForm"
+import { LoadingScreen } from "@/core/components/LoadingScreen"
+import { Modal } from "@/core/components/Modals/Modal"
+import { Pagination } from "@/core/components/Pagination"
+import { Table } from "@/core/components/Table"
+import { useCorretoraQuery } from "@/modules/corretoras-components/corretora/infra/hooks/use-corretora-query"
+import { usePerfilQuery } from "@/modules/perfis-components/perfis/infra/hooks/use-perfil-query"
+import { LockKey, LockKeyOpen, Pencil, Trash } from "@phosphor-icons/react"
+import { useRouter } from "next/navigation"
+import { useMemo, useState } from "react"
+import { toast } from "sonner"
+import { useUsuarioQuery } from "../../infra/hooks/use-usuario-query"
+import { blockUsuario, removeUsuario, unblockUsuario } from "../../infra/remote"
+
+export function UsuariosTable() {
+  const [page, setPage] = useState(1)
+  const [limit, setLimit] = useState(10)
+  const [filters, setFilters] = useState<Record<string, string>>({})
+  const { data, isLoading, refetch } = useUsuarioQuery(page, limit, filters)
+  const { data: corretoras } = useCorretoraQuery(1, 100)
+  const { data: perfis } = usePerfilQuery()
+  const { push } = useRouter()
+
+  const [open, setOpen] = useState(false)
+  const [id, setId] = useState("")
+
+  const usuarios = data?.data?.map(item => item.props) || []
+  const totalPages = data?.totalPages || 1
+
+  const corretorasOptions = useMemo(() => {
+    if (!corretoras?.data) return []
+    return corretoras.data.map((c) => ({
+      label: c.razaoSocial,
+      value: c.id,
+    }))
+  }, [corretoras])
+
+  const perfisOptions = useMemo(() => {
+    if (!perfis) return []
+    return perfis.map((p) => ({
+      label: p.nome,
+      value: p.id,
+    }))
+  }, [perfis])
+
+  const handleEdit = (id: string) => {
+    push(`/usuarios/edit/${id}`)
+  }
+
+  const handleConfirmDelete = async () => {
+    try {
+      await removeUsuario(id)
+      toast.success("Usuário removido com sucesso!")
+      refetch()
+    } catch (error) {
+      const message =
+        error?.response?.data?.message || "Erro ao remover usuário"
+      toast.error(message)
+    } finally {
+      setOpen(false)
+    }
+  }
+
+  const handleBlock = async (id: string) => {
+    try {
+      await blockUsuario(id)
+      toast.success("Usuário bloqueado com sucesso!")
+      refetch()
+    } catch (error) {
+      toast.error("Erro ao bloquear usuário")
+    }
+  }
+
+  const handleUnblock = async (id: string) => {
+    try {
+      await unblockUsuario(id)
+      toast.success("Usuário desbloqueado com sucesso!")
+      refetch()
+    } catch (error) {
+      toast.error("Erro ao desbloquear usuário")
+    }
+  }
+
+  const columns = [
+    { header: "Nome", accessor: "nome" },
+    { header: "Email", accessor: "email" },
+    {
+      header: "Status",
+      accessor: "status",
+      render: (value: string) => (
+        <span className={value === "ATIVO" ? "text-green-600" : "text-red-600"}>
+          {value}
+        </span>
+      ),
+    },
+    {
+      header: "Perfil",
+      accessor: "perfilId",
+      render: (value: string) =>
+        perfis?.find((p) => p.id === value)?.nome || "",
+    },
+    {
+      header: "Corretora",
+      accessor: "corretoraId",
+      render: (value: string) =>
+        value ?
+          corretoras?.data?.find((c) => c.id === value)?.razaoSocial || ""
+        : "-",
+    },
+    {
+      header: "Master",
+      accessor: "isMaster",
+      render: (value: boolean) => (value ? "Sim" : "Não"),
+    },
+    {
+      header: "Ações",
+      accessor: "id",
+      render: (value: string, row: any) => (
+        <div className="flex space-x-4">
+          <Pencil
+            className="cursor-pointer hover:text-blue-500"
+            size={24}
+            onClick={() => handleEdit(value)}
+          />
+          {row.bloqueadoAte ?
+            <LockKeyOpen
+              className="cursor-pointer hover:text-green-500"
+              size={24}
+              onClick={() => handleUnblock(value)}
+            />
+          : <LockKey
+              className="cursor-pointer hover:text-yellow-500"
+              size={24}
+              onClick={() => handleBlock(value)}
+            />
+          }
+          <Trash
+            className="cursor-pointer hover:text-red-500"
+            size={24}
+            onClick={() => {
+              setId(value)
+              setOpen(true)
+            }}
+          />
+        </div>
+      ),
+    },
+  ]
+
+  const filterFields: FilterField[] = [
+    { name: "search", label: "Busca", placeholder: "Buscar por nome ou email" },
+    {
+      name: "status",
+      label: "Status",
+      type: "select",
+      options: [
+        { label: "Ativo", value: "ATIVO" },
+        { label: "Inativo", value: "INATIVO" },
+      ],
+    },
+    {
+      name: "corretoraId",
+      label: "Corretora",
+      type: "select",
+      options: corretorasOptions,
+    },
+    {
+      name: "perfilId",
+      label: "Perfil",
+      type: "select",
+      options: perfisOptions,
+    },
+  ]
+
+  const handleFilter = (newFilters: Record<string, string>) => {
+    setFilters(newFilters)
+    setPage(1)
+  }
+
+  if (isLoading) return <LoadingScreen />
+
+  return (
+    <>
+      <Modal
+        title="Remover Usuário"
+        content="Você tem certeza de que deseja remover este usuário?"
+        onClose={() => setOpen(false)}
+        open={open}>
+        <div className="flex items-center justify-center gap-4">
+          <Button onClick={handleConfirmDelete} variant="secondary">
+            Confirmar
+          </Button>
+          <Button onClick={() => setOpen(false)} variant="tertiary">
+            Cancelar
+          </Button>
+        </div>
+      </Modal>
+
+      <FilterForm
+        fields={filterFields}
+        onFilter={handleFilter}
+        appliedFilters={filters}
+      />
+
+      <div className="mt-8 flex items-center justify-between">
+        <Button onClick={() => push("/usuarios/create")} variant="secondary">
+          Cadastrar
+        </Button>
+      </div>
+
+      {usuarios.length == 0 ?
+        <h2 className="mt-6 text-xl font-semibold">
+          Nenhum usuário cadastrado.
+        </h2>
+      : <>
+          <Table columns={columns} data={usuarios} />
+          <Pagination
+            page={page}
+            totalPages={totalPages}
+            limit={limit}
+            onPageChange={setPage}
+            onLimitChange={(newLimit) => {
+              setLimit(newLimit)
+              setPage(1)
+            }}
+          />
+        </>
+      }
+    </>
+  )
+}

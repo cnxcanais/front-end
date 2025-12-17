@@ -1,7 +1,7 @@
 "use client"
 
 import { removeCookie } from "@/lib/cookies"
-import { List, X } from "@phosphor-icons/react"
+import { CaretDown, CaretRight, List, X } from "@phosphor-icons/react"
 import { SignOut } from "@phosphor-icons/react/dist/ssr"
 import Image from "next/image"
 import { usePathname, useRouter } from "next/navigation"
@@ -12,6 +12,7 @@ import { SidebarItem } from "./SidebarItem"
 
 export function Sidebar() {
   const [isOpen, setIsOpen] = useState(true)
+  const [collapsedGroups, setCollapsedGroups] = useState<Record<string, boolean>>({})
   const pathname = usePathname()
   const { push } = useRouter()
 
@@ -63,20 +64,25 @@ export function Sidebar() {
               <ul role="list" className="-mx-2 space-y-1">
                 {Object.keys(sidebarGroupedByGroups).map((group) => (
                   <Fragment key={group}>
-                    <h3 className="!my-3 border-b-2 pb-0.5 text-lg font-semibold text-white">
+                    <h3 
+                      className="!my-3 flex cursor-pointer items-center gap-2 border-b-2 pb-0.5 text-lg font-semibold text-white hover:opacity-80"
+                      onClick={() => setCollapsedGroups(prev => ({ ...prev, [group]: !prev[group] }))}>
+                      {collapsedGroups[group] ? <CaretRight size={16} /> : <CaretDown size={16} />}
                       {group}
                     </h3>
-                    <div className="space-y-1">
-                      {sidebarGroupedByGroups[group].map((item) => (
-                        <SidebarItem
-                          key={item.name}
-                          href={item.href}
-                          Icon={item.Icon}
-                          name={item.name}
-                          current={pathname === item.href}
-                        />
-                      ))}
-                    </div>
+                    {!collapsedGroups[group] && (
+                      <ul className="space-y-1">
+                        {sidebarGroupedByGroups[group].map((item) => (
+                          <SidebarItem
+                            key={item.name}
+                            href={item.href}
+                            Icon={item.Icon}
+                            name={item.name}
+                            current={pathname === item.href}
+                          />
+                        ))}
+                      </ul>
+                    )}
                   </Fragment>
                 ))}
               </ul>

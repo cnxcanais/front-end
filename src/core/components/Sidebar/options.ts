@@ -20,7 +20,7 @@ type SidebarOptionProps = {
 
 export const sidebar_options: SidebarOptionProps[] = [
   {
-    name: "Perfil",
+    name: "Meu Usuário",
     href: "",
     Icon: User,
     group: "Gerenciamento",
@@ -74,10 +74,16 @@ export const sidebar_options: SidebarOptionProps[] = [
     group: "Operações",
   },
   {
-    name: "Perfil de Usuário",
+    name: "Perfil de Usuários",
     href: "/perfis",
     Icon: UsersFour,
-    group: "Configurações",
+    group: "Gerenciamento",
+  },
+  {
+    name: "Usuários",
+    href: "/usuarios",
+    Icon: User,
+    group: "Gerenciamento",
   },
 ]
 

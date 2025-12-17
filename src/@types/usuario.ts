@@ -29,6 +29,11 @@ export namespace Usuario {
     data: {
       props: Type
     }[]
+
+    totalPages: number
+    totalItems: number
+    currentPage: number
+    itemsPerPage: number
   }
 
   export type AuthResponse = {
