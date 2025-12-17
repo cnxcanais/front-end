@@ -8,13 +8,13 @@ import {
 } from "@/modules/login-components/login/presentation/validation/schema"
 import { zodResolver } from "@hookform/resolvers/zod"
 import { Eye, EyeSlash } from "@phosphor-icons/react"
-import Link from "next/link"
 import { useRouter } from "next/navigation"
 import { useState } from "react"
 import { useForm } from "react-hook-form"
 import { ClipLoader } from "react-spinners"
 import { toast } from "sonner"
 import { authenticate } from "../../infra/remote/authenticate"
+import { forgotPassword } from "../../infra/remote/forgot-password"
 
 export function LoginForm() {
   const { push } = useRouter()
@@ -24,6 +24,7 @@ export function LoginForm() {
   const {
     register,
     handleSubmit,
+    watch,
     formState: { isSubmitting, errors },
   } = useForm<LoginSchema>({
     resolver: zodResolver(loginFormSchema),
@@ -40,6 +41,15 @@ export function LoginForm() {
     } finally {
       setIsLoading(false)
     }
+  }
+
+  const handleForgotPassword = async () => {
+    const email = watch("email")
+    if (!email) {
+      toast.error("Por favor, insira seu e-mail para recuperar a senha.")
+      return
+    }
+    await forgotPassword(email)
   }
 
   return (
@@ -81,9 +91,12 @@ export function LoginForm() {
         )}
       </div>
 
-      <Link href="" className="text-xs text-yellow-100 hover:text-yellow-200">
+      <button
+        type="button"
+        onClick={handleForgotPassword}
+        className="text-left text-xs text-yellow-100 hover:text-yellow-200">
         Esqueceu sua senha? clique aqui
-      </Link>
+      </button>
 
       <Button disabled={isSubmitting} type="submit">
         {isLoading ?
