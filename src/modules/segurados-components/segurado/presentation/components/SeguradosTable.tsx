@@ -1,5 +1,7 @@
 "use client"
 
+import { EntityType } from "@/@types/enums/entityType"
+
 import { Segurado } from "@/@types/segurado"
 import { Button } from "@/core/components/Button"
 import { FilterField, FilterForm } from "@/core/components/FilterForm"
@@ -125,7 +127,7 @@ export function SeguradosTable() {
       header: "Arquivos",
       accessor: "id",
       render: (value: string) => (
-        <ModalFilesTrigger entityId={value} entityType={"segurado"} />
+        <ModalFilesTrigger entityId={value} entityType={EntityType.SEGURADO} />
       ),
     },
     {

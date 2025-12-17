@@ -1,15 +1,11 @@
+import { EntityType } from "@/@types/enums/entityType"
 import { FileModal } from "@/core/components/Modals/ModalFiles/FileModal"
 import { Paperclip } from "@phosphor-icons/react"
 import { useState } from "react"
 
 type ModalFilesTrigger = {
   entityId: string
-  entityType:
-    | "seguradora"
-    | "produtor"
-    | "corretora"
-    | "segurado"
-    | "proposta-apolice"
+  entityType: EntityType
 }
 
 export function ModalFilesTrigger({ entityId, entityType }: ModalFilesTrigger) {

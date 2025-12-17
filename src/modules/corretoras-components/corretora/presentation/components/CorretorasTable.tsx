@@ -1,5 +1,6 @@
 "use client"
 
+import { EntityType } from "@/@types/enums/entityType"
 import { Button } from "@/core/components/Button"
 import { ExportTableToPDFButton } from "@/core/components/ExportPDFButton"
 import { FilterField, FilterForm } from "@/core/components/FilterForm"
@@ -93,7 +94,7 @@ export function CorretorasTable() {
       header: "Arquivos",
       accessor: "id",
       render: (value: string) => (
-        <ModalFilesTrigger entityId={value} entityType={"corretora"} />
+        <ModalFilesTrigger entityId={value} entityType={EntityType.CORRETORA} />
       ),
     },
     {

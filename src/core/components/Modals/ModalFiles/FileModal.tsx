@@ -1,3 +1,4 @@
+import { EntityType } from "@/@types/enums/entityType"
 import { FileList } from "@/core/components/Modals/ModalFiles/FileList"
 import { FileUploadQueue } from "@/core/components/Modals/ModalFiles/FileUploadQueue"
 import {
@@ -12,12 +13,7 @@ type FileModalProps = {
   open: boolean
   onClose: (open: boolean) => void
   entityId: string
-  entityType:
-    | "seguradora"
-    | "produtor"
-    | "corretora"
-    | "segurado"
-    | "proposta-apolice"
+  entityType: EntityType
 }
 
 export function FileModal({

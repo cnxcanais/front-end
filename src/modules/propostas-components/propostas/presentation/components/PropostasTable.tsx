@@ -1,5 +1,7 @@
 "use client"
 
+import { EntityType } from "@/@types/enums/entityType"
+
 import { Button } from "@/core/components/Button"
 import { FilterField, FilterForm } from "@/core/components/FilterForm"
 import { LoadingScreen } from "@/core/components/LoadingScreen"
@@ -259,7 +261,10 @@ export function PropostasTable() {
       header: "Arquivos",
       accessor: "id",
       render: (value: string) => (
-        <ModalFilesTrigger entityId={value} entityType={"proposta-apolice"} />
+        <ModalFilesTrigger
+          entityId={value}
+          entityType={EntityType.PROPOSTA_APOLICE}
+        />
       ),
     },
     {

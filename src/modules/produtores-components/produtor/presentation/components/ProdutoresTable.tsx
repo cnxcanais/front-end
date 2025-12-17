@@ -1,5 +1,6 @@
 "use client"
 
+import { EntityType } from "@/@types/enums/entityType"
 import { Button } from "@/core/components/Button"
 import { ExportTableToPDFButton } from "@/core/components/ExportPDFButton"
 import { FilterField, FilterForm } from "@/core/components/FilterForm"
@@ -77,7 +78,7 @@ export function ProdutoresTable() {
       header: "Arquivos",
       accessor: "id",
       render: (value: string) => (
-        <ModalFilesTrigger entityId={value} entityType={"produtor"} />
+        <ModalFilesTrigger entityId={value} entityType={EntityType.PRODUTOR} />
       ),
     },
     {

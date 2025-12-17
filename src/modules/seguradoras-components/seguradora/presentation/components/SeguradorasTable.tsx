@@ -1,5 +1,7 @@
 "use client"
 
+import { EntityType } from "@/@types/enums/entityType"
+
 import { Button } from "@/core/components/Button"
 import { ExportTableToPDFButton } from "@/core/components/ExportPDFButton"
 import { FilterField, FilterForm } from "@/core/components/FilterForm"
@@ -112,13 +114,10 @@ export function SeguradorasTable() {
     {
       header: "Logo",
       accessor: "logoUrl",
-      render: (value: string) => (
-        value ? (
+      render: (value: string) =>
+        value ?
           <img src={value} alt="Logo" className="h-8 w-8 object-contain" />
-        ) : (
-          <span className="text-gray-400">-</span>
-        )
-      ),
+        : <span className="text-gray-400">-</span>,
     },
     { header: "Nome Fantasia", accessor: "fantasia" },
     { header: "Documento", accessor: "cnpjFormatado" },
@@ -129,7 +128,10 @@ export function SeguradorasTable() {
       header: "Arquivos",
       accessor: "id",
       render: (value: string) => (
-        <ModalFilesTrigger entityId={value} entityType={"seguradora"} />
+        <ModalFilesTrigger
+          entityId={value}
+          entityType={EntityType.SEGURADORA}
+        />
       ),
     },
     {

@@ -1,3 +1,4 @@
+import { EntityType } from "@/@types/enums/entityType"
 import { Button } from "@/core/components/Button"
 import { saveFile } from "@/core/components/Modals/ModalFiles/remote"
 import { formatFileSize } from "@/core/utils/format-file-size"
@@ -7,7 +8,7 @@ import { toast } from "sonner"
 import { useFetchFilesQuery } from "./remote/use-fetch-files-query"
 
 type FileUploadQueueProps = {
-  entityType: "seguradora" | "produtor" | "corretora" | "segurado"
+  entityType: EntityType
   entityId: string
 }
 

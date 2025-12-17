@@ -1,3 +1,4 @@
+import { EntityType } from "@/@types/enums/entityType"
 import { LoadingScreen } from "@/core/components/LoadingScreen"
 import { removeFile } from "@/core/components/Modals/ModalFiles/remote"
 import { SearchInput } from "@/core/components/SearchInput"
@@ -8,12 +9,7 @@ import { toast } from "sonner"
 import { useFetchFilesQuery } from "./remote/use-fetch-files-query"
 
 type FileListProps = {
-  entityType:
-    | "seguradora"
-    | "produtor"
-    | "corretora"
-    | "segurado"
-    | "proposta-apolice"
+  entityType: EntityType
   entityId: string
 }
 
