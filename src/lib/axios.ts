@@ -28,6 +28,9 @@ const cepApi = axios.create({
 
 const bffApi = axios.create({
   baseURL: process.env.NEXT_PUBLIC_BFF_API_URL,
+  headers: {
+    Authorization: `Bearer ${getUpdatedToken()}`,
+  },
 })
 
 const bancosApi = axios.create({

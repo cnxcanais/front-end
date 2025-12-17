@@ -31,6 +31,23 @@ export namespace Usuario {
     }[]
   }
 
+  export type AuthResponse = {
+    accessToken: string
+    refreshToken: string
+    expiresIn: number
+    usuario: {
+      id: string
+      nome: string
+      email: string
+      status: string
+      perfil: {
+        id: string
+        nome: string
+      }
+      isMaster: boolean
+    }
+  }
+
   export type CreateRequest = {
     nome: string
     email: string

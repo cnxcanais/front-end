@@ -45,7 +45,8 @@ export function EditPerfilForm({ id }: { id: string }) {
     <form
       className="mt-6 flex max-w-[1000px] flex-col gap-4"
       onSubmit={handleSubmit(onSubmit)}>
-      <div className="flex flex-col gap-4">
+      <div className="flex flex-col gap-4 bg-gray-50 p-4 shadow-md">
+        <h3 className="text-lg font-semibold">Dados do Perfil</h3>
         <div className="flex gap-4">
           <div className="flex flex-1 flex-col gap-2">
             <label htmlFor="nome">Nome</label>
@@ -57,7 +58,10 @@ export function EditPerfilForm({ id }: { id: string }) {
                 {errors.nome.message}
               </span>
             )}
+          </div>
 
+          <div className="flex flex-1 flex-col gap-2">
+            <label htmlFor="descricao">Descrição</label>
             <Input.Root variant={errors.descricao ? "error" : "primary"}>
               <Input.Control {...register("descricao")} type="text" />
             </Input.Root>
@@ -66,13 +70,18 @@ export function EditPerfilForm({ id }: { id: string }) {
                 {errors.descricao.message}
               </span>
             )}
+          </div>
 
-            <Input.Root variant="disabled">
-              <Input.Control
+          <div className="flex flex-col gap-2">
+            <label htmlFor="isSistema">Sistema</label>
+            <div className="flex h-10 items-center">
+              <input
                 type="checkbox"
                 defaultChecked={perfil.isSistema}
+                disabled
+                className="h-5 w-5 cursor-not-allowed rounded border-gray-300 opacity-50"
               />
-            </Input.Root>
+            </div>
           </div>
         </div>
       </div>
@@ -84,7 +93,7 @@ export function EditPerfilForm({ id }: { id: string }) {
         <Button
           type="button"
           disabled={isSubmitting}
-          onClick={() => push("/grupos-economicos")}
+          onClick={() => push("/perfis")}
           variant="tertiary">
           Voltar
         </Button>

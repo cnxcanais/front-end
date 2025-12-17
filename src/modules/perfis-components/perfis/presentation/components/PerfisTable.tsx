@@ -15,17 +15,13 @@ import { usePerfilQuery } from "../../infra/hooks/use-perfil-query"
 import { removePerfil } from "../../infra/remote"
 
 export function PerfisTable() {
-  const [page, setPage] = useState(1)
-  const [limit, setLimit] = useState(10)
   const [filters, setFilters] = useState<Record<string, string>>({})
-  const { data, isLoading, refetch } = usePerfilQuery()
+  const { data: perfis, isLoading, refetch } = usePerfilQuery()
   const { push } = useRouter()
 
   const [open, setOpen] = useState(false)
   const [id, setId] = useState("")
   const [filteredResults, setFilteredResults] = useState([])
-
-  const perfis = data?.data || []
 
   const handleEdit = (id: string) => {
     push(`/perfis/edit/${id}`)
@@ -43,6 +39,8 @@ export function PerfisTable() {
       setOpen(false)
     }
   }
+
+  console.log("perfis", perfis)
 
   const columns = [
     { header: "Nome", accessor: "nome" },
@@ -85,11 +83,10 @@ export function PerfisTable() {
 
   const handleFilter = (newFilters: Record<string, string>) => {
     setFilters(newFilters)
-    setPage(1)
   }
 
   useEffect(() => {
-    if (perfis.length > 0) setFilteredResults(perfis)
+    if (perfis?.length > 0) setFilteredResults(perfis)
   }, [perfis])
 
   if (isLoading) return <LoadingScreen />
@@ -119,9 +116,7 @@ export function PerfisTable() {
 
       <div className="mt-8 flex items-center justify-between">
         <div className="flex h-full gap-4">
-          <Button
-            onClick={() => push("/grupos-economicos/create")}
-            variant="secondary">
+          <Button onClick={() => push("/perfis/create")} variant="secondary">
             Cadastrar
           </Button>
         </div>

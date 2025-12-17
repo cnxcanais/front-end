@@ -1,7 +1,8 @@
+import { Perfil } from "@/@types/perfil"
 import { bffApi } from "@/lib/axios"
 
 export async function getPerfis() {
-  const response = await bffApi.get("/perfis")
+  const response = await bffApi.get<Perfil.GetResponse>("/perfis")
   return response.data
 }
 
