@@ -9,11 +9,12 @@ import { useRamoQuery } from "@/modules/ramos-components/ramos/infra/hooks/use-r
 import { useSeguradoraQuery } from "@/modules/seguradoras-components/seguradora/infra/hooks/use-seguradora-query"
 import { useSeguradoQuery } from "@/modules/segurados-components/segurado/infra/hooks/use-segurado-query"
 import { zodResolver } from "@hookform/resolvers/zod"
-import { useRouter } from "next/navigation"
+import { useRouter, useSearchParams } from "next/navigation"
 import { useEffect, useMemo, useState } from "react"
 import { useForm } from "react-hook-form"
 import { toast } from "sonner"
 import { Proposta } from "../../../types/proposta"
+import { usePropostaByIdQuery } from "../../infra/hooks/use-proposta-by-id-query"
 import { createProposta, updateProposta } from "../../infra/remote"
 import { propostaFormSchema, PropostaFormSchema } from "../validation/schema"
 import { ParcelasModal } from "./ParcelasModal"
@@ -34,10 +35,16 @@ interface PropostaFormProps {
 }
 
 export function PropostaForm({ proposta, isEdit }: PropostaFormProps) {
+  const searchParams = useSearchParams()
+  const duplicateFromId = searchParams.get("duplicateFrom")
+  const { data: propostaToDuplicate } = usePropostaByIdQuery(duplicateFromId)
+
   const [activeTab, setActiveTab] = useState(0)
   const [showParcelasModal, setShowParcelasModal] = useState(false)
   const [numParcelasInput, setNumParcelasInput] = useState("")
   const [dataPrimeiroVencimento, setDataPrimeiroVencimento] = useState("")
+
+  const sourceData = propostaToDuplicate || proposta
 
   const {
     register,
@@ -46,43 +53,44 @@ export function PropostaForm({ proposta, isEdit }: PropostaFormProps) {
     setValue,
     getValues,
     trigger,
+    reset,
     formState: { errors },
   } = useForm<PropostaFormSchema>({
     resolver: zodResolver(propostaFormSchema),
     defaultValues: {
-      numeroProposta: proposta?.numeroProposta || "",
-      seguradoId: proposta?.seguradoId || "",
-      corretoraId: proposta?.corretoraId || "",
-      produtorId: proposta?.produtorId || "",
-      seguradoraId: proposta?.seguradoraId || "",
-      ramoId: proposta?.ramoId || "",
-      produtoId: proposta?.produtoId || "",
-      placaVeiculo: proposta?.placaVeiculo || "",
-      chassiVeiculo: proposta?.chassiVeiculo || "",
-      modeloVeiculo: proposta?.modeloVeiculo || "",
-      marcaVeiculo: proposta?.marcaVeiculo || "",
-      anoFabricacaoVeiculo: proposta?.anoFabricacaoVeiculo || undefined,
-      anoModeloVeiculo: proposta?.anoModeloVeiculo || undefined,
-      complementoItem: proposta?.complementoItem || "",
-      tipoDocumento: proposta?.tipoDocumento || "Proposta",
-      origem: proposta?.origem || "Manual",
-      situacao: proposta?.situacao || "Ativo",
-      inicioVigencia: proposta?.inicioVigencia || "",
-      fimVigencia: proposta?.fimVigencia || "",
-      dataEmissao: proposta?.dataEmissao || "",
-      numeroApolice: proposta?.numeroApolice || "",
-      numeroEndosso: proposta?.numeroEndosso || "",
-      renovacao: proposta?.renovacao || "Renovável",
-      motivoNaoRenovacao: proposta?.motivoNaoRenovacao || "",
-      percentualComissao: proposta?.percentualComissao || undefined,
-      comissaoSobre: (proposta?.comissaoSobre as any) || "Premio Liquido",
-      formaComissao: proposta?.formaComissao || "Na Parcela",
-      valorComissao: proposta?.valorComissao || undefined,
-      premioLiquido: proposta?.premioLiquido || undefined,
-      valoresAdicionais: proposta?.valoresAdicionais || undefined,
-      iof: proposta?.iof || undefined,
+      numeroProposta: propostaToDuplicate ? "" : proposta?.numeroProposta || "",
+      seguradoId: sourceData?.seguradoId || "",
+      corretoraId: sourceData?.corretoraId || "",
+      produtorId: sourceData?.produtorId || "",
+      seguradoraId: sourceData?.seguradoraId || "",
+      ramoId: sourceData?.ramoId || "",
+      produtoId: sourceData?.produtoId || "",
+      placaVeiculo: sourceData?.placaVeiculo || "",
+      chassiVeiculo: sourceData?.chassiVeiculo || "",
+      modeloVeiculo: sourceData?.modeloVeiculo || "",
+      marcaVeiculo: sourceData?.marcaVeiculo || "",
+      anoFabricacaoVeiculo: sourceData?.anoFabricacaoVeiculo || undefined,
+      anoModeloVeiculo: sourceData?.anoModeloVeiculo || undefined,
+      complementoItem: sourceData?.complementoItem || "",
+      tipoDocumento: "Proposta",
+      origem: sourceData?.origem || "Manual",
+      situacao: "Ativo",
+      inicioVigencia: sourceData?.inicioVigencia || "",
+      fimVigencia: sourceData?.fimVigencia || "",
+      dataEmissao: sourceData?.dataEmissao || "",
+      numeroApolice: sourceData?.numeroApolice || "",
+      numeroEndosso: sourceData?.numeroEndosso || "",
+      renovacao: sourceData?.renovacao || "Renovável",
+      motivoNaoRenovacao: sourceData?.motivoNaoRenovacao || "",
+      percentualComissao: sourceData?.percentualComissao || undefined,
+      comissaoSobre: (sourceData?.comissaoSobre as any) || "Premio Liquido",
+      formaComissao: sourceData?.formaComissao || "Na Parcela",
+      valorComissao: sourceData?.valorComissao || undefined,
+      premioLiquido: sourceData?.premioLiquido || undefined,
+      valoresAdicionais: sourceData?.valoresAdicionais || undefined,
+      iof: sourceData?.iof || undefined,
       parcelas:
-        proposta?.parcelas?.map((p) => ({
+        sourceData?.parcelas?.map((p) => ({
           numeroParcela: p.numeroParcela,
           dataVencimento: p.dataVencimento,
           valor: Number(p.valor),
@@ -92,7 +100,7 @@ export function PropostaForm({ proposta, isEdit }: PropostaFormProps) {
           situacao: p.situacao,
         })) || [],
       repasses:
-        proposta?.repasses?.map((r) => ({
+        sourceData?.repasses?.map((r) => ({
           produtorId: r.produtorId,
           percentualRepasse: Number(r.percentualRepasse),
           repasseSobre: r.repasseSobre as any,
@@ -102,6 +110,7 @@ export function PropostaForm({ proposta, isEdit }: PropostaFormProps) {
   })
 
   const formData = watch()
+  console.log(errors)
 
   const { push } = useRouter()
   const { data: segurados } = useSeguradoQuery(1, 100)
@@ -125,6 +134,61 @@ export function PropostaForm({ proposta, isEdit }: PropostaFormProps) {
       setValue("fimVigencia", inicio.toISOString().split("T")[0])
     }
   }, [formData.inicioVigencia, isEdit])
+
+  useEffect(() => {
+    if (propostaToDuplicate) {
+      reset({
+        numeroProposta: "",
+        seguradoId: propostaToDuplicate.seguradoId,
+        corretoraId: propostaToDuplicate.corretoraId,
+        produtorId: propostaToDuplicate.produtorId,
+        seguradoraId: propostaToDuplicate.seguradoraId,
+        ramoId: propostaToDuplicate.ramoId,
+        produtoId: propostaToDuplicate.produtoId,
+        placaVeiculo: propostaToDuplicate.placaVeiculo,
+        chassiVeiculo: propostaToDuplicate.chassiVeiculo,
+        modeloVeiculo: propostaToDuplicate.modeloVeiculo,
+        marcaVeiculo: propostaToDuplicate.marcaVeiculo,
+        anoFabricacaoVeiculo: propostaToDuplicate.anoFabricacaoVeiculo,
+        anoModeloVeiculo: propostaToDuplicate.anoModeloVeiculo,
+        complementoItem: propostaToDuplicate.complementoItem,
+        tipoDocumento: "Proposta",
+        origem: propostaToDuplicate.origem,
+        situacao: "Ativo",
+        inicioVigencia: propostaToDuplicate.inicioVigencia,
+        fimVigencia: propostaToDuplicate.fimVigencia,
+        dataEmissao: propostaToDuplicate.dataEmissao,
+        numeroApolice: propostaToDuplicate.numeroApolice,
+        numeroEndosso: propostaToDuplicate.numeroEndosso,
+        renovacao: propostaToDuplicate.renovacao,
+        motivoNaoRenovacao: propostaToDuplicate.motivoNaoRenovacao,
+        percentualComissao: propostaToDuplicate.percentualComissao,
+        comissaoSobre: propostaToDuplicate.comissaoSobre as any,
+        formaComissao: propostaToDuplicate.formaComissao,
+        valorComissao: propostaToDuplicate.valorComissao,
+        premioLiquido: propostaToDuplicate.premioLiquido,
+        valoresAdicionais: propostaToDuplicate.valoresAdicionais,
+        iof: propostaToDuplicate.iof,
+        parcelas:
+          propostaToDuplicate.parcelas?.map((p) => ({
+            numeroParcela: p.numeroParcela,
+            dataVencimento: p.dataVencimento,
+            valor: Number(p.valor),
+            valorLiquido: Number(p.valorLiquido),
+            percentualCorretora: Number(p.percentualCorretora),
+            previsaoRecebimento: p.previsaoRecebimento,
+            situacao: p.situacao,
+          })) || [],
+        repasses:
+          propostaToDuplicate.repasses?.map((r) => ({
+            produtorId: r.produtorId,
+            percentualRepasse: Number(r.percentualRepasse),
+            repasseSobre: r.repasseSobre as any,
+            formaRepasse: r.formaRepasse as any,
+          })) || [],
+      })
+    }
+  }, [propostaToDuplicate, reset])
 
   useEffect(() => {
     const premio = Number(formData.premioLiquido) || 0

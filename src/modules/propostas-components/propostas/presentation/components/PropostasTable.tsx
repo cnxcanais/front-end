@@ -18,10 +18,14 @@ import {
   importPropostas,
   removeProposta,
 } from "@/modules/propostas-components/propostas/infra/remote"
+import {
+  SituacaoEnum,
+  TipoDocumentoEnum,
+} from "@/modules/propostas-components/types/enums"
 import { useRamoQuery } from "@/modules/ramos-components/ramos/infra/hooks/use-ramo-query"
 import { useSeguradoraQuery } from "@/modules/seguradoras-components/seguradora/infra/hooks/use-seguradora-query"
 import { useSeguradoQuery } from "@/modules/segurados-components/segurado/infra/hooks/use-segurado-query"
-import { FileXls, Pencil, Trash } from "@phosphor-icons/react"
+import { Copy, FileXls, Pencil, Trash } from "@phosphor-icons/react"
 import { useRouter } from "next/navigation"
 import { useEffect, useMemo, useState } from "react"
 import { toast } from "sonner"
@@ -120,10 +124,36 @@ export function PropostasTable() {
     corretoras?.data?.find((c) => c.id === id)?.razaoSocial || ""
 
   const handleEdit = (id: string) => {
+    const propostaSelecionada = propostas.find((p) => p.id === id)
+    if (
+      propostaSelecionada.tipoDocumento !== TipoDocumentoEnum.PROPOSTA &&
+      propostaSelecionada.situacao !== SituacaoEnum.ATIVO
+    ) {
+      toast.info("Apenas propostas ativas podem ser editadas.")
+      return
+    }
     push(`/propostas/edit/${id}`)
   }
 
+  const handleDuplicate = (id: string) => {
+    const propostaSelecionada = propostas.find((p) => p.id === id)
+    if (propostaSelecionada?.tipoDocumento !== TipoDocumentoEnum.PROPOSTA) {
+      toast.info("Apenas propostas podem ser duplicadas.")
+      return
+    }
+    push(`/propostas/create?duplicateFrom=${id}`)
+  }
+
   const handleConfirmDelete = async () => {
+    const propostaSelecionada = propostas.find((p) => p.id === id)
+    if (
+      propostaSelecionada.situacao !== SituacaoEnum.ATIVO &&
+      propostaSelecionada.tipoDocumento !== TipoDocumentoEnum.PROPOSTA
+    ) {
+      toast.info("Apenas propostas ativas podem ser removidas.")
+      return
+    }
+
     try {
       await removeProposta(id)
       toast.success("Proposta removida com sucesso!")
@@ -270,13 +300,20 @@ export function PropostasTable() {
     {
       header: "Ação",
       accessor: "id",
-      render: (value: string) => (
+      render: (value: string, row: any) => (
         <div className="flex gap-2">
           <Pencil
             className="cursor-pointer hover:text-blue-500"
             size={24}
             onClick={() => handleEdit(value)}
           />
+          {row.tipoDocumento === TipoDocumentoEnum.PROPOSTA && (
+            <Copy
+              className="cursor-pointer hover:text-green-500"
+              size={24}
+              onClick={() => handleDuplicate(value)}
+            />
+          )}
           <Trash
             className="cursor-pointer hover:text-red-500"
             size={24}
