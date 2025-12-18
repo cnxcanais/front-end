@@ -16,6 +16,7 @@ interface PropostaTabProps {
   corretoras: Corretora.GetResponse
   ramos: any
   produtosOptions: any
+  isEndosso?: boolean
 }
 
 export function PropostaTab({
@@ -29,13 +30,14 @@ export function PropostaTab({
   corretoras,
   ramos,
   produtosOptions,
+  isEndosso = false,
 }: PropostaTabProps) {
   return (
     <div className="grid grid-cols-2 gap-4">
       <div>
         <label>Número da Proposta *</label>
         <Input.Root className="mt-2">
-          <Input.Control {...register("numeroProposta")} />
+          <Input.Control {...register("numeroProposta")} disabled={isEndosso} />
         </Input.Root>
         {errors.numeroProposta && (
           <span className="text-xs text-red-500">
@@ -56,6 +58,7 @@ export function PropostaTab({
             })) || []
           }
           required
+          disabled={isEndosso}
         />
         {errors.seguradoId && (
           <span className="text-xs text-red-500">
@@ -76,6 +79,7 @@ export function PropostaTab({
             })) || []
           }
           required
+          disabled={isEndosso}
         />
         {errors.seguradoraId && (
           <span className="text-xs text-red-500">
@@ -101,6 +105,7 @@ export function PropostaTab({
             })) || []
           }
           required
+          disabled={isEndosso}
         />
         {errors.produtorId && (
           <span className="text-xs text-red-500">
@@ -145,6 +150,7 @@ export function PropostaTab({
             })) || []
           }
           required
+          disabled={isEndosso}
         />
         {errors.ramoId && (
           <span className="text-xs text-red-500">{errors.ramoId.message}</span>
@@ -157,6 +163,7 @@ export function PropostaTab({
           value={formData.produtoId}
           onChange={(e) => setValue("produtoId", e.target.value)}
           options={produtosOptions}
+          disabled={isEndosso}
         />
         {errors.produtoId && (
           <span className="text-xs text-red-500">

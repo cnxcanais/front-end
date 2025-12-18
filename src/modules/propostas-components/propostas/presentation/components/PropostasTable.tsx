@@ -14,8 +14,10 @@ import { useProdutorQuery } from "@/modules/produtores-components/produtor/infra
 import { useProdutoQuery } from "@/modules/produtos-components/produtos/infra/hooks/use-produto-query"
 import { usePropostaQuery } from "@/modules/propostas-components/propostas/infra/hooks/use-proposta-query"
 import {
+  emitirApolice,
   exportPropostas,
   importPropostas,
+  refuseProposta,
   removeProposta,
 } from "@/modules/propostas-components/propostas/infra/remote"
 import {
@@ -25,11 +27,21 @@ import {
 import { useRamoQuery } from "@/modules/ramos-components/ramos/infra/hooks/use-ramo-query"
 import { useSeguradoraQuery } from "@/modules/seguradoras-components/seguradora/infra/hooks/use-seguradora-query"
 import { useSeguradoQuery } from "@/modules/segurados-components/segurado/infra/hooks/use-segurado-query"
-import { Copy, FileXls, Pencil, Trash } from "@phosphor-icons/react"
+import {
+  Copy,
+  FileXls,
+  MoneyWavy,
+  Note,
+  Pencil,
+  Trash,
+  XCircle,
+} from "@phosphor-icons/react"
 import { useRouter } from "next/navigation"
 import { useEffect, useMemo, useState } from "react"
 import { toast } from "sonner"
 import { DashboardIndicators } from "./DashboardIndicators"
+import { EmitirApoliceModal } from "./EmitirApoliceModal"
+import { EndossarApoliceModal } from "./EndossarApoliceModal"
 import { ExportPropostasModal } from "./ExportPropostasModal"
 import { ImportPropostasModal } from "./ImportPropostasModal"
 
@@ -48,6 +60,9 @@ export function PropostasTable() {
   const [expandedIds, setExpandedIds] = useState<string[]>([])
   const [openExportModal, setOpenExportModal] = useState(false)
   const [openImportModal, setOpenImportModal] = useState(false)
+  const [openEmitirApoliceModal, setOpenEmitirApoliceModal] = useState(false)
+  const [selectedPropostaId, setSelectedPropostaId] = useState("")
+  const [openEndossarApoliceModal, setOpenEndossarApoliceModal] = useState(false)
 
   const { data: segurados } = useSeguradoQuery(1, 100)
   const { data: corretoras } = useCorretoraQuery(1, 100)
@@ -142,6 +157,52 @@ export function PropostasTable() {
       return
     }
     push(`/propostas/create?duplicateFrom=${id}`)
+  }
+
+  const handleRefuseProposta = async (id: string) => {
+    const propostaSelecionada = propostas.find((p) => p.id === id)
+    if (
+      propostaSelecionada.tipoDocumento !== TipoDocumentoEnum.PROPOSTA &&
+      propostaSelecionada.situacao !== SituacaoEnum.ATIVO
+    ) {
+      toast.info("Apenas propostas ativas podem ser recusadas.")
+      return
+    }
+    await refuseProposta(id)
+  }
+
+  const handleEmitirApolice = async (data: {
+    dataEmissao: string
+    numeroApolice: string
+    inicioVigencia: string
+    fimVigencia: string
+  }) => {
+    try {
+      await emitirApolice(selectedPropostaId, data)
+      toast.success("Apólice emitida com sucesso!")
+      refetch()
+      setOpenEmitirApoliceModal(false)
+    } catch (error) {
+      toast.error("Erro ao emitir apólice")
+    }
+  }
+
+  const handleEndossarApolice = (data: {
+    dataEmissao: string
+    numeroEndosso: string
+    inicioVigencia: string
+    fimVigencia: string
+  }) => {
+    const params = new URLSearchParams({
+      duplicateFrom: selectedPropostaId,
+      endosso: "true",
+      dataEmissao: data.dataEmissao,
+      numeroEndosso: data.numeroEndosso,
+      inicioVigencia: data.inicioVigencia,
+      fimVigencia: data.fimVigencia,
+    })
+    push(`/propostas/create?${params.toString()}`)
+    setOpenEndossarApoliceModal(false)
   }
 
   const handleConfirmDelete = async () => {
@@ -301,27 +362,73 @@ export function PropostasTable() {
       header: "Ação",
       accessor: "id",
       render: (value: string, row: any) => (
-        <div className="flex gap-2">
-          <Pencil
-            className="cursor-pointer hover:text-blue-500"
-            size={24}
-            onClick={() => handleEdit(value)}
-          />
-          {row.tipoDocumento === TipoDocumentoEnum.PROPOSTA && (
-            <Copy
-              className="cursor-pointer hover:text-green-500"
+        <div className="flex min-w-[100px] max-w-[150px] flex-wrap gap-2">
+          <span title="Editar">
+            <Pencil
+              className="cursor-pointer hover:text-blue-500"
               size={24}
-              onClick={() => handleDuplicate(value)}
+              onClick={() => handleEdit(value)}
             />
-          )}
-          <Trash
-            className="cursor-pointer hover:text-red-500"
-            size={24}
-            onClick={() => {
-              setId(value)
-              setOpen(true)
-            }}
-          />
+          </span>
+
+          {row.tipoDocumento === TipoDocumentoEnum.PROPOSTA &&
+            row.situacao === SituacaoEnum.ATIVO && (
+              <>
+                <span title="Clonar Proposta">
+                  <Copy
+                    className="cursor-pointer hover:text-green-500"
+                    size={24}
+                    onClick={() => handleDuplicate(value)}
+                  />
+                </span>
+
+                <span title="Recusar Proposta">
+                  <XCircle
+                    className="cursor-pointer hover:text-red-500"
+                    size={24}
+                    onClick={() => handleRefuseProposta(value)}
+                  />
+                </span>
+
+                <span title="Emitir Apólice">
+                  <MoneyWavy
+                    className="cursor-pointer hover:text-green-500"
+                    size={24}
+                    onClick={() => {
+                      setSelectedPropostaId(value)
+                      setOpenEmitirApoliceModal(true)
+                    }}
+                  />
+                </span>
+              </>
+            )}
+
+          {(row.tipoDocumento === TipoDocumentoEnum.APOLICE ||
+            row.tipoDocumento === TipoDocumentoEnum.ENDOSSO ||
+            row.tipoDocumento === TipoDocumentoEnum.RENOVACAO) &&
+            row.situacao === SituacaoEnum.ATIVO && (
+              <span title="Endossar Apólice">
+                <Note
+                  className="cursor-pointer hover:text-blue-500"
+                  size={24}
+                  onClick={() => {
+                    setSelectedPropostaId(value)
+                    setOpenEndossarApoliceModal(true)
+                  }}
+                />
+              </span>
+            )}
+
+          <span title="Deletar">
+            <Trash
+              className="cursor-pointer hover:text-red-500"
+              size={24}
+              onClick={() => {
+                setId(value)
+                setOpen(true)
+              }}
+            />
+          </span>
         </div>
       ),
     },
@@ -562,6 +669,18 @@ export function PropostasTable() {
         open={openImportModal}
         onClose={() => setOpenImportModal(false)}
         onImport={handleImport}
+      />
+
+      <EmitirApoliceModal
+        open={openEmitirApoliceModal}
+        onClose={() => setOpenEmitirApoliceModal(false)}
+        onConfirm={handleEmitirApolice}
+      />
+
+      <EndossarApoliceModal
+        open={openEndossarApoliceModal}
+        onClose={() => setOpenEndossarApoliceModal(false)}
+        onConfirm={handleEndossarApolice}
       />
 
       {propostas.length == 0 ?

@@ -14,6 +14,7 @@ export enum OrigemEnum {
 export enum SituacaoEnum {
   ATIVO = "Ativo",
   INATIVO = "Inativo",
+  RECUSADA = "Recusada",
 }
 
 export enum RenovacaoEnum {

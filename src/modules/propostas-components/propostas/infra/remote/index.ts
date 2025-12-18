@@ -1,4 +1,5 @@
 import { bffApi } from "@/lib/axios"
+import { SituacaoEnum, TipoDocumentoEnum } from "@/modules/propostas-components/types/enums"
 import { toast } from "sonner"
 import { Proposta, PropostasResponse } from "../../../types/proposta"
 
@@ -77,6 +78,19 @@ export async function removeProposta(id: string) {
     )
     throw error
   }
+}
+
+export async function refuseProposta(id: string) {
+  await updateProposta(id, { situacao: SituacaoEnum.RECUSADA })
+}
+
+export async function emitirApolice(id: string, data: {
+  dataEmissao: string
+  numeroApolice: string
+  inicioVigencia: string
+  fimVigencia: string
+}) {
+  await updateProposta(id, { ...data, tipoDocumento: TipoDocumentoEnum.APOLICE })
 }
 
 export async function exportPropostas(filters?: Record<string, string>) {
