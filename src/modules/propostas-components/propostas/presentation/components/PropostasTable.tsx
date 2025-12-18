@@ -14,9 +14,11 @@ import { useProdutorQuery } from "@/modules/produtores-components/produtor/infra
 import { useProdutoQuery } from "@/modules/produtos-components/produtos/infra/hooks/use-produto-query"
 import { usePropostaQuery } from "@/modules/propostas-components/propostas/infra/hooks/use-proposta-query"
 import {
+  cancelarApolice,
   emitirApolice,
   exportPropostas,
   importPropostas,
+  naoRenovarApolice,
   refuseProposta,
   removeProposta,
 } from "@/modules/propostas-components/propostas/infra/remote"
@@ -33,17 +35,22 @@ import {
   MoneyWavy,
   Note,
   Pencil,
+  ProhibitInset,
+  Recycle,
   Trash,
+  X,
   XCircle,
 } from "@phosphor-icons/react"
 import { useRouter } from "next/navigation"
 import { useEffect, useMemo, useState } from "react"
 import { toast } from "sonner"
+import { CancelarApoliceModal } from "./CancelarApoliceModal"
 import { DashboardIndicators } from "./DashboardIndicators"
 import { EmitirApoliceModal } from "./EmitirApoliceModal"
 import { EndossarApoliceModal } from "./EndossarApoliceModal"
 import { ExportPropostasModal } from "./ExportPropostasModal"
 import { ImportPropostasModal } from "./ImportPropostasModal"
+import { RenovarApoliceModal } from "./RenovarApoliceModal"
 
 export function PropostasTable() {
   const [page, setPage] = useState(1)
@@ -62,7 +69,12 @@ export function PropostasTable() {
   const [openImportModal, setOpenImportModal] = useState(false)
   const [openEmitirApoliceModal, setOpenEmitirApoliceModal] = useState(false)
   const [selectedPropostaId, setSelectedPropostaId] = useState("")
-  const [openEndossarApoliceModal, setOpenEndossarApoliceModal] = useState(false)
+  const [openEndossarApoliceModal, setOpenEndossarApoliceModal] =
+    useState(false)
+  const [openRenovarApoliceModal, setOpenRenovarApoliceModal] = useState(false)
+  const [openNaoRenovarModal, setOpenNaoRenovarModal] = useState(false)
+  const [openCancelarApoliceModal, setOpenCancelarApoliceModal] =
+    useState(false)
 
   const { data: segurados } = useSeguradoQuery(1, 100)
   const { data: corretoras } = useCorretoraQuery(1, 100)
@@ -203,6 +215,50 @@ export function PropostasTable() {
     })
     push(`/propostas/create?${params.toString()}`)
     setOpenEndossarApoliceModal(false)
+  }
+
+  const handleRenovarApolice = (data: {
+    dataEmissao: string
+    numeroApolice: string
+    inicioVigencia: string
+    fimVigencia: string
+  }) => {
+    const params = new URLSearchParams({
+      duplicateFrom: selectedPropostaId,
+      renovacao: "true",
+      dataEmissao: data.dataEmissao,
+      numeroApolice: data.numeroApolice,
+      inicioVigencia: data.inicioVigencia,
+      fimVigencia: data.fimVigencia,
+    })
+    push(`/propostas/create?${params.toString()}`)
+    setOpenRenovarApoliceModal(false)
+  }
+
+  const handleConfirmNaoRenovar = async () => {
+    try {
+      await naoRenovarApolice(selectedPropostaId)
+      toast.success("Apólice marcada como não renovada!")
+      refetch()
+    } catch (error) {
+      toast.error("Erro ao marcar apólice como não renovada")
+    } finally {
+      setOpenNaoRenovarModal(false)
+    }
+  }
+
+  const handleCancelarApolice = async (data: {
+    dataCancelamento: string
+    motivoNaoCancelamento: string
+  }) => {
+    try {
+      await cancelarApolice(selectedPropostaId, data)
+      toast.success("Apólice cancelada com sucesso!")
+      refetch()
+      setOpenCancelarApoliceModal(false)
+    } catch (error) {
+      toast.error("Erro ao cancelar apólice")
+    }
   }
 
   const handleConfirmDelete = async () => {
@@ -414,6 +470,63 @@ export function PropostasTable() {
                   onClick={() => {
                     setSelectedPropostaId(value)
                     setOpenEndossarApoliceModal(true)
+                  }}
+                />
+              </span>
+            )}
+
+          {row.tipoDocumento === TipoDocumentoEnum.APOLICE &&
+            row.situacao === SituacaoEnum.ATIVO && (
+              <>
+                <span title="Renovar Apólice">
+                  <Recycle
+                    className="cursor-pointer hover:text-purple-500"
+                    size={24}
+                    onClick={() => {
+                      setSelectedPropostaId(value)
+                      setOpenRenovarApoliceModal(true)
+                    }}
+                  />
+                </span>
+                <span title="Não Renovar Apólice">
+                  <ProhibitInset
+                    className="cursor-pointer hover:text-orange-500"
+                    size={24}
+                    onClick={() => {
+                      setSelectedPropostaId(value)
+                      setOpenNaoRenovarModal(true)
+                    }}
+                  />
+                </span>
+              </>
+            )}
+
+          {(row.tipoDocumento === TipoDocumentoEnum.ENDOSSO ||
+            row.tipoDocumento === TipoDocumentoEnum.RENOVACAO) &&
+            row.situacao === SituacaoEnum.ATIVO && (
+              <span title="Não Renovar Apólice">
+                <ProhibitInset
+                  className="cursor-pointer hover:text-orange-500"
+                  size={24}
+                  onClick={() => {
+                    setSelectedPropostaId(value)
+                    setOpenNaoRenovarModal(true)
+                  }}
+                />
+              </span>
+            )}
+
+          {(row.tipoDocumento === TipoDocumentoEnum.APOLICE ||
+            row.tipoDocumento === TipoDocumentoEnum.ENDOSSO ||
+            row.tipoDocumento === TipoDocumentoEnum.RENOVACAO) &&
+            row.situacao === SituacaoEnum.ATIVO && (
+              <span title="Cancelar Apólice">
+                <X
+                  className="cursor-pointer hover:text-red-600"
+                  size={24}
+                  onClick={() => {
+                    setSelectedPropostaId(value)
+                    setOpenCancelarApoliceModal(true)
                   }}
                 />
               </span>
@@ -681,6 +794,35 @@ export function PropostasTable() {
         open={openEndossarApoliceModal}
         onClose={() => setOpenEndossarApoliceModal(false)}
         onConfirm={handleEndossarApolice}
+      />
+
+      <RenovarApoliceModal
+        open={openRenovarApoliceModal}
+        onClose={() => setOpenRenovarApoliceModal(false)}
+        onConfirm={handleRenovarApolice}
+      />
+
+      <Modal
+        title="Não Renovar Apólice"
+        content="Tem certeza de que deseja marcar esta apólice como não renovada?"
+        onClose={() => setOpenNaoRenovarModal(false)}
+        open={openNaoRenovarModal}>
+        <div className="flex items-center justify-center gap-4">
+          <Button onClick={handleConfirmNaoRenovar} variant="secondary">
+            Confirmar
+          </Button>
+          <Button
+            onClick={() => setOpenNaoRenovarModal(false)}
+            variant="tertiary">
+            Cancelar
+          </Button>
+        </div>
+      </Modal>
+
+      <CancelarApoliceModal
+        open={openCancelarApoliceModal}
+        onClose={() => setOpenCancelarApoliceModal(false)}
+        onConfirm={handleCancelarApolice}
       />
 
       {propostas.length == 0 ?

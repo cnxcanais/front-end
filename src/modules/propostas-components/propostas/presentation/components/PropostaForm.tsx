@@ -38,9 +38,16 @@ export function PropostaForm({ proposta, isEdit }: PropostaFormProps) {
   const searchParams = useSearchParams()
   const duplicateFromId = searchParams.get("duplicateFrom")
   const isEndosso = searchParams.get("endosso") === "true"
+  const isRenovacao = searchParams.get("renovacao") === "true"
   const endossoData = isEndosso ? {
     dataEmissao: searchParams.get("dataEmissao") || "",
     numeroEndosso: searchParams.get("numeroEndosso") || "",
+    inicioVigencia: searchParams.get("inicioVigencia") || "",
+    fimVigencia: searchParams.get("fimVigencia") || "",
+  } : null
+  const renovacaoData = isRenovacao ? {
+    dataEmissao: searchParams.get("dataEmissao") || "",
+    numeroApolice: searchParams.get("numeroApolice") || "",
     inicioVigencia: searchParams.get("inicioVigencia") || "",
     fimVigencia: searchParams.get("fimVigencia") || "",
   } : null
@@ -144,8 +151,11 @@ export function PropostaForm({ proposta, isEdit }: PropostaFormProps) {
 
   useEffect(() => {
     if (propostaToDuplicate) {
+      const tipoDoc = isEndosso ? "Endosso" : isRenovacao ? "Renovação" : "Proposta"
+      const numProposta = isEndosso || isRenovacao ? propostaToDuplicate.numeroProposta : ""
+      
       reset({
-        numeroProposta: isEndosso ? propostaToDuplicate.numeroProposta : "",
+        numeroProposta: numProposta,
         seguradoId: propostaToDuplicate.seguradoId,
         corretoraId: propostaToDuplicate.corretoraId,
         produtorId: propostaToDuplicate.produtorId,
@@ -159,14 +169,14 @@ export function PropostaForm({ proposta, isEdit }: PropostaFormProps) {
         anoFabricacaoVeiculo: propostaToDuplicate.anoFabricacaoVeiculo,
         anoModeloVeiculo: propostaToDuplicate.anoModeloVeiculo,
         complementoItem: propostaToDuplicate.complementoItem,
-        tipoDocumento: isEndosso ? "Endosso" : "Proposta",
+        tipoDocumento: tipoDoc,
         origem: propostaToDuplicate.origem,
         situacao: "Ativo",
-        inicioVigencia: isEndosso && endossoData ? endossoData.inicioVigencia : propostaToDuplicate.inicioVigencia,
-        fimVigencia: isEndosso && endossoData ? endossoData.fimVigencia : propostaToDuplicate.fimVigencia,
-        dataEmissao: isEndosso && endossoData ? endossoData.dataEmissao : propostaToDuplicate.dataEmissao,
-        numeroApolice: propostaToDuplicate.numeroApolice,
-        numeroEndosso: isEndosso && endossoData ? endossoData.numeroEndosso : propostaToDuplicate.numeroEndosso,
+        inicioVigencia: (isEndosso && endossoData) ? endossoData.inicioVigencia : (isRenovacao && renovacaoData) ? renovacaoData.inicioVigencia : propostaToDuplicate.inicioVigencia,
+        fimVigencia: (isEndosso && endossoData) ? endossoData.fimVigencia : (isRenovacao && renovacaoData) ? renovacaoData.fimVigencia : propostaToDuplicate.fimVigencia,
+        dataEmissao: (isEndosso && endossoData) ? endossoData.dataEmissao : (isRenovacao && renovacaoData) ? renovacaoData.dataEmissao : propostaToDuplicate.dataEmissao,
+        numeroApolice: (isRenovacao && renovacaoData) ? renovacaoData.numeroApolice : propostaToDuplicate.numeroApolice,
+        numeroEndosso: (isEndosso && endossoData) ? endossoData.numeroEndosso : propostaToDuplicate.numeroEndosso,
         renovacao: propostaToDuplicate.renovacao,
         motivoNaoRenovacao: propostaToDuplicate.motivoNaoRenovacao,
         percentualComissao: propostaToDuplicate.percentualComissao,
@@ -195,7 +205,8 @@ export function PropostaForm({ proposta, isEdit }: PropostaFormProps) {
           })) || [],
       })
     }
-  }, [propostaToDuplicate, reset, isEndosso, endossoData])
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [propostaToDuplicate])
 
   useEffect(() => {
     const premio = Number(formData.premioLiquido) || 0
@@ -498,6 +509,7 @@ export function PropostaForm({ proposta, isEdit }: PropostaFormProps) {
             ramos={ramos}
             produtosOptions={produtosOptions}
             isEndosso={isEndosso}
+            isRenovacao={isRenovacao}
           />
         )}
 

@@ -17,6 +17,7 @@ interface PropostaTabProps {
   ramos: any
   produtosOptions: any
   isEndosso?: boolean
+  isRenovacao?: boolean
 }
 
 export function PropostaTab({
@@ -31,13 +32,15 @@ export function PropostaTab({
   ramos,
   produtosOptions,
   isEndosso = false,
+  isRenovacao = false,
 }: PropostaTabProps) {
+  const isDisabled = isEndosso || isRenovacao
   return (
     <div className="grid grid-cols-2 gap-4">
       <div>
         <label>Número da Proposta *</label>
         <Input.Root className="mt-2">
-          <Input.Control {...register("numeroProposta")} disabled={isEndosso} />
+          <Input.Control {...register("numeroProposta")} disabled={isDisabled} />
         </Input.Root>
         {errors.numeroProposta && (
           <span className="text-xs text-red-500">
@@ -58,7 +61,7 @@ export function PropostaTab({
             })) || []
           }
           required
-          disabled={isEndosso}
+          disabled={isDisabled}
         />
         {errors.seguradoId && (
           <span className="text-xs text-red-500">
@@ -79,7 +82,7 @@ export function PropostaTab({
             })) || []
           }
           required
-          disabled={isEndosso}
+          disabled={isDisabled}
         />
         {errors.seguradoraId && (
           <span className="text-xs text-red-500">
@@ -105,7 +108,7 @@ export function PropostaTab({
             })) || []
           }
           required
-          disabled={isEndosso}
+          disabled={isDisabled}
         />
         {errors.produtorId && (
           <span className="text-xs text-red-500">
@@ -150,7 +153,7 @@ export function PropostaTab({
             })) || []
           }
           required
-          disabled={isEndosso}
+          disabled={isDisabled}
         />
         {errors.ramoId && (
           <span className="text-xs text-red-500">{errors.ramoId.message}</span>
@@ -163,7 +166,7 @@ export function PropostaTab({
           value={formData.produtoId}
           onChange={(e) => setValue("produtoId", e.target.value)}
           options={produtosOptions}
-          disabled={isEndosso}
+          disabled={isDisabled}
         />
         {errors.produtoId && (
           <span className="text-xs text-red-500">
