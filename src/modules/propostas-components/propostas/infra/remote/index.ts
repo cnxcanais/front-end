@@ -4,7 +4,7 @@ import {
   TipoDocumentoEnum,
 } from "@/modules/propostas-components/types/enums"
 import { toast } from "sonner"
-import { Proposta, PropostasResponse } from "../../../types/proposta"
+import { Proposta, PropostasResponse } from "../../../../../@types/proposta"
 
 export async function getPropostas(
   page = 1,

@@ -219,6 +219,7 @@ export function EditSeguradoForm({ id }: EditSeguradoFormProps) {
                   )[0]?.razaoSocial
                 }
                 type="text"
+                readOnly
               />
             </Input.Root>
           </div>

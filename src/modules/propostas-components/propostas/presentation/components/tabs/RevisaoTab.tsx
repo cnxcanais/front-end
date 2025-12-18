@@ -1,6 +1,14 @@
 import { Button } from "@/core/components/Button"
 import * as Input from "@/core/components/Input"
 import { SelectInput } from "@/core/components/SelectInput"
+import dynamic from "next/dynamic"
+
+import { Controller } from "react-hook-form"
+
+//@ts-expect-error css import
+import "react-quill-new/dist/quill.snow.css"
+
+const ReactQuill = dynamic(() => import("react-quill-new"), { ssr: false })
 
 interface RevisaoTabProps {
   register: any
@@ -12,6 +20,7 @@ interface RevisaoTabProps {
   produtores: any
   corretoras: any
   ramos: any
+  control: any
   produtosOptions: any
   isAutomovelRamo: boolean
 }
@@ -25,6 +34,7 @@ export function RevisaoTab({
   seguradoras,
   produtores,
   corretoras,
+  control,
   ramos,
   produtosOptions,
   isAutomovelRamo,
@@ -91,7 +101,9 @@ export function RevisaoTab({
               onChange={(e) => {
                 const produtorId = e.target.value
                 setValue("produtorId", produtorId)
-                const corretoraId = produtores?.data?.find((p: any) => p.id === produtorId)?.corretoraId
+                const corretoraId = produtores?.data?.find(
+                  (p: any) => p.id === produtorId
+                )?.corretoraId
                 if (corretoraId) setValue("corretoraId", corretoraId)
               }}
               options={
@@ -508,6 +520,22 @@ export function RevisaoTab({
             ))}
           </div>
         }
+      </div>
+      <div className="rounded-lg bg-gray-50 p-6">
+        <h3 className="mb-4 text-lg font-semibold">Observações</h3>
+        <Controller
+          name="observacoes"
+          control={control}
+          render={({ field }) => (
+            <div className="bg-white">
+              <ReactQuill
+                theme="snow"
+                value={field.value || ""}
+                onChange={field.onChange}
+              />
+            </div>
+          )}
+        />
       </div>
     </>
   )

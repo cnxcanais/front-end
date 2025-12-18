@@ -1,6 +1,6 @@
 "use client"
 
-import { Proposta } from "@/modules/propostas-components/types/proposta"
+import { Proposta } from "@/@types/proposta"
 import {
   ArrowClockwise,
   CheckCircle,
@@ -34,7 +34,7 @@ export function DashboardIndicators({
     propostaAttribute: string
   ) => {
     const isCurrentlyActive = clickedAttribute[propostaAttribute]
-    
+
     if (isCurrentlyActive) {
       onFilterChange?.(filterName, allPropostas.data.data)
       setClickedAttribute({ ...clickedAttribute, [propostaAttribute]: false })
@@ -61,11 +61,16 @@ export function DashboardIndicators({
   })
 
   const propostasVigentes =
-    propostasAtivas?.data?.data?.filter(
-      (p) =>
-        new Date(p.inicioVigencia) <= new Date() &&
-        new Date(p.fimVigencia) >= new Date()
-    ) || []
+    propostasAtivas?.data?.data?.filter((p) => {
+      const [anoInicio, mesInicio, diaInicio] = p.inicioVigencia
+        .split("-")
+        .map(Number)
+      const [anoFim, mesFim, diaFim] = p.fimVigencia.split("-").map(Number)
+      const inicioVigencia = new Date(anoInicio, mesInicio - 1, diaInicio)
+      const fimVigencia = new Date(anoFim, mesFim - 1, diaFim)
+      const hoje = new Date()
+      return inicioVigencia <= hoje && fimVigencia >= hoje
+    }) || []
 
   const propostasPendentes =
     propostasAtivas.data?.data?.filter(
@@ -78,11 +83,16 @@ export function DashboardIndicators({
   })
 
   const apolicesVigentes =
-    apolicesAtivas?.data?.data?.filter(
-      (p) =>
-        new Date(p.inicioVigencia) <= new Date() &&
-        new Date(p.fimVigencia) >= new Date()
-    ) || []
+    apolicesAtivas?.data?.data?.filter((p) => {
+      const [anoInicio, mesInicio, diaInicio] = p.inicioVigencia
+        .split("-")
+        .map(Number)
+      const [anoFim, mesFim, diaFim] = p.fimVigencia.split("-").map(Number)
+      const inicioVigencia = new Date(anoInicio, mesInicio - 1, diaInicio)
+      const fimVigencia = new Date(anoFim, mesFim - 1, diaFim)
+      const hoje = new Date()
+      return inicioVigencia <= hoje && fimVigencia >= hoje
+    }) || []
 
   const apolicesPendentes =
     apolicesAtivas.data?.data?.filter(
@@ -91,17 +101,20 @@ export function DashboardIndicators({
 
   const renovacoesHoje =
     apolicesAtivas?.data?.data?.filter((p) => {
-      const fimVigencia = new Date(p.fimVigencia)
+      const [ano, mes, dia] = p.fimVigencia.split("-").map(Number)
       const hoje = new Date()
       return (
-        fimVigencia.toDateString() === hoje.toDateString() &&
+        dia === hoje.getDate() &&
+        mes === hoje.getMonth() + 1 &&
+        ano === hoje.getFullYear() &&
         !apolicesVigentes.some((v) => v.id === p.id)
       )
     }) || []
 
   const renovacoesProximos30 =
     apolicesAtivas?.data?.data?.filter((p) => {
-      const fimVigencia = new Date(p.fimVigencia)
+      const [ano, mes, dia] = p.fimVigencia.split("-").map(Number)
+      const fimVigencia = new Date(ano, mes - 1, dia)
       const hoje = new Date()
       const dias30 = new Date(hoje.getTime() + 30 * 24 * 60 * 60 * 1000)
       return (

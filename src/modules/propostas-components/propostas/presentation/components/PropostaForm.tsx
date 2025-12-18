@@ -13,7 +13,7 @@ import { useRouter, useSearchParams } from "next/navigation"
 import { useEffect, useMemo, useState } from "react"
 import { useForm } from "react-hook-form"
 import { toast } from "sonner"
-import { Proposta } from "../../../types/proposta"
+import { Proposta } from "../../../../../@types/proposta"
 import { usePropostaByIdQuery } from "../../infra/hooks/use-proposta-by-id-query"
 import { createProposta, updateProposta } from "../../infra/remote"
 import { propostaFormSchema, PropostaFormSchema } from "../validation/schema"
@@ -39,18 +39,24 @@ export function PropostaForm({ proposta, isEdit }: PropostaFormProps) {
   const duplicateFromId = searchParams.get("duplicateFrom")
   const isEndosso = searchParams.get("endosso") === "true"
   const isRenovacao = searchParams.get("renovacao") === "true"
-  const endossoData = isEndosso ? {
-    dataEmissao: searchParams.get("dataEmissao") || "",
-    numeroEndosso: searchParams.get("numeroEndosso") || "",
-    inicioVigencia: searchParams.get("inicioVigencia") || "",
-    fimVigencia: searchParams.get("fimVigencia") || "",
-  } : null
-  const renovacaoData = isRenovacao ? {
-    dataEmissao: searchParams.get("dataEmissao") || "",
-    numeroApolice: searchParams.get("numeroApolice") || "",
-    inicioVigencia: searchParams.get("inicioVigencia") || "",
-    fimVigencia: searchParams.get("fimVigencia") || "",
-  } : null
+  const endossoData =
+    isEndosso ?
+      {
+        dataEmissao: searchParams.get("dataEmissao") || "",
+        numeroEndosso: searchParams.get("numeroEndosso") || "",
+        inicioVigencia: searchParams.get("inicioVigencia") || "",
+        fimVigencia: searchParams.get("fimVigencia") || "",
+      }
+    : null
+  const renovacaoData =
+    isRenovacao ?
+      {
+        dataEmissao: searchParams.get("dataEmissao") || "",
+        numeroApolice: searchParams.get("numeroApolice") || "",
+        inicioVigencia: searchParams.get("inicioVigencia") || "",
+        fimVigencia: searchParams.get("fimVigencia") || "",
+      }
+    : null
   const { data: propostaToDuplicate } = usePropostaByIdQuery(duplicateFromId)
 
   const [activeTab, setActiveTab] = useState(0)
@@ -68,6 +74,7 @@ export function PropostaForm({ proposta, isEdit }: PropostaFormProps) {
     getValues,
     trigger,
     reset,
+    control,
     formState: { errors },
   } = useForm<PropostaFormSchema>({
     resolver: zodResolver(propostaFormSchema),
@@ -151,9 +158,13 @@ export function PropostaForm({ proposta, isEdit }: PropostaFormProps) {
 
   useEffect(() => {
     if (propostaToDuplicate) {
-      const tipoDoc = isEndosso ? "Endosso" : isRenovacao ? "Renovação" : "Proposta"
-      const numProposta = isEndosso || isRenovacao ? propostaToDuplicate.numeroProposta : ""
-      
+      const tipoDoc =
+        isEndosso ? "Endosso"
+        : isRenovacao ? "Renovação"
+        : "Proposta"
+      const numProposta =
+        isEndosso || isRenovacao ? propostaToDuplicate.numeroProposta : ""
+
       reset({
         numeroProposta: numProposta,
         seguradoId: propostaToDuplicate.seguradoId,
@@ -172,11 +183,26 @@ export function PropostaForm({ proposta, isEdit }: PropostaFormProps) {
         tipoDocumento: tipoDoc,
         origem: propostaToDuplicate.origem,
         situacao: "Ativo",
-        inicioVigencia: (isEndosso && endossoData) ? endossoData.inicioVigencia : (isRenovacao && renovacaoData) ? renovacaoData.inicioVigencia : propostaToDuplicate.inicioVigencia,
-        fimVigencia: (isEndosso && endossoData) ? endossoData.fimVigencia : (isRenovacao && renovacaoData) ? renovacaoData.fimVigencia : propostaToDuplicate.fimVigencia,
-        dataEmissao: (isEndosso && endossoData) ? endossoData.dataEmissao : (isRenovacao && renovacaoData) ? renovacaoData.dataEmissao : propostaToDuplicate.dataEmissao,
-        numeroApolice: (isRenovacao && renovacaoData) ? renovacaoData.numeroApolice : propostaToDuplicate.numeroApolice,
-        numeroEndosso: (isEndosso && endossoData) ? endossoData.numeroEndosso : propostaToDuplicate.numeroEndosso,
+        inicioVigencia:
+          isEndosso && endossoData ? endossoData.inicioVigencia
+          : isRenovacao && renovacaoData ? renovacaoData.inicioVigencia
+          : propostaToDuplicate.inicioVigencia,
+        fimVigencia:
+          isEndosso && endossoData ? endossoData.fimVigencia
+          : isRenovacao && renovacaoData ? renovacaoData.fimVigencia
+          : propostaToDuplicate.fimVigencia,
+        dataEmissao:
+          isEndosso && endossoData ? endossoData.dataEmissao
+          : isRenovacao && renovacaoData ? renovacaoData.dataEmissao
+          : propostaToDuplicate.dataEmissao,
+        numeroApolice:
+          isRenovacao && renovacaoData ?
+            renovacaoData.numeroApolice
+          : propostaToDuplicate.numeroApolice,
+        numeroEndosso:
+          isEndosso && endossoData ?
+            endossoData.numeroEndosso
+          : propostaToDuplicate.numeroEndosso,
         renovacao: propostaToDuplicate.renovacao,
         motivoNaoRenovacao: propostaToDuplicate.motivoNaoRenovacao,
         percentualComissao: propostaToDuplicate.percentualComissao,
@@ -569,6 +595,7 @@ export function PropostaForm({ proposta, isEdit }: PropostaFormProps) {
       {((activeTab === 6 && !isAutomovelRamo) ||
         (activeTab === 7 && isAutomovelRamo)) && (
         <RevisaoTab
+          control={control}
           register={register}
           errors={errors}
           formData={formData}

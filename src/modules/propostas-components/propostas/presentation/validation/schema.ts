@@ -73,6 +73,7 @@ export const propostaFormSchema = z.object({
     errorMap: () => ({ message: "Origem é obrigatória" }),
   }),
   situacao: z.enum(["Ativo", "Inativo"]),
+  observacoes: z.string().nullable().optional(),
   inicioVigencia: z.string().min(1, "Início da vigência é obrigatório"),
   fimVigencia: z.string().min(1, "Fim da vigência é obrigatório"),
   dataEmissao: z.string().optional(),

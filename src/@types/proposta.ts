@@ -8,7 +8,7 @@ import {
   SituacaoEnum,
   SituacaoParcelaEnum,
   TipoDocumentoEnum,
-} from "./enums"
+} from "../modules/propostas-components/types/enums"
 
 export interface Parcela {
   id: string
@@ -91,6 +91,7 @@ export interface Proposta {
   produtoNome?: string
   parcelas?: Parcela[]
   repasses?: Repasse[]
+  observacoes?: string
 }
 
 export interface PropostasResponse {
