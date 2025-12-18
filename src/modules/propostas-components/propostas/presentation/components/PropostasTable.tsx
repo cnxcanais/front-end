@@ -371,8 +371,8 @@ export function PropostasTable() {
         <div className="flex items-center gap-2">
           <div
             className={`h-3 w-3 rounded-full ${
-              value === "Ativo" ? "bg-green-500"
-              : value === "Pendente" ? "bg-yellow-500"
+              new Date(row.fimVigencia) > new Date() ? "bg-green-500"
+              : new Date(row.fimVigencia) === new Date() ? "bg-yellow-500"
               : "bg-red-500"
             }`}
           />
@@ -532,16 +532,19 @@ export function PropostasTable() {
               </span>
             )}
 
-          <span title="Deletar">
-            <Trash
-              className="cursor-pointer hover:text-red-500"
-              size={24}
-              onClick={() => {
-                setId(value)
-                setOpen(true)
-              }}
-            />
-          </span>
+          {row.tipoDocumento === TipoDocumentoEnum.PROPOSTA &&
+            row.situacao === SituacaoEnum.ATIVO && (
+              <span title="Deletar">
+                <Trash
+                  className="cursor-pointer hover:text-red-500"
+                  size={24}
+                  onClick={() => {
+                    setId(value)
+                    setOpen(true)
+                  }}
+                />
+              </span>
+            )}
         </div>
       ),
     },
