@@ -10,7 +10,7 @@ interface CancelarApoliceModalProps {
   onClose: () => void
   onConfirm: (data: {
     dataCancelamento: string
-    motivoNaoCancelamento: string
+    motivoNaoRenovacao: string
   }) => Promise<void>
 }
 
@@ -20,28 +20,32 @@ export function CancelarApoliceModal({
   onConfirm,
 }: CancelarApoliceModalProps) {
   const [dataCancelamento, setDataCancelamento] = useState("")
-  const [motivoNaoCancelamento, setMotivoNaoCancelamento] = useState("")
+  const [motivoNaoRenovacao, setMotivoNaoRenovacao] = useState("")
   const [loading, setLoading] = useState(false)
 
   const handleConfirm = async () => {
-    if (!dataCancelamento || !motivoNaoCancelamento) {
+    if (!dataCancelamento || !motivoNaoRenovacao) {
       return
     }
     setLoading(true)
-    await onConfirm({ dataCancelamento, motivoNaoCancelamento })
+    await onConfirm({ dataCancelamento, motivoNaoRenovacao })
     setLoading(false)
     setDataCancelamento("")
-    setMotivoNaoCancelamento("")
+    setMotivoNaoRenovacao("")
   }
 
   const handleClose = () => {
     setDataCancelamento("")
-    setMotivoNaoCancelamento("")
+    setMotivoNaoRenovacao("")
     onClose()
   }
 
   return (
-    <Modal title="Cancelar Apólice" content="" onClose={handleClose} open={open}>
+    <Modal
+      title="Cancelar Apólice"
+      content=""
+      onClose={handleClose}
+      open={open}>
       <div className="flex flex-col gap-4">
         <Input.Root>
           <label>Data de Cancelamento</label>
@@ -57,13 +61,16 @@ export function CancelarApoliceModal({
           <textarea
             className="w-full rounded border px-3 py-2"
             rows={4}
-            value={motivoNaoCancelamento}
-            onChange={(e) => setMotivoNaoCancelamento(e.target.value)}
+            value={motivoNaoRenovacao}
+            onChange={(e) => setMotivoNaoRenovacao(e.target.value)}
           />
         </Input.Root>
 
         <div className="flex items-center justify-center gap-4">
-          <Button onClick={handleConfirm} variant="secondary" disabled={loading}>
+          <Button
+            onClick={handleConfirm}
+            variant="secondary"
+            disabled={loading}>
             {loading ? "Processando..." : "Confirmar Cancelamento"}
           </Button>
           <Button onClick={handleClose} variant="tertiary" disabled={loading}>

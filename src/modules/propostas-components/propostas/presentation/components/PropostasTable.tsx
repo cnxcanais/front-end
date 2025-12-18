@@ -249,7 +249,7 @@ export function PropostasTable() {
 
   const handleCancelarApolice = async (data: {
     dataCancelamento: string
-    motivoNaoCancelamento: string
+    motivoNaoRenovacao: string
   }) => {
     try {
       await cancelarApolice(selectedPropostaId, data)

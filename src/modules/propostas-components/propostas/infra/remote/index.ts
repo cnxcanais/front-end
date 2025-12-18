@@ -95,7 +95,7 @@ export async function cancelarApolice(
   id: string,
   data: {
     dataCancelamento: string
-    motivoNaoCancelamento: string
+    motivoNaoRenovacao: string
   }
 ) {
   await updateProposta(id, { ...data, situacao: "Cancelada" })
