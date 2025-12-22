@@ -69,8 +69,9 @@ export function PropostaTab({
             const corretoraId = segurados?.data?.find(
               (s) => s.id === seguradoId
             ).corretoraId
-            if (corretoraId) setValue("corretoraId", corretoraId)
-            if (produtorId) setValue("produtorId", produtorId)
+
+            setValue("corretoraId", corretoraId || "")
+            setValue("produtorId", produtorId || "")
           }}
           options={
             segurados?.data?.map((s: Segurado.Type) => ({
