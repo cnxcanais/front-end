@@ -5,7 +5,7 @@ import { toast } from "sonner"
 export async function importSegurados(file: File) {
   const formData = new FormData()
   formData.append("file", file)
-  formData.append("duplicationBehavior", "SKIP")
+  formData.append("duplicationBehavior", "UPDATE")
 
   try {
     const { data } = await bffApi.post<Segurado.ImportRequest>(

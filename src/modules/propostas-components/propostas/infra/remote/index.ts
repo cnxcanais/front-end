@@ -136,7 +136,7 @@ export async function importPropostas(file: File) {
   try {
     const formData = new FormData()
     formData.append("file", file)
-    formData.append("behavior", "SKIP")
+    formData.append("behavior", "UPDATE")
     const response = await bffApi.post("/propostas-apolices/import", formData, {
       headers: {
         "Content-Type": "multipart/form-data",
