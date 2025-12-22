@@ -2,8 +2,6 @@ import {
   ComissaoSobreEnum,
   FormaComissaoEnum,
   FormaRepasseEnum,
-  OrigemEnum,
-  RenovacaoEnum,
   RepasseSobreEnum,
   SituacaoEnum,
   SituacaoParcelaEnum,
@@ -60,18 +58,26 @@ export interface Proposta {
   anoModeloVeiculo?: number
   complementoItem?: string
   tipoDocumento: TipoDocumentoEnum
-  origem: OrigemEnum
+  tomadorId?: string
+  propostaOriginalId?: string
+  apoliceRaiz?: string
+  ultimoEndossoId?: string
+  possuiEndossoMaisRecente: boolean
+  dataCancelamento?: string
+  motivoCancelamento?: string
+  origem?: "Manual" | "Importação" | "Integração"
+  tomadorNome?: string
+  numeroVersao?: number
   situacao: SituacaoEnum
   inicioVigencia: string
   fimVigencia: string
   dataEmissao?: string
   numeroApolice?: string
-  numeroEndosso?: string
-  renovacao?: RenovacaoEnum
   motivoNaoRenovacao?: string
   percentualComissao: number
   comissaoSobre: ComissaoSobreEnum
   formaComissao: FormaComissaoEnum
+  produtoRenovavel: boolean
   valorComissao: number
   premioLiquido: number
   valoresAdicionais?: number

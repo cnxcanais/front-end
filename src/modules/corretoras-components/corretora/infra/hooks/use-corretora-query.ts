@@ -11,6 +11,7 @@ export function useCorretoraQuery(
     return useQuery({
       queryKey: ["corretora", page, limit, filters],
       queryFn: () => getCorretoras(page, limit, filters),
+      staleTime: 1000 * 60 * 5, // 5 minutes
     })
   } catch (error) {
     console.error("Error in useCorretoraQuery:", error)

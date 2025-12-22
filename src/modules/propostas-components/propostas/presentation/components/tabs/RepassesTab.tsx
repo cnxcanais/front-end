@@ -1,13 +1,15 @@
+import { Produtor } from "@/@types/produtor"
 import { Button } from "@/core/components/Button"
 import * as Input from "@/core/components/Input"
 import { SelectInput } from "@/core/components/SelectInput"
+import { PropostaFormSchema } from "../../validation/schema"
 
 interface RepassesTabProps {
   register: any
   errors: any
-  formData: any
+  formData: PropostaFormSchema
   setValue: any
-  produtores: any
+  produtores: Produtor.GetResponse
 }
 
 export function RepassesTab({
@@ -24,7 +26,7 @@ export function RepassesTab({
         <Button
           onClick={() => {
             const newRepasse = {
-              produtorId: "",
+              produtorId: formData.produtorId || "",
               percentualRepasse: undefined,
               repasseSobre: "Premio Liquido" as const,
               formaRepasse: "No recebimento" as const,
@@ -81,10 +83,9 @@ export function RepassesTab({
                 <Input.Root className="mt-2">
                   <Input.Control
                     type="number"
-                    {...register(
-                      `repasses.${index}.percentualRepasse` as any,
-                      { valueAsNumber: true }
-                    )}
+                    {...register(`repasses.${index}.percentualRepasse` as any, {
+                      valueAsNumber: true,
+                    })}
                   />
                 </Input.Root>
                 {errors.repasses?.[index]?.percentualRepasse && (

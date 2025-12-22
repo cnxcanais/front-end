@@ -11,6 +11,7 @@ export function useProdutoQuery(
     return useQuery({
       queryKey: ["produtos", page, limit, filters],
       queryFn: () => getProdutos(page, limit, filters),
+      staleTime: 1000 * 60 * 5, // 5 minutes
     })
   } catch (error) {
     console.error("Erro ao buscar produtos:", error)

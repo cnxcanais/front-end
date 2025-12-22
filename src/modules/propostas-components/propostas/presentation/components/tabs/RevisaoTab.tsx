@@ -1,7 +1,12 @@
+import { Corretora } from "@/@types/corretora"
+import { Produtor } from "@/@types/produtor"
+import { Segurado } from "@/@types/segurado"
+import { Seguradora } from "@/@types/seguradora"
 import { Button } from "@/core/components/Button"
 import * as Input from "@/core/components/Input"
 import { SelectInput } from "@/core/components/SelectInput"
 import dynamic from "next/dynamic"
+import { PropostaFormSchema } from "../../validation/schema"
 
 import { Controller } from "react-hook-form"
 
@@ -12,12 +17,12 @@ const ReactQuill = dynamic(() => import("react-quill-new"), { ssr: false })
 interface RevisaoTabProps {
   register: any
   errors: any
-  formData: any
+  formData: PropostaFormSchema
   setValue: any
-  segurados: any
-  seguradoras: any
-  produtores: any
-  corretoras: any
+  segurados: Segurado.GetResponse
+  seguradoras: Seguradora.GetResponse
+  produtores: Produtor.GetResponse
+  corretoras: Corretora.GetResponse
   ramos: any
   control: any
   produtosOptions: any

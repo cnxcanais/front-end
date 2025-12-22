@@ -80,12 +80,12 @@ export function PropostasTable() {
   const [openErrorsModal, setOpenErrorsModal] = useState(false)
   const [importErrorsData, setImportErrorsData] = useState<ImportErrors>()
 
-  const { data: segurados } = useSeguradoQuery(1, 100)
-  const { data: corretoras } = useCorretoraQuery(1, 100)
-  const { data: produtores } = useProdutorQuery(1, 100)
-  const { data: seguradoras } = useSeguradoraQuery(1, 100)
-  const { data: ramos } = useRamoQuery(1, 100)
-  const { data: produtos } = useProdutoQuery(1, 100)
+  const { data: segurados } = useSeguradoQuery(1, -1)
+  const { data: corretoras } = useCorretoraQuery(1, -1)
+  const { data: produtores } = useProdutorQuery(1, -1)
+  const { data: seguradoras } = useSeguradoraQuery(1, -1)
+  const { data: ramos } = useRamoQuery(1, -1)
+  const { data: produtos } = useProdutoQuery(1, -1)
 
   useEffect(() => {
     if (ramoId && produtos?.data) {

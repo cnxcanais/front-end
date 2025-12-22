@@ -11,6 +11,7 @@ export function useSeguradoQuery(
     return useQuery({
       queryKey: ["segurado", page, limit, filters],
       queryFn: () => getSegurados(page, limit, filters),
+      staleTime: 1000 * 60 * 5, // 5 minutes
     })
   } catch (error) {
     console.error("Error in useSeguradoQuery:", error)

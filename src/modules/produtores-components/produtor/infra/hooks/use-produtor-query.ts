@@ -11,6 +11,7 @@ export function useProdutorQuery(
     return useQuery({
       queryKey: ["produtor", page, limit, filters],
       queryFn: () => getProdutores(page, limit, filters),
+      staleTime: 1000 * 60 * 5, // 5 minutes
     })
   } catch (error) {
     console.error("Error in useProdutorQuery:", error)

@@ -11,6 +11,7 @@ export function useRamoQuery(
     return useQuery({
       queryKey: ["ramos", page, limit, filters],
       queryFn: () => getRamos(page, limit, filters),
+      staleTime: 1000 * 60 * 5, // 5 minutes
     })
   } catch (error) {
     console.error("Erro ao buscar ramos:", error)

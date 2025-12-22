@@ -51,66 +51,82 @@ const repasseSchema = z.object({
   ),
 })
 
-export const propostaFormSchema = z.object({
-  numeroProposta: z.string().min(1, "Número da proposta é obrigatório").max(20),
-  seguradoId: z.string().min(1, "Segurado é obrigatório"),
-  corretoraId: z.string().min(1, "Corretora é obrigatória"),
-  produtorId: z.string().min(1, "Produtor é obrigatório"),
-  seguradoraId: z.string().min(1, "Seguradora é obrigatória"),
-  ramoId: z.string().min(1, "Ramo é obrigatório"),
-  produtoId: z.string().optional(),
-  placaVeiculo: z.string().nullable().optional(),
-  chassiVeiculo: z.string().nullable().optional(),
-  modeloVeiculo: z.string().nullable().optional(),
-  marcaVeiculo: z.string().nullable().optional(),
-  anoFabricacaoVeiculo: z.number().nullable().optional(),
-  anoModeloVeiculo: z.number().nullable().optional(),
-  complementoItem: z.string().nullable().optional(),
-  tipoDocumento: z.enum(["Proposta", "Apólice", "Renovação", "Endosso"], {
-    errorMap: () => ({ message: "Tipo de documento é obrigatório" }),
-  }),
-  origem: z.enum(["Manual", "Importação", "Integração"], {
-    errorMap: () => ({ message: "Origem é obrigatória" }),
-  }),
-  situacao: z.enum(["Ativo", "Inativo"]),
-  observacoes: z.string().nullable().optional(),
-  inicioVigencia: z.string().min(1, "Início da vigência é obrigatório"),
-  fimVigencia: z.string().min(1, "Fim da vigência é obrigatório"),
-  dataEmissao: z.string().optional(),
-  numeroApolice: z.string().nullable().optional(),
-  numeroEndosso: z.string().nullable().optional(),
-  renovacao: z.enum(["Renovável", "Não Renovável"]).nullable().optional(),
-  motivoNaoRenovacao: z.string().nullable().optional(),
-  percentualComissao: z
-    .number({
-      invalid_type_error: "Percentual de comissão deve ser um número válido",
-    })
-    .min(0, "Percentual deve ser maior ou igual a 0")
-    .max(100, "Percentual deve ser menor ou igual a 100")
-    .nullable(),
-  comissaoSobre: z.enum(
-    ["Premio Liquido", "Premio Comercial", "Premio Total"],
+export const propostaFormSchema = z
+  .object({
+    numeroProposta: z
+      .string()
+      .min(1, "Número da proposta é obrigatório")
+      .max(20),
+    seguradoId: z.string().min(1, "Segurado é obrigatório"),
+    corretoraId: z.string().min(1, "Corretora é obrigatória"),
+    produtorId: z.string().min(1, "Produtor é obrigatório"),
+    seguradoraId: z.string().min(1, "Seguradora é obrigatória"),
+    ramoId: z.string().min(1, "Ramo é obrigatório"),
+    produtoId: z.string().optional(),
+    tomadorId: z.string().optional(),
+    placaVeiculo: z.string().nullable().optional(),
+    chassiVeiculo: z.string().nullable().optional(),
+    modeloVeiculo: z.string().nullable().optional(),
+    marcaVeiculo: z.string().nullable().optional(),
+    anoFabricacaoVeiculo: z.number().nullable().optional(),
+    anoModeloVeiculo: z.number().nullable().optional(),
+    complementoItem: z.string().nullable().optional(),
+    tipoDocumento: z.enum(["Proposta", "Apólice", "Renovação", "Endosso"], {
+      errorMap: () => ({ message: "Tipo de documento é obrigatório" }),
+    }),
+    origem: z.enum(["Manual", "Importação", "Integração"], {
+      errorMap: () => ({ message: "Origem é obrigatória" }),
+    }),
+    situacao: z.enum(["Ativo", "Inativo"]),
+    observacoes: z.string().nullable().optional(),
+    inicioVigencia: z.string().min(1, "Início da vigência é obrigatório"),
+    fimVigencia: z.string().min(1, "Fim da vigência é obrigatório"),
+    dataEmissao: z.string().optional(),
+    dataCancelamento: z.string().optional(),
+    motivoCancelamento: z.string().optional(),
+    numeroApolice: z.string().nullable().optional(),
+    motivoNaoRenovacao: z.string().nullable().optional(),
+    percentualComissao: z
+      .number({
+        invalid_type_error: "Percentual de comissão deve ser um número válido",
+      })
+      .min(0, "Percentual deve ser maior ou igual a 0")
+      .max(100, "Percentual deve ser menor ou igual a 100")
+      .nullable(),
+    comissaoSobre: z.enum(
+      ["Premio Liquido", "Premio Comercial", "Premio Total"],
+      {
+        errorMap: () => ({ message: "Comissão sobre é obrigatória" }),
+      }
+    ),
+    formaComissao: z.enum(["Na Parcela", "Antecipado", "Recorrencia"], {
+      errorMap: () => ({ message: "Forma de comissão é obrigatória" }),
+    }),
+    valorComissao: z
+      .number({
+        invalid_type_error: "Valor de comissão deve ser um número válido",
+      })
+      .min(0, "Valor de comissão deve ser maior ou igual a 0")
+      .nullable(),
+    premioLiquido: z
+      .number({
+        invalid_type_error: "Prêmio líquido deve ser um número válido",
+      })
+      .min(0, "Prêmio líquido deve ser maior ou igual a 0")
+      .nullable(),
+    valoresAdicionais: z.number().nullable().optional(),
+    iof: z.number().nullable().optional(),
+    parcelas: z.array(parcelaSchema),
+    repasses: z.array(repasseSchema),
+  })
+  .refine(
+    (data) => {
+      return data.tomadorId !== data.produtorId
+    },
     {
-      errorMap: () => ({ message: "Comissão sobre é obrigatória" }),
+      message: "Tomador não pode ser o mesmo que o produtor",
+      path: ["tomadorId"],
     }
-  ),
-  formaComissao: z.enum(["Na Parcela", "Antecipado", "Recorrencia"], {
-    errorMap: () => ({ message: "Forma de comissão é obrigatória" }),
-  }),
-  valorComissao: z
-    .number({
-      invalid_type_error: "Valor de comissão deve ser um número válido",
-    })
-    .min(0, "Valor de comissão deve ser maior ou igual a 0")
-    .nullable(),
-  premioLiquido: z
-    .number({ invalid_type_error: "Prêmio líquido deve ser um número válido" })
-    .min(0, "Prêmio líquido deve ser maior ou igual a 0")
-    .nullable(),
-  valoresAdicionais: z.number().nullable().optional(),
-  iof: z.number().nullable().optional(),
-  parcelas: z.array(parcelaSchema),
-  repasses: z.array(repasseSchema),
-})
+  )
 
 export type PropostaFormSchema = z.infer<typeof propostaFormSchema>

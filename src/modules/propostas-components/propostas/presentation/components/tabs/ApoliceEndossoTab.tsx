@@ -1,18 +1,24 @@
+import { Proposta } from "@/@types/proposta"
 import * as Input from "@/core/components/Input"
-import { SelectInput } from "@/core/components/SelectInput"
+import dynamic from "next/dynamic"
+import { Controller } from "react-hook-form"
 
 interface ApoliceEndossoTabProps {
   register: any
   errors: any
-  formData: any
-  setValue: any
+  control: any
+  proposta: Proposta
 }
+
+import "react-quill-new/dist/quill.snow.css"
+
+const ReactQuill = dynamic(() => import("react-quill-new"), { ssr: false })
 
 export function ApoliceEndossoTab({
   register,
   errors,
-  formData,
-  setValue,
+  control,
+  proposta,
 }: ApoliceEndossoTabProps) {
   return (
     <div className="grid grid-cols-2 gap-4">
@@ -38,45 +44,23 @@ export function ApoliceEndossoTab({
           </span>
         )}
       </div>
-      <div>
-        <label>Número do Endosso</label>
-        <Input.Root className="mt-2">
-          <Input.Control {...register("numeroEndosso")} />
-        </Input.Root>
-        {errors.numeroEndosso && (
-          <span className="text-xs text-red-500">
-            {errors.numeroEndosso.message}
-          </span>
-        )}
-      </div>
-      <div>
-        <SelectInput
-          label="Renovação"
-          field_name="renovacao"
-          value={formData.renovacao}
-          onChange={(e) => setValue("renovacao", e.target.value as any)}
-          options={[
-            { text: "Renovável", value: "Renovável" },
-            { text: "Não Renovável", value: "Não Renovável" },
-          ]}
-        />
-        {errors.renovacao && (
-          <span className="text-xs text-red-500">
-            {errors.renovacao.message}
-          </span>
-        )}
-      </div>
-      {formData.renovacao === "Não Renovável" && (
-        <div className="col-span-2">
-          <label>Motivo da Não Renovação</label>
-          <Input.Root className="mt-2">
-            <Input.Control {...register("motivoNaoRenovacao")} />
-          </Input.Root>
-          {errors.motivoNaoRenovacao && (
-            <span className="text-xs text-red-500">
-              {errors.motivoNaoRenovacao.message}
-            </span>
-          )}
+
+      {proposta?.produtoRenovavel && (
+        <div className="rounded-lg bg-gray-50 p-6">
+          <h3 className="mb-4 text-lg font-semibold">Observações</h3>
+          <Controller
+            name="motivoNaoRenovacao"
+            control={control}
+            render={({ field }) => (
+              <div className="bg-white">
+                <ReactQuill
+                  theme="snow"
+                  value={field.value || ""}
+                  onChange={field.onChange}
+                />
+              </div>
+            )}
+          />
         </div>
       )}
     </div>

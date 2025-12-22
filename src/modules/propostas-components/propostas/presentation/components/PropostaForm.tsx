@@ -100,8 +100,6 @@ export function PropostaForm({ proposta, isEdit }: PropostaFormProps) {
       fimVigencia: sourceData?.fimVigencia || "",
       dataEmissao: sourceData?.dataEmissao || "",
       numeroApolice: sourceData?.numeroApolice || "",
-      numeroEndosso: sourceData?.numeroEndosso || "",
-      renovacao: sourceData?.renovacao || "Renovável",
       motivoNaoRenovacao: sourceData?.motivoNaoRenovacao || "",
       percentualComissao: sourceData?.percentualComissao || undefined,
       comissaoSobre: (sourceData?.comissaoSobre as any) || "Premio Liquido",
@@ -131,15 +129,14 @@ export function PropostaForm({ proposta, isEdit }: PropostaFormProps) {
   })
 
   const formData = watch()
-  console.log(errors)
 
   const { push } = useRouter()
-  const { data: segurados } = useSeguradoQuery(1, 100)
-  const { data: corretoras } = useCorretoraQuery(1, 100)
-  const { data: produtores } = useProdutorQuery(1, 100)
-  const { data: seguradoras } = useSeguradoraQuery(1, 100)
-  const { data: ramos } = useRamoQuery(1, 100)
-  const { data: produtos } = useProdutoQuery(1, 100)
+  const { data: segurados } = useSeguradoQuery(1, -1, { status: "ATIVO" })
+  const { data: corretoras } = useCorretoraQuery(1, -1)
+  const { data: produtores } = useProdutorQuery(1, -1)
+  const { data: seguradoras } = useSeguradoraQuery(1, -1)
+  const { data: ramos } = useRamoQuery(1, -1)
+  const { data: produtos } = useProdutoQuery(1, -1)
 
   const produtosOptions = useMemo(() => {
     if (!produtos?.data || !formData.ramoId) return []
@@ -199,11 +196,7 @@ export function PropostaForm({ proposta, isEdit }: PropostaFormProps) {
           isRenovacao && renovacaoData ?
             renovacaoData.numeroApolice
           : propostaToDuplicate.numeroApolice,
-        numeroEndosso:
-          isEndosso && endossoData ?
-            endossoData.numeroEndosso
-          : propostaToDuplicate.numeroEndosso,
-        renovacao: propostaToDuplicate.renovacao,
+
         motivoNaoRenovacao: propostaToDuplicate.motivoNaoRenovacao,
         percentualComissao: propostaToDuplicate.percentualComissao,
         comissaoSobre: propostaToDuplicate.comissaoSobre as any,
@@ -532,8 +525,8 @@ export function PropostaForm({ proposta, isEdit }: PropostaFormProps) {
             seguradoras={seguradoras}
             produtores={produtores}
             corretoras={corretoras}
-            ramos={ramos}
             produtosOptions={produtosOptions}
+            ramos={ramos}
             isEndosso={isEndosso}
             isRenovacao={isRenovacao}
           />
@@ -553,8 +546,8 @@ export function PropostaForm({ proposta, isEdit }: PropostaFormProps) {
           <ApoliceEndossoTab
             register={register}
             errors={errors}
-            formData={formData}
-            setValue={setValue}
+            proposta={propostaToDuplicate}
+            control={control}
           />
         )}
 

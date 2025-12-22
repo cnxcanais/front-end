@@ -1,5 +1,6 @@
 import { Corretora } from "@/@types/corretora"
 import { Produtor } from "@/@types/produtor"
+import { Ramo } from "@/@types/ramo"
 import { Segurado } from "@/@types/segurado"
 import { Seguradora } from "@/@types/seguradora"
 import * as Input from "@/core/components/Input"
@@ -14,8 +15,11 @@ interface PropostaTabProps {
   seguradoras: Seguradora.GetResponse
   produtores: Produtor.GetResponse
   corretoras: Corretora.GetResponse
+  produtosOptions: {
+    text: string
+    value: string
+  }[]
   ramos: any
-  produtosOptions: any
   isEndosso?: boolean
   isRenovacao?: boolean
 }
@@ -69,7 +73,7 @@ export function PropostaTab({
             if (produtorId) setValue("produtorId", produtorId)
           }}
           options={
-            segurados?.data?.map((s: any) => ({
+            segurados?.data?.map((s: Segurado.Type) => ({
               text: s.nomeRazaoSocial,
               value: s.id,
             })) || []
@@ -90,7 +94,7 @@ export function PropostaTab({
           value={formData.seguradoraId}
           onChange={(e) => setValue("seguradoraId", e.target.value)}
           options={
-            seguradoras?.data?.map((s: any) => ({
+            seguradoras?.data?.map((s: Seguradora.Type) => ({
               text: s.razaoSocial,
               value: s.id,
             })) || []
@@ -114,7 +118,7 @@ export function PropostaTab({
             setValue("produtorId", produtorId)
           }}
           options={
-            produtores?.data?.map((p: any) => ({
+            produtores?.data?.map((p: Produtor.Type) => ({
               text: p.nome,
               value: p.id,
             })) || []
@@ -136,7 +140,7 @@ export function PropostaTab({
           value={formData.corretoraId}
           onChange={(e) => setValue("corretoraId", e.target.value)}
           options={
-            corretoras?.data?.map((c: any) => ({
+            corretoras?.data?.map((c: Corretora.Type) => ({
               text: c.razaoSocial,
               value: c.id,
             })) || []
@@ -156,7 +160,7 @@ export function PropostaTab({
           value={formData.ramoId}
           onChange={(e) => setValue("ramoId", e.target.value)}
           options={
-            ramos?.data?.map((r: any) => ({
+            ramos?.data?.map((r: Ramo) => ({
               text: r.descricao,
               value: r.id,
             })) || []
@@ -170,11 +174,32 @@ export function PropostaTab({
       </div>
       <div>
         <SelectInput
+          label="Tomador"
+          field_name="tomadorId"
+          value={formData.tomadorId}
+          onChange={(e) => setValue("tomadorId", e.target.value)}
+          options={
+            segurados?.data?.map((s: Segurado.Type) => ({
+              text: s.nomeRazaoSocial,
+              value: s.id,
+            })) || []
+          }
+          required
+          disabled={isDisabled}
+        />
+        {errors.tomadorId && (
+          <span className="text-xs text-red-500">
+            {errors.tomadorId.message}
+          </span>
+        )}
+      </div>
+      <div>
+        <SelectInput
           label="Produto"
           field_name="produtoId"
           value={formData.produtoId}
           onChange={(e) => setValue("produtoId", e.target.value)}
-          options={produtosOptions}
+          options={produtosOptions || []}
           disabled={isDisabled}
         />
         {errors.produtoId && (
@@ -188,7 +213,7 @@ export function PropostaTab({
           label="Tipo de Documento *"
           field_name="tipoDocumento"
           value={formData.tipoDocumento}
-          onChange={(e) => setValue("tipoDocumento", e.target.value as any)}
+          onChange={(e) => setValue("tipoDocumento", e.target.value)}
           options={[
             { text: "Proposta", value: "Proposta" },
             { text: "Apólice", value: "Apólice" },
@@ -208,7 +233,7 @@ export function PropostaTab({
           label="Origem *"
           field_name="origem"
           value={formData.origem}
-          onChange={(e) => setValue("origem", e.target.value as any)}
+          onChange={(e) => setValue("origem", e.target.value)}
           options={[
             { text: "Manual", value: "Manual" },
             { text: "Importação", value: "Importação" },
