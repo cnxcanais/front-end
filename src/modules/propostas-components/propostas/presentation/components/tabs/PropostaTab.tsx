@@ -40,7 +40,10 @@ export function PropostaTab({
       <div>
         <label>Número da Proposta *</label>
         <Input.Root className="mt-2">
-          <Input.Control {...register("numeroProposta")} disabled={isDisabled} />
+          <Input.Control
+            {...register("numeroProposta")}
+            disabled={isDisabled}
+          />
         </Input.Root>
         {errors.numeroProposta && (
           <span className="text-xs text-red-500">
@@ -53,7 +56,18 @@ export function PropostaTab({
           label="Segurado *"
           field_name="seguradoId"
           value={formData.seguradoId}
-          onChange={(e) => setValue("seguradoId", e.target.value)}
+          onChange={(e) => {
+            const seguradoId = e.target.value
+            setValue("seguradoId", seguradoId)
+            const produtorId = segurados?.data?.find(
+              (s) => s.id === seguradoId
+            ).produtorId
+            const corretoraId = segurados?.data?.find(
+              (s) => s.id === seguradoId
+            ).corretoraId
+            if (corretoraId) setValue("corretoraId", corretoraId)
+            if (produtorId) setValue("produtorId", produtorId)
+          }}
           options={
             segurados?.data?.map((s: any) => ({
               text: s.nomeRazaoSocial,
@@ -98,8 +112,6 @@ export function PropostaTab({
           onChange={(e) => {
             const produtorId = e.target.value
             setValue("produtorId", produtorId)
-            const corretoraId = produtores?.data?.find((p) => p.id === produtorId)?.corretoraId
-            if (corretoraId) setValue("corretoraId", corretoraId)
           }}
           options={
             produtores?.data?.map((p: any) => ({
@@ -121,10 +133,7 @@ export function PropostaTab({
           label="Corretora *"
           disabled
           field_name="corretoraId"
-          value={
-            produtores?.data?.find((prod) => prod.id === formData.produtorId)
-              ?.corretoraId || ""
-          }
+          value={formData.corretoraId}
           onChange={(e) => setValue("corretoraId", e.target.value)}
           options={
             corretoras?.data?.map((c: any) => ({
