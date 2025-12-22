@@ -26,6 +26,7 @@ import {
   SituacaoEnum,
   TipoDocumentoEnum,
 } from "@/modules/propostas-components/types/enums"
+import { ImportErrors } from "@/modules/propostas-components/types/importErrors"
 import { useRamoQuery } from "@/modules/ramos-components/ramos/infra/hooks/use-ramo-query"
 import { useSeguradoraQuery } from "@/modules/seguradoras-components/seguradora/infra/hooks/use-seguradora-query"
 import { useSeguradoQuery } from "@/modules/segurados-components/segurado/infra/hooks/use-segurado-query"
@@ -49,6 +50,7 @@ import { DashboardIndicators } from "./DashboardIndicators"
 import { EmitirApoliceModal } from "./EmitirApoliceModal"
 import { EndossarApoliceModal } from "./EndossarApoliceModal"
 import { ExportPropostasModal } from "./ExportPropostasModal"
+import { ImportErrorsModal } from "./ImportErrorsModal"
 import { ImportPropostasModal } from "./ImportPropostasModal"
 import { RenovarApoliceModal } from "./RenovarApoliceModal"
 
@@ -75,6 +77,8 @@ export function PropostasTable() {
   const [openNaoRenovarModal, setOpenNaoRenovarModal] = useState(false)
   const [openCancelarApoliceModal, setOpenCancelarApoliceModal] =
     useState(false)
+  const [openErrorsModal, setOpenErrorsModal] = useState(false)
+  const [importErrorsData, setImportErrorsData] = useState<ImportErrors>()
 
   const { data: segurados } = useSeguradoQuery(1, 100)
   const { data: corretoras } = useCorretoraQuery(1, 100)
@@ -308,7 +312,11 @@ export function PropostasTable() {
   const handleImport = async (file: File) => {
     try {
       const response = await importPropostas(file)
-      if (response.erros) toast.success("Propostas importadas com sucesso!")
+      console.log(response)
+      if (response.erros) {
+        setOpenErrorsModal(true)
+        setImportErrorsData(response)
+      }
       refetch()
     } catch (error) {
       console.error("Erro ao importar propostas:", error)
@@ -785,6 +793,12 @@ export function PropostasTable() {
         open={openImportModal}
         onClose={() => setOpenImportModal(false)}
         onImport={handleImport}
+      />
+
+      <ImportErrorsModal
+        open={openErrorsModal}
+        onClose={() => setOpenErrorsModal(false)}
+        detalheErros={importErrorsData}
       />
 
       <EmitirApoliceModal
