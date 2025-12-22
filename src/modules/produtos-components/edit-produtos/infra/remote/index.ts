@@ -1,5 +1,5 @@
+import { Produto } from "@/@types/produto"
 import { bffApi } from "@/lib/axios"
-import { Produto } from "../../../produtos/infra/remote"
 
 export async function getProdutoById(id: string) {
   const response = await bffApi.get<Produto>(`/produtos/${id}`)
