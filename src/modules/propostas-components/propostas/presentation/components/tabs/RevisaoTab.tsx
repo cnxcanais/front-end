@@ -5,7 +5,6 @@ import dynamic from "next/dynamic"
 
 import { Controller } from "react-hook-form"
 
-//@ts-expect-error css import
 import "react-quill-new/dist/quill.snow.css"
 
 const ReactQuill = dynamic(() => import("react-quill-new"), { ssr: false })
