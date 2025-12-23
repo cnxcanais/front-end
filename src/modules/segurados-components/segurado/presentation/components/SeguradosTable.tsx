@@ -247,6 +247,10 @@ export function SeguradosTable() {
   const handleFilter = (newFilters: Record<string, string>) => {
     setFilters(newFilters)
     setPage(1)
+    setDashboardFilter(null)
+    if (searchParams.get("ids")) {
+      push("/segurados")
+    }
   }
 
   useEffect(() => {

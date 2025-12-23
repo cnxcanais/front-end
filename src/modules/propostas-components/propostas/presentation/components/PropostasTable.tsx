@@ -740,6 +740,10 @@ export function PropostasTable() {
     }
     setFilters(updatedFilters)
     setPage(1)
+    setDashboardFilter(null)
+    if (searchParams.get("ids")) {
+      push("/propostas")
+    }
   }
 
   useEffect(() => {
