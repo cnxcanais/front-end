@@ -3,15 +3,16 @@ import * as Input from "@/core/components/Input"
 interface VeiculoTabProps {
   register: any
   errors: any
+  readOnly?: boolean
 }
 
-export function VeiculoTab({ register, errors }: VeiculoTabProps) {
+export function VeiculoTab({ register, errors, readOnly }: VeiculoTabProps) {
   return (
     <div className="grid grid-cols-2 gap-4">
       <div>
         <label>Placa do Veículo</label>
         <Input.Root className="mt-2">
-          <Input.Control {...register("placaVeiculo")} />
+          <Input.Control {...register("placaVeiculo")} disabled={readOnly} />
         </Input.Root>
         {errors.placaVeiculo && (
           <span className="text-xs text-red-500">
@@ -22,7 +23,7 @@ export function VeiculoTab({ register, errors }: VeiculoTabProps) {
       <div>
         <label>Chassi do Veículo</label>
         <Input.Root className="mt-2">
-          <Input.Control {...register("chassiVeiculo")} />
+          <Input.Control {...register("chassiVeiculo")} disabled={readOnly} />
         </Input.Root>
         {errors.chassiVeiculo && (
           <span className="text-xs text-red-500">
@@ -33,7 +34,7 @@ export function VeiculoTab({ register, errors }: VeiculoTabProps) {
       <div>
         <label>Marca do Veículo</label>
         <Input.Root className="mt-2">
-          <Input.Control {...register("marcaVeiculo")} />
+          <Input.Control {...register("marcaVeiculo")} disabled={readOnly} />
         </Input.Root>
         {errors.marcaVeiculo && (
           <span className="text-xs text-red-500">
@@ -44,7 +45,7 @@ export function VeiculoTab({ register, errors }: VeiculoTabProps) {
       <div>
         <label>Modelo do Veículo</label>
         <Input.Root className="mt-2">
-          <Input.Control {...register("modeloVeiculo")} />
+          <Input.Control {...register("modeloVeiculo")} disabled={readOnly} />
         </Input.Root>
         {errors.modeloVeiculo && (
           <span className="text-xs text-red-500">
@@ -58,6 +59,7 @@ export function VeiculoTab({ register, errors }: VeiculoTabProps) {
           <Input.Control
             type="number"
             {...register("anoFabricacaoVeiculo", { valueAsNumber: true })}
+            disabled={readOnly}
           />
         </Input.Root>
         {errors.anoFabricacaoVeiculo && (
@@ -72,6 +74,7 @@ export function VeiculoTab({ register, errors }: VeiculoTabProps) {
           <Input.Control
             type="number"
             {...register("anoModeloVeiculo", { valueAsNumber: true })}
+            disabled={readOnly}
           />
         </Input.Root>
         {errors.anoModeloVeiculo && (
@@ -83,7 +86,7 @@ export function VeiculoTab({ register, errors }: VeiculoTabProps) {
       <div className="col-span-2">
         <label>Complemento do Item</label>
         <Input.Root className="mt-2">
-          <Input.Control {...register("complementoItem")} />
+          <Input.Control {...register("complementoItem")} disabled={readOnly} />
         </Input.Root>
         {errors.complementoItem && (
           <span className="text-xs text-red-500">

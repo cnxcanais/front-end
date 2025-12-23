@@ -33,6 +33,7 @@ import { useSeguradoraQuery } from "@/modules/seguradoras-components/seguradora/
 import { useSeguradoQuery } from "@/modules/segurados-components/segurado/infra/hooks/use-segurado-query"
 import {
   Copy,
+  Eye,
   FileXls,
   MoneyWavy,
   Note,
@@ -62,7 +63,7 @@ export function PropostasTable() {
   const { data, isLoading, refetch } = usePropostaQuery(page, limit, filters)
   const [ramoId, setRamoId] = useState("")
   const { push } = useRouter()
-  const isAdmin = getCookie("perfilId") !== process.env.NEXT_PUBLIC_ADM_ID
+  const isAdmin = getCookie("perfilId") === process.env.NEXT_PUBLIC_ADM_ID
 
   const [open, setOpen] = useState(false)
   const [id, setId] = useState("")
@@ -419,6 +420,7 @@ export function PropostasTable() {
       accessor: "id",
       render: (value: string) => (
         <ModalFilesTrigger
+          isAdmin={isAdmin}
           entityId={value}
           entityType={EntityType.PROPOSTA_APOLICE}
         />
@@ -429,6 +431,13 @@ export function PropostasTable() {
       accessor: "id",
       render: (value: string, row: any) => (
         <div className="flex min-w-[100px] max-w-[150px] flex-wrap gap-2">
+          <span title="Visualizar">
+            <Eye
+              className="cursor-pointer hover:text-gray-500"
+              size={24}
+              onClick={() => push(`/propostas/view/${value}`)}
+            />
+          </span>
           {row.tipoDocumento === TipoDocumentoEnum.PROPOSTA &&
             row.situacao === SituacaoEnum.ATIVO &&
             isAdmin && (
@@ -758,31 +767,35 @@ export function PropostasTable() {
         }}
       />
 
-      <div className="flex items-center justify-between">
-        <div className="flex h-full gap-4">
-          <Button onClick={() => push("/propostas/create")} variant="secondary">
-            Cadastrar
-          </Button>
-        </div>
-        {propostas.length > 0 && (
-          <div className="flex items-center gap-2">
+      {isAdmin && (
+        <div className="flex items-center justify-between">
+          <div className="flex h-full gap-4">
             <Button
-              className="flex items-center gap-1"
-              variant="secondary"
-              onClick={() => setOpenImportModal(true)}>
-              <FileXls size={22} />
-              Importar
-            </Button>
-            <Button
-              className="flex items-center gap-1"
-              variant="secondary"
-              onClick={() => setOpenExportModal(true)}>
-              <FileXls size={22} />
-              Exportar
+              onClick={() => push("/propostas/create")}
+              variant="secondary">
+              Cadastrar
             </Button>
           </div>
-        )}
-      </div>
+          {propostas.length > 0 && (
+            <div className="flex items-center gap-2">
+              <Button
+                className="flex items-center gap-1"
+                variant="secondary"
+                onClick={() => setOpenImportModal(true)}>
+                <FileXls size={22} />
+                Importar
+              </Button>
+              <Button
+                className="flex items-center gap-1"
+                variant="secondary"
+                onClick={() => setOpenExportModal(true)}>
+                <FileXls size={22} />
+                Exportar
+              </Button>
+            </div>
+          )}
+        </div>
+      )}
 
       <ExportPropostasModal
         open={openExportModal}

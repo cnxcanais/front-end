@@ -27,6 +27,7 @@ interface RevisaoTabProps {
   control: any
   produtosOptions: any
   isAutomovelRamo: boolean
+  readOnly?: boolean
 }
 
 export function RevisaoTab({
@@ -42,6 +43,7 @@ export function RevisaoTab({
   ramos,
   produtosOptions,
   isAutomovelRamo,
+  readOnly,
 }: RevisaoTabProps) {
   return (
     <>
@@ -51,7 +53,7 @@ export function RevisaoTab({
           <div>
             <label>Número da Proposta *</label>
             <Input.Root className="mt-2">
-              <Input.Control {...register("numeroProposta")} />
+              <Input.Control {...register("numeroProposta")} disabled={readOnly} />
             </Input.Root>
             {errors.numeroProposta && (
               <span className="text-xs text-red-500">
@@ -71,6 +73,7 @@ export function RevisaoTab({
                   value: s.id,
                 })) || []
               }
+              disabled={readOnly}
             />
             {errors.seguradoId && (
               <span className="text-xs text-red-500">
@@ -536,6 +539,7 @@ export function RevisaoTab({
                 theme="snow"
                 value={field.value || ""}
                 onChange={field.onChange}
+                readOnly={readOnly}
               />
             </div>
           )}

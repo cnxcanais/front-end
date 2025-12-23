@@ -11,6 +11,7 @@ interface PremioParcelasTabProps {
   setValue: UseFormSetValue<PropostaFormSchema>
   setShowParcelasModal: (show: boolean) => void
   premioLiquido: number
+  readOnly?: boolean
 }
 
 export function PremioParcelasTab({
@@ -20,6 +21,7 @@ export function PremioParcelasTab({
   setValue,
   setShowParcelasModal,
   premioLiquido,
+  readOnly,
 }: PremioParcelasTabProps) {
   const handleOpenParcelaModal = () => {
     console.log(premioLiquido)
@@ -40,6 +42,7 @@ export function PremioParcelasTab({
               type="number"
               {...register("premioLiquido", { valueAsNumber: true })}
               required
+              disabled={readOnly}
             />
           </Input.Root>
           {errors.premioLiquido && (
@@ -56,6 +59,7 @@ export function PremioParcelasTab({
               {...register("valoresAdicionais", {
                 setValueAs: (v) => (v === "" ? null : Number(v)),
               })}
+              disabled={readOnly}
             />
           </Input.Root>
         </div>
@@ -67,11 +71,12 @@ export function PremioParcelasTab({
               {...register("iof", {
                 setValueAs: (v) => (v === "" ? null : Number(v)),
               })}
+              disabled={readOnly}
             />
           </Input.Root>
         </div>
       </div>
-      <Button onClick={handleOpenParcelaModal}>Gerar Parcelas</Button>
+      {!readOnly && <Button onClick={handleOpenParcelaModal}>Gerar Parcelas</Button>}
       {formData.parcelas.length > 0 && (
         <div className="mt-4">
           <h4 className="mb-2 font-semibold">Parcelas</h4>
@@ -101,6 +106,7 @@ export function PremioParcelasTab({
                         newParcelas[index].dataVencimento = e.target.value
                         setValue("parcelas", newParcelas)
                       }}
+                      disabled={readOnly}
                     />
                   </Input.Root>
                 </div>
@@ -115,6 +121,7 @@ export function PremioParcelasTab({
                         newParcelas[index].previsaoRecebimento = e.target.value
                         setValue("parcelas", newParcelas)
                       }}
+                      disabled={readOnly}
                     />
                   </Input.Root>
                 </div>

@@ -6,9 +6,14 @@ import { useState } from "react"
 type ModalFilesTrigger = {
   entityId: string
   entityType: EntityType
+  isAdmin?: boolean
 }
 
-export function ModalFilesTrigger({ entityId, entityType }: ModalFilesTrigger) {
+export function ModalFilesTrigger({
+  entityId,
+  entityType,
+  isAdmin = true,
+}: ModalFilesTrigger) {
   const [isOpen, setIsOpen] = useState(false)
 
   return (
@@ -18,6 +23,7 @@ export function ModalFilesTrigger({ entityId, entityType }: ModalFilesTrigger) {
         onClose={() => setIsOpen(false)}
         entityId={entityId}
         entityType={entityType}
+        isAdmin={isAdmin}
       />
       <Paperclip
         onClick={() => setIsOpen(true)}

@@ -6,6 +6,7 @@ interface ComissaoTabProps {
   errors: any
   formData: any
   setValue: any
+  readOnly?: boolean
 }
 
 export function ComissaoTab({
@@ -13,6 +14,7 @@ export function ComissaoTab({
   errors,
   formData,
   setValue,
+  readOnly,
 }: ComissaoTabProps) {
   return (
     <div className="grid grid-cols-2 gap-4">
@@ -23,6 +25,7 @@ export function ComissaoTab({
             type="number"
             {...register("percentualComissao", { valueAsNumber: true })}
             required
+            disabled={readOnly}
           />
         </Input.Root>
         {errors.percentualComissao && (
@@ -43,6 +46,7 @@ export function ComissaoTab({
             { text: "Prêmio Total", value: "Premio Total" },
           ]}
           required
+          disabled={readOnly}
         />
         {errors.comissaoSobre && (
           <span className="text-xs text-red-500">
@@ -62,6 +66,7 @@ export function ComissaoTab({
             { text: "Recorrência", value: "Recorrencia" },
           ]}
           required
+          disabled={readOnly}
         />
         {errors.formaComissao && (
           <span className="text-xs text-red-500">

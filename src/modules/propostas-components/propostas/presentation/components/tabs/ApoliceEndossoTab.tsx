@@ -8,6 +8,7 @@ interface ApoliceEndossoTabProps {
   errors: any
   control: any
   proposta: Proposta
+  readOnly?: boolean
 }
 
 import "react-quill-new/dist/quill.snow.css"
@@ -19,13 +20,14 @@ export function ApoliceEndossoTab({
   errors,
   control,
   proposta,
+  readOnly,
 }: ApoliceEndossoTabProps) {
   return (
     <div className="grid grid-cols-2 gap-4">
       <div>
         <label>Data de Emissão</label>
         <Input.Root className="mt-2">
-          <Input.Control type="date" {...register("dataEmissao")} />
+          <Input.Control type="date" {...register("dataEmissao")} disabled={readOnly} />
         </Input.Root>
         {errors.dataEmissao && (
           <span className="text-xs text-red-500">
@@ -36,7 +38,7 @@ export function ApoliceEndossoTab({
       <div>
         <label>Número da Apólice</label>
         <Input.Root className="mt-2">
-          <Input.Control {...register("numeroApolice")} />
+          <Input.Control {...register("numeroApolice")} disabled={readOnly} />
         </Input.Root>
         {errors.numeroApolice && (
           <span className="text-xs text-red-500">
@@ -57,6 +59,7 @@ export function ApoliceEndossoTab({
                   theme="snow"
                   value={field.value || ""}
                   onChange={field.onChange}
+                  readOnly={readOnly}
                 />
               </div>
             )}

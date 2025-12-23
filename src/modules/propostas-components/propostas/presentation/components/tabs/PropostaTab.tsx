@@ -22,6 +22,7 @@ interface PropostaTabProps {
   ramos: any
   isEndosso?: boolean
   isRenovacao?: boolean
+  readOnly?: boolean
 }
 
 export function PropostaTab({
@@ -37,8 +38,9 @@ export function PropostaTab({
   produtosOptions,
   isEndosso = false,
   isRenovacao = false,
+  readOnly = false,
 }: PropostaTabProps) {
-  const isDisabled = isEndosso || isRenovacao
+  const isDisabled = isEndosso || isRenovacao || readOnly
   return (
     <div className="grid grid-cols-2 gap-4">
       <div>

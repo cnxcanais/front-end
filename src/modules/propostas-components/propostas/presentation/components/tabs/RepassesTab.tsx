@@ -10,6 +10,7 @@ interface RepassesTabProps {
   formData: PropostaFormSchema
   setValue: any
   produtores: Produtor.GetResponse
+  readOnly?: boolean
 }
 
 export function RepassesTab({
@@ -18,23 +19,26 @@ export function RepassesTab({
   formData,
   setValue,
   produtores,
+  readOnly,
 }: RepassesTabProps) {
   return (
     <div className="space-y-4">
       <div className="flex items-center justify-between">
         <h4 className="font-semibold">Repasses</h4>
-        <Button
-          onClick={() => {
-            const newRepasse = {
-              produtorId: formData.produtorId || "",
-              percentualRepasse: undefined,
-              repasseSobre: "Premio Liquido" as const,
-              formaRepasse: "No recebimento" as const,
-            }
-            setValue("repasses", [...formData.repasses, newRepasse])
-          }}>
-          Adicionar Repasse
-        </Button>
+        {!readOnly && (
+          <Button
+            onClick={() => {
+              const newRepasse = {
+                produtorId: formData.produtorId || "",
+                percentualRepasse: undefined,
+                repasseSobre: "Premio Liquido" as const,
+                formaRepasse: "No recebimento" as const,
+              }
+              setValue("repasses", [...formData.repasses, newRepasse])
+            }}>
+            Adicionar Repasse
+          </Button>
+        )}
       </div>
       {formData.repasses.length === 0 ?
         <p className="text-sm text-gray-600">Nenhum repasse cadastrado</p>
@@ -42,17 +46,19 @@ export function RepassesTab({
           <div key={index} className="rounded border bg-white p-4">
             <div className="mb-2 flex items-center justify-between">
               <h5 className="font-medium">Repasse {index + 1}</h5>
-              <button
-                type="button"
-                onClick={() => {
-                  const newRepasses = formData.repasses.filter(
-                    (_: any, i: number) => i !== index
-                  )
-                  setValue("repasses", newRepasses)
-                }}
-                className="text-sm text-red-600 hover:underline">
-                Remover
-              </button>
+              {!readOnly && (
+                <button
+                  type="button"
+                  onClick={() => {
+                    const newRepasses = formData.repasses.filter(
+                      (_: any, i: number) => i !== index
+                    )
+                    setValue("repasses", newRepasses)
+                  }}
+                  className="text-sm text-red-600 hover:underline">
+                  Remover
+                </button>
+              )}
             </div>
             <div className="grid grid-cols-2 gap-4">
               <div>
@@ -71,6 +77,7 @@ export function RepassesTab({
                       value: p.id,
                     })) || []
                   }
+                  disabled={readOnly}
                 />
                 {errors.repasses?.[index]?.produtorId && (
                   <span className="text-xs text-red-500">
@@ -86,6 +93,7 @@ export function RepassesTab({
                     {...register(`repasses.${index}.percentualRepasse` as any, {
                       valueAsNumber: true,
                     })}
+                    disabled={readOnly}
                   />
                 </Input.Root>
                 {errors.repasses?.[index]?.percentualRepasse && (
@@ -112,6 +120,7 @@ export function RepassesTab({
                     },
                     { text: "Valor Fixo", value: "Valor Fixo" },
                   ]}
+                  disabled={readOnly}
                 />
                 {errors.repasses?.[index]?.repasseSobre && (
                   <span className="text-xs text-red-500">
@@ -144,6 +153,7 @@ export function RepassesTab({
                       value: "Antecipado emissão",
                     },
                   ]}
+                  disabled={readOnly}
                 />
                 {errors.repasses?.[index]?.formaRepasse && (
                   <span className="text-xs text-red-500">

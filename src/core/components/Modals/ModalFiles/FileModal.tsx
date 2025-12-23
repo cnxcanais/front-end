@@ -14,6 +14,7 @@ type FileModalProps = {
   onClose: (open: boolean) => void
   entityId: string
   entityType: EntityType
+  isAdmin?: boolean
 }
 
 export function FileModal({
@@ -21,6 +22,7 @@ export function FileModal({
   onClose,
   entityId,
   entityType,
+  isAdmin,
 }: FileModalProps) {
   return (
     <Dialog open={open} onClose={onClose} className="relative z-10">
@@ -47,7 +49,9 @@ export function FileModal({
               Gerenciar Arquivos
             </DialogTitle>
 
-            <FileUploadQueue entityId={entityId} entityType={entityType} />
+            {isAdmin && (
+              <FileUploadQueue entityId={entityId} entityType={entityType} />
+            )}
 
             <FileList entityId={entityId} entityType={entityType} />
           </DialogPanel>

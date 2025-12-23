@@ -32,9 +32,10 @@ import {
 interface PropostaFormProps {
   proposta?: Proposta
   isEdit?: boolean
+  readOnly?: boolean
 }
 
-export function PropostaForm({ proposta, isEdit }: PropostaFormProps) {
+export function PropostaForm({ proposta, isEdit, readOnly }: PropostaFormProps) {
   const searchParams = useSearchParams()
   const duplicateFromId = searchParams.get("duplicateFrom")
   const isEndosso = searchParams.get("endosso") === "true"
@@ -531,16 +532,17 @@ export function PropostaForm({ proposta, isEdit }: PropostaFormProps) {
             ramos={ramos}
             isEndosso={isEndosso}
             isRenovacao={isRenovacao}
+            readOnly={readOnly}
           />
         )}
 
         {activeTab === 1 && isAutomovelRamo && (
-          <VeiculoTab register={register} errors={errors} />
+          <VeiculoTab register={register} errors={errors} readOnly={readOnly} />
         )}
 
         {((activeTab === 1 && !isAutomovelRamo) ||
           (activeTab === 2 && isAutomovelRamo)) && (
-          <VigenciaTab register={register} errors={errors} />
+          <VigenciaTab register={register} errors={errors} readOnly={readOnly} />
         )}
 
         {((activeTab === 2 && !isAutomovelRamo) ||
@@ -550,6 +552,7 @@ export function PropostaForm({ proposta, isEdit }: PropostaFormProps) {
             errors={errors}
             proposta={propostaToDuplicate}
             control={control}
+            readOnly={readOnly}
           />
         )}
 
@@ -562,6 +565,7 @@ export function PropostaForm({ proposta, isEdit }: PropostaFormProps) {
             setValue={setValue}
             setShowParcelasModal={setShowParcelasModal}
             premioLiquido={getValues("premioLiquido")}
+            readOnly={readOnly}
           />
         )}
 
@@ -572,6 +576,7 @@ export function PropostaForm({ proposta, isEdit }: PropostaFormProps) {
             errors={errors}
             formData={formData}
             setValue={setValue}
+            readOnly={readOnly}
           />
         )}
 
@@ -583,6 +588,7 @@ export function PropostaForm({ proposta, isEdit }: PropostaFormProps) {
             formData={formData}
             setValue={setValue}
             produtores={produtores}
+            readOnly={readOnly}
           />
         )}
       </div>
@@ -602,28 +608,31 @@ export function PropostaForm({ proposta, isEdit }: PropostaFormProps) {
           ramos={ramos}
           produtosOptions={produtosOptions}
           isAutomovelRamo={isAutomovelRamo}
+          readOnly={readOnly}
         />
       )}
 
       <div className="flex justify-between">
         <div className="flex gap-2">
-          {activeTab > 0 && (
+          {activeTab > 0 && !readOnly && (
             <Button variant="secondary" onClick={handlePrevTab}>
               Voltar
             </Button>
           )}
           <Button variant="secondary" onClick={() => push("/propostas")}>
-            Cancelar
+            {readOnly ? "Voltar" : "Cancelar"}
           </Button>
         </div>
-        <div>
-          {activeTab < tabs.length - 1 ?
-            <Button onClick={handleNextTab}>Avançar</Button>
-          : <Button onClick={handleFormSubmit(handleSubmit)}>
-              {isEdit ? "Atualizar" : "Criar"} Proposta
-            </Button>
-          }
-        </div>
+        {!readOnly && (
+          <div>
+            {activeTab < tabs.length - 1 ?
+              <Button onClick={handleNextTab}>Avançar</Button>
+            : <Button onClick={handleFormSubmit(handleSubmit)}>
+                {isEdit ? "Atualizar" : "Criar"} Proposta
+              </Button>
+            }
+          </div>
+        )}
       </div>
 
       {showParcelasModal && (
