@@ -96,6 +96,7 @@ export function RevisaoTab({
                   value: s.id,
                 })) || []
               }
+              disabled={readOnly}
             />
             {errors.seguradoraId && (
               <span className="text-xs text-red-500">
@@ -122,6 +123,7 @@ export function RevisaoTab({
                   value: p.id,
                 })) || []
               }
+              disabled={readOnly}
             />
             {errors.produtorId && (
               <span className="text-xs text-red-500">
@@ -164,6 +166,7 @@ export function RevisaoTab({
                   value: r.id,
                 })) || []
               }
+              disabled={readOnly}
             />
             {errors.ramoId && (
               <span className="text-xs text-red-500">
@@ -197,6 +200,7 @@ export function RevisaoTab({
               value={formData.produtoId}
               onChange={(e) => setValue("produtoId", e.target.value)}
               options={produtosOptions}
+              disabled={readOnly}
             />
             {errors.produtoId && (
               <span className="text-xs text-red-500">
@@ -216,6 +220,7 @@ export function RevisaoTab({
                 { text: "Renovação", value: "Renovação" },
                 { text: "Endosso", value: "Endosso" },
               ]}
+              disabled={readOnly}
             />
             {errors.tipoDocumento && (
               <span className="text-xs text-red-500">
@@ -234,6 +239,7 @@ export function RevisaoTab({
                 { text: "Importação", value: "Importação" },
                 { text: "Integração", value: "Integração" },
               ]}
+              disabled={readOnly}
             />
             {errors.origem && (
               <span className="text-xs text-red-500">
@@ -251,25 +257,37 @@ export function RevisaoTab({
             <div>
               <label>Placa do Veículo</label>
               <Input.Root className="mt-2">
-                <Input.Control {...register("placaVeiculo")} />
+                <Input.Control
+                  {...register("placaVeiculo")}
+                  disabled={readOnly}
+                />
               </Input.Root>
             </div>
             <div>
               <label>Chassi do Veículo</label>
               <Input.Root className="mt-2">
-                <Input.Control {...register("chassiVeiculo")} />
+                <Input.Control
+                  {...register("chassiVeiculo")}
+                  disabled={readOnly}
+                />
               </Input.Root>
             </div>
             <div>
               <label>Marca do Veículo</label>
               <Input.Root className="mt-2">
-                <Input.Control {...register("marcaVeiculo")} />
+                <Input.Control
+                  {...register("marcaVeiculo")}
+                  disabled={readOnly}
+                />
               </Input.Root>
             </div>
             <div>
               <label>Modelo do Veículo</label>
               <Input.Root className="mt-2">
-                <Input.Control {...register("modeloVeiculo")} />
+                <Input.Control
+                  {...register("modeloVeiculo")}
+                  disabled={readOnly}
+                />
               </Input.Root>
             </div>
             <div>
@@ -278,6 +296,7 @@ export function RevisaoTab({
                 <Input.Control
                   type="number"
                   {...register("anoFabricacaoVeiculo", { valueAsNumber: true })}
+                  disabled={readOnly}
                 />
               </Input.Root>
             </div>
@@ -287,13 +306,17 @@ export function RevisaoTab({
                 <Input.Control
                   type="number"
                   {...register("anoModeloVeiculo", { valueAsNumber: true })}
+                  disabled={readOnly}
                 />
               </Input.Root>
             </div>
             <div className="col-span-2">
               <label>Complemento</label>
               <Input.Root className="mt-2">
-                <Input.Control {...register("complementoItem")} />
+                <Input.Control
+                  {...register("complementoItem")}
+                  disabled={readOnly}
+                />
               </Input.Root>
             </div>
           </div>
@@ -306,13 +329,21 @@ export function RevisaoTab({
           <div>
             <label>Início da Vigência *</label>
             <Input.Root className="mt-2">
-              <Input.Control type="date" {...register("inicioVigencia")} />
+              <Input.Control
+                type="date"
+                {...register("inicioVigencia")}
+                disabled={readOnly}
+              />
             </Input.Root>
           </div>
           <div>
             <label>Fim da Vigência *</label>
             <Input.Root className="mt-2">
-              <Input.Control type="date" {...register("fimVigencia")} />
+              <Input.Control
+                type="date"
+                {...register("fimVigencia")}
+                disabled={readOnly}
+              />
             </Input.Root>
           </div>
         </div>
@@ -324,13 +355,19 @@ export function RevisaoTab({
           <div>
             <label>Número da Apólice</label>
             <Input.Root className="mt-2">
-              <Input.Control {...register("numeroApolice")} />
+              <Input.Control
+                {...register("numeroApolice")}
+                disabled={readOnly}
+              />
             </Input.Root>
           </div>
           <div>
             <label>Número do Endosso</label>
             <Input.Root className="mt-2">
-              <Input.Control {...register("numeroEndosso")} />
+              <Input.Control
+                {...register("numeroEndosso")}
+                disabled={readOnly}
+              />
             </Input.Root>
           </div>
         </div>
@@ -345,6 +382,7 @@ export function RevisaoTab({
               <Input.Control
                 type="number"
                 {...register("percentualComissao", { valueAsNumber: true })}
+                disabled={readOnly}
               />
             </Input.Root>
           </div>
@@ -359,6 +397,7 @@ export function RevisaoTab({
                 { text: "Prêmio Comercial", value: "Premio Comercial" },
                 { text: "Prêmio Total", value: "Premio Total" },
               ]}
+              disabled={readOnly}
             />
           </div>
           <div>
@@ -372,6 +411,7 @@ export function RevisaoTab({
                 { text: "Antecipado", value: "Antecipado" },
                 { text: "Recorrência", value: "Recorrencia" },
               ]}
+              disabled={readOnly}
             />
           </div>
           <div>
@@ -396,6 +436,7 @@ export function RevisaoTab({
               <Input.Control
                 type="number"
                 {...register("premioLiquido", { valueAsNumber: true })}
+                disabled={readOnly}
               />
             </Input.Root>
           </div>
@@ -407,6 +448,7 @@ export function RevisaoTab({
                 {...register("valoresAdicionais", {
                   setValueAs: (v) => (v === "" ? null : Number(v)),
                 })}
+                disabled={readOnly}
               />
             </Input.Root>
           </div>
@@ -418,6 +460,7 @@ export function RevisaoTab({
                 {...register("iof", {
                   setValueAs: (v) => (v === "" ? null : Number(v)),
                 })}
+                disabled={readOnly}
               />
             </Input.Root>
           </div>
@@ -434,18 +477,20 @@ export function RevisaoTab({
       <div className="rounded-lg bg-gray-50 p-6">
         <div className="mb-4 flex items-center justify-between">
           <h3 className="text-lg font-semibold">Repasses</h3>
-          <Button
-            onClick={() => {
-              const newRepasse = {
-                produtorId: "",
-                percentualRepasse: undefined,
-                repasseSobre: "Premio Liquido" as const,
-                formaRepasse: "No recebimento" as const,
-              }
-              setValue("repasses", [...formData.repasses, newRepasse])
-            }}>
-            Adicionar Repasse
-          </Button>
+          {!readOnly && (
+            <Button
+              onClick={() => {
+                const newRepasse = {
+                  produtorId: "",
+                  percentualRepasse: undefined,
+                  repasseSobre: "Premio Liquido" as const,
+                  formaRepasse: "No recebimento" as const,
+                }
+                setValue("repasses", [...formData.repasses, newRepasse])
+              }}>
+              Adicionar Repasse
+            </Button>
+          )}
         </div>
         {formData.repasses.length === 0 ?
           <p className="text-gray-500">Nenhum repasse cadastrado</p>
@@ -454,17 +499,19 @@ export function RevisaoTab({
               <div key={index} className="rounded border bg-white p-4">
                 <div className="mb-2 flex items-center justify-between">
                   <h5 className="font-medium">Repasse {index + 1}</h5>
-                  <button
-                    type="button"
-                    onClick={() => {
-                      const newRepasses = formData.repasses.filter(
-                        (_: any, i: number) => i !== index
-                      )
-                      setValue("repasses", newRepasses)
-                    }}
-                    className="text-sm text-red-600 hover:underline">
-                    Remover
-                  </button>
+                  {!readOnly && (
+                    <button
+                      type="button"
+                      onClick={() => {
+                        const newRepasses = formData.repasses.filter(
+                          (_: any, i: number) => i !== index
+                        )
+                        setValue("repasses", newRepasses)
+                      }}
+                      className="text-sm text-red-600 hover:underline">
+                      Remover
+                    </button>
+                  )}
                 </div>
                 <div className="grid grid-cols-2 gap-4">
                   <div>
@@ -483,6 +530,7 @@ export function RevisaoTab({
                           value: p.id,
                         })) || []
                       }
+                      disabled={readOnly}
                     />
                   </div>
                   <div>
@@ -494,6 +542,7 @@ export function RevisaoTab({
                           `repasses.${index}.percentualRepasse` as any,
                           { valueAsNumber: true }
                         )}
+                        disabled={readOnly}
                       />
                     </Input.Root>
                   </div>
@@ -515,6 +564,7 @@ export function RevisaoTab({
                         },
                         { text: "Valor Fixo", value: "Valor Fixo" },
                       ]}
+                      disabled={readOnly}
                     />
                   </div>
                   <div>
@@ -542,6 +592,7 @@ export function RevisaoTab({
                           value: "Antecipado emissão",
                         },
                       ]}
+                      disabled={readOnly}
                     />
                   </div>
                 </div>
