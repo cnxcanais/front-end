@@ -1,3 +1,5 @@
+"use client"
+
 import { PageTitle } from "@/core/components/PageTitle"
 import { useProfileAccess } from "@/modules/perfis-components/perfis/infra/hooks/use-profile-access"
 import { EditProdutorForm } from "@/modules/produtores-components/edit-produtor/presentation/components/EditProdutorForm"

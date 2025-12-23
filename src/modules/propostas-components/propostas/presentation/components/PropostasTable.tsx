@@ -9,6 +9,7 @@ import { Modal } from "@/core/components/Modals/Modal"
 import { ModalFilesTrigger } from "@/core/components/Modals/ModalFiles/ModalFilesTrigger"
 import { Pagination } from "@/core/components/Pagination"
 import { Table } from "@/core/components/Table"
+import { getCookie } from "@/lib/cookies"
 import { useCorretoraQuery } from "@/modules/corretoras-components/corretora/infra/hooks/use-corretora-query"
 import { useProdutorQuery } from "@/modules/produtores-components/produtor/infra/hooks/use-produtor-query"
 import { useProdutoQuery } from "@/modules/produtos-components/produtos/infra/hooks/use-produto-query"
@@ -61,6 +62,7 @@ export function PropostasTable() {
   const { data, isLoading, refetch } = usePropostaQuery(page, limit, filters)
   const [ramoId, setRamoId] = useState("")
   const { push } = useRouter()
+  const isAdmin = getCookie("perfilId") !== process.env.NEXT_PUBLIC_ADM_ID
 
   const [open, setOpen] = useState(false)
   const [id, setId] = useState("")
@@ -427,17 +429,17 @@ export function PropostasTable() {
       accessor: "id",
       render: (value: string, row: any) => (
         <div className="flex min-w-[100px] max-w-[150px] flex-wrap gap-2">
-          <span title="Editar">
-            <Pencil
-              className="cursor-pointer hover:text-blue-500"
-              size={24}
-              onClick={() => handleEdit(value)}
-            />
-          </span>
-
           {row.tipoDocumento === TipoDocumentoEnum.PROPOSTA &&
-            row.situacao === SituacaoEnum.ATIVO && (
+            row.situacao === SituacaoEnum.ATIVO &&
+            isAdmin && (
               <>
+                <span title="Editar">
+                  <Pencil
+                    className="cursor-pointer hover:text-blue-500"
+                    size={24}
+                    onClick={() => handleEdit(value)}
+                  />
+                </span>
                 <span title="Clonar Proposta">
                   <Copy
                     className="cursor-pointer hover:text-green-500"
@@ -470,7 +472,8 @@ export function PropostasTable() {
           {(row.tipoDocumento === TipoDocumentoEnum.APOLICE ||
             row.tipoDocumento === TipoDocumentoEnum.ENDOSSO ||
             row.tipoDocumento === TipoDocumentoEnum.RENOVACAO) &&
-            row.situacao === SituacaoEnum.ATIVO && (
+            row.situacao === SituacaoEnum.ATIVO &&
+            isAdmin && (
               <span title="Endossar Apólice">
                 <Note
                   className="cursor-pointer hover:text-blue-500"
@@ -484,7 +487,8 @@ export function PropostasTable() {
             )}
 
           {row.tipoDocumento === TipoDocumentoEnum.APOLICE &&
-            row.situacao === SituacaoEnum.ATIVO && (
+            row.situacao === SituacaoEnum.ATIVO &&
+            isAdmin && (
               <>
                 <span title="Renovar Apólice">
                   <Recycle
@@ -511,7 +515,8 @@ export function PropostasTable() {
 
           {(row.tipoDocumento === TipoDocumentoEnum.ENDOSSO ||
             row.tipoDocumento === TipoDocumentoEnum.RENOVACAO) &&
-            row.situacao === SituacaoEnum.ATIVO && (
+            row.situacao === SituacaoEnum.ATIVO &&
+            isAdmin && (
               <span title="Não Renovar Apólice">
                 <ProhibitInset
                   className="cursor-pointer hover:text-orange-500"
@@ -527,7 +532,8 @@ export function PropostasTable() {
           {(row.tipoDocumento === TipoDocumentoEnum.APOLICE ||
             row.tipoDocumento === TipoDocumentoEnum.ENDOSSO ||
             row.tipoDocumento === TipoDocumentoEnum.RENOVACAO) &&
-            row.situacao === SituacaoEnum.ATIVO && (
+            row.situacao === SituacaoEnum.ATIVO &&
+            isAdmin && (
               <span title="Cancelar Apólice">
                 <X
                   className="cursor-pointer hover:text-red-600"
@@ -541,7 +547,8 @@ export function PropostasTable() {
             )}
 
           {row.tipoDocumento === TipoDocumentoEnum.PROPOSTA &&
-            row.situacao === SituacaoEnum.ATIVO && (
+            row.situacao === SituacaoEnum.ATIVO &&
+            isAdmin && (
               <span title="Deletar">
                 <Trash
                   className="cursor-pointer hover:text-red-500"

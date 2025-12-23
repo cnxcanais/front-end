@@ -1,3 +1,5 @@
+"use client"
+
 import { PageTitle } from "@/core/components/PageTitle"
 import { PropostaForm } from "@/modules/propostas-components/propostas/presentation/components/PropostaForm"
 import { Suspense } from "react"

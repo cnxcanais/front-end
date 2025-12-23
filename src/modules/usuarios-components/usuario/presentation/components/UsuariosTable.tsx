@@ -42,7 +42,7 @@ export function UsuariosTable() {
 
   const perfisOptions = useMemo(() => {
     if (!perfis) return []
-    return perfis.map((p) => ({
+    return perfis?.data.map((p) => ({
       label: p.nome,
       value: p.id,
     }))
@@ -101,7 +101,7 @@ export function UsuariosTable() {
       header: "Perfil",
       accessor: "perfilId",
       render: (value: string) =>
-        perfis?.find((p) => p.id === value)?.nome || "",
+        perfis?.data.find((p) => p.id === value)?.nome || "",
     },
     {
       header: "Corretora",
