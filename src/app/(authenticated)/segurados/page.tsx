@@ -1,3 +1,5 @@
+"use client"
+
 import { PageTitle } from "@/core/components/PageTitle"
 import { SeguradosTable } from "@/modules/segurados-components/segurado/presentation/components/SeguradosTable"
 

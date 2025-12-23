@@ -1,12 +1,16 @@
+"use client"
 import { PageTitle } from "@/core/components/PageTitle"
+import { useProfileAccess } from "@/modules/perfis-components/perfis/infra/hooks/use-profile-access"
 import { EditProdutoForm } from "@/modules/produtos-components/edit-produtos/presentation/components/EditProdutoForm"
+import { use } from "react"
 
-export default async function EditProdutoPage({
+export default function EditProdutoPage({
   params,
 }: {
   params: Promise<{ id: string }>
 }) {
-  const { id } = await params
+  useProfileAccess(process.env.NEXT_PUBLIC_ADM_ID!)
+  const { id } = use(params)
 
   return (
     <>

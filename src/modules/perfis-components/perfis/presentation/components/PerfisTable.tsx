@@ -40,8 +40,6 @@ export function PerfisTable() {
     }
   }
 
-  console.log("perfis", perfis)
-
   const columns = [
     { header: "Nome", accessor: "nome" },
     { header: "Descrição", accessor: "descricao" },
@@ -86,7 +84,7 @@ export function PerfisTable() {
   }
 
   useEffect(() => {
-    if (perfis?.length > 0) setFilteredResults(perfis)
+    if (perfis?.data.length > 0) setFilteredResults(perfis.data)
   }, [perfis])
 
   if (isLoading) return <LoadingScreen />
@@ -120,7 +118,7 @@ export function PerfisTable() {
             Cadastrar
           </Button>
         </div>
-        {perfis.length > 0 && (
+        {perfis.data.length > 0 && (
           <div className="flex items-center gap-2">
             <ExportTableToPDFButton
               filename={`perfis.${new Date().toLocaleDateString("pt-BR").replace(/\//g, "-")}`}
@@ -140,7 +138,7 @@ export function PerfisTable() {
         )}
       </div>
 
-      {perfis.length == 0 ?
+      {perfis.data.length == 0 ?
         <h2 className="mt-6 text-xl font-semibold">
           Nenhum perfil cadastrado.
         </h2>

@@ -8,7 +8,13 @@ export namespace Perfil {
     updatedAt: string
   }
 
-  export type GetResponse = Type[]
+  export type GetResponse = {
+    data: Type[]
+    total: number
+    page: number
+    limit: number
+    totalPages: number
+  }
 
   export type CreateRequest = Omit<Type, "createdAt" | "updatedAt" | "id">
 

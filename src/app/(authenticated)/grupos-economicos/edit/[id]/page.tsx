@@ -1,11 +1,16 @@
+"use client"
+
 import { PageTitle } from "@/core/components/PageTitle"
 import { EditGrupoEconomicoForm } from "@/modules/grupos-economicos-components/edit-grupos-economicos/presentation/components/EditGrupoEconomicoForm"
-export default async function EditGrupoEconomicoPage({
+import { useProfileAccess } from "@/modules/perfis-components/perfis/infra/hooks/use-profile-access"
+import { use } from "react"
+export default function EditGrupoEconomicoPage({
   params,
 }: {
   params: Promise<{ id: string }>
 }) {
-  const { id } = await params
+  useProfileAccess(process.env.NEXT_PUBLIC_ADM_ID!)
+  const { id } = use(params)
 
   return (
     <>
