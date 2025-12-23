@@ -8,16 +8,20 @@ import {
   User,
   Users,
 } from "@phosphor-icons/react"
+import { useRouter } from "next/navigation"
 import { useState } from "react"
 import { useSeguradoQuery } from "../../infra/hooks/use-segurado-query"
 
 interface SeguradosDashboardProps {
   onFilterChange?: (filterType: string, data: Segurado.Type[]) => void
+  redirectOnClick?: boolean
 }
 
 export function SeguradosDashboard({
   onFilterChange,
+  redirectOnClick = false,
 }: SeguradosDashboardProps) {
+  const router = useRouter()
   const [lastUpdated, setLastUpdated] = useState(new Date())
   const [clickedAttribute, setClickedAttribute] = useState({
     pessoaFisica: false,
@@ -36,6 +40,12 @@ export function SeguradosDashboard({
     filteredSegurados: Segurado.Type[],
     attribute: string
   ) => {
+    if (redirectOnClick) {
+      const ids = filteredSegurados.map((s) => s.id).join(",")
+      router.push(`/segurados?filter=${attribute}&ids=${ids}`)
+      return
+    }
+
     const isCurrentlyActive = clickedAttribute[attribute]
 
     if (isCurrentlyActive) {

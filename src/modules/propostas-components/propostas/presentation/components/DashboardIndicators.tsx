@@ -7,16 +7,20 @@ import {
   Clock,
   FileText,
 } from "@phosphor-icons/react"
+import { useRouter } from "next/navigation"
 import { useState } from "react"
 import { usePropostaQuery } from "../../infra/hooks/use-proposta-query"
 
 interface DashboardIndicatorsProps {
   onFilterChange?: (filterType: string, data: any[]) => void
+  redirectOnClick?: boolean
 }
 
 export function DashboardIndicators({
   onFilterChange,
+  redirectOnClick = false,
 }: DashboardIndicatorsProps) {
+  const router = useRouter()
   const [lastUpdated, setLastUpdated] = useState(new Date())
   const [clickedAttribute, setClickedAttribute] = useState({
     propostasVigentes: false,
@@ -33,6 +37,12 @@ export function DashboardIndicators({
     filteredPropostas: Proposta[],
     propostaAttribute: string
   ) => {
+    if (redirectOnClick) {
+      const ids = filteredPropostas.map((p) => p.id).join(",")
+      router.push(`/propostas?filter=${propostaAttribute}&ids=${ids}`)
+      return
+    }
+
     const isCurrentlyActive = clickedAttribute[propostaAttribute]
 
     if (isCurrentlyActive) {

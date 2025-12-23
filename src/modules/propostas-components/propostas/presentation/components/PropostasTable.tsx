@@ -44,7 +44,7 @@ import {
   X,
   XCircle,
 } from "@phosphor-icons/react"
-import { useRouter } from "next/navigation"
+import { useRouter, useSearchParams } from "next/navigation"
 import { useEffect, useMemo, useState } from "react"
 import { toast } from "sonner"
 import { DashboardIndicators } from "./DashboardIndicators"
@@ -57,10 +57,16 @@ import { ImportPropostasModal } from "./modals/ImportPropostasModal"
 import { RenovarApoliceModal } from "./modals/RenovarApoliceModal"
 
 export function PropostasTable() {
+  const searchParams = useSearchParams()
   const [page, setPage] = useState(1)
   const [limit, setLimit] = useState(10)
   const [filters, setFilters] = useState<Record<string, string>>({})
-  const { data, isLoading, refetch } = usePropostaQuery(page, limit, filters)
+  const hasUrlIds = searchParams.get("ids")
+  const { data, isLoading, refetch } = usePropostaQuery(
+    page,
+    hasUrlIds ? -1 : limit,
+    filters
+  )
   const [ramoId, setRamoId] = useState("")
   const { push } = useRouter()
   const isAdmin = getCookie("perfilId") === process.env.NEXT_PUBLIC_ADM_ID
@@ -68,6 +74,7 @@ export function PropostasTable() {
   const [open, setOpen] = useState(false)
   const [id, setId] = useState("")
   const [filteredResults, setFilteredResults] = useState([])
+  const [dashboardFilter, setDashboardFilter] = useState<any[] | null>(null)
   const [produtosOptions, setProdutosOptions] = useState([])
   const [expandedIds, setExpandedIds] = useState<string[]>([])
   const [openExportModal, setOpenExportModal] = useState(false)
@@ -150,7 +157,10 @@ export function PropostasTable() {
   }, [ramos])
 
   const propostas = data?.data || []
-  const totalPages = data?.meta?.totalPages || 1
+  const totalPages =
+    dashboardFilter ?
+      Math.ceil(filteredResults.length / limit)
+    : data?.meta?.totalPages || 1
 
   const getSeguradoName = (id: string) =>
     segurados?.data?.find((s) => s.id === id)?.nomeRazaoSocial || ""
@@ -733,8 +743,25 @@ export function PropostasTable() {
   }
 
   useEffect(() => {
-    if (propostas.length > 0) setFilteredResults(propostas)
-  }, [propostas])
+    const ids = searchParams.get("ids")
+    if (ids) {
+      const idArray = ids.split(",")
+      const filtered = propostas.filter((p) => idArray.includes(p.id))
+      if (JSON.stringify(filtered) !== JSON.stringify(dashboardFilter)) {
+        setDashboardFilter(filtered)
+      }
+    } else if (dashboardFilter !== null) {
+      setDashboardFilter(null)
+    }
+  }, [searchParams, propostas, dashboardFilter])
+
+  useEffect(() => {
+    if (dashboardFilter) {
+      setFilteredResults(dashboardFilter)
+    } else if (propostas.length > 0) {
+      setFilteredResults(propostas)
+    }
+  }, [propostas, dashboardFilter])
 
   if (isLoading) return <LoadingScreen />
 

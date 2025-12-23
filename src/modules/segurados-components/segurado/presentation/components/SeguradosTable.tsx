@@ -20,17 +20,23 @@ import {
   removeSegurado,
 } from "@/modules/segurados-components/segurado/infra/remote"
 import { FileCsv, Pencil, Trash } from "@phosphor-icons/react"
-import { useRouter } from "next/navigation"
+import { useRouter, useSearchParams } from "next/navigation"
 import { useEffect, useMemo, useState } from "react"
 import { toast } from "sonner"
 import { ImportSeguradosModal } from "./ImportSeguradosModal"
 import { SeguradosDashboard } from "./SeguradosDashboard"
 
 export function SeguradosTable() {
+  const searchParams = useSearchParams()
   const [page, setPage] = useState(1)
   const [limit, setLimit] = useState(10)
   const [filters, setFilters] = useState<Record<string, string>>({})
-  const { data, isLoading, refetch } = useSeguradoQuery(page, limit, filters)
+  const hasUrlIds = searchParams.get("ids")
+  const { data, isLoading, refetch } = useSeguradoQuery(
+    page,
+    hasUrlIds ? -1 : limit,
+    filters
+  )
   const { data: corretoras, isLoading: isLoadingCorretoras } =
     useCorretoraQuery()
   const { data: produtores, isLoading: isLoadingProdutores } =
@@ -56,7 +62,7 @@ export function SeguradosTable() {
   }, [corretoras, isLoadingCorretoras])
 
   const segurados = data?.data || []
-  const totalPages = data?.totalPages || 1
+  const totalPages = dashboardFilter ? Math.ceil(filteredResults.length / limit) : (data?.totalPages || 1)
 
   const handleEdit = (id: string) => {
     push(`/segurados/edit/${id}`)
@@ -244,6 +250,19 @@ export function SeguradosTable() {
   }
 
   useEffect(() => {
+    const ids = searchParams.get("ids")
+    if (ids) {
+      const idArray = ids.split(",")
+      const filtered = segurados.filter((s) => idArray.includes(s.id))
+      if (JSON.stringify(filtered) !== JSON.stringify(dashboardFilter)) {
+        setDashboardFilter(filtered)
+      }
+    } else if (dashboardFilter !== null) {
+      setDashboardFilter(null)
+    }
+  }, [searchParams, segurados, dashboardFilter])
+
+  useEffect(() => {
     if (dashboardFilter) {
       setFilteredResults(dashboardFilter)
     } else if (segurados.length > 0) {
@@ -255,7 +274,8 @@ export function SeguradosTable() {
     _filterType: string,
     data: Segurado.Type[]
   ) => {
-    setDashboardFilter(data)
+    setFilteredResults(data)
+    setPage(1)
   }
 
   if (isLoading) return <LoadingScreen />

@@ -172,7 +172,7 @@ export function MainDashboard() {
           <IdentificationBadge size={24} className="text-yellow-200" />
           <label className="text-bold text-xl text-yellow-200">Segurados</label>
         </div>
-        <SeguradosDashboard />
+        <SeguradosDashboard redirectOnClick />
       </div>
 
       <div className="mt-4 flex flex-col gap-4">
@@ -182,7 +182,7 @@ export function MainDashboard() {
             Propostas/Apólices
           </label>
         </div>
-        <DashboardIndicators />
+        <DashboardIndicators redirectOnClick />
       </div>
     </>
   )
