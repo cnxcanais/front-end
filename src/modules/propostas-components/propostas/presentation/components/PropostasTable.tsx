@@ -101,6 +101,14 @@ export function PropostasTable() {
     }
   }, [ramoId, produtos?.data])
 
+  // useEffect(() => {
+  //   const userCorretora = corretoras.data.filter((c) => c.id === "")
+  //   setFilters((prevFilters) => ({
+  //     ...prevFilters,
+  //     corretoraId: "",
+  //   }))
+  // }, [])
+
   const seguradosOptions = useMemo(() => {
     if (!segurados?.data) return []
     return segurados.data.map((s) => ({

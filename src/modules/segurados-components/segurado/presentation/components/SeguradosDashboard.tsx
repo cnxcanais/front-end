@@ -56,7 +56,7 @@ export function SeguradosDashboard({
     setLastUpdated(new Date())
   }
 
-  const allSegurados = useSeguradoQuery(1, 100)
+  const allSegurados = useSeguradoQuery(1, -1)
 
   const segurados = allSegurados.data?.data || []
 
@@ -69,13 +69,13 @@ export function SeguradosDashboard({
   const hoje = new Date()
   const aniversariantesHoje = segurados.filter((s) => {
     if (!s.dataNascimento) return false
-    const [ano, mes, dia] = s.dataNascimento.split('-').map(Number)
+    const [ano, mes, dia] = s.dataNascimento.split("-").map(Number)
     return dia === hoje.getDate() && mes === hoje.getMonth() + 1
   })
 
   const aniversariantesProximos15 = segurados.filter((s) => {
     if (!s.dataNascimento) return false
-    const [ano, mes, dia] = s.dataNascimento.split('-').map(Number)
+    const [ano, mes, dia] = s.dataNascimento.split("-").map(Number)
     const dias15 = new Date(hoje.getTime() + 15 * 24 * 60 * 60 * 1000)
     const aniversarioEsteAno = new Date(hoje.getFullYear(), mes - 1, dia)
     return aniversarioEsteAno > hoje && aniversarioEsteAno <= dias15
@@ -83,7 +83,7 @@ export function SeguradosDashboard({
 
   const aniversariantesProximos30 = segurados.filter((s) => {
     if (!s.dataNascimento) return false
-    const [ano, mes, dia] = s.dataNascimento.split('-').map(Number)
+    const [ano, mes, dia] = s.dataNascimento.split("-").map(Number)
     const dias30 = new Date(hoje.getTime() + 30 * 24 * 60 * 60 * 1000)
     const aniversarioEsteAno = new Date(hoje.getFullYear(), mes - 1, dia)
     return aniversarioEsteAno > hoje && aniversarioEsteAno <= dias30
@@ -91,13 +91,17 @@ export function SeguradosDashboard({
 
   const cnhHoje = segurados.filter((s) => {
     if (!s.vencimentoCnh) return false
-    const [ano, mes, dia] = s.vencimentoCnh.split('-').map(Number)
-    return dia === hoje.getDate() && mes === hoje.getMonth() + 1 && ano === hoje.getFullYear()
+    const [ano, mes, dia] = s.vencimentoCnh.split("-").map(Number)
+    return (
+      dia === hoje.getDate() &&
+      mes === hoje.getMonth() + 1 &&
+      ano === hoje.getFullYear()
+    )
   })
 
   const cnhProximos30 = segurados.filter((s) => {
     if (!s.vencimentoCnh) return false
-    const [ano, mes, dia] = s.vencimentoCnh.split('-').map(Number)
+    const [ano, mes, dia] = s.vencimentoCnh.split("-").map(Number)
     const vencimento = new Date(ano, mes - 1, dia)
     const dias30 = new Date(hoje.getTime() + 30 * 24 * 60 * 60 * 1000)
     return vencimento > hoje && vencimento <= dias30

@@ -11,6 +11,7 @@ import { ModalFilesTrigger } from "@/core/components/Modals/ModalFiles/ModalFile
 import { Pagination } from "@/core/components/Pagination"
 import { Table } from "@/core/components/Table"
 import { formatStaticDocument } from "@/core/utils/formatDocumentNumber"
+import { getCookie } from "@/lib/cookies"
 import { useCorretoraQuery } from "@/modules/corretoras-components/corretora/infra/hooks/use-corretora-query"
 import { useProdutorQuery } from "@/modules/produtores-components/produtor/infra/hooks/use-produtor-query"
 import { useSeguradoQuery } from "@/modules/segurados-components/segurado/infra/hooks/use-segurado-query"
@@ -43,6 +44,8 @@ export function SeguradosTable() {
   const [dashboardFilter, setDashboardFilter] = useState<
     Segurado.Type[] | null
   >(null)
+
+  const isAdmin = getCookie("perfilId") === process.env.NEXT_PUBLIC_ADM_ID
 
   const corretorasOptions = useMemo(() => {
     if (isLoadingCorretoras || !corretoras) return []
@@ -93,6 +96,48 @@ export function SeguradosTable() {
       setOpen(false)
     }
   }
+
+  const columnsNotAdmin = [
+    { header: "Nome/Razão Social", accessor: "nomeRazaoSocial" },
+    {
+      header: "CPF/CNPJ",
+      accessor: "cnpjCpf",
+      render: (value: string) => {
+        return formatStaticDocument(value)
+      },
+    },
+    { header: "Tipo", accessor: "tipoPessoa" },
+    { header: "Status", accessor: "status" },
+    {
+      header: "Corretora",
+      accessor: "corretoraId",
+      render: (value: string) => {
+        const corretora = corretoras?.data?.find((c) => c.id === value)
+        return corretora?.razaoSocial || value
+      },
+    },
+    {
+      header: "Produtor",
+      accessor: "produtorId",
+      render: (value: string) => {
+        const produtor = produtores?.data?.find((p) => p.id === value)
+        return produtor?.nome || value
+      },
+    },
+    { header: "Cidade", accessor: "cidade" },
+    { header: "UF", accessor: "uf" },
+    {
+      header: "Arquivos",
+      accessor: "id",
+      render: (value: string) => (
+        <ModalFilesTrigger
+          entityId={value}
+          entityType={EntityType.SEGURADO}
+          isAdmin={isAdmin}
+        />
+      ),
+    },
+  ]
 
   const columns = [
     { header: "Nome/Razão Social", accessor: "nomeRazaoSocial" },
@@ -240,38 +285,45 @@ export function SeguradosTable() {
 
       <SeguradosDashboard onFilterChange={handleDashboardFilterChange} />
 
-      <div className="mt-8 flex items-center justify-between">
-        <div className="flex h-full gap-4">
-          <Button onClick={() => push("/segurados/create")} variant="secondary">
-            Cadastrar
-          </Button>
-        </div>
-        {segurados.length > 0 && (
-          <div className="flex items-center gap-2">
+      {isAdmin && (
+        <div className="mt-8 flex items-center justify-between">
+          <div className="flex h-full gap-4">
             <Button
-              className="flex items-center gap-1"
-              variant="secondary"
-              onClick={() => setOpenImportModal(true)}>
-              <FileCsv size={22} />
-              Importar Segurados
-            </Button>
-            <Button
-              className="flex items-center gap-1"
-              variant="secondary"
-              onClick={() => handleDownloadCsv()}>
-              <FileCsv size={22} />
-              Exportar Segurados
+              onClick={() => push("/segurados/create")}
+              variant="secondary">
+              Cadastrar
             </Button>
           </div>
-        )}
-      </div>
+          {segurados.length > 0 && (
+            <div className="flex items-center gap-2">
+              <Button
+                className="flex items-center gap-1"
+                variant="secondary"
+                onClick={() => setOpenImportModal(true)}>
+                <FileCsv size={22} />
+                Importar Segurados
+              </Button>
+              <Button
+                className="flex items-center gap-1"
+                variant="secondary"
+                onClick={() => handleDownloadCsv()}>
+                <FileCsv size={22} />
+                Exportar Segurados
+              </Button>
+            </div>
+          )}
+        </div>
+      )}
 
       {segurados.length == 0 ?
         <h2 className="mt-6 text-xl font-semibold">
           Nenhum segurado cadastrado.
         </h2>
       : <>
-          <Table columns={columns} data={filteredResults} />
+          <Table
+            columns={isAdmin ? columns : columnsNotAdmin}
+            data={filteredResults}
+          />
           <Pagination
             page={page}
             totalPages={totalPages}
