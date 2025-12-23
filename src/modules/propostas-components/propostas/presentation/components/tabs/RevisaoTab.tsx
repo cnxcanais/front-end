@@ -53,7 +53,10 @@ export function RevisaoTab({
           <div>
             <label>Número da Proposta *</label>
             <Input.Root className="mt-2">
-              <Input.Control {...register("numeroProposta")} disabled={readOnly} />
+              <Input.Control
+                {...register("numeroProposta")}
+                disabled={readOnly}
+              />
             </Input.Root>
             {errors.numeroProposta && (
               <span className="text-xs text-red-500">
@@ -159,6 +162,25 @@ export function RevisaoTab({
                 ramos?.data?.map((r: any) => ({
                   text: r.descricao,
                   value: r.id,
+                })) || []
+              }
+            />
+            {errors.ramoId && (
+              <span className="text-xs text-red-500">
+                {errors.ramoId.message}
+              </span>
+            )}
+          </div>
+          <div>
+            <SelectInput
+              label="Tomador"
+              field_name="tomadorId"
+              value={formData.tomadorId}
+              onChange={(e) => setValue("tomadorId", e.target.value)}
+              options={
+                segurados?.data?.map((s: Segurado.Type) => ({
+                  text: s.nomeRazaoSocial,
+                  value: s.id,
                 })) || []
               }
             />

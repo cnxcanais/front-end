@@ -35,7 +35,11 @@ interface PropostaFormProps {
   readOnly?: boolean
 }
 
-export function PropostaForm({ proposta, isEdit, readOnly }: PropostaFormProps) {
+export function PropostaForm({
+  proposta,
+  isEdit,
+  readOnly,
+}: PropostaFormProps) {
   const searchParams = useSearchParams()
   const duplicateFromId = searchParams.get("duplicateFrom")
   const isEndosso = searchParams.get("endosso") === "true"
@@ -85,6 +89,7 @@ export function PropostaForm({ proposta, isEdit, readOnly }: PropostaFormProps) 
       seguradoId: sourceData?.seguradoId || "",
       corretoraId: sourceData?.corretoraId || "",
       produtorId: sourceData?.produtorId || "",
+      tomadorId: sourceData?.tomadorId || "",
       seguradoraId: sourceData?.seguradoraId || "",
       ramoId: sourceData?.ramoId || "",
       produtoId: sourceData?.produtoId || "",
@@ -169,6 +174,7 @@ export function PropostaForm({ proposta, isEdit, readOnly }: PropostaFormProps) 
         seguradoId: propostaToDuplicate.seguradoId,
         corretoraId: propostaToDuplicate.corretoraId,
         produtorId: propostaToDuplicate.produtorId,
+        tomadorId: propostaToDuplicate.tomadorId,
         seguradoraId: propostaToDuplicate.seguradoraId,
         ramoId: propostaToDuplicate.ramoId,
         produtoId: propostaToDuplicate.produtoId,
@@ -542,7 +548,11 @@ export function PropostaForm({ proposta, isEdit, readOnly }: PropostaFormProps) 
 
         {((activeTab === 1 && !isAutomovelRamo) ||
           (activeTab === 2 && isAutomovelRamo)) && (
-          <VigenciaTab register={register} errors={errors} readOnly={readOnly} />
+          <VigenciaTab
+            register={register}
+            errors={errors}
+            readOnly={readOnly}
+          />
         )}
 
         {((activeTab === 2 && !isAutomovelRamo) ||
