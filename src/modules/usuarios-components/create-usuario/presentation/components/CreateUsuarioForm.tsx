@@ -32,7 +32,7 @@ export function CreateUsuarioForm() {
 
   const perfisOptions = useMemo(() => {
     if (!perfis) return []
-    return perfis.map((p) => ({
+    return perfis.data.map((p) => ({
       text: p.nome,
       value: p.id,
     }))
