@@ -45,14 +45,14 @@ import {
 import { useRouter } from "next/navigation"
 import { useEffect, useMemo, useState } from "react"
 import { toast } from "sonner"
-import { CancelarApoliceModal } from "./CancelarApoliceModal"
 import { DashboardIndicators } from "./DashboardIndicators"
-import { EmitirApoliceModal } from "./EmitirApoliceModal"
-import { EndossarApoliceModal } from "./EndossarApoliceModal"
-import { ExportPropostasModal } from "./ExportPropostasModal"
-import { ImportErrorsModal } from "./ImportErrorsModal"
-import { ImportPropostasModal } from "./ImportPropostasModal"
-import { RenovarApoliceModal } from "./RenovarApoliceModal"
+import { CancelarApoliceModal } from "./modals/CancelarApoliceModal"
+import { EmitirApoliceModal } from "./modals/EmitirApoliceModal"
+import { EndossarApoliceModal } from "./modals/EndossarApoliceModal"
+import { ExportPropostasModal } from "./modals/ExportPropostasModal"
+import { ImportErrorsModal } from "./modals/ImportErrorsModal"
+import { ImportPropostasModal } from "./modals/ImportPropostasModal"
+import { RenovarApoliceModal } from "./modals/RenovarApoliceModal"
 
 export function PropostasTable() {
   const [page, setPage] = useState(1)

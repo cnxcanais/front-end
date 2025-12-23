@@ -2,6 +2,7 @@
 
 import { Button } from "@/core/components/Button"
 import * as Input from "@/core/components/Input"
+import { useRamoQuery } from "@/modules/ramos-components/ramos/infra/hooks/use-ramo-query"
 import { zodResolver } from "@hookform/resolvers/zod"
 import { useRouter } from "next/navigation"
 import { useMemo } from "react"
@@ -12,7 +13,6 @@ import {
   CreateProdutoSchema,
   createProdutoFormSchema,
 } from "../validation/schema"
-import { useRamoQuery } from "@/modules/ramos-components/ramos/infra/hooks/use-ramo-query"
 
 export function CreateProdutoForm() {
   const { push } = useRouter()
@@ -34,7 +34,11 @@ export function CreateProdutoForm() {
     }))
   }, [ramos])
 
-  async function onSubmit(data: { ramoId: string; descricao: string }) {
+  async function onSubmit(data: {
+    ramoId: string
+    descricao: string
+    seguroRenovavel: boolean
+  }) {
     try {
       await createProduto(data)
       toast.success("Produto criado com sucesso!")
@@ -65,6 +69,16 @@ export function CreateProdutoForm() {
             {errors.ramoId && (
               <span className="text-xs text-red-500">
                 {errors.ramoId.message}
+              </span>
+            )}
+          </div>
+
+          <div className="flex max-w-[40px] flex-1 flex-col gap-2">
+            <label htmlFor="descricao">Renovável</label>
+            <input {...register("seguroRenovavel")} type="checkbox" />
+            {errors.seguroRenovavel && (
+              <span className="text-xs text-red-500">
+                {errors.seguroRenovavel.message}
               </span>
             )}
           </div>

@@ -9,10 +9,7 @@ import { zodResolver } from "@hookform/resolvers/zod"
 import { useRouter } from "next/navigation"
 import { useForm } from "react-hook-form"
 import { toast } from "sonner"
-import {
-  EditProdutoSchema,
-  editProdutoFormSchema,
-} from "../validation/schema"
+import { EditProdutoSchema, editProdutoFormSchema } from "../validation/schema"
 
 export function EditProdutoForm({ id }: { id: string }) {
   const { push } = useRouter()
@@ -28,10 +25,16 @@ export function EditProdutoForm({ id }: { id: string }) {
     values: {
       id: produto?.id || "",
       descricao: produto?.descricao || "",
+      seguroRenovavel: produto?.seguroRenovavel || false,
     },
   })
 
-  async function onSubmit(data: { descricao: string; id: string }) {
+  async function onSubmit(data: {
+    descricao: string
+    id: string
+    seguroRenovavel: boolean
+  }) {
+    console.log(data)
     try {
       await editProduto(data)
       toast.success("Produto editado com sucesso!")
@@ -48,6 +51,33 @@ export function EditProdutoForm({ id }: { id: string }) {
       className="mt-6 flex max-w-[1000px] flex-col gap-4"
       onSubmit={handleSubmit(onSubmit)}>
       <div className="flex flex-col gap-4">
+        <div className="flex gap-4">
+          <div className="flex flex-1 flex-col gap-2">
+            <label htmlFor="ramoId">Ramo</label>
+            <Input.Root>
+              <Input.Control
+                value={produto?.ramo?.descricao}
+                type="text"
+                disabled
+              />
+            </Input.Root>
+          </div>
+
+          <div className="flex max-w-[40px] flex-1 flex-col gap-2">
+            <label htmlFor="descricao">Renovável</label>
+            <input
+              {...register("seguroRenovavel", {
+                setValueAs: (v) => v === "true" || v === true,
+              })}
+              type="checkbox"
+            />
+            {errors.seguroRenovavel && (
+              <span className="text-xs text-red-500">
+                {errors.seguroRenovavel.message}
+              </span>
+            )}
+          </div>
+        </div>
         <div className="flex gap-4">
           <div className="flex flex-1 flex-col gap-2">
             <label htmlFor="descricao">Descrição</label>

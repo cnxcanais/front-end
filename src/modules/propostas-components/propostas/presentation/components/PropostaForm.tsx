@@ -17,7 +17,7 @@ import { Proposta } from "../../../../../@types/proposta"
 import { usePropostaByIdQuery } from "../../infra/hooks/use-proposta-by-id-query"
 import { createProposta, updateProposta } from "../../infra/remote"
 import { propostaFormSchema, PropostaFormSchema } from "../validation/schema"
-import { ParcelasModal } from "./ParcelasModal"
+import { ParcelasModal } from "./modals/ParcelasModal"
 import {
   ApoliceEndossoTab,
   ComissaoTab,
@@ -57,7 +57,8 @@ export function PropostaForm({ proposta, isEdit }: PropostaFormProps) {
         fimVigencia: searchParams.get("fimVigencia") || "",
       }
     : null
-  const { data: propostaToDuplicate } = usePropostaByIdQuery(duplicateFromId)
+  const { data: propostaToDuplicate, refetch } =
+    usePropostaByIdQuery(duplicateFromId)
 
   const [activeTab, setActiveTab] = useState(0)
   const [showParcelasModal, setShowParcelasModal] = useState(false)
@@ -447,6 +448,7 @@ export function PropostaForm({ proposta, isEdit }: PropostaFormProps) {
         await createProposta(payload)
         toast.success("Proposta criada com sucesso!")
       }
+      refetch()
       push("/propostas")
     } catch (error: any) {
       toast.error(error?.response?.data?.message || "Erro ao salvar proposta")

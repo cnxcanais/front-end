@@ -6,6 +6,7 @@ export const editProdutoFormSchema = z.object({
     .string()
     .nonempty({ message: "Obrigatório" })
     .max(255, { message: "Campo deve ter no máximo 255 caracteres" }),
+  seguroRenovavel: z.boolean(),
 })
 
 export type EditProdutoSchema = z.infer<typeof editProdutoFormSchema>

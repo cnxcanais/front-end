@@ -4,6 +4,7 @@ export interface Produto {
   id: string
   ramoId: string
   ramo: Ramo
+  seguroRenovavel: boolean
   descricao: string
   createdAt: string
   updatedAt: string
