@@ -32,13 +32,13 @@ const sidebar_options_not_admin: SidebarOptionProps[] = [
     name: "Segurados",
     href: "/segurados",
     Icon: IdentificationBadge,
-    group: "Cadastros",
+    group: "Gerenciamento",
   },
   {
     name: "Propostas",
     href: "/propostas",
     Icon: FileText,
-    group: "Operações",
+    group: "Gerenciamento",
   },
 ]
 
