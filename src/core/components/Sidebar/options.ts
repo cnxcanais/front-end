@@ -1,3 +1,4 @@
+import { getCookie } from "@/lib/cookies"
 import { Icon } from "@phosphor-icons/react"
 import {
   BuildingOffice,
@@ -17,6 +18,29 @@ type SidebarOptionProps = {
   Icon: Icon
   group: string
 }
+
+const isAdmin = getCookie("perfilId") === process.env.NEXT_PUBLIC_ADM_ID
+
+const sidebar_options_not_admin: SidebarOptionProps[] = [
+  {
+    name: "Meu Usuário",
+    href: "",
+    Icon: User,
+    group: "Gerenciamento",
+  },
+  {
+    name: "Segurados",
+    href: "/segurados",
+    Icon: IdentificationBadge,
+    group: "Cadastros",
+  },
+  {
+    name: "Propostas",
+    href: "/propostas",
+    Icon: FileText,
+    group: "Operações",
+  },
+]
 
 export const sidebar_options: SidebarOptionProps[] = [
   {
@@ -91,7 +115,9 @@ type SidebarGroups = {
   [key: string]: SidebarOptionProps[]
 }
 
-export const sidebarGroupedByGroups = sidebar_options.reduce<SidebarGroups>(
+const options = isAdmin ? sidebar_options : sidebar_options_not_admin
+
+export const sidebarGroupedByGroups = options.reduce<SidebarGroups>(
   (groups, option) => {
     const group = option.group
     if (!groups[group]) {
