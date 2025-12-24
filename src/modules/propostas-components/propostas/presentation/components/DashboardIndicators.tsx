@@ -73,9 +73,16 @@ export function DashboardIndicators({
 
   const allPropostaParams = isAdmin ? {} : { corretoraId }
 
+  const apolicesAtivasParams =
+    isAdmin ?
+      { situacao: "Ativo", tipoDocumento: "Apólice" }
+    : { situacao: "Ativo", tipoDocumento: "Apólice", corretoraId }
+
   const allPropostas = usePropostaQuery(1, -1, allPropostaParams)
 
   const propostasAtivas = usePropostaQuery(1, -1, ativasParams)
+
+  const apolicesAtivas = usePropostaQuery(1, -1, apolicesAtivasParams)
 
   const propostasVigentes =
     propostasAtivas?.data?.data?.filter((p) => {
@@ -93,11 +100,6 @@ export function DashboardIndicators({
     propostasAtivas.data?.data?.filter(
       (p) => !propostasVigentes.some((v) => v.id === p.id)
     ) || []
-
-  const apolicesAtivas = usePropostaQuery(1, 100, {
-    situacao: "Ativo",
-    tipoDocumento: "Apólice",
-  })
 
   const apolicesVigentes =
     apolicesAtivas?.data?.data?.filter((p) => {

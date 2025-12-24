@@ -60,7 +60,12 @@ export function PropostasTable() {
   const searchParams = useSearchParams()
   const [page, setPage] = useState(1)
   const [limit, setLimit] = useState(10)
-  const [filters, setFilters] = useState<Record<string, string>>({})
+  const isAdmin = getCookie("perfilId") === process.env.NEXT_PUBLIC_ADM_ID
+  const corretoraId = getCookie("corretoraId")
+  const baseFilter = isAdmin ? {} : { corretoraId }
+  const [filters, setFilters] = useState<Record<string, string>>({
+    ...baseFilter,
+  })
   const hasUrlIds = searchParams.get("ids")
   const { data, isLoading, refetch } = usePropostaQuery(
     page,
@@ -69,7 +74,6 @@ export function PropostasTable() {
   )
   const [ramoId, setRamoId] = useState("")
   const { push } = useRouter()
-  const isAdmin = getCookie("perfilId") === process.env.NEXT_PUBLIC_ADM_ID
 
   const [open, setOpen] = useState(false)
   const [id, setId] = useState("")
@@ -107,14 +111,6 @@ export function PropostasTable() {
       setProdutosOptions(produtosOption)
     }
   }, [ramoId, produtos?.data])
-
-  // useEffect(() => {
-  //   const userCorretora = corretoras.data.filter((c) => c.id === "")
-  //   setFilters((prevFilters) => ({
-  //     ...prevFilters,
-  //     corretoraId: "",
-  //   }))
-  // }, [])
 
   const seguradosOptions = useMemo(() => {
     if (!segurados?.data) return []
@@ -742,7 +738,7 @@ export function PropostasTable() {
     if (!newFilters.ramoId) {
       delete updatedFilters.produtoId
     }
-    setFilters(updatedFilters)
+    setFilters({ ...baseFilter, ...updatedFilters })
     setPage(1)
     setDashboardFilter(null)
     if (searchParams.get("ids")) {
