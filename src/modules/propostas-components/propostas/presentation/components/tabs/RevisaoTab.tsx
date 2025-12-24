@@ -45,6 +45,17 @@ export function RevisaoTab({
   isAutomovelRamo,
   readOnly,
 }: RevisaoTabProps) {
+  const premioTotal =
+    (formData.premioLiquido || 0) +
+    (formData.valoresAdicionais || 0) +
+    (formData.iof || 0)
+  const totalParcelas = formData.parcelas.reduce(
+    (acc: number, p: any) => acc + (p.valor || 0),
+    0
+  )
+  const hasMismatch = Math.abs(premioTotal - totalParcelas) >= 0.01
+  console.log(errors)
+
   return (
     <>
       <div className="rounded-lg bg-gray-50 p-6">
@@ -439,6 +450,11 @@ export function RevisaoTab({
                 disabled={readOnly}
               />
             </Input.Root>
+            {errors.premioLiquido && (
+              <span className="text-xs text-red-500">
+                {errors.premioLiquido.message}
+              </span>
+            )}
           </div>
           <div>
             <label>Valores Adicionais</label>
@@ -465,6 +481,16 @@ export function RevisaoTab({
             </Input.Root>
           </div>
         </div>
+        {errors.parcelas && (
+          <span className="text-xs text-red-500">
+            {errors.parcelas.message}
+          </span>
+        )}
+        {hasMismatch && formData.parcelas.length > 0 && (
+          <span className="text-xs text-red-500">
+            A soma dos valores das parcelas deve ser igual ao prêmio total
+          </span>
+        )}
         {formData.parcelas.length > 0 && (
           <div className="mt-4">
             <p className="font-medium">

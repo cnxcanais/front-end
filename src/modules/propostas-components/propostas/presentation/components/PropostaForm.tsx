@@ -336,6 +336,20 @@ export function PropostaForm({
               )
               return
             }
+            const premioTotal =
+              (formData.premioLiquido || 0) +
+              (formData.valoresAdicionais || 0) +
+              (formData.iof || 0)
+            const totalParcelas = formData.parcelas.reduce(
+              (acc: number, p: any) => acc + (p.valor || 0),
+              0
+            )
+            if (Math.abs(premioTotal - totalParcelas) >= 0.01) {
+              toast.error(
+                "A soma das parcelas deve ser igual ao prêmio total"
+              )
+              return
+            }
           }
         }
         break
@@ -353,6 +367,20 @@ export function PropostaForm({
             if (hasEmptyDates) {
               toast.error(
                 "Preencha o vencimento e previsão de recebimento de todas as parcelas"
+              )
+              return
+            }
+            const premioTotal =
+              (formData.premioLiquido || 0) +
+              (formData.valoresAdicionais || 0) +
+              (formData.iof || 0)
+            const totalParcelas = formData.parcelas.reduce(
+              (acc: number, p: any) => acc + (p.valor || 0),
+              0
+            )
+            if (Math.abs(premioTotal - totalParcelas) >= 0.01) {
+              toast.error(
+                "A soma das parcelas deve ser igual ao prêmio total"
               )
               return
             }

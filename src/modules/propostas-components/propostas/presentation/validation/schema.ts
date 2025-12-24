@@ -3,8 +3,8 @@ import { z } from "zod"
 const parcelaSchema = z.object({
   numeroParcela: z.number().min(1, "Número da parcela é obrigatório"),
   dataVencimento: z.string().min(1, "Data de vencimento é obrigatória"),
-  valor: z.number().min(0, "Valor deve ser maior ou igual a 0"),
-  valorLiquido: z.number().min(0, "Valor líquido deve ser maior ou igual a 0"),
+  valor: z.number(),
+  valorLiquido: z.number().nullable(),
   percentualCorretora: z.preprocess(
     (val) =>
       val === "" || val === null || (typeof val === "number" && isNaN(val)) ?
@@ -90,7 +90,7 @@ export const propostaFormSchema = z
       .number({
         invalid_type_error: "Percentual de comissão deve ser um número válido",
       })
-      .min(0, "Percentual deve ser maior ou igual a 0")
+      .min(-100, "Percentual deve ser maior ou igual a -100")
       .max(100, "Percentual deve ser menor ou igual a 100")
       .nullable(),
     comissaoSobre: z.enum(
@@ -106,7 +106,6 @@ export const propostaFormSchema = z
       .number({
         invalid_type_error: "Valor de comissão deve ser um número válido",
       })
-      .min(0, "Valor de comissão deve ser maior ou igual a 0")
       .nullable(),
     premioLiquido: z
       .number({
@@ -125,6 +124,23 @@ export const propostaFormSchema = z
     {
       message: "Tomador não pode ser o mesmo que o produtor",
       path: ["tomadorId"],
+    }
+  )
+  .refine(
+    (data) => {
+      if (data.parcelas.length === 0) return true
+      const premioTotal =
+        (data.premioLiquido || 0) +
+        (data.valoresAdicionais || 0) +
+        (data.iof || 0)
+      const totalParcelas = data.parcelas.reduce(
+        (acc, parcela) => acc + (parcela.valor || 0),
+        0
+      )
+      return Math.abs(premioTotal - totalParcelas) < 0.01
+    },
+    {
+      message: "A soma dos valores das parcelas deve ser igual ao prêmio total",
     }
   )
 

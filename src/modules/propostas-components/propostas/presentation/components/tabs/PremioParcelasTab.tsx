@@ -24,7 +24,6 @@ export function PremioParcelasTab({
   readOnly,
 }: PremioParcelasTabProps) {
   const handleOpenParcelaModal = () => {
-    console.log(premioLiquido)
     if (!premioLiquido) {
       toast.error("Defina o valor do prêmio líquido")
       return
@@ -77,7 +76,54 @@ export function PremioParcelasTab({
         </div>
       </div>
       {!readOnly && (
-        <Button onClick={handleOpenParcelaModal}>Gerar Parcelas</Button>
+        <div className="flex items-center justify-between">
+          <Button onClick={handleOpenParcelaModal}>Gerar Parcelas</Button>
+          <div
+            className={`flex items-center gap-4 ${
+              (
+                Math.abs(
+                  (formData.premioLiquido || 0) +
+                    (formData.valoresAdicionais || 0) +
+                    (formData.iof || 0) -
+                    (formData.parcelas?.reduce(
+                      (acc, parcela) => acc + (parcela.valor || 0),
+                      0
+                    ) || 0)
+                ) < 0.01
+              ) ?
+                "text-green-500"
+              : "text-red-500"
+            }`}>
+            <div>
+              <label>Valor Total</label>
+              <h3>
+                {(
+                  (formData.premioLiquido || 0) +
+                  (formData.valoresAdicionais || 0) +
+                  (formData.iof || 0)
+                ).toLocaleString("pt-br", {
+                  style: "currency",
+                  currency: "BRL",
+                })}
+              </h3>
+            </div>
+            <span> | </span>
+            <div>
+              <label>Parcelas</label>
+              <h3>
+                {(
+                  formData.parcelas?.reduce(
+                    (acc, parcela) => acc + parcela.valor,
+                    0
+                  ) || 0
+                ).toLocaleString("pt-BR", {
+                  style: "currency",
+                  currency: "BRL",
+                })}
+              </h3>
+            </div>
+          </div>
+        </div>
       )}
       {formData.parcelas?.length > 0 && (
         <div className="mt-4">
@@ -94,7 +140,15 @@ export function PremioParcelasTab({
                 <div>
                   <label>Valor</label>
                   <Input.Root>
-                    <Input.Control value={parcela.valor} disabled />
+                    <Input.Control
+                      value={parcela.valor}
+                      disabled={readOnly}
+                      onChange={(e) => {
+                        const newParcelas = [...formData.parcelas]
+                        newParcelas[index].valor = Number(e.target.value)
+                        setValue("parcelas", newParcelas)
+                      }}
+                    />
                   </Input.Root>
                 </div>
                 <div>
