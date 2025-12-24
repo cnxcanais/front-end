@@ -1,6 +1,7 @@
 "use client"
 
 import { Proposta } from "@/@types/proposta"
+import { getCookie } from "@/lib/cookies"
 import {
   ArrowClockwise,
   CheckCircle,
@@ -63,12 +64,18 @@ export function DashboardIndicators({
     setLastUpdated(new Date())
   }
 
-  const allPropostas = usePropostaQuery(1, 100)
+  const isAdmin = getCookie("perfilId") === process.env.NEXT_PUBLIC_ADM_ID
+  const corretoraId = getCookie("corretoraId")
+  const ativasParams =
+    isAdmin ?
+      { situacao: "Ativo", tipoDocumento: "Proposta" }
+    : { situacao: "Ativo", tipoDocumento: "Proposta", corretoraId }
 
-  const propostasAtivas = usePropostaQuery(1, 100, {
-    situacao: "Ativo",
-    tipoDocumento: "Proposta",
-  })
+  const allPropostaParams = isAdmin ? {} : { corretoraId }
+
+  const allPropostas = usePropostaQuery(1, -1, allPropostaParams)
+
+  const propostasAtivas = usePropostaQuery(1, -1, ativasParams)
 
   const propostasVigentes =
     propostasAtivas?.data?.data?.filter((p) => {

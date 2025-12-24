@@ -49,6 +49,10 @@ export namespace Usuario {
         id: string
         nome: string
       }
+      corretora?: {
+        id: string
+        razaoSocial: string
+      }
       isMaster: boolean
     }
   }

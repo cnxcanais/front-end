@@ -52,6 +52,7 @@ export function SeguradosTable() {
   >(null)
 
   const isAdmin = getCookie("perfilId") === process.env.NEXT_PUBLIC_ADM_ID
+  const corretoraId = getCookie("corretoraId")
 
   const corretorasOptions = useMemo(() => {
     if (isLoadingCorretoras || !corretoras) return []

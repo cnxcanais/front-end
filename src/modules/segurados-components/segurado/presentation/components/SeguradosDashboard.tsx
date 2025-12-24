@@ -1,6 +1,7 @@
 "use client"
 
 import { Segurado } from "@/@types/segurado"
+import { getCookie } from "@/lib/cookies"
 import {
   ArrowClockwise,
   Cake,
@@ -66,7 +67,11 @@ export function SeguradosDashboard({
     setLastUpdated(new Date())
   }
 
-  const allSegurados = useSeguradoQuery(1, -1)
+  const isAdmin = getCookie("perfilId") === process.env.NEXT_PUBLIC_ADM_ID
+  const corretoraId = getCookie("corretoraId")
+  const paramsPayload = isAdmin ? {} : { corretoraId }
+
+  const allSegurados = useSeguradoQuery(1, -1, paramsPayload)
 
   const segurados = allSegurados.data?.data || []
 
