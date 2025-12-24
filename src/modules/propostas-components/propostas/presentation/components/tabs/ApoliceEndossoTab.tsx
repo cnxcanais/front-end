@@ -9,6 +9,7 @@ interface ApoliceEndossoTabProps {
   control: any
   proposta: Proposta
   readOnly?: boolean
+  isEndosso: boolean
 }
 
 import "react-quill-new/dist/quill.snow.css"
@@ -21,13 +22,18 @@ export function ApoliceEndossoTab({
   control,
   proposta,
   readOnly,
+  isEndosso,
 }: ApoliceEndossoTabProps) {
   return (
     <div className="grid grid-cols-2 gap-4">
       <div>
         <label>Data de Emissão</label>
         <Input.Root className="mt-2">
-          <Input.Control type="date" {...register("dataEmissao")} disabled={readOnly} />
+          <Input.Control
+            type="date"
+            {...register("dataEmissao")}
+            disabled={readOnly}
+          />
         </Input.Root>
         {errors.dataEmissao && (
           <span className="text-xs text-red-500">
@@ -38,7 +44,10 @@ export function ApoliceEndossoTab({
       <div>
         <label>Número da Apólice</label>
         <Input.Root className="mt-2">
-          <Input.Control {...register("numeroApolice")} disabled={readOnly} />
+          <Input.Control
+            {...register("numeroApolice")}
+            disabled={readOnly || isEndosso}
+          />
         </Input.Root>
         {errors.numeroApolice && (
           <span className="text-xs text-red-500">

@@ -224,7 +224,7 @@ export function PropostaTab({
             { text: "Endosso", value: "Endosso" },
           ]}
           required
-          disabled={readOnly}
+          disabled={isDisabled}
         />
         {errors.tipoDocumento && (
           <span className="text-xs text-red-500">
@@ -244,7 +244,7 @@ export function PropostaTab({
             { text: "Integração", value: "Integração" },
           ]}
           required
-          disabled={readOnly}
+          disabled={isDisabled}
         />
         {errors.origem && (
           <span className="text-xs text-red-500">{errors.origem.message}</span>

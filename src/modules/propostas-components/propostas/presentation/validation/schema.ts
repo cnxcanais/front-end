@@ -112,7 +112,6 @@ export const propostaFormSchema = z
       .number({
         invalid_type_error: "Prêmio líquido deve ser um número válido",
       })
-      .min(0, "Prêmio líquido deve ser maior ou igual a 0")
       .nullable(),
     valoresAdicionais: z.number().nullable().optional(),
     iof: z.number().nullable().optional(),

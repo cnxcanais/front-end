@@ -4,7 +4,11 @@ import {
   TipoDocumentoEnum,
 } from "@/modules/propostas-components/types/enums"
 import { toast } from "sonner"
-import { Proposta, PropostasResponse } from "../../../../../@types/proposta"
+import {
+  Proposta,
+  PropostasResponse,
+  UltimoEndossoResponse,
+} from "../../../../../@types/proposta"
 
 export async function getPropostas(
   page = 1,
@@ -31,6 +35,21 @@ export async function getPropostas(
 export async function getProposta(id: string) {
   try {
     const response = await bffApi.get<Proposta>(`/propostas-apolices/${id}`)
+    return response.data
+  } catch (error: any) {
+    toast.error(
+      "Erro ao buscar proposta: " + error?.response?.data?.message ||
+        "Erro ao buscar proposta"
+    )
+    throw error
+  }
+}
+
+export async function getUltimoEndosso(id: string) {
+  try {
+    const response = await bffApi.get<UltimoEndossoResponse>(
+      `/propostas-apolices/${id}/ultimo-endosso`
+    )
     return response.data
   } catch (error: any) {
     toast.error(

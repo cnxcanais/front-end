@@ -91,7 +91,7 @@ export function PropostaForm({
       seguradoId: sourceData?.seguradoId || "",
       corretoraId: sourceData?.corretoraId || "",
       produtorId: sourceData?.produtorId || "",
-      observacoes: sourceData.observacoes || "",
+      observacoes: sourceData?.observacoes || "",
       tomadorId: sourceData?.tomadorId || "",
       seguradoraId: sourceData?.seguradoraId || "",
       ramoId: sourceData?.ramoId || "",
@@ -214,19 +214,22 @@ export function PropostaForm({
         comissaoSobre: propostaToDuplicate.comissaoSobre as any,
         formaComissao: propostaToDuplicate.formaComissao,
         valorComissao: propostaToDuplicate.valorComissao,
-        premioLiquido: propostaToDuplicate.premioLiquido,
-        valoresAdicionais: propostaToDuplicate.valoresAdicionais,
-        iof: propostaToDuplicate.iof,
+        premioLiquido: isEndosso ? null : propostaToDuplicate.premioLiquido,
+        valoresAdicionais:
+          isEndosso ? null : propostaToDuplicate.valoresAdicionais,
+        iof: isEndosso ? null : propostaToDuplicate.iof,
         parcelas:
-          propostaToDuplicate.parcelas?.map((p) => ({
-            numeroParcela: p.numeroParcela,
-            dataVencimento: p.dataVencimento,
-            valor: Number(p.valor),
-            valorLiquido: Number(p.valorLiquido),
-            percentualCorretora: Number(p.percentualCorretora),
-            previsaoRecebimento: p.previsaoRecebimento,
-            situacao: p.situacao,
-          })) || [],
+          isEndosso ? null : (
+            propostaToDuplicate.parcelas?.map((p) => ({
+              numeroParcela: p.numeroParcela,
+              dataVencimento: p.dataVencimento,
+              valor: Number(p.valor),
+              valorLiquido: Number(p.valorLiquido),
+              percentualCorretora: Number(p.percentualCorretora),
+              previsaoRecebimento: p.previsaoRecebimento,
+              situacao: p.situacao,
+            })) || []
+          ),
         repasses:
           propostaToDuplicate.repasses?.map((r) => ({
             produtorId: r.produtorId,
@@ -569,6 +572,7 @@ export function PropostaForm({
             proposta={propostaToDuplicate}
             control={control}
             readOnly={readOnly}
+            isEndosso={isEndosso}
           />
         )}
 

@@ -76,8 +76,10 @@ export function PremioParcelasTab({
           </Input.Root>
         </div>
       </div>
-      {!readOnly && <Button onClick={handleOpenParcelaModal}>Gerar Parcelas</Button>}
-      {formData.parcelas.length > 0 && (
+      {!readOnly && (
+        <Button onClick={handleOpenParcelaModal}>Gerar Parcelas</Button>
+      )}
+      {formData.parcelas?.length > 0 && (
         <div className="mt-4">
           <h4 className="mb-2 font-semibold">Parcelas</h4>
           {formData.parcelas.map((parcela: any, index: number) => (

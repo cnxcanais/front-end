@@ -109,3 +109,21 @@ export interface PropostasResponse {
     totalPages: number
   }
 }
+
+export interface UltimoEndossoResponse {
+  isUltimaVersa: boolean
+  documentoAtual: {
+    id: string
+    numeroProposta: string
+    numeroVersao: number
+    possuiEndossoMaisRecente: boolean
+    ultimoEndossoId: string | null
+  }
+  ultimaVersao: {
+    id: string
+    numeroProposta: string
+    numeroVersao: number
+    possuiEndossoMaisRecente: boolean
+  }
+  totalEndossos: number
+}

@@ -18,6 +18,7 @@ import {
   cancelarApolice,
   emitirApolice,
   exportPropostas,
+  getUltimoEndosso,
   importPropostas,
   naoRenovarApolice,
   refuseProposta,
@@ -202,6 +203,7 @@ export function PropostasTable() {
       return
     }
     await refuseProposta(id)
+    refetch()
   }
 
   const handleEmitirApolice = async (data: {
@@ -400,7 +402,9 @@ export function PropostasTable() {
         <div className="flex items-center gap-2">
           <div
             className={`h-3 w-3 rounded-full ${
-              new Date(row.fimVigencia) > new Date() ? "bg-green-500"
+              row.situacao === "Cancelada" ? "bg-red-500"
+              : row.situacao !== "Ativo" ? "bg-blue-100"
+              : new Date(row.fimVigencia) > new Date() ? "bg-green-500"
               : new Date(row.fimVigencia) === new Date() ? "bg-yellow-500"
               : "bg-red-500"
             }`}
@@ -408,6 +412,7 @@ export function PropostasTable() {
           <div>
             <div className="font-medium">{row.tipoDocumento}</div>
             <div className="text-sm text-gray-600">{row.numeroProposta}</div>
+            <div>{row.situacao}</div>
           </div>
         </div>
       ),
@@ -505,8 +510,9 @@ export function PropostasTable() {
                 <Note
                   className="cursor-pointer hover:text-blue-500"
                   size={24}
-                  onClick={() => {
-                    setSelectedPropostaId(value)
+                  onClick={async () => {
+                    const ultimoEndosso = await getUltimoEndosso(value)
+                    setSelectedPropostaId(ultimoEndosso?.ultimaVersao?.id)
                     setOpenEndossarApoliceModal(true)
                   }}
                 />
