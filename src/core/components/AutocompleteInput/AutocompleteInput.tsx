@@ -18,6 +18,7 @@ type AutocompleteInputProps = {
   value?: string
   defaultValue?: string
   variant?: "primary" | "disabled" | "error"
+  readOnly?: boolean
 }
 
 export const AutocompleteInput = forwardRef<
@@ -35,6 +36,7 @@ export const AutocompleteInput = forwardRef<
       value,
       defaultValue,
       variant,
+      readOnly = false,
       ...rest
     },
     ref
@@ -103,6 +105,7 @@ export const AutocompleteInput = forwardRef<
             type="text"
             value={search}
             onChange={(e) => {
+              if (readOnly) return
               setSearch(e.target.value)
               setIsOpen(true)
               if (e.target.value === "" && hiddenInputRef.current && onChange) {
@@ -115,7 +118,8 @@ export const AutocompleteInput = forwardRef<
                 onChange(event)
               }
             }}
-            onFocus={() => setIsOpen(true)}
+            onFocus={() => !readOnly && setIsOpen(true)}
+            readOnly={readOnly}
           />
         </Input.Root>
         <input
@@ -132,7 +136,7 @@ export const AutocompleteInput = forwardRef<
           {...rest}
         />
 
-        {isOpen && filteredOptions.length > 0 && (
+        {isOpen && !readOnly && filteredOptions.length > 0 && (
           <div className="absolute top-full z-50 mt-1 max-h-60 w-full overflow-auto rounded-md border border-gray-300 bg-white shadow-lg">
             {filteredOptions.map((option, index) => (
               <div

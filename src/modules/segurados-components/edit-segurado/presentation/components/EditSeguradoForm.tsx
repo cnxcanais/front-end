@@ -37,9 +37,13 @@ import {
 
 type EditSeguradoFormProps = {
   id: string
+  readOnly?: boolean
 }
 
-export function EditSeguradoForm({ id }: EditSeguradoFormProps) {
+export function EditSeguradoForm({
+  id,
+  readOnly = false,
+}: EditSeguradoFormProps) {
   const { push } = useRouter()
   const [isCepSearched, setIsCepSearched] = useState(false)
 
@@ -158,7 +162,11 @@ export function EditSeguradoForm({ id }: EditSeguradoFormProps) {
           <div className="flex flex-1 flex-col gap-2">
             <label>Nome/Razão Social</label>
             <Input.Root>
-              <Input.Control {...register("nomeRazaoSocial")} type="text" />
+              <Input.Control
+                {...register("nomeRazaoSocial")}
+                type="text"
+                readOnly={readOnly}
+              />
             </Input.Root>
             {errors.nomeRazaoSocial && (
               <span className="text-xs text-red-500">
@@ -172,6 +180,7 @@ export function EditSeguradoForm({ id }: EditSeguradoFormProps) {
               options={StatusSeguradoLabels}
               label="Status"
               field_name="status"
+              disabled={readOnly}
               {...register("status")}
             />
             {errors.status && (
@@ -227,7 +236,11 @@ export function EditSeguradoForm({ id }: EditSeguradoFormProps) {
           <div className="flex flex-1 flex-col gap-2">
             <label>Grupo</label>
             <Input.Root variant="disabled">
-              <Input.Control {...register("grupo")} type="text" />
+              <Input.Control
+                {...register("grupo")}
+                type="text"
+                readOnly={readOnly}
+              />
             </Input.Root>
             {errors.grupo && (
               <span className="text-xs text-red-500">
@@ -253,6 +266,7 @@ export function EditSeguradoForm({ id }: EditSeguradoFormProps) {
                   <Input.Control
                     {...register("representanteLegalNome")}
                     type="text"
+                    readOnly={readOnly}
                   />
                 </Input.Root>
                 {errors.representanteLegalNome && (
@@ -272,6 +286,7 @@ export function EditSeguradoForm({ id }: EditSeguradoFormProps) {
                       },
                     })}
                     type="text"
+                    readOnly={readOnly}
                   />
                 </Input.Root>
                 {errors.representanteLegalCpf && (
@@ -288,21 +303,33 @@ export function EditSeguradoForm({ id }: EditSeguradoFormProps) {
           <div className="flex flex-1 flex-col gap-2">
             <label>RG</label>
             <Input.Root variant="primary">
-              <Input.Control {...register("rg")} type="text" />
+              <Input.Control
+                {...register("rg")}
+                type="text"
+                readOnly={readOnly}
+              />
             </Input.Root>
           </div>
 
           <div className="flex flex-1 flex-col gap-2">
             <label>Órgão Emissor</label>
             <Input.Root variant="primary">
-              <Input.Control {...register("orgaoEmissor")} type="text" />
+              <Input.Control
+                {...register("orgaoEmissor")}
+                type="text"
+                readOnly={readOnly}
+              />
             </Input.Root>
           </div>
 
           <div className="flex flex-1 flex-col gap-2">
             <label>Data de Nascimento</label>
             <Input.Root variant="primary">
-              <Input.Control {...register("dataNascimento")} type="date" />
+              <Input.Control
+                {...register("dataNascimento")}
+                type="date"
+                readOnly={readOnly}
+              />
             </Input.Root>
           </div>
         </div>
@@ -314,6 +341,7 @@ export function EditSeguradoForm({ id }: EditSeguradoFormProps) {
               label="Sexo"
               field_name="sexo"
               {...register("sexo")}
+              disabled={readOnly}
             />
           </div>
 
@@ -323,6 +351,7 @@ export function EditSeguradoForm({ id }: EditSeguradoFormProps) {
               label="Estado Civil"
               field_name="estadoCivil"
               {...register("estadoCivil")}
+              disabled={readOnly}
             />
           </div>
 
@@ -330,14 +359,22 @@ export function EditSeguradoForm({ id }: EditSeguradoFormProps) {
             <div className="flex flex-1 flex-col gap-2">
               <label>Ramo de Atividade</label>
               <Input.Root variant="primary">
-                <Input.Control {...register("ramoAtividade")} type="text" />
+                <Input.Control
+                  {...register("ramoAtividade")}
+                  type="text"
+                  readOnly={readOnly}
+                />
               </Input.Root>
             </div>
 
             <div className="flex flex-1 flex-col gap-2">
               <label>Vencimento CNH</label>
               <Input.Root>
-                <Input.Control {...register("vencimentoCnh")} type="date" />
+                <Input.Control
+                  {...register("vencimentoCnh")}
+                  type="date"
+                  readOnly={readOnly}
+                />
               </Input.Root>
               {errors.vencimentoCnh && (
                 <span className="text-xs text-red-500">
@@ -356,7 +393,11 @@ export function EditSeguradoForm({ id }: EditSeguradoFormProps) {
           <div className="flex flex-1 flex-col gap-2">
             <label>Email</label>
             <Input.Root variant={errors.email ? "error" : "primary"}>
-              <Input.Control {...register("email")} type="email" />
+              <Input.Control
+                {...register("email")}
+                type="email"
+                readOnly={readOnly}
+              />
             </Input.Root>
             {errors.email && (
               <span className="text-xs text-red-500">
@@ -375,6 +416,7 @@ export function EditSeguradoForm({ id }: EditSeguradoFormProps) {
                   },
                 })}
                 type="text"
+                readOnly={readOnly}
               />
             </Input.Root>
           </div>
@@ -389,6 +431,7 @@ export function EditSeguradoForm({ id }: EditSeguradoFormProps) {
                   },
                 })}
                 type="text"
+                readOnly={readOnly}
               />
             </Input.Root>
           </div>
@@ -398,21 +441,33 @@ export function EditSeguradoForm({ id }: EditSeguradoFormProps) {
           <div className="flex flex-1 flex-col gap-2">
             <label>Nome do Contato</label>
             <Input.Root variant="primary">
-              <Input.Control {...register("nomeContato")} type="text" />
+              <Input.Control
+                {...register("nomeContato")}
+                type="text"
+                readOnly={readOnly}
+              />
             </Input.Root>
           </div>
 
           <div className="flex flex-1 flex-col gap-2">
             <label>Cargo do Contato</label>
             <Input.Root variant="primary">
-              <Input.Control {...register("cargoContato")} type="text" />
+              <Input.Control
+                {...register("cargoContato")}
+                type="text"
+                readOnly={readOnly}
+              />
             </Input.Root>
           </div>
 
           <div className="flex flex-1 flex-col gap-2">
             <label>Canal de Vendas</label>
             <Input.Root variant="primary">
-              <Input.Control {...register("canalVendas")} type="text" />
+              <Input.Control
+                {...register("canalVendas")}
+                type="text"
+                readOnly={readOnly}
+              />
             </Input.Root>
           </div>
         </div>
@@ -442,6 +497,7 @@ export function EditSeguradoForm({ id }: EditSeguradoFormProps) {
                   const cleanedCep = e.target.value.replace(/\D/g, "")
                   fetchCep(cleanedCep, setValue)
                 }}
+                readOnly={readOnly}
               />
             </Input.Root>
             {errors.cep && (
@@ -452,21 +508,33 @@ export function EditSeguradoForm({ id }: EditSeguradoFormProps) {
           <div className="flex flex-1 flex-col gap-2">
             <label>Logradouro</label>
             <Input.Root variant="primary">
-              <Input.Control {...register("logradouro")} type="text" />
+              <Input.Control
+                {...register("logradouro")}
+                type="text"
+                readOnly={readOnly}
+              />
             </Input.Root>
           </div>
 
           <div className="flex max-w-[150px] flex-col gap-2">
             <label>Número</label>
             <Input.Root variant="primary">
-              <Input.Control {...register("numero")} type="text" />
+              <Input.Control
+                {...register("numero")}
+                type="text"
+                readOnly={readOnly}
+              />
             </Input.Root>
           </div>
 
           <div className="flex flex-1 flex-col gap-2">
             <label>Complemento</label>
             <Input.Root variant="primary">
-              <Input.Control {...register("complemento")} type="text" />
+              <Input.Control
+                {...register("complemento")}
+                type="text"
+                readOnly={readOnly}
+              />
             </Input.Root>
           </div>
         </div>
@@ -475,21 +543,33 @@ export function EditSeguradoForm({ id }: EditSeguradoFormProps) {
           <div className="flex flex-1 flex-col gap-2">
             <label>Bairro</label>
             <Input.Root variant="primary">
-              <Input.Control {...register("bairro")} type="text" />
+              <Input.Control
+                {...register("bairro")}
+                type="text"
+                readOnly={readOnly}
+              />
             </Input.Root>
           </div>
 
           <div className="flex flex-1 flex-col gap-2">
             <label>Cidade</label>
             <Input.Root variant="primary">
-              <Input.Control {...register("cidade")} type="text" />
+              <Input.Control
+                {...register("cidade")}
+                type="text"
+                readOnly={readOnly}
+              />
             </Input.Root>
           </div>
 
           <div className="flex max-w-[150px] flex-col gap-2">
             <label>UF</label>
             <Input.Root variant="primary">
-              <Input.Control {...register("uf")} type="text" />
+              <Input.Control
+                {...register("uf")}
+                type="text"
+                readOnly={readOnly}
+              />
             </Input.Root>
           </div>
         </div>
@@ -506,6 +586,7 @@ export function EditSeguradoForm({ id }: EditSeguradoFormProps) {
               field_name="banco"
               variant={errors.banco ? "error" : "primary"}
               {...register("banco")}
+              readOnly={readOnly}
             />
             {errors.banco && (
               <span className="text-xs text-red-500">
@@ -517,21 +598,33 @@ export function EditSeguradoForm({ id }: EditSeguradoFormProps) {
           <div className="flex flex-1 flex-col gap-2">
             <label>Agência</label>
             <Input.Root variant="primary">
-              <Input.Control {...register("agencia")} type="text" />
+              <Input.Control
+                {...register("agencia")}
+                type="text"
+                readOnly={readOnly}
+              />
             </Input.Root>
           </div>
 
           <div className="flex flex-1 flex-col gap-2">
             <label>Conta</label>
             <Input.Root variant="primary">
-              <Input.Control {...register("conta")} type="text" />
+              <Input.Control
+                {...register("conta")}
+                type="text"
+                readOnly={readOnly}
+              />
             </Input.Root>
           </div>
 
           <div className="flex max-w-[150px] flex-col gap-2">
             <label>Dígito</label>
             <Input.Root variant="primary">
-              <Input.Control {...register("digitoConta")} type="text" />
+              <Input.Control
+                {...register("digitoConta")}
+                type="text"
+                readOnly={readOnly}
+              />
             </Input.Root>
           </div>
         </div>
@@ -543,13 +636,18 @@ export function EditSeguradoForm({ id }: EditSeguradoFormProps) {
               label="Tipo de Conta"
               field_name="tipoConta"
               {...register("tipoConta")}
+              disabled={readOnly}
             />
           </div>
 
           <div className="flex flex-1 flex-col gap-2">
             <label>PIX</label>
             <Input.Root variant="primary">
-              <Input.Control {...register("pix")} type="text" />
+              <Input.Control
+                {...register("pix")}
+                type="text"
+                readOnly={readOnly}
+              />
             </Input.Root>
           </div>
         </div>
@@ -564,6 +662,7 @@ export function EditSeguradoForm({ id }: EditSeguradoFormProps) {
               options={produtoresOptions}
               label="Produtor"
               field_name="produtorId"
+              readOnly={readOnly}
               {...register("produtorId")}
             />
           </div>
@@ -571,14 +670,22 @@ export function EditSeguradoForm({ id }: EditSeguradoFormProps) {
           <div className="flex flex-1 flex-col gap-2">
             <label>Supervisor</label>
             <Input.Root variant="primary">
-              <Input.Control {...register("supervisor")} type="text" />
+              <Input.Control
+                {...register("supervisor")}
+                type="text"
+                readOnly={readOnly}
+              />
             </Input.Root>
           </div>
 
           <div className="flex flex-1 flex-col gap-2">
             <label>Indicado Por</label>
             <Input.Root variant="primary">
-              <Input.Control {...register("indicadoPor")} type="text" />
+              <Input.Control
+                {...register("indicadoPor")}
+                type="text"
+                readOnly={readOnly}
+              />
             </Input.Root>
           </div>
         </div>
@@ -586,7 +693,7 @@ export function EditSeguradoForm({ id }: EditSeguradoFormProps) {
         <div className="flex flex-col gap-2">
           <label>Observações</label>
           <Input.Root variant="primary">
-            <Input.Control {...register("observacoes")} />
+            <Input.Control {...register("observacoes")} readOnly={readOnly} />
           </Input.Root>
         </div>
       </div>
@@ -598,9 +705,11 @@ export function EditSeguradoForm({ id }: EditSeguradoFormProps) {
           onClick={() => push("/segurados")}>
           Cancelar
         </Button>
-        <Button type="submit" variant="secondary" disabled={isSubmitting}>
-          {isSubmitting ? "Salvando..." : "Salvar"}
-        </Button>
+        {!readOnly && (
+          <Button type="submit" variant="secondary" disabled={isSubmitting}>
+            {isSubmitting ? "Salvando..." : "Salvar"}
+          </Button>
+        )}
       </div>
     </form>
   )

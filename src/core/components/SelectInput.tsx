@@ -23,7 +23,7 @@ export function SelectInput({
       <div className="mt-2 grid flex-1 grid-cols-1">
         <select
           {...props}
-          className={`${className} col-start-1 row-start-1 w-full appearance-none rounded-lg border-black bg-white px-4 py-2.5 pl-3 pr-8 text-sm font-semibold text-gray-900 shadow-sm outline outline-1 -outline-offset-1 focus-within:border-blue-300 focus-within:ring-2 focus-within:ring-blue-100 focus:outline focus:outline-2 focus:-outline-offset-2 sm:text-sm/6`}>
+          className={`${className} border-black col-start-1 row-start-1 w-full appearance-none rounded-lg bg-white px-4 py-2.5 pl-3 pr-8 text-sm font-semibold text-gray-900 shadow-sm outline outline-1 -outline-offset-1 focus-within:border-blue-300 focus-within:ring-2 focus-within:ring-blue-100 focus:outline focus:outline-2 focus:-outline-offset-2 sm:text-sm/6`}>
           <option></option>
           {options.map((option, index) => {
             return (

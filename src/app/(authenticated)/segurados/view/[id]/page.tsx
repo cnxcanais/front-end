@@ -1,7 +1,6 @@
 "use client"
 
 import { PageTitle } from "@/core/components/PageTitle"
-import { useProfileAccess } from "@/modules/perfis-components/perfis/infra/hooks/use-profile-access"
 import { EditSeguradoForm } from "@/modules/segurados-components/edit-segurado/presentation/components/EditSeguradoForm"
 import { use } from "react"
 
@@ -11,11 +10,10 @@ export default function EditSeguradoPage({
   params: Promise<{ id: string }>
 }) {
   const { id } = use(params)
-  useProfileAccess(process.env.NEXT_PUBLIC_ADM_ID!)
   return (
     <>
       <PageTitle content="Editar Segurado" />
-      <EditSeguradoForm id={id} />
+      <EditSeguradoForm id={id} readOnly />
     </>
   )
 }

@@ -19,7 +19,7 @@ import {
   exportSegurados,
   removeSegurado,
 } from "@/modules/segurados-components/segurado/infra/remote"
-import { FileCsv, Pencil, Trash } from "@phosphor-icons/react"
+import { Eye, FileCsv, Pencil, Trash } from "@phosphor-icons/react"
 import { useRouter, useSearchParams } from "next/navigation"
 import { useEffect, useMemo, useState } from "react"
 import { toast } from "sonner"
@@ -62,7 +62,10 @@ export function SeguradosTable() {
   }, [corretoras, isLoadingCorretoras])
 
   const segurados = data?.data || []
-  const totalPages = dashboardFilter ? Math.ceil(filteredResults.length / limit) : (data?.totalPages || 1)
+  const totalPages =
+    dashboardFilter ?
+      Math.ceil(filteredResults.length / limit)
+    : data?.totalPages || 1
 
   const handleEdit = (id: string) => {
     push(`/segurados/edit/${id}`)
@@ -143,6 +146,19 @@ export function SeguradosTable() {
         />
       ),
     },
+    {
+      header: "Ações",
+      accessor: "id",
+      render: (value: string) => (
+        <div className="flex space-x-4">
+          <Eye
+            className="cursor-pointer duration-300 ease-in-out hover:text-blue-500"
+            size={24}
+            onClick={() => push(`/segurados/view/${value}`)}
+          />
+        </div>
+      ),
+    },
   ]
 
   const columns = [
@@ -198,6 +214,11 @@ export function SeguradosTable() {
               setId(value)
               setOpen(true)
             }}
+          />
+          <Eye
+            className="cursor-pointer duration-300 ease-in-out hover:text-blue-500"
+            size={24}
+            onClick={() => push(`/segurados/view/${value}`)}
           />
         </div>
       ),

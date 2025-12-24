@@ -61,8 +61,7 @@ type InputControlProps = ComponentProps<"input">
 
 export function Control(props: InputControlProps) {
   const { value, ...rest } = props
-  const sanitizedValue = typeof value === 'number' && isNaN(value) ? '' : value
-  
+  const sanitizedValue = typeof value === "number" && isNaN(value) ? "" : value
   return (
     <input
       className="w-full !border-none bg-transparent p-0 text-sm !outline-none !ring-0 autofill:bg-transparent autofill:text-white disabled:cursor-not-allowed"
