@@ -1,13 +1,13 @@
 "use client"
 
-import { removeCookie } from "@/lib/cookies"
+import { getCookie, removeCookie } from "@/lib/cookies"
 import { CaretDown, CaretRight, List, X } from "@phosphor-icons/react"
 import { SignOut } from "@phosphor-icons/react/dist/ssr"
 import Image from "next/image"
 import { usePathname, useRouter } from "next/navigation"
-import { Fragment, useState } from "react"
+import { Fragment, useMemo, useState } from "react"
 import { Button } from "../Button"
-import { sidebarGroupedByGroups } from "./options"
+import { getSidebarGroupedByGroups } from "./options"
 import { SidebarItem } from "./SidebarItem"
 
 export function Sidebar() {
@@ -15,6 +15,11 @@ export function Sidebar() {
   const [collapsedGroups, setCollapsedGroups] = useState<Record<string, boolean>>({})
   const pathname = usePathname()
   const { push } = useRouter()
+
+  const sidebarGroupedByGroups = useMemo(() => {
+    const isAdmin = getCookie("perfilId") === process.env.NEXT_PUBLIC_ADM_ID
+    return getSidebarGroupedByGroups(isAdmin)
+  }, [])
 
   const toggleSidebar = () => {
     setIsOpen(!isOpen)
