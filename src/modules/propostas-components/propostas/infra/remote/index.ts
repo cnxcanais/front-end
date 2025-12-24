@@ -106,15 +106,18 @@ export async function refuseProposta(id: string) {
   await updateProposta(id, { situacao: SituacaoEnum.RECUSADA })
 }
 
-export async function naoRenovarApolice(id: string) {
-  await updateProposta(id, { situacao: "Não Renovada" })
+export async function naoRenovarApolice(
+  id: string,
+  motivoNaoRenovacao: string
+) {
+  await updateProposta(id, { situacao: "Não Renovada", motivoNaoRenovacao })
 }
 
 export async function cancelarApolice(
   id: string,
   data: {
     dataCancelamento: string
-    motivoNaoRenovacao: string
+    motivoCancelamento: string
   }
 ) {
   await updateProposta(id, { ...data, situacao: "Cancelada" })

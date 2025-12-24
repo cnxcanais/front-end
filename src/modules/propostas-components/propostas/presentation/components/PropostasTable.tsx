@@ -55,6 +55,7 @@ import { EndossarApoliceModal } from "./modals/EndossarApoliceModal"
 import { ExportPropostasModal } from "./modals/ExportPropostasModal"
 import { ImportErrorsModal } from "./modals/ImportErrorsModal"
 import { ImportPropostasModal } from "./modals/ImportPropostasModal"
+import { MotivoNaoRenovacaoModal } from "./modals/MotivoNaoRenovacao"
 import { RenovarApoliceModal } from "./modals/RenovarApoliceModal"
 
 export function PropostasTable() {
@@ -94,6 +95,7 @@ export function PropostasTable() {
     useState(false)
   const [openErrorsModal, setOpenErrorsModal] = useState(false)
   const [importErrorsData, setImportErrorsData] = useState<ImportErrors>()
+  const [motivoNaoRenovacao, setMotivoNaoRenovacao] = useState("")
 
   const { data: segurados } = useSeguradoQuery(1, -1)
   const { data: corretoras } = useCorretoraQuery(1, -1)
@@ -260,7 +262,7 @@ export function PropostasTable() {
 
   const handleConfirmNaoRenovar = async () => {
     try {
-      await naoRenovarApolice(selectedPropostaId)
+      await naoRenovarApolice(selectedPropostaId, motivoNaoRenovacao)
       toast.success("Apólice marcada como não renovada!")
       refetch()
     } catch (error) {
@@ -272,7 +274,7 @@ export function PropostasTable() {
 
   const handleCancelarApolice = async (data: {
     dataCancelamento: string
-    motivoNaoRenovacao: string
+    motivoCancelamento: string
   }) => {
     try {
       await cancelarApolice(selectedPropostaId, data)
@@ -897,27 +899,18 @@ export function PropostasTable() {
         onConfirm={handleRenovarApolice}
       />
 
-      <Modal
-        title="Não Renovar Apólice"
-        content="Tem certeza de que deseja marcar esta apólice como não renovada?"
-        onClose={() => setOpenNaoRenovarModal(false)}
-        open={openNaoRenovarModal}>
-        <div className="flex items-center justify-center gap-4">
-          <Button onClick={handleConfirmNaoRenovar} variant="secondary">
-            Confirmar
-          </Button>
-          <Button
-            onClick={() => setOpenNaoRenovarModal(false)}
-            variant="tertiary">
-            Cancelar
-          </Button>
-        </div>
-      </Modal>
-
       <CancelarApoliceModal
         open={openCancelarApoliceModal}
         onClose={() => setOpenCancelarApoliceModal(false)}
         onConfirm={handleCancelarApolice}
+      />
+
+      <MotivoNaoRenovacaoModal
+        open={openNaoRenovarModal}
+        setOpenNaoRenovarModal={setOpenNaoRenovarModal}
+        setMotivoNaoRenovacao={setMotivoNaoRenovacao}
+        handleConfirmNaoRenovar={handleConfirmNaoRenovar}
+        motivoNaoRenovacao={motivoNaoRenovacao}
       />
 
       {propostas.length == 0 ?

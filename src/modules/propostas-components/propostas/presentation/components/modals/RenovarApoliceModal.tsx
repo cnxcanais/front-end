@@ -71,7 +71,12 @@ export function RenovarApoliceModal({
           <Input.Control
             type="date"
             value={inicioVigencia}
-            onChange={(e) => setInicioVigencia(e.target.value)}
+            onChange={(e) => {
+              setInicioVigencia(e.target.value)
+              const date = new Date(e.target.value)
+              date.setFullYear(date.getFullYear() + 1)
+              setFimVigencia(date.toISOString().split("T")[0])
+            }}
           />
         </Input.Root>
 

@@ -10,7 +10,7 @@ interface CancelarApoliceModalProps {
   onClose: () => void
   onConfirm: (data: {
     dataCancelamento: string
-    motivoNaoRenovacao: string
+    motivoCancelamento: string
   }) => Promise<void>
 }
 
@@ -20,23 +20,23 @@ export function CancelarApoliceModal({
   onConfirm,
 }: CancelarApoliceModalProps) {
   const [dataCancelamento, setDataCancelamento] = useState("")
-  const [motivoNaoRenovacao, setMotivoNaoRenovacao] = useState("")
+  const [motivoCancelamento, setMotivoCancelamento] = useState("")
   const [loading, setLoading] = useState(false)
 
   const handleConfirm = async () => {
-    if (!dataCancelamento || !motivoNaoRenovacao) {
+    if (!dataCancelamento || !motivoCancelamento) {
       return
     }
     setLoading(true)
-    await onConfirm({ dataCancelamento, motivoNaoRenovacao })
+    await onConfirm({ dataCancelamento, motivoCancelamento })
     setLoading(false)
     setDataCancelamento("")
-    setMotivoNaoRenovacao("")
+    setMotivoCancelamento("")
   }
 
   const handleClose = () => {
     setDataCancelamento("")
-    setMotivoNaoRenovacao("")
+    setMotivoCancelamento("")
     onClose()
   }
 
@@ -61,8 +61,8 @@ export function CancelarApoliceModal({
           <textarea
             className="w-full rounded border px-3 py-2"
             rows={4}
-            value={motivoNaoRenovacao}
-            onChange={(e) => setMotivoNaoRenovacao(e.target.value)}
+            value={motivoCancelamento}
+            onChange={(e) => setMotivoCancelamento(e.target.value)}
           />
         </Input.Root>
 

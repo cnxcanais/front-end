@@ -46,7 +46,11 @@ export function EndossarApoliceModal({
   }
 
   return (
-    <Modal title="Endossar Apólice" content="" onClose={handleClose} open={open}>
+    <Modal
+      title="Endossar Apólice"
+      content=""
+      onClose={handleClose}
+      open={open}>
       <div className="flex flex-col gap-4">
         <Input.Root>
           <label>Data de Emissão</label>
@@ -71,7 +75,12 @@ export function EndossarApoliceModal({
           <Input.Control
             type="date"
             value={inicioVigencia}
-            onChange={(e) => setInicioVigencia(e.target.value)}
+            onChange={(e) => {
+              setInicioVigencia(e.target.value)
+              const date = new Date(e.target.value)
+              date.setFullYear(date.getFullYear() + 1)
+              setFimVigencia(date.toISOString().split("T")[0])
+            }}
           />
         </Input.Root>
 

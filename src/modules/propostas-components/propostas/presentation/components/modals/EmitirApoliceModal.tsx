@@ -74,7 +74,12 @@ export function EmitirApoliceModal({
           <Input.Control
             type="date"
             value={inicioVigencia}
-            onChange={(e) => setInicioVigencia(e.target.value)}
+            onChange={(e) => {
+              setInicioVigencia(e.target.value)
+              const date = new Date(e.target.value)
+              date.setFullYear(date.getFullYear() + 1)
+              setFimVigencia(date.toISOString().split("T")[0])
+            }}
           />
         </Input.Root>
 
@@ -88,7 +93,10 @@ export function EmitirApoliceModal({
         </Input.Root>
 
         <div className="flex items-center justify-center gap-4">
-          <Button onClick={handleConfirm} variant="secondary" disabled={loading}>
+          <Button
+            onClick={handleConfirm}
+            variant="secondary"
+            disabled={loading}>
             {loading ? "Processando..." : "Confirmar"}
           </Button>
           <Button onClick={handleClose} variant="tertiary" disabled={loading}>
