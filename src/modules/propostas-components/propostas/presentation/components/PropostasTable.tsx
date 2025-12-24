@@ -630,14 +630,14 @@ export function PropostasTable() {
         name: "corretoraId",
         label: "Corretora",
         placeholder: "Buscar por corretora",
-        type: "select",
+        type: "select" as const,
         options: [{ label: "Todos", value: "" }, ...corretorasOptions],
       },
       {
         name: "produtorId",
         label: "Produtor",
         placeholder: "Buscar por produtor",
-        type: "select",
+        type: "select" as const,
         options: [{ label: "Todos", value: "" }, ...produtoresOptions],
       },
       {

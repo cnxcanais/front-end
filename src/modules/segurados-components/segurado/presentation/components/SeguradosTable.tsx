@@ -30,7 +30,13 @@ export function SeguradosTable() {
   const searchParams = useSearchParams()
   const [page, setPage] = useState(1)
   const [limit, setLimit] = useState(10)
-  const [filters, setFilters] = useState<Record<string, string>>({})
+  const isAdmin = getCookie("perfilId") === process.env.NEXT_PUBLIC_ADM_ID
+  const corretoraId = getCookie("corretoraId")
+  const baseFilter = isAdmin ? {} : { corretoraId }
+
+  const [filters, setFilters] = useState<Record<string, string>>({
+    ...baseFilter,
+  })
   const hasUrlIds = searchParams.get("ids")
   const { data, isLoading, refetch } = useSeguradoQuery(
     page,
@@ -50,9 +56,6 @@ export function SeguradosTable() {
   const [dashboardFilter, setDashboardFilter] = useState<
     Segurado.Type[] | null
   >(null)
-
-  const isAdmin = getCookie("perfilId") === process.env.NEXT_PUBLIC_ADM_ID
-  const corretoraId = getCookie("corretoraId")
 
   const corretorasOptions = useMemo(() => {
     if (isLoadingCorretoras || !corretoras) return []
@@ -225,8 +228,7 @@ export function SeguradosTable() {
       ),
     },
   ]
-
-  const filterFields: FilterField[] = [
+  const corretoraFilters: FilterField[] = [
     {
       name: "nomeRazaoSocial",
       label: "Nome/Razão Social",
@@ -238,17 +240,10 @@ export function SeguradosTable() {
       placeholder: "Buscar por CPF ou CNPJ",
     },
     {
-      name: "corretoraId",
-      label: "Corretora",
-      placeholder: "Buscar por Corretora",
-      type: "select",
-      options: corretorasOptions,
-    },
-    {
       name: "tipoPessoa",
       label: "Tipo Pessoa",
       placeholder: "Buscar por Tipo de Pessoa",
-      type: "select",
+      type: "select" as const,
       options: [
         { label: "Pessoa Física", value: "FISICA" },
         { label: "Pessoa Jurídica", value: "JURIDICA" },
@@ -258,7 +253,7 @@ export function SeguradosTable() {
       name: "status",
       label: "Status",
       placeholder: "Buscar por Status",
-      type: "select",
+      type: "select" as const,
       options: [
         { label: "Ativo", value: "ATIVO" },
         { label: "Inativo", value: "INATIVO" },
@@ -266,8 +261,19 @@ export function SeguradosTable() {
     },
   ]
 
+  const adminFilters: FilterField[] = [
+    ...corretoraFilters,
+    {
+      name: "corretoraId",
+      label: "Corretora",
+      placeholder: "Buscar por Corretora",
+      type: "select" as const,
+      options: corretorasOptions,
+    },
+  ]
+
   const handleFilter = (newFilters: Record<string, string>) => {
-    setFilters(newFilters)
+    setFilters({ ...baseFilter, ...newFilters })
     setPage(1)
     setDashboardFilter(null)
     if (searchParams.get("ids")) {
@@ -324,7 +330,7 @@ export function SeguradosTable() {
       </Modal>
 
       <FilterForm
-        fields={filterFields}
+        fields={isAdmin ? adminFilters : corretoraFilters}
         onFilter={handleFilter}
         appliedFilters={filters}
       />
