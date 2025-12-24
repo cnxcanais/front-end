@@ -620,15 +620,8 @@ export function PropostasTable() {
     [seguradosOptions]
   )
 
-  const advancedSearchFields: FilterField[] = useMemo(
+  const baseAdvancedSearchFields: FilterField[] = useMemo(
     () => [
-      {
-        name: "corretoraId",
-        label: "Corretora",
-        placeholder: "Buscar por corretora",
-        type: "select" as const,
-        options: [{ label: "Todos", value: "" }, ...corretorasOptions],
-      },
       {
         name: "produtorId",
         label: "Produtor",
@@ -717,6 +710,26 @@ export function PropostasTable() {
     ]
   )
 
+  const adminAdvancedSearchFields: FilterField[] = useMemo(
+    () => [
+      ...baseAdvancedSearchFields,
+      {
+        name: "corretoraId",
+        label: "Corretora",
+        placeholder: "Buscar por corretora",
+        type: "select" as const,
+        options: [{ label: "Todos", value: "" }, ...corretorasOptions],
+      },
+    ],
+    [
+      corretorasOptions,
+      produtoresOptions,
+      seguradoresOptions,
+      ramosOptions,
+      produtosOptions,
+    ]
+  )
+
   const filterSections = useMemo(
     () => [
       {
@@ -726,11 +739,11 @@ export function PropostasTable() {
       },
       {
         title: "Busca Avançada",
-        fields: advancedSearchFields,
+        fields: isAdmin ? adminAdvancedSearchFields : baseAdvancedSearchFields,
         defaultOpen: false,
       },
     ],
-    [quickSearchFields, advancedSearchFields]
+    [quickSearchFields, adminAdvancedSearchFields, baseAdvancedSearchFields]
   )
 
   const handleFilter = (newFilters: Record<string, string>) => {
