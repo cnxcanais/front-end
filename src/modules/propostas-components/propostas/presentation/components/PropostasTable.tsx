@@ -368,7 +368,11 @@ export function PropostasTable() {
       render: (value: string) => (
         <span
           className="cursor-pointer text-red-600 hover:underline"
-          onClick={() => push(`/segurados/edit/${value}`)}>
+          onClick={() =>
+            isAdmin ?
+              push(`/segurados/edit/${value}`)
+            : push(`/segurados/view/${value}`)
+          }>
           {getSeguradoName(value)}
         </span>
       ),
