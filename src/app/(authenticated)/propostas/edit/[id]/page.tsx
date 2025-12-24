@@ -8,14 +8,14 @@ import { useParams } from "next/navigation"
 export default function EditPropostaPage() {
   const params = useParams()
   const id = params.id as string
-  const { data: proposta, isLoading } = usePropostaByIdQuery(id)
+  const { data: proposta, isLoading, refetch } = usePropostaByIdQuery(id)
 
   if (isLoading) return <div>Carregando...</div>
 
   return (
     <>
       <PageTitle content="Editar Proposta" />
-      {proposta && <PropostaForm proposta={proposta} isEdit />}
+      {proposta && <PropostaForm proposta={proposta} isEdit refetchProposta={refetch} />}
     </>
   )
 }

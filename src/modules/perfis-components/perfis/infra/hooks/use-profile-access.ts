@@ -9,7 +9,7 @@ export function useProfileAccess(allowedProfileId: string) {
   const { data: profileId } = useProfileQuery()
 
   useEffect(() => {
-    if (profileId && profileId === allowedProfileId) {
+    if (profileId && profileId !== allowedProfileId) {
       router.push("/unauthorized")
     }
   }, [profileId, allowedProfileId, router])

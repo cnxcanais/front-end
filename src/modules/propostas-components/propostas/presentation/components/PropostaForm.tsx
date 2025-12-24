@@ -33,12 +33,14 @@ interface PropostaFormProps {
   proposta?: Proposta
   isEdit?: boolean
   readOnly?: boolean
+  refetchProposta?: () => void
 }
 
 export function PropostaForm({
   proposta,
   isEdit,
   readOnly,
+  refetchProposta,
 }: PropostaFormProps) {
   const searchParams = useSearchParams()
   const duplicateFromId = searchParams.get("duplicateFrom")
@@ -62,7 +64,7 @@ export function PropostaForm({
         fimVigencia: searchParams.get("fimVigencia") || "",
       }
     : null
-  const { data: propostaToDuplicate, refetch } =
+  const { data: propostaToDuplicate, refetch: duplicateRefetch } =
     usePropostaByIdQuery(duplicateFromId)
 
   const [activeTab, setActiveTab] = useState(0)
@@ -452,15 +454,17 @@ export function PropostaForm({
       if (isEdit && proposta?.id) {
         const { numeroProposta, ...updatePayload } = payload
         await updateProposta(proposta.id, updatePayload)
+        await refetchProposta?.()
         toast.success("Proposta atualizada com sucesso!")
       } else {
         await createProposta(payload)
         toast.success("Proposta criada com sucesso!")
       }
-      refetch()
+      duplicateRefetch()
       push("/propostas")
     } catch (error: any) {
       toast.error(error?.response?.data?.message || "Erro ao salvar proposta")
+      duplicateRefetch()
     }
   }
 
