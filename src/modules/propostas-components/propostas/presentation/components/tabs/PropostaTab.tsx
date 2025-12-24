@@ -5,11 +5,12 @@ import { Segurado } from "@/@types/segurado"
 import { Seguradora } from "@/@types/seguradora"
 import * as Input from "@/core/components/Input"
 import { SelectInput } from "@/core/components/SelectInput"
+import { PropostaFormSchema } from "../../validation/schema"
 
 interface PropostaTabProps {
   register: any
   errors: any
-  formData: any
+  formData: PropostaFormSchema
   setValue: any
   segurados: Segurado.GetResponse
   seguradoras: Seguradora.GetResponse
@@ -41,6 +42,8 @@ export function PropostaTab({
   readOnly = false,
 }: PropostaTabProps) {
   const isDisabled = isEndosso || isRenovacao || readOnly
+  const RAMO_ID_GARANTIA = process.env.NEXT_PUBLIC_RAMO_GARANTIA_ID
+
   return (
     <div className="grid grid-cols-2 gap-4">
       <div>
@@ -161,7 +164,9 @@ export function PropostaTab({
           label="Ramo *"
           field_name="ramoId"
           value={formData.ramoId}
-          onChange={(e) => setValue("ramoId", e.target.value)}
+          onChange={(e) => {
+            setValue("ramoId", e.target.value)
+          }}
           options={
             ramos?.data?.map((r: Ramo) => ({
               text: r.descricao,
@@ -175,27 +180,30 @@ export function PropostaTab({
           <span className="text-xs text-red-500">{errors.ramoId.message}</span>
         )}
       </div>
-      <div>
-        <SelectInput
-          label="Tomador"
-          field_name="tomadorId"
-          value={formData.tomadorId}
-          onChange={(e) => setValue("tomadorId", e.target.value)}
-          options={
-            segurados?.data?.map((s: Segurado.Type) => ({
-              text: s.nomeRazaoSocial,
-              value: s.id,
-            })) || []
-          }
-          required
-          disabled={isDisabled}
-        />
-        {errors.tomadorId && (
-          <span className="text-xs text-red-500">
-            {errors.tomadorId.message}
-          </span>
-        )}
-      </div>
+      {formData.ramoId === RAMO_ID_GARANTIA && (
+        <div>
+          <SelectInput
+            label="Tomador"
+            field_name="tomadorId"
+            value={formData.tomadorId}
+            onChange={(e) => setValue("tomadorId", e.target.value)}
+            options={
+              segurados?.data?.map((s: Segurado.Type) => ({
+                text: s.nomeRazaoSocial,
+                value: s.id,
+              })) || []
+            }
+            required
+            disabled={isDisabled}
+          />
+          {errors.tomadorId && (
+            <span className="text-xs text-red-500">
+              {errors.tomadorId.message}
+            </span>
+          )}
+        </div>
+      )}
+
       <div>
         <SelectInput
           label="Produto"

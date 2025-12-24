@@ -457,7 +457,7 @@ export function PropostaForm({
       if (isEdit && proposta?.id) {
         const { numeroProposta, ...updatePayload } = payload
         await updateProposta(proposta.id, updatePayload)
-        await refetchProposta?.()
+        refetchProposta?.()
         toast.success("Proposta atualizada com sucesso!")
       } else {
         await createProposta(payload)
