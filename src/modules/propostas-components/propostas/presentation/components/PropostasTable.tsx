@@ -23,6 +23,7 @@ import {
   naoRenovarApolice,
   refuseProposta,
   removeProposta,
+  setParcelaToPaid,
 } from "@/modules/propostas-components/propostas/infra/remote"
 import {
   SituacaoEnum,
@@ -34,6 +35,7 @@ import { useSeguradoraQuery } from "@/modules/seguradoras-components/seguradora/
 import { useSeguradoQuery } from "@/modules/segurados-components/segurado/infra/hooks/use-segurado-query"
 import {
   Copy,
+  CurrencyCircleDollar,
   Eye,
   FileXls,
   MoneyWavy,
@@ -83,6 +85,7 @@ export function PropostasTable() {
   const [dashboardFilter, setDashboardFilter] = useState<any[] | null>(null)
   const [produtosOptions, setProdutosOptions] = useState([])
   const [expandedIds, setExpandedIds] = useState<string[]>([])
+  const [expandedParcelasIds, setExpandedParcelasIds] = useState<string[]>([])
   const [openExportModal, setOpenExportModal] = useState(false)
   const [openImportModal, setOpenImportModal] = useState(false)
   const [openEmitirApoliceModal, setOpenEmitirApoliceModal] = useState(false)
@@ -438,6 +441,30 @@ export function PropostasTable() {
           : <div className="h-8 w-8" />}
           <span>{getSeguradoraName(value)}</span>
         </div>
+      ),
+    },
+    {
+      header: "Parcelas",
+      accessor: "id",
+      render: (value: string, row: any) => (
+        <span
+          onClick={() => {
+            console.log(
+              "Parcelas clicked",
+              value,
+              "current state:",
+              expandedParcelasIds
+            )
+            const newState =
+              expandedParcelasIds.includes(value) ?
+                expandedParcelasIds.filter((id) => id !== value)
+              : [...expandedParcelasIds, value]
+            console.log("New state:", newState)
+            setExpandedParcelasIds(newState)
+          }}
+          className="cursor-pointer font-semibold text-blue-600 hover:underline">
+          {row.parcelas?.length || 0}
+        </span>
       ),
     },
     {
@@ -921,133 +948,195 @@ export function PropostasTable() {
           <Table
             columns={columns}
             data={filteredResults}
-            expandedRowIds={expandedIds}
-            expandedRowContent={(row: any) => (
-              <div className="grid grid-cols-4 gap-3 text-xs">
-                <div>
-                  <label className="mb-1 block font-medium text-gray-600">
-                    Corretora
-                  </label>
-                  <input
-                    type="text"
-                    value={getCorretoraName(row.corretoraId)}
-                    disabled
-                    className="w-full rounded border bg-white px-2 py-1"
-                  />
-                </div>
-                <div>
-                  <label className="mb-1 block font-medium text-gray-600">
-                    Prêmio Líquido
-                  </label>
-                  <input
-                    type="text"
-                    value={row.premioLiquido || ""}
-                    disabled
-                    className="w-full rounded border bg-white px-2 py-1"
-                  />
-                </div>
-                <div>
-                  <label className="mb-1 block font-medium text-gray-600">
-                    Comissão
-                  </label>
-                  <input
-                    type="text"
-                    value={row.valorComissao || ""}
-                    disabled
-                    className="w-full rounded border bg-white px-2 py-1"
-                  />
-                </div>
-                <div>
-                  <label className="mb-1 block font-medium text-gray-600">
-                    Origem
-                  </label>
-                  <input
-                    type="text"
-                    value={row.origem || ""}
-                    disabled
-                    className="w-full rounded border bg-white px-2 py-1"
-                  />
-                </div>
-                {row.placaVeiculo && (
-                  <div>
-                    <label className="mb-1 block font-medium text-gray-600">
-                      Placa Veículo
-                    </label>
-                    <input
-                      type="text"
-                      value={row.placaVeiculo}
-                      disabled
-                      className="w-full rounded border bg-white px-2 py-1"
-                    />
-                  </div>
-                )}
-                {row.chassiVeiculo && (
-                  <div>
-                    <label className="mb-1 block font-medium text-gray-600">
-                      Chassi Veículo
-                    </label>
-                    <input
-                      type="text"
-                      value={row.chassiVeiculo}
-                      disabled
-                      className="w-full rounded border bg-white px-2 py-1"
-                    />
-                  </div>
-                )}
-                {row.marcaVeiculo && (
-                  <div>
-                    <label className="mb-1 block font-medium text-gray-600">
-                      Marca Veículo
-                    </label>
-                    <input
-                      type="text"
-                      value={row.marcaVeiculo}
-                      disabled
-                      className="w-full rounded border bg-white px-2 py-1"
-                    />
-                  </div>
-                )}
-                {row.modeloVeiculo && (
-                  <div>
-                    <label className="mb-1 block font-medium text-gray-600">
-                      Modelo Veículo
-                    </label>
-                    <input
-                      type="text"
-                      value={row.modeloVeiculo}
-                      disabled
-                      className="w-full rounded border bg-white px-2 py-1"
-                    />
-                  </div>
-                )}
-                {row.anoFabricacaoVeiculo && (
-                  <div>
-                    <label className="mb-1 block font-medium text-gray-600">
-                      Ano Fabricação
-                    </label>
-                    <input
-                      type="text"
-                      value={row.anoFabricacaoVeiculo}
-                      disabled
-                      className="w-full rounded border bg-white px-2 py-1"
-                    />
-                  </div>
-                )}
-                {row.anoModeloVeiculo && (
-                  <div>
-                    <label className="mb-1 block font-medium text-gray-600">
-                      Ano Modelo
-                    </label>
-                    <input
-                      type="text"
-                      value={row.anoModeloVeiculo}
-                      disabled
-                      className="w-full rounded border bg-white px-2 py-1"
-                    />
-                  </div>
-                )}
-              </div>
-            )}
+            expandedRowIds={[...expandedIds, ...expandedParcelasIds]}
+            expandedRowContent={(row: any) => {
+              const isParcelasExpanded = expandedParcelasIds.includes(row.id)
+              const isSeguradoExpanded = expandedIds.includes(row.id)
+
+              return (
+                <>
+                  {isSeguradoExpanded && (
+                    <div className="grid grid-cols-4 gap-3 text-xs">
+                      <div>
+                        <label className="mb-1 block font-medium text-gray-600">
+                          Corretora
+                        </label>
+                        <input
+                          type="text"
+                          value={getCorretoraName(row.corretoraId)}
+                          disabled
+                          className="w-full rounded border bg-white px-2 py-1"
+                        />
+                      </div>
+                      <div>
+                        <label className="mb-1 block font-medium text-gray-600">
+                          Prêmio Líquido
+                        </label>
+                        <input
+                          type="text"
+                          value={row.premioLiquido || ""}
+                          disabled
+                          className="w-full rounded border bg-white px-2 py-1"
+                        />
+                      </div>
+                      <div>
+                        <label className="mb-1 block font-medium text-gray-600">
+                          Comissão
+                        </label>
+                        <input
+                          type="text"
+                          value={row.valorComissao || ""}
+                          disabled
+                          className="w-full rounded border bg-white px-2 py-1"
+                        />
+                      </div>
+                      <div>
+                        <label className="mb-1 block font-medium text-gray-600">
+                          Origem
+                        </label>
+                        <input
+                          type="text"
+                          value={row.origem || ""}
+                          disabled
+                          className="w-full rounded border bg-white px-2 py-1"
+                        />
+                      </div>
+                      {row.placaVeiculo && (
+                        <div>
+                          <label className="mb-1 block font-medium text-gray-600">
+                            Placa Veículo
+                          </label>
+                          <input
+                            type="text"
+                            value={row.placaVeiculo}
+                            disabled
+                            className="w-full rounded border bg-white px-2 py-1"
+                          />
+                        </div>
+                      )}
+                      {row.chassiVeiculo && (
+                        <div>
+                          <label className="mb-1 block font-medium text-gray-600">
+                            Chassi Veículo
+                          </label>
+                          <input
+                            type="text"
+                            value={row.chassiVeiculo}
+                            disabled
+                            className="w-full rounded border bg-white px-2 py-1"
+                          />
+                        </div>
+                      )}
+                      {row.marcaVeiculo && (
+                        <div>
+                          <label className="mb-1 block font-medium text-gray-600">
+                            Marca Veículo
+                          </label>
+                          <input
+                            type="text"
+                            value={row.marcaVeiculo}
+                            disabled
+                            className="w-full rounded border bg-white px-2 py-1"
+                          />
+                        </div>
+                      )}
+                      {row.modeloVeiculo && (
+                        <div>
+                          <label className="mb-1 block font-medium text-gray-600">
+                            Modelo Veículo
+                          </label>
+                          <input
+                            type="text"
+                            value={row.modeloVeiculo}
+                            disabled
+                            className="w-full rounded border bg-white px-2 py-1"
+                          />
+                        </div>
+                      )}
+                      {row.anoFabricacaoVeiculo && (
+                        <div>
+                          <label className="mb-1 block font-medium text-gray-600">
+                            Ano Fabricação
+                          </label>
+                          <input
+                            type="text"
+                            value={row.anoFabricacaoVeiculo}
+                            disabled
+                            className="w-full rounded border bg-white px-2 py-1"
+                          />
+                        </div>
+                      )}
+                      {row.anoModeloVeiculo && (
+                        <div>
+                          <label className="mb-1 block font-medium text-gray-600">
+                            Ano Modelo
+                          </label>
+                          <input
+                            type="text"
+                            value={row.anoModeloVeiculo}
+                            disabled
+                            className="w-full rounded border bg-white px-2 py-1"
+                          />
+                        </div>
+                      )}
+                    </div>
+                  )}
+                  {isParcelasExpanded && row.parcelas?.length > 0 && (
+                    <div className="mt-4 rounded bg-gray-100 p-4">
+                      <h4 className="mb-3 font-semibold">Parcelas</h4>
+                      <table className="w-full text-sm">
+                        <thead>
+                          <tr className="border-b">
+                            <th className="pb-2 text-left">Nº</th>
+                            <th className="pb-2 text-left">Data</th>
+                            <th className="pb-2 text-left">Situação</th>
+                            <th className="pb-2 text-left">Valor</th>
+                            <th className="pb-2 text-left">Ação</th>
+                          </tr>
+                        </thead>
+                        <tbody>
+                          {row.parcelas.map((parcela: any, index: number) => (
+                            <tr key={index} className="border-b">
+                              <td className="py-2">{parcela.numeroParcela}</td>
+                              <td className="py-2">
+                                {new Date(
+                                  parcela.dataVencimento
+                                ).toLocaleDateString("pt-BR")}
+                              </td>
+                              <td className="py-2">{parcela.situacao}</td>
+                              <td className="py-2">
+                                {Number(parcela.valor).toLocaleString("pt-BR", {
+                                  style: "currency",
+                                  currency: "BRL",
+                                })}
+                              </td>
+                              <td className="py-2">
+                                {(parcela.situacao === "Pendente" ||
+                                  parcela.situacao === "Em Atraso") && (
+                                  <CurrencyCircleDollar
+                                    className="cursor-pointer text-green-600 hover:text-green-700"
+                                    size={20}
+                                    onClick={async () => {
+                                      try {
+                                        await setParcelaToPaid(parcela.id)
+                                        toast.success("Parcela marcada como paga!")
+                                        refetch()
+                                      } catch (error) {
+                                        toast.error("Erro ao marcar parcela como paga")
+                                      }
+                                    }}
+                                  />
+                                )}
+                              </td>
+                            </tr>
+                          ))}
+                        </tbody>
+                      </table>
+                    </div>
+                  )}
+                </>
+              )
+            }}
           />
           <Pagination
             page={page}

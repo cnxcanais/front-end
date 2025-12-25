@@ -177,3 +177,29 @@ export async function importPropostas(file: File) {
     throw error
   }
 }
+
+export async function setParcelaToPaid(id: string) {
+  try {
+    const response = await bffApi.patch(`/parcelas/${id}/marcar-como-paga`)
+    return response.data
+  } catch (error: any) {
+    toast.error(
+      "Erro ao atualizar parcela: " + error?.response?.data?.message ||
+        "Erro ao atualizar parcela"
+    )
+    throw error
+  }
+}
+
+export async function setAllParcelasToPaid(id: string) {
+  try {
+    const response = await bffApi.patch(`/parcelas/${id}/marcar-como-paga`)
+    return response.data
+  } catch (error: any) {
+    toast.error(
+      "Erro ao atualizar parcela: " + error?.response?.data?.message ||
+        "Erro ao atualizar parcela"
+    )
+    throw error
+  }
+}
