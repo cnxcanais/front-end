@@ -5,6 +5,7 @@ import { addMonthsToDate } from "@/core/utils/dateFunctions"
 import { useCorretoraQuery } from "@/modules/corretoras-components/corretora/infra/hooks/use-corretora-query"
 import { useProdutorQuery } from "@/modules/produtores-components/produtor/infra/hooks/use-produtor-query"
 import { useProdutoQuery } from "@/modules/produtos-components/produtos/infra/hooks/use-produto-query"
+import { SituacaoEnum } from "@/modules/propostas-components/types/enums"
 import { useRamoQuery } from "@/modules/ramos-components/ramos/infra/hooks/use-ramo-query"
 import { useSeguradoraQuery } from "@/modules/seguradoras-components/seguradora/infra/hooks/use-seguradora-query"
 import { useSeguradoQuery } from "@/modules/segurados-components/segurado/infra/hooks/use-segurado-query"
@@ -15,7 +16,11 @@ import { useForm } from "react-hook-form"
 import { toast } from "sonner"
 import { Proposta } from "../../../../../@types/proposta"
 import { usePropostaByIdQuery } from "../../infra/hooks/use-proposta-by-id-query"
-import { createProposta, updateProposta } from "../../infra/remote"
+import {
+  createProposta,
+  getUltimoEndosso,
+  updateProposta,
+} from "../../infra/remote"
 import { propostaFormSchema, PropostaFormSchema } from "../validation/schema"
 import { ParcelasModal } from "./modals/ParcelasModal"
 import {
@@ -105,7 +110,7 @@ export function PropostaForm({
       complementoItem: sourceData?.complementoItem || "",
       tipoDocumento: "Proposta",
       origem: sourceData?.origem || "Manual",
-      situacao: "Ativo",
+      situacao: SituacaoEnum.ATIVO,
       inicioVigencia: sourceData?.inicioVigencia || "",
       fimVigencia: sourceData?.fimVigencia || "",
       dataEmissao: sourceData?.dataEmissao || "",
@@ -191,7 +196,7 @@ export function PropostaForm({
         complementoItem: propostaToDuplicate.complementoItem,
         tipoDocumento: tipoDoc,
         origem: propostaToDuplicate.origem,
-        situacao: "Ativo",
+        situacao: SituacaoEnum.ATIVO,
         inicioVigencia:
           isEndosso && endossoData ? endossoData.inicioVigencia
           : isRenovacao && renovacaoData ? renovacaoData.inicioVigencia
@@ -239,7 +244,6 @@ export function PropostaForm({
           })) || [],
       })
     }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [propostaToDuplicate])
 
   useEffect(() => {
@@ -263,9 +267,15 @@ export function PropostaForm({
       Number(formData.valoresAdicionais || 0) +
       Number(formData.iof || 0)
     const valorParcela = Math.floor((premioTotal / numParcelas) * 100) / 100
-    const valorLiquido = Math.floor((Number(formData.premioLiquido) / numParcelas) * 100) / 100
-    const primeiraParcela = Math.round((premioTotal - valorParcela * (numParcelas - 1)) * 100) / 100
-    const primeiroValorLiquido = Math.round((Number(formData.premioLiquido) - valorLiquido * (numParcelas - 1)) * 100) / 100
+    const valorLiquido =
+      Math.floor((Number(formData.premioLiquido) / numParcelas) * 100) / 100
+    const primeiraParcela =
+      Math.round((premioTotal - valorParcela * (numParcelas - 1)) * 100) / 100
+    const primeiroValorLiquido =
+      Math.round(
+        (Number(formData.premioLiquido) - valorLiquido * (numParcelas - 1)) *
+          100
+      ) / 100
 
     const parcelas = Array.from({ length: numParcelas }, (_, i) => {
       const dataVencimento = addMonthsToDate(vencimentoPrimeiraParcela, i)
@@ -347,9 +357,7 @@ export function PropostaForm({
               0
             )
             if (Math.abs(premioTotal - totalParcelas) >= 0.01) {
-              toast.error(
-                "A soma das parcelas deve ser igual ao prêmio total"
-              )
+              toast.error("A soma das parcelas deve ser igual ao prêmio total")
               return
             }
           }
@@ -381,9 +389,7 @@ export function PropostaForm({
               0
             )
             if (Math.abs(premioTotal - totalParcelas) >= 0.01) {
-              toast.error(
-                "A soma das parcelas deve ser igual ao prêmio total"
-              )
+              toast.error("A soma das parcelas deve ser igual ao prêmio total")
               return
             }
           }
@@ -460,6 +466,12 @@ export function PropostaForm({
 
   const handleSubmit = async (data: PropostaFormSchema) => {
     try {
+      let propostaOriginalId = null
+      if (isRenovacao || isEndosso) {
+        const response = await getUltimoEndosso(duplicateFromId)
+        propostaOriginalId = response?.cadeia[0]?.id
+      }
+
       const payload = {
         ...data,
         inicioVigencia:
@@ -482,6 +494,7 @@ export function PropostaForm({
               new Date(p.previsaoRecebimento).toISOString()
             : "",
         })),
+        propostaOriginalId,
       }
 
       if (isEdit && proposta?.id) {

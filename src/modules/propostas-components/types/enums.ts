@@ -15,6 +15,9 @@ export enum SituacaoEnum {
   ATIVO = "Ativo",
   INATIVO = "Inativo",
   RECUSADA = "Recusada",
+  RENOVADA = "Renovada",
+  NAO_RENOVADA = "Não Renovada",
+  CANCELADA = "Cancelada",
 }
 
 export enum RenovacaoEnum {

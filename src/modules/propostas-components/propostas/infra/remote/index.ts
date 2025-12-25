@@ -9,6 +9,7 @@ import {
   PropostasResponse,
   UltimoEndossoResponse,
 } from "../../../../../@types/proposta"
+import { PropostaFormSchema } from "../../presentation/validation/schema"
 
 export async function getPropostas(
   page = 1,
@@ -60,7 +61,7 @@ export async function getUltimoEndosso(id: string) {
   }
 }
 
-export async function createProposta(data: any) {
+export async function createProposta(data: PropostaFormSchema) {
   try {
     const response = await bffApi.post<Proposta>("/propostas-apolices", data)
     return response.data
@@ -73,7 +74,7 @@ export async function createProposta(data: any) {
   }
 }
 
-export async function updateProposta(id: string, data: any) {
+export async function updateProposta(id: string, data: PropostaFormSchema) {
   try {
     const response = await bffApi.patch<Proposta>(
       `/propostas-apolices/${id}`,
@@ -110,7 +111,10 @@ export async function naoRenovarApolice(
   id: string,
   motivoNaoRenovacao: string
 ) {
-  await updateProposta(id, { situacao: "Não Renovada", motivoNaoRenovacao })
+  await updateProposta(id, {
+    situacao: SituacaoEnum.NAO_RENOVADA,
+    motivoNaoRenovacao,
+  })
 }
 
 export async function cancelarApolice(
@@ -120,7 +124,7 @@ export async function cancelarApolice(
     motivoCancelamento: string
   }
 ) {
-  await updateProposta(id, { ...data, situacao: "Cancelada" })
+  await updateProposta(id, { ...data, situacao: SituacaoEnum.CANCELADA })
 }
 
 export async function emitirApolice(

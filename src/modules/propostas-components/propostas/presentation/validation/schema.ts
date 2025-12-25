@@ -1,3 +1,4 @@
+import { SituacaoEnum } from "@/modules/propostas-components/types/enums"
 import { z } from "zod"
 
 const parcelaSchema = z.object({
@@ -71,13 +72,14 @@ export const propostaFormSchema = z
     anoFabricacaoVeiculo: z.number().nullable().optional(),
     anoModeloVeiculo: z.number().nullable().optional(),
     complementoItem: z.string().nullable().optional(),
+    propostaOriginalId: z.string().nullable().optional(),
     tipoDocumento: z.enum(["Proposta", "Apólice", "Renovação", "Endosso"], {
       errorMap: () => ({ message: "Tipo de documento é obrigatório" }),
     }),
     origem: z.enum(["Manual", "Importação", "Integração"], {
       errorMap: () => ({ message: "Origem é obrigatória" }),
     }),
-    situacao: z.enum(["Ativo", "Inativo"]),
+    situacao: z.nativeEnum(SituacaoEnum),
     observacoes: z.string().nullable().optional(),
     inicioVigencia: z.string().min(1, "Início da vigência é obrigatório"),
     fimVigencia: z.string().min(1, "Fim da vigência é obrigatório"),

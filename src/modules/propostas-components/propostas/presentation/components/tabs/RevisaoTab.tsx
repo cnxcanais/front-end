@@ -49,7 +49,7 @@ export function RevisaoTab({
     (formData.premioLiquido || 0) +
     (formData.valoresAdicionais || 0) +
     (formData.iof || 0)
-  const totalParcelas = formData.parcelas.reduce(
+  const totalParcelas = formData?.parcelas?.reduce(
     (acc: number, p: any) => acc + (p.valor || 0),
     0
   )
@@ -486,12 +486,12 @@ export function RevisaoTab({
             {errors.parcelas.message}
           </span>
         )}
-        {hasMismatch && formData.parcelas.length > 0 && (
+        {hasMismatch && formData?.parcelas?.length > 0 && (
           <span className="text-xs text-red-500">
             A soma dos valores das parcelas deve ser igual ao prêmio total
           </span>
         )}
-        {formData.parcelas.length > 0 && (
+        {formData?.parcelas?.length > 0 && (
           <div className="mt-4">
             <p className="font-medium">
               {formData.parcelas.length} parcela(s) gerada(s)

@@ -126,4 +126,9 @@ export interface UltimoEndossoResponse {
     possuiEndossoMaisRecente: boolean
   }
   totalEndossos: number
+  cadeia: {
+    id: string
+    numeroProposta: string
+    numeroVersao: number
+  }[]
 }
