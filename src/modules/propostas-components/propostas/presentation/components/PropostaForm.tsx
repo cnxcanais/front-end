@@ -262,8 +262,10 @@ export function PropostaForm({
       Number(formData.premioLiquido) +
       Number(formData.valoresAdicionais || 0) +
       Number(formData.iof || 0)
-    const valorParcela = premioTotal / numParcelas
-    const valorLiquido = Number(formData.premioLiquido) / numParcelas
+    const valorParcela = Math.floor((premioTotal / numParcelas) * 100) / 100
+    const valorLiquido = Math.floor((Number(formData.premioLiquido) / numParcelas) * 100) / 100
+    const primeiraParcela = Math.round((premioTotal - valorParcela * (numParcelas - 1)) * 100) / 100
+    const primeiroValorLiquido = Math.round((Number(formData.premioLiquido) - valorLiquido * (numParcelas - 1)) * 100) / 100
 
     const parcelas = Array.from({ length: numParcelas }, (_, i) => {
       const dataVencimento = addMonthsToDate(vencimentoPrimeiraParcela, i)
@@ -272,8 +274,8 @@ export function PropostaForm({
 
       return {
         numeroParcela: i + 1,
-        valor: valorParcela,
-        valorLiquido: valorLiquido,
+        valor: i === 0 ? primeiraParcela : valorParcela,
+        valorLiquido: i === 0 ? primeiroValorLiquido : valorLiquido,
         dataVencimento: dataVencimento,
         percentualCorretora: formData.percentualComissao ?? null,
         previsaoRecebimento: dataVencimento,

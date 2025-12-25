@@ -141,11 +141,13 @@ export function PremioParcelasTab({
                   <label>Valor</label>
                   <Input.Root>
                     <Input.Control
+                      type="number"
+                      step="0.01"
                       value={parcela.valor}
                       disabled={readOnly}
                       onChange={(e) => {
                         const newParcelas = [...formData.parcelas]
-                        newParcelas[index].valor = Number(e.target.value)
+                        newParcelas[index].valor = parseFloat(e.target.value) || 0
                         setValue("parcelas", newParcelas)
                       }}
                     />
