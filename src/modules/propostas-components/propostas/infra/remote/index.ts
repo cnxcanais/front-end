@@ -191,14 +191,16 @@ export async function setParcelaToPaid(id: string) {
   }
 }
 
-export async function setAllParcelasToPaid(id: string) {
+export async function setAllParcelasToPaid(propostaId: string) {
   try {
-    const response = await bffApi.patch(`/parcelas/${id}/marcar-como-paga`)
+    const response = await bffApi.patch(
+      `/propostas-apolices/${propostaId}/parcelas/marcar-vencidas-como-pagas`
+    )
     return response.data
   } catch (error: any) {
     toast.error(
-      "Erro ao atualizar parcela: " + error?.response?.data?.message ||
-        "Erro ao atualizar parcela"
+      "Erro ao atualizar parcelas: " + error?.response?.data?.message ||
+        "Erro ao atualizar parcelas"
     )
     throw error
   }

@@ -23,6 +23,7 @@ import {
   naoRenovarApolice,
   refuseProposta,
   removeProposta,
+  setAllParcelasToPaid,
   setParcelaToPaid,
 } from "@/modules/propostas-components/propostas/infra/remote"
 import {
@@ -34,6 +35,7 @@ import { useRamoQuery } from "@/modules/ramos-components/ramos/infra/hooks/use-r
 import { useSeguradoraQuery } from "@/modules/seguradoras-components/seguradora/infra/hooks/use-seguradora-query"
 import { useSeguradoQuery } from "@/modules/segurados-components/segurado/infra/hooks/use-segurado-query"
 import {
+  Coins,
   Copy,
   CurrencyCircleDollar,
   Eye,
@@ -1083,7 +1085,36 @@ export function PropostasTable() {
                   )}
                   {isParcelasExpanded && row.parcelas?.length > 0 && (
                     <div className="mt-4 rounded bg-gray-100 p-4">
-                      <h4 className="mb-3 font-semibold">Parcelas</h4>
+                      <div className="mb-3 flex items-center justify-between">
+                        <h4 className="font-semibold">Parcelas</h4>
+                        {row.tipoDocumento !== "Proposta" &&
+                          row.parcelas.some(
+                            (p: any) =>
+                              p.situacao === "Pendente" ||
+                              p.situacao === "Em Atraso"
+                          ) && (
+                            <button
+                              className="rounded bg-green-600 px-3 py-1 text-sm text-white shadow hover:bg-green-700"
+                              onClick={async () => {
+                                try {
+                                  await setAllParcelasToPaid(row.id)
+                                  toast.success(
+                                    "Todas as parcelas marcadas como pagas!"
+                                  )
+                                  refetch()
+                                } catch (error) {
+                                  toast.error(
+                                    "Erro ao marcar parcelas como pagas"
+                                  )
+                                }
+                              }}>
+                              <div className="flex items-center gap-1">
+                                <Coins />
+                                Pagar Todas
+                              </div>
+                            </button>
+                          )}
+                      </div>
                       <table className="w-full text-sm">
                         <thead>
                           <tr className="border-b">
@@ -1112,21 +1143,26 @@ export function PropostasTable() {
                               </td>
                               <td className="py-2">
                                 {(parcela.situacao === "Pendente" ||
-                                  parcela.situacao === "Em Atraso") && (
-                                  <CurrencyCircleDollar
-                                    className="cursor-pointer text-green-600 hover:text-green-700"
-                                    size={20}
-                                    onClick={async () => {
-                                      try {
-                                        await setParcelaToPaid(parcela.id)
-                                        toast.success("Parcela marcada como paga!")
-                                        refetch()
-                                      } catch (error) {
-                                        toast.error("Erro ao marcar parcela como paga")
-                                      }
-                                    }}
-                                  />
-                                )}
+                                  parcela.situacao === "Em Atraso") &&
+                                  row.tipoDocumento !== "Proposta" && (
+                                    <CurrencyCircleDollar
+                                      className="cursor-pointer text-green-600 hover:text-green-700"
+                                      size={20}
+                                      onClick={async () => {
+                                        try {
+                                          await setParcelaToPaid(parcela.id)
+                                          toast.success(
+                                            "Parcela marcada como paga!"
+                                          )
+                                          refetch()
+                                        } catch (error) {
+                                          toast.error(
+                                            "Erro ao marcar parcela como paga"
+                                          )
+                                        }
+                                      }}
+                                    />
+                                  )}
                               </td>
                             </tr>
                           ))}
