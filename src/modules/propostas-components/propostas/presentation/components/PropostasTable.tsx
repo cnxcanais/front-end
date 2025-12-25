@@ -17,8 +17,10 @@ import { usePropostaQuery } from "@/modules/propostas-components/propostas/infra
 import {
   cancelarApolice,
   emitirApolice,
+  exportParcelas,
   exportPropostas,
   getUltimoEndosso,
+  importParcelas,
   importPropostas,
   naoRenovarApolice,
   refuseProposta,
@@ -57,6 +59,7 @@ import { CancelarApoliceModal } from "./modals/CancelarApoliceModal"
 import { EmitirApoliceModal } from "./modals/EmitirApoliceModal"
 import { EndossarApoliceModal } from "./modals/EndossarApoliceModal"
 import { ExportPropostasModal } from "./modals/ExportPropostasModal"
+import { ExportParcelasModal } from "./modals/ExportParcelasModal"
 import { ImportErrorsModal } from "./modals/ImportErrorsModal"
 import { ImportPropostasModal } from "./modals/ImportPropostasModal"
 import { MotivoNaoRenovacaoModal } from "./modals/MotivoNaoRenovacao"
@@ -90,6 +93,8 @@ export function PropostasTable() {
   const [expandedParcelasIds, setExpandedParcelasIds] = useState<string[]>([])
   const [openExportModal, setOpenExportModal] = useState(false)
   const [openImportModal, setOpenImportModal] = useState(false)
+  const [openExportParcelasModal, setOpenExportParcelasModal] = useState(false)
+  const [openImportParcelasModal, setOpenImportParcelasModal] = useState(false)
   const [openEmitirApoliceModal, setOpenEmitirApoliceModal] = useState(false)
   const [selectedPropostaId, setSelectedPropostaId] = useState("")
   const [openEndossarApoliceModal, setOpenEndossarApoliceModal] =
@@ -346,6 +351,41 @@ export function PropostasTable() {
       refetch()
     } catch (error) {
       console.error("Erro ao importar propostas:", error)
+    }
+  }
+
+  const handleExportParcelas = async (exportFilters: Record<string, string>) => {
+    try {
+      const blob = await exportParcelas(exportFilters)
+      const csvBlob = new Blob([blob], { type: "text/csv;charset=utf-8;" })
+      const url = window.URL.createObjectURL(csvBlob)
+      const link = document.createElement("a")
+      link.href = url
+      link.setAttribute(
+        "download",
+        `parcelas-${new Date().toLocaleDateString("pt-BR").replace(/\//g, "-")}.csv`
+      )
+      document.body.appendChild(link)
+      link.click()
+      link.remove()
+      window.URL.revokeObjectURL(url)
+      toast.success("Parcelas exportadas com sucesso!")
+    } catch (error) {
+      console.error("Erro ao exportar parcelas:", error)
+    }
+  }
+
+  const handleImportParcelas = async (file: File) => {
+    try {
+      const response = await importParcelas(file)
+      console.log(response)
+      if (response.erros) {
+        setOpenErrorsModal(true)
+        setImportErrorsData(response)
+      }
+      refetch()
+    } catch (error) {
+      console.error("Erro ao importar parcelas:", error)
     }
   }
 
@@ -881,6 +921,20 @@ export function PropostasTable() {
                 <FileXls size={22} />
                 Exportar
               </Button>
+              <Button
+                className="flex items-center gap-1 bg-green-600 hover:bg-green-700"
+                variant="secondary"
+                onClick={() => setOpenImportParcelasModal(true)}>
+                <FileXls size={22} />
+                Importar Parcelas
+              </Button>
+              <Button
+                className="flex items-center gap-1 bg-green-600 hover:bg-green-700"
+                variant="secondary"
+                onClick={() => setOpenExportParcelasModal(true)}>
+                <FileXls size={22} />
+                Exportar Parcelas
+              </Button>
             </div>
           )}
         </div>
@@ -902,6 +956,18 @@ export function PropostasTable() {
         open={openImportModal}
         onClose={() => setOpenImportModal(false)}
         onImport={handleImport}
+      />
+
+      <ExportParcelasModal
+        open={openExportParcelasModal}
+        onClose={() => setOpenExportParcelasModal(false)}
+        onExport={handleExportParcelas}
+      />
+
+      <ImportPropostasModal
+        open={openImportParcelasModal}
+        onClose={() => setOpenImportParcelasModal(false)}
+        onImport={handleImportParcelas}
       />
 
       <ImportErrorsModal
@@ -1110,7 +1176,7 @@ export function PropostasTable() {
                               }}>
                               <div className="flex items-center gap-1">
                                 <Coins />
-                                Pagar Todas
+                                Pagar Todas Vencidas
                               </div>
                             </button>
                           )}

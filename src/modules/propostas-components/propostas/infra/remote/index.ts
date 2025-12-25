@@ -205,3 +205,43 @@ export async function setAllParcelasToPaid(propostaId: string) {
     throw error
   }
 }
+
+export async function exportParcelas(filters?: Record<string, string>) {
+  try {
+    const response = await bffApi.get("/propostas-apolices/parcelas/export", {
+      params: filters,
+      responseType: "blob",
+    })
+    return response.data
+  } catch (error: any) {
+    toast.error(
+      "Erro ao exportar parcelas: " + error?.response?.data?.message ||
+        "Erro ao exportar parcelas"
+    )
+    throw error
+  }
+}
+
+export async function importParcelas(file: File) {
+  try {
+    const formData = new FormData()
+    formData.append("file", file)
+    formData.append("behavior", "UPDATE")
+    const response = await bffApi.post(
+      "/propostas-apolices/parcelas/import",
+      formData,
+      {
+        headers: {
+          "Content-Type": "multipart/form-data",
+        },
+      }
+    )
+    return response.data
+  } catch (error: any) {
+    toast.error(
+      "Erro ao importar parcelas: " + error?.response?.data?.message ||
+        "Erro ao importar parcelas"
+    )
+    throw error
+  }
+}

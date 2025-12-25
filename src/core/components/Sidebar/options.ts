@@ -5,6 +5,7 @@ import {
   FileText,
   IdentificationBadge,
   Package,
+  ProjectorScreenChart,
   Suitcase,
   Tag,
   User,
@@ -20,9 +21,9 @@ type SidebarOptionProps = {
 
 const sidebar_options_not_admin: SidebarOptionProps[] = [
   {
-    name: "Meu Usuário",
-    href: "",
-    Icon: User,
+    name: "Dashboard",
+    href: "/dashboard",
+    Icon: ProjectorScreenChart,
     group: "Gerenciamento",
   },
   {
@@ -114,15 +115,12 @@ type SidebarGroups = {
 
 export function getSidebarGroupedByGroups(isAdmin: boolean) {
   const options = isAdmin ? sidebar_options : sidebar_options_not_admin
-  return options.reduce<SidebarGroups>(
-    (groups, option) => {
-      const group = option.group
-      if (!groups[group]) {
-        groups[group] = []
-      }
-      groups[group].push(option)
-      return groups
-    },
-    {}
-  )
+  return options.reduce<SidebarGroups>((groups, option) => {
+    const group = option.group
+    if (!groups[group]) {
+      groups[group] = []
+    }
+    groups[group].push(option)
+    return groups
+  }, {})
 }
