@@ -70,6 +70,8 @@ export function FileList({ entityId, entityType, isAdmin }: FileListProps) {
             <Link
               key={file.id}
               href={file.url}
+              target="_blank"
+              rel="noopener noreferrer"
               className="group relative cursor-pointer rounded-lg border p-2 hover:border-blue-500">
               <div className="aspect-w-1 aspect-h-1 w-full overflow-hidden rounded-lg bg-gray-100">
                 <div className="flex items-center justify-center">
