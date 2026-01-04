@@ -685,6 +685,11 @@ export function PropostasTable() {
         placeholder: "Buscar por número",
       },
       {
+        name: "numeroApolice",
+        label: "Número Apólice/Endosso",
+        placeholder: "Buscar por número",
+      },
+      {
         name: "seguradoId",
         label: "Segurado",
         placeholder: "Buscar por segurado",

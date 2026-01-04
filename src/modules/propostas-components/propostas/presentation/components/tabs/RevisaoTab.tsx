@@ -210,7 +210,7 @@ export function RevisaoTab({
 
           <div>
             <SelectInput
-              label="Produto"
+              label="Produto *"
               field_name="produtoId"
               value={formData.produtoId}
               onChange={(e) => setValue("produtoId", e.target.value)}
@@ -365,22 +365,13 @@ export function RevisaoTab({
       </div>
 
       <div className="rounded-lg bg-gray-50 p-6">
-        <h3 className="mb-4 text-lg font-semibold">Apólice e Endosso</h3>
+        <h3 className="mb-4 text-lg font-semibold">Apólice</h3>
         <div className="grid grid-cols-2 gap-4">
           <div>
             <label>Número da Apólice</label>
             <Input.Root className="mt-2">
               <Input.Control
                 {...register("numeroApolice")}
-                disabled={readOnly}
-              />
-            </Input.Root>
-          </div>
-          <div>
-            <label>Número do Endosso</label>
-            <Input.Root className="mt-2">
-              <Input.Control
-                {...register("numeroEndosso")}
                 disabled={readOnly}
               />
             </Input.Root>
