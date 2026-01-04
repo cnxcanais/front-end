@@ -54,7 +54,8 @@ export function RevisaoTab({
     0
   )
   const hasMismatch = Math.abs(premioTotal - totalParcelas) >= 0.01
-  console.log(errors)
+  const isGarantia =
+    formData.ramoId === process.env.NEXT_PUBLIC_RAMO_GARANTIA_ID
 
   return (
     <>
@@ -185,25 +186,28 @@ export function RevisaoTab({
               </span>
             )}
           </div>
-          <div>
-            <SelectInput
-              label="Tomador"
-              field_name="tomadorId"
-              value={formData.tomadorId}
-              onChange={(e) => setValue("tomadorId", e.target.value)}
-              options={
-                segurados?.data?.map((s: Segurado.Type) => ({
-                  text: s.nomeRazaoSocial,
-                  value: s.id,
-                })) || []
-              }
-            />
-            {errors.ramoId && (
-              <span className="text-xs text-red-500">
-                {errors.ramoId.message}
-              </span>
-            )}
-          </div>
+          {isGarantia && (
+            <div>
+              <SelectInput
+                label="Tomador"
+                field_name="tomadorId"
+                value={formData.tomadorId}
+                onChange={(e) => setValue("tomadorId", e.target.value)}
+                options={
+                  segurados?.data?.map((s: Segurado.Type) => ({
+                    text: s.nomeRazaoSocial,
+                    value: s.id,
+                  })) || []
+                }
+              />
+              {errors.ramoId && (
+                <span className="text-xs text-red-500">
+                  {errors.ramoId.message}
+                </span>
+              )}
+            </div>
+          )}
+
           <div>
             <SelectInput
               label="Produto"

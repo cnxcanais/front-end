@@ -15,11 +15,13 @@ import { usePropostaQuery } from "../../infra/hooks/use-proposta-query"
 interface DashboardIndicatorsProps {
   onFilterChange?: (filterType: string, data: any[]) => void
   redirectOnClick?: boolean
+  filteredData?: Proposta[]
 }
 
 export function DashboardIndicators({
   onFilterChange,
   redirectOnClick = false,
+  filteredData,
 }: DashboardIndicatorsProps) {
   const router = useRouter()
   const [lastUpdated, setLastUpdated] = useState(new Date())
@@ -80,12 +82,15 @@ export function DashboardIndicators({
 
   const allPropostas = usePropostaQuery(1, -1, allPropostaParams)
 
+  const dataToUse = filteredData || allPropostas?.data?.data || []
+
   const propostasAtivas = usePropostaQuery(1, -1, ativasParams)
 
   const apolicesAtivas = usePropostaQuery(1, -1, apolicesAtivasParams)
 
   const propostasVigentes =
-    propostasAtivas?.data?.data?.filter((p) => {
+    dataToUse?.filter((p) => {
+      if (p.tipoDocumento !== "Proposta" || p.situacao !== "Ativo") return false
       const [anoInicio, mesInicio, diaInicio] = p.inicioVigencia
         .split("-")
         .map(Number)
@@ -97,12 +102,16 @@ export function DashboardIndicators({
     }) || []
 
   const propostasPendentes =
-    propostasAtivas.data?.data?.filter(
-      (p) => !propostasVigentes.some((v) => v.id === p.id)
+    dataToUse?.filter(
+      (p) =>
+        p.tipoDocumento === "Proposta" &&
+        p.situacao === "Ativo" &&
+        !propostasVigentes.some((v) => v.id === p.id)
     ) || []
 
   const apolicesVigentes =
-    apolicesAtivas?.data?.data?.filter((p) => {
+    dataToUse?.filter((p) => {
+      if (p.tipoDocumento !== "Apólice" || p.situacao !== "Ativo") return false
       const [anoInicio, mesInicio, diaInicio] = p.inicioVigencia
         .split("-")
         .map(Number)
@@ -114,12 +123,16 @@ export function DashboardIndicators({
     }) || []
 
   const apolicesPendentes =
-    apolicesAtivas.data?.data?.filter(
-      (p) => !apolicesVigentes.some((v) => v.id === p.id)
+    dataToUse?.filter(
+      (p) =>
+        p.tipoDocumento === "Apólice" &&
+        p.situacao === "Ativo" &&
+        !apolicesVigentes.some((v) => v.id === p.id)
     ) || []
 
   const renovacoesHoje =
-    apolicesAtivas?.data?.data?.filter((p) => {
+    dataToUse?.filter((p) => {
+      if (p.tipoDocumento !== "Apólice" || p.situacao !== "Ativo") return false
       const [ano, mes, dia] = p.fimVigencia.split("-").map(Number)
       const hoje = new Date()
       return (
@@ -131,7 +144,8 @@ export function DashboardIndicators({
     }) || []
 
   const renovacoesProximos30 =
-    apolicesAtivas?.data?.data?.filter((p) => {
+    dataToUse?.filter((p) => {
+      if (p.tipoDocumento !== "Apólice" || p.situacao !== "Ativo") return false
       const [ano, mes, dia] = p.fimVigencia.split("-").map(Number)
       const fimVigencia = new Date(ano, mes - 1, dia)
       const hoje = new Date()

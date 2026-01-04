@@ -81,6 +81,7 @@ export function PropostasTable() {
     hasUrlIds ? -1 : limit,
     filters
   )
+  const { data: allData } = usePropostaQuery(1, -1, filters)
   const [ramoId, setRamoId] = useState("")
   const { push } = useRouter()
 
@@ -166,6 +167,7 @@ export function PropostasTable() {
   }, [ramos])
 
   const propostas = data?.data || []
+  const allPropostas = allData?.data || []
   const totalPages =
     dashboardFilter ?
       Math.ceil(filteredResults.length / limit)
@@ -896,6 +898,7 @@ export function PropostasTable() {
       />
 
       <DashboardIndicators
+        filteredData={allPropostas}
         onFilterChange={(filterType, data) => {
           setFilteredResults(data)
           setPage(1)
