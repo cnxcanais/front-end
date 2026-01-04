@@ -53,7 +53,7 @@ export function FileModal({
               <FileUploadQueue entityId={entityId} entityType={entityType} />
             )}
 
-            <FileList entityId={entityId} entityType={entityType} />
+            <FileList entityId={entityId} entityType={entityType} isAdmin={isAdmin} />
           </DialogPanel>
         </div>
       </div>

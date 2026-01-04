@@ -337,6 +337,18 @@ export function SeguradosTable() {
 
       <SeguradosDashboard onFilterChange={handleDashboardFilterChange} />
 
+      {!isAdmin && segurados.length > 0 && (
+        <div className="flex items-center gap-2">
+          <Button
+            className="flex items-center gap-1"
+            variant="secondary"
+            onClick={() => handleDownloadCsv()}>
+            <FileCsv size={22} />
+            Exportar Segurados
+          </Button>
+        </div>
+      )}
+
       {isAdmin && (
         <div className="mt-8 flex items-center justify-between">
           <div className="flex h-full gap-4">

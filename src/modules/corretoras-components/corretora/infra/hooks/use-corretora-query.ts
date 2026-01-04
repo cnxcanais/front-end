@@ -4,7 +4,7 @@ import { getCorretoras } from "../remote"
 
 export function useCorretoraQuery(
   page = 1,
-  limit = 10,
+  limit = -1,
   filters?: Record<string, string>
 ) {
   try {

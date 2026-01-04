@@ -4,7 +4,7 @@ import { getProdutores } from "../remote"
 
 export function useProdutorQuery(
   page = 1,
-  limit = 10,
+  limit = -1,
   filters?: Record<string, string>
 ) {
   try {

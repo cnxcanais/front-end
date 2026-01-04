@@ -11,9 +11,10 @@ import { useFetchFilesQuery } from "./remote/use-fetch-files-query"
 type FileListProps = {
   entityType: EntityType
   entityId: string
+  isAdmin?: boolean
 }
 
-export function FileList({ entityId, entityType }: FileListProps) {
+export function FileList({ entityId, entityType, isAdmin }: FileListProps) {
   const [filteredFiles, setFilteredFiles] = useState([])
   const [entityFiles, setEntityFiles] = useState([])
 
@@ -87,7 +88,9 @@ export function FileList({ entityId, entityType }: FileListProps) {
                   e.stopPropagation()
                   handleRemoveUploaded(file.id)
                 }}
-                className="border-black text-black absolute right-2 top-2 rounded-full border bg-white p-1 opacity-0 shadow-sm transition-opacity hover:border-white hover:bg-gray-500 hover:text-white group-hover:opacity-100">
+                className={`border-black text-black absolute right-2 top-2 rounded-full border bg-white p-1 shadow-sm transition-opacity hover:border-white hover:bg-gray-500 hover:text-white ${
+                  isAdmin ? "opacity-0 group-hover:opacity-100" : "hidden"
+                }`}>
                 <X size={16} />
               </button>
             </Link>
