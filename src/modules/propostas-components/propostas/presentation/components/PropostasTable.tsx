@@ -358,7 +358,9 @@ export function PropostasTable() {
     exportFilters: Record<string, string>
   ) => {
     try {
-      const blob = await exportParcelas(exportFilters)
+      const adjustedFilters =
+        isAdmin ? exportFilters : { ...exportFilters, corretoraId: corretoraId }
+      const blob = await exportParcelas(adjustedFilters)
       const csvBlob = new Blob([blob], { type: "text/csv;charset=utf-8;" })
       const url = window.URL.createObjectURL(csvBlob)
       const link = document.createElement("a")
