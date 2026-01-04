@@ -983,7 +983,6 @@ export function PropostasTable() {
         produtoresOptions={produtoresOptions}
         seguradoresOptions={seguradoresOptions}
         ramosOptions={ramosOptions}
-        produtosOptions={produtosOptions}
         isAdmin={isAdmin}
       />
 

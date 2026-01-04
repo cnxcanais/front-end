@@ -5,7 +5,8 @@ import { Button } from "@/core/components/Button"
 import * as Input from "@/core/components/Input"
 import { Modal } from "@/core/components/Modals/Modal"
 import { SelectInput } from "@/core/components/SelectInput"
-import { useState } from "react"
+import { useProdutoQuery } from "@/modules/produtos-components/produtos/infra/hooks/use-produto-query"
+import { useEffect, useMemo, useState } from "react"
 
 interface ExportPropostasModalProps {
   open: boolean
@@ -16,7 +17,6 @@ interface ExportPropostasModalProps {
   produtoresOptions: { label: string; value: string }[]
   seguradoresOptions: { label: string; value: string }[]
   ramosOptions: { label: string; value: string }[]
-  produtosOptions: { label: string; value: string }[]
   isAdmin: boolean
 }
 
@@ -29,10 +29,28 @@ export function ExportPropostasModal({
   produtoresOptions,
   seguradoresOptions,
   ramosOptions,
-  produtosOptions,
   isAdmin,
 }: ExportPropostasModalProps) {
   const [exportFilters, setExportFilters] = useState<Record<string, string>>({})
+  const { data: produtos } = useProdutoQuery(1, -1)
+
+  const filteredProdutosOptions = useMemo(() => {
+    if (!produtos?.data || !exportFilters.ramoId) return []
+    return produtos.data
+      .filter((p) => p.ramoId === exportFilters.ramoId)
+      .map((p) => ({ label: p.descricao, value: p.id }))
+  }, [produtos?.data, exportFilters.ramoId])
+
+  useEffect(() => {
+    if (exportFilters.ramoId && exportFilters.produtoId) {
+      const isProdutoValid = filteredProdutosOptions.some(
+        (p) => p.value === exportFilters.produtoId
+      )
+      if (!isProdutoValid) {
+        setExportFilters({ ...exportFilters, produtoId: "" })
+      }
+    }
+  }, [exportFilters.ramoId])
 
   const handleExport = () => {
     const cleanFilters = Object.fromEntries(
@@ -120,10 +138,11 @@ export function ExportPropostasModal({
           onChange={(e) =>
             setExportFilters({ ...exportFilters, produtoId: e.target.value })
           }
-          options={produtosOptions.map((o) => ({
+          options={filteredProdutosOptions.map((o) => ({
             text: o.label,
             value: o.value,
           }))}
+          readOnly={!exportFilters.ramoId}
         />
         <SelectInput
           label="Tipo de Documento"
