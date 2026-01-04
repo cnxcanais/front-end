@@ -64,7 +64,7 @@ export const propostaFormSchema = z
     seguradoraId: z.string().min(1, "Seguradora é obrigatória"),
     ramoId: z.string().min(1, "Ramo é obrigatório"),
     produtoId: z.string().optional(),
-    tomadorId: z.string().optional(),
+    tomadorId: z.string().nullable().optional(),
     placaVeiculo: z.string().nullable().optional(),
     chassiVeiculo: z.string().nullable().optional(),
     modeloVeiculo: z.string().nullable().optional(),

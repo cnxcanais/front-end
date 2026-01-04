@@ -10,7 +10,6 @@ interface EndossarApoliceModalProps {
   onClose: () => void
   onConfirm: (data: {
     dataEmissao: string
-    numeroEndosso: string
     inicioVigencia: string
     fimVigencia: string
   }) => void
@@ -22,24 +21,21 @@ export function EndossarApoliceModal({
   onConfirm,
 }: EndossarApoliceModalProps) {
   const [dataEmissao, setDataEmissao] = useState("")
-  const [numeroEndosso, setNumeroEndosso] = useState("")
   const [inicioVigencia, setInicioVigencia] = useState("")
   const [fimVigencia, setFimVigencia] = useState("")
 
   const handleConfirm = () => {
-    if (!dataEmissao || !numeroEndosso || !inicioVigencia || !fimVigencia) {
+    if (!dataEmissao || !inicioVigencia || !fimVigencia) {
       return
     }
-    onConfirm({ dataEmissao, numeroEndosso, inicioVigencia, fimVigencia })
+    onConfirm({ dataEmissao, inicioVigencia, fimVigencia })
     setDataEmissao("")
-    setNumeroEndosso("")
     setInicioVigencia("")
     setFimVigencia("")
   }
 
   const handleClose = () => {
     setDataEmissao("")
-    setNumeroEndosso("")
     setInicioVigencia("")
     setFimVigencia("")
     onClose()
@@ -58,15 +54,6 @@ export function EndossarApoliceModal({
             type="date"
             value={dataEmissao}
             onChange={(e) => setDataEmissao(e.target.value)}
-          />
-        </Input.Root>
-
-        <Input.Root>
-          <label>Número do Endosso</label>
-          <Input.Control
-            type="text"
-            value={numeroEndosso}
-            onChange={(e) => setNumeroEndosso(e.target.value)}
           />
         </Input.Root>
 

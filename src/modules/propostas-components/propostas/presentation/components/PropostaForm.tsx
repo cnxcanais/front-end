@@ -145,6 +145,8 @@ export function PropostaForm({
 
   const formData = watch()
 
+  console.log(errors)
+
   const { push } = useRouter()
   const { data: segurados } = useSeguradoQuery(1, -1, { status: "ATIVO" })
   const { data: corretoras } = useCorretoraQuery(1, -1)
