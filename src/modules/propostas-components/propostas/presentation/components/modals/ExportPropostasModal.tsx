@@ -1,10 +1,10 @@
 "use client"
 
+import { AutocompleteInput } from "@/core/components/AutocompleteInput"
 import { Button } from "@/core/components/Button"
+import * as Input from "@/core/components/Input"
 import { Modal } from "@/core/components/Modals/Modal"
 import { SelectInput } from "@/core/components/SelectInput"
-import { AutocompleteInput } from "@/core/components/AutocompleteInput"
-import * as Input from "@/core/components/Input"
 import { useState } from "react"
 
 interface ExportPropostasModalProps {
@@ -17,6 +17,7 @@ interface ExportPropostasModalProps {
   seguradoresOptions: { label: string; value: string }[]
   ramosOptions: { label: string; value: string }[]
   produtosOptions: { label: string; value: string }[]
+  isAdmin: boolean
 }
 
 export function ExportPropostasModal({
@@ -29,6 +30,7 @@ export function ExportPropostasModal({
   seguradoresOptions,
   ramosOptions,
   produtosOptions,
+  isAdmin,
 }: ExportPropostasModalProps) {
   const [exportFilters, setExportFilters] = useState<Record<string, string>>({})
 
@@ -55,17 +57,29 @@ export function ExportPropostasModal({
           onChange={(e) =>
             setExportFilters({ ...exportFilters, seguradoId: e.target.value })
           }
-          options={seguradosOptions.map(o => ({ text: o.label, value: o.value }))}
+          options={seguradosOptions.map((o) => ({
+            text: o.label,
+            value: o.value,
+          }))}
         />
-        <AutocompleteInput
-          label="Corretora"
-          field_name="corretoraId"
-          value={exportFilters.corretoraId || ""}
-          onChange={(e) =>
-            setExportFilters({ ...exportFilters, corretoraId: e.target.value })
-          }
-          options={corretorasOptions.map(o => ({ text: o.label, value: o.value }))}
-        />
+        {isAdmin && (
+          <AutocompleteInput
+            label="Corretora"
+            field_name="corretoraId"
+            value={exportFilters.corretoraId || ""}
+            onChange={(e) =>
+              setExportFilters({
+                ...exportFilters,
+                corretoraId: e.target.value,
+              })
+            }
+            options={corretorasOptions.map((o) => ({
+              text: o.label,
+              value: o.value,
+            }))}
+          />
+        )}
+
         <AutocompleteInput
           label="Produtor"
           field_name="produtorId"
@@ -73,7 +87,10 @@ export function ExportPropostasModal({
           onChange={(e) =>
             setExportFilters({ ...exportFilters, produtorId: e.target.value })
           }
-          options={produtoresOptions.map(o => ({ text: o.label, value: o.value }))}
+          options={produtoresOptions.map((o) => ({
+            text: o.label,
+            value: o.value,
+          }))}
         />
         <AutocompleteInput
           label="Seguradora"
@@ -82,7 +99,10 @@ export function ExportPropostasModal({
           onChange={(e) =>
             setExportFilters({ ...exportFilters, seguradoraId: e.target.value })
           }
-          options={seguradoresOptions.map(o => ({ text: o.label, value: o.value }))}
+          options={seguradoresOptions.map((o) => ({
+            text: o.label,
+            value: o.value,
+          }))}
         />
         <AutocompleteInput
           label="Ramo"
@@ -91,7 +111,7 @@ export function ExportPropostasModal({
           onChange={(e) =>
             setExportFilters({ ...exportFilters, ramoId: e.target.value })
           }
-          options={ramosOptions.map(o => ({ text: o.label, value: o.value }))}
+          options={ramosOptions.map((o) => ({ text: o.label, value: o.value }))}
         />
         <AutocompleteInput
           label="Produto"
@@ -100,14 +120,20 @@ export function ExportPropostasModal({
           onChange={(e) =>
             setExportFilters({ ...exportFilters, produtoId: e.target.value })
           }
-          options={produtosOptions.map(o => ({ text: o.label, value: o.value }))}
+          options={produtosOptions.map((o) => ({
+            text: o.label,
+            value: o.value,
+          }))}
         />
         <SelectInput
           label="Tipo de Documento"
           field_name="tipoDocumento"
           value={exportFilters.tipoDocumento || ""}
           onChange={(e) =>
-            setExportFilters({ ...exportFilters, tipoDocumento: e.target.value })
+            setExportFilters({
+              ...exportFilters,
+              tipoDocumento: e.target.value,
+            })
           }
           options={[
             { text: "Todos", value: "" },
@@ -150,7 +176,10 @@ export function ExportPropostasModal({
             <Input.Control
               value={exportFilters.numeroProposta || ""}
               onChange={(e) =>
-                setExportFilters({ ...exportFilters, numeroProposta: e.target.value })
+                setExportFilters({
+                  ...exportFilters,
+                  numeroProposta: e.target.value,
+                })
               }
             />
           </Input.Root>
@@ -161,7 +190,10 @@ export function ExportPropostasModal({
             <Input.Control
               value={exportFilters.numeroApolice || ""}
               onChange={(e) =>
-                setExportFilters({ ...exportFilters, numeroApolice: e.target.value })
+                setExportFilters({
+                  ...exportFilters,
+                  numeroApolice: e.target.value,
+                })
               }
             />
           </Input.Root>
@@ -172,7 +204,10 @@ export function ExportPropostasModal({
             <Input.Control
               value={exportFilters.numeroEndosso || ""}
               onChange={(e) =>
-                setExportFilters({ ...exportFilters, numeroEndosso: e.target.value })
+                setExportFilters({
+                  ...exportFilters,
+                  numeroEndosso: e.target.value,
+                })
               }
             />
           </Input.Root>
@@ -183,7 +218,10 @@ export function ExportPropostasModal({
             <Input.Control
               value={exportFilters.placaVeiculo || ""}
               onChange={(e) =>
-                setExportFilters({ ...exportFilters, placaVeiculo: e.target.value })
+                setExportFilters({
+                  ...exportFilters,
+                  placaVeiculo: e.target.value,
+                })
               }
             />
           </Input.Root>
@@ -194,7 +232,10 @@ export function ExportPropostasModal({
             <Input.Control
               value={exportFilters.chassiVeiculo || ""}
               onChange={(e) =>
-                setExportFilters({ ...exportFilters, chassiVeiculo: e.target.value })
+                setExportFilters({
+                  ...exportFilters,
+                  chassiVeiculo: e.target.value,
+                })
               }
             />
           </Input.Root>
@@ -206,7 +247,10 @@ export function ExportPropostasModal({
               type="date"
               value={exportFilters.inicioVigenciaMin || ""}
               onChange={(e) =>
-                setExportFilters({ ...exportFilters, inicioVigenciaMin: e.target.value })
+                setExportFilters({
+                  ...exportFilters,
+                  inicioVigenciaMin: e.target.value,
+                })
               }
             />
           </Input.Root>
@@ -218,7 +262,10 @@ export function ExportPropostasModal({
               type="date"
               value={exportFilters.inicioVigenciaMax || ""}
               onChange={(e) =>
-                setExportFilters({ ...exportFilters, inicioVigenciaMax: e.target.value })
+                setExportFilters({
+                  ...exportFilters,
+                  inicioVigenciaMax: e.target.value,
+                })
               }
             />
           </Input.Root>

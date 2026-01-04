@@ -321,7 +321,9 @@ export function PropostasTable() {
 
   const handleExport = async (exportFilters: Record<string, string>) => {
     try {
-      const blob = await exportPropostas(exportFilters)
+      const adjustedFilters =
+        isAdmin ? exportFilters : { ...exportFilters, corretoraId: corretoraId }
+      const blob = await exportPropostas(adjustedFilters)
       const csvBlob = new Blob([blob], { type: "text/csv;charset=utf-8;" })
       const url = window.URL.createObjectURL(csvBlob)
       const link = document.createElement("a")
@@ -969,15 +971,12 @@ export function PropostasTable() {
         onClose={() => setOpenExportModal(false)}
         onExport={handleExport}
         seguradosOptions={seguradosOptions}
-        corretorasOptions={
-          isAdmin ? corretorasOptions : (
-            corretorasOptions.filter((c) => c.value === corretoraId)
-          )
-        }
+        corretorasOptions={corretorasOptions}
         produtoresOptions={produtoresOptions}
         seguradoresOptions={seguradoresOptions}
         ramosOptions={ramosOptions}
         produtosOptions={produtosOptions}
+        isAdmin={isAdmin}
       />
 
       <ImportPropostasModal
