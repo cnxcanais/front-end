@@ -58,8 +58,8 @@ import { DashboardIndicators } from "./DashboardIndicators"
 import { CancelarApoliceModal } from "./modals/CancelarApoliceModal"
 import { EmitirApoliceModal } from "./modals/EmitirApoliceModal"
 import { EndossarApoliceModal } from "./modals/EndossarApoliceModal"
-import { ExportPropostasModal } from "./modals/ExportPropostasModal"
 import { ExportParcelasModal } from "./modals/ExportParcelasModal"
+import { ExportPropostasModal } from "./modals/ExportPropostasModal"
 import { ImportErrorsModal } from "./modals/ImportErrorsModal"
 import { ImportPropostasModal } from "./modals/ImportPropostasModal"
 import { MotivoNaoRenovacaoModal } from "./modals/MotivoNaoRenovacao"
@@ -354,7 +354,9 @@ export function PropostasTable() {
     }
   }
 
-  const handleExportParcelas = async (exportFilters: Record<string, string>) => {
+  const handleExportParcelas = async (
+    exportFilters: Record<string, string>
+  ) => {
     try {
       const blob = await exportParcelas(exportFilters)
       const csvBlob = new Blob([blob], { type: "text/csv;charset=utf-8;" })
@@ -896,6 +898,26 @@ export function PropostasTable() {
         }}
       />
 
+      {!isAdmin && (
+        <div className="flex items-center gap-2">
+          <Button
+            className="flex items-center gap-1"
+            variant="secondary"
+            onClick={() => setOpenExportModal(true)}>
+            <FileXls size={22} />
+            Exportar
+          </Button>
+
+          <Button
+            className="flex items-center gap-1 bg-green-600 hover:bg-green-700"
+            variant="secondary"
+            onClick={() => setOpenExportParcelasModal(true)}>
+            <FileXls size={22} />
+            Exportar Parcelas
+          </Button>
+        </div>
+      )}
+
       {isAdmin && (
         <div className="flex items-center justify-between">
           <div className="flex h-full gap-4">
@@ -945,7 +967,11 @@ export function PropostasTable() {
         onClose={() => setOpenExportModal(false)}
         onExport={handleExport}
         seguradosOptions={seguradosOptions}
-        corretorasOptions={corretorasOptions}
+        corretorasOptions={
+          isAdmin ? corretorasOptions : (
+            corretorasOptions.filter((c) => c.value === corretoraId)
+          )
+        }
         produtoresOptions={produtoresOptions}
         seguradoresOptions={seguradoresOptions}
         ramosOptions={ramosOptions}
