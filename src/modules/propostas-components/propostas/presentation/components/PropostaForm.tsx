@@ -506,11 +506,9 @@ export function PropostaForm({
         await createProposta(payload)
         toast.success("Proposta criada com sucesso!")
       }
-      duplicateRefetch()
       push("/propostas")
     } catch (error: any) {
       toast.error(error?.response?.data?.message || "Erro ao salvar proposta")
-      duplicateRefetch()
     }
   }
 

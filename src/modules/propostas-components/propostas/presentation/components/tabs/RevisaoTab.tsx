@@ -502,7 +502,7 @@ export function RevisaoTab({
             <Button
               onClick={() => {
                 const newRepasse = {
-                  produtorId: "",
+                  produtorId: formData.produtorId || "",
                   percentualRepasse: undefined,
                   repasseSobre: "Premio Liquido" as const,
                   formaRepasse: "No recebimento" as const,
