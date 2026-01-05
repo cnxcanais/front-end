@@ -5,6 +5,7 @@ import { Button } from "@/core/components/Button"
 import * as Input from "@/core/components/Input"
 import { LoadingScreen } from "@/core/components/LoadingScreen"
 import { MapModal } from "@/core/components/MapModal"
+import { PrivacyPolicyModal } from "@/core/components/Modals/PrivacyPolicyModal"
 import { SelectInput } from "@/core/components/SelectInput"
 import { fetchCep } from "@/core/utils/findCep"
 import { formatCep } from "@/core/utils/format-cep"
@@ -32,10 +33,9 @@ export function EditCorretoraForm({ id }: { id: string }) {
   const [logoFile, setLogoFile] = useState<File | null>(null)
   const [logoPreview, setLogoPreview] = useState<string | null>(null)
   const fileInputRef = useRef<HTMLInputElement>(null)
+  const [privacyModalOpen, setPrivacyModalOpen] = useState(false)
 
   const { data: corretora, isLoading } = useCorretoraByIdQuery(id)
-
-  console.log(corretora)
 
   const {
     register,
@@ -494,13 +494,25 @@ export function EditCorretoraForm({ id }: { id: string }) {
           </Input.Root>
         </div>
 
-        <div className="flex items-center gap-2">
-          <input
-            {...register("consentimentoLgpd")}
-            type="checkbox"
-            id="consentimentoLgpd"
-          />
-          <label htmlFor="consentimentoLgpd">Consentimento LGPD</label>
+        <div className="flex flex-col gap-2">
+          <div className="flex items-center gap-2">
+            <input
+              {...register("consentimentoLgpd")}
+              type="checkbox"
+              id="consentimentoLgpd"
+            />
+            <label htmlFor="consentimentoLgpd">
+              Declaro que solicitei a prévia autorização para utilização dos dados
+              do(s) titular(es) conforme a base legal prevista no artigo 7º,
+              inciso V, da LGPD
+            </label>
+          </div>
+          <button
+            type="button"
+            onClick={() => setPrivacyModalOpen(true)}
+            className="text-sm text-blue-600 hover:underline w-fit">
+            Ler política de privacidade
+          </button>
         </div>
       </div>
 
@@ -508,6 +520,11 @@ export function EditCorretoraForm({ id }: { id: string }) {
         open={showMapModal}
         onClose={() => setShowMapModal(false)}
         address={fullAddress}
+      />
+
+      <PrivacyPolicyModal
+        open={privacyModalOpen}
+        onClose={() => setPrivacyModalOpen(false)}
       />
 
       <div className="my-2 flex gap-4">

@@ -3,6 +3,7 @@
 import { Corretora } from "@/@types/corretora"
 import { Button } from "@/core/components/Button"
 import * as Input from "@/core/components/Input"
+import { PrivacyPolicyModal } from "@/core/components/Modals/PrivacyPolicyModal"
 import { SelectInput } from "@/core/components/SelectInput"
 import { fetchCep } from "@/core/utils/findCep"
 import { formatCep } from "@/core/utils/format-cep"
@@ -29,6 +30,7 @@ export function CreateCorretoraForm() {
   const [logoFile, setLogoFile] = useState<File | null>(null)
   const [logoPreview, setLogoPreview] = useState<string | null>(null)
   const fileInputRef = useRef<HTMLInputElement>(null)
+  const [privacyModalOpen, setPrivacyModalOpen] = useState(false)
 
   const { data: gruposEconomicos } = useGrupoEconomicoQuery(1, 100)
 
@@ -463,15 +465,32 @@ export function CreateCorretoraForm() {
           </Input.Root>
         </div>
 
-        <div className="flex items-center gap-2">
-          <input
-            {...register("consentimentoLgpd")}
-            type="checkbox"
-            id="consentimentoLgpd"
-          />
-          <label htmlFor="consentimentoLgpd">Consentimento LGPD</label>
+        <div className="flex flex-col gap-2">
+          <div className="flex items-center gap-2">
+            <input
+              {...register("consentimentoLgpd")}
+              type="checkbox"
+              id="consentimentoLgpd"
+            />
+            <label htmlFor="consentimentoLgpd">
+              Declaro que solicitei a prévia autorização para utilização dos dados
+              do(s) titular(es) conforme a base legal prevista no artigo 7º,
+              inciso V, da LGPD
+            </label>
+          </div>
+          <button
+            type="button"
+            onClick={() => setPrivacyModalOpen(true)}
+            className="text-sm text-blue-600 hover:underline w-fit">
+            Ler política de privacidade
+          </button>
         </div>
       </div>
+
+      <PrivacyPolicyModal
+        open={privacyModalOpen}
+        onClose={() => setPrivacyModalOpen(false)}
+      />
 
       <div className="my-2 flex gap-4">
         <Button type="submit" disabled={isSubmitting} variant="primary">

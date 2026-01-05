@@ -4,6 +4,7 @@ import {
   DialogPanel,
   DialogTitle,
 } from "@headlessui/react"
+import { X } from "@phosphor-icons/react"
 
 export type ModalProps = {
   children: React.ReactNode
@@ -34,6 +35,13 @@ export function Modal({ children, content, title, onClose, open, size = "medium"
             transition
             className={`relative transform overflow-hidden rounded-lg bg-white px-4 pb-4 pt-5 text-left shadow-xl transition-all data-[closed]:translate-y-4 data-[closed]:opacity-0 data-[enter]:duration-300 data-[leave]:duration-200 data-[enter]:ease-out data-[leave]:ease-in sm:my-8 sm:w-full ${sizeClasses[size]} sm:p-6 data-[closed]:sm:translate-y-0 data-[closed]:sm:scale-95`}>
             <div>
+              <div className="absolute right-4 top-4">
+                <button
+                  onClick={() => onClose(false)}
+                  className="text-gray-400 hover:text-gray-600">
+                  <X size={24} />
+                </button>
+              </div>
               <div className="mt-3 text-center sm:mt-5">
                 <DialogTitle
                   as="h3"
