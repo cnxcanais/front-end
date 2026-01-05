@@ -10,6 +10,7 @@ import { formatDocumentNumber } from "@/core/utils/formatDocumentNumber"
 import { formatPhoneNumber } from "@/core/utils/formatPhoneNumber"
 import { normalizeDecimals } from "@/core/utils/normalizeDecimals"
 import { useGrupoEconomicoQuery } from "@/modules/grupos-economicos-components/grupos-economicos/infra/hooks/use-grupo-economico-query"
+import { uploadLogoSeguradora } from "@/modules/seguradoras-components/seguradora/infra/remote/upload-logo-seguradora"
 import { zodResolver } from "@hookform/resolvers/zod"
 import { Image, MagnifyingGlass, X } from "@phosphor-icons/react"
 import { useRouter } from "next/navigation"
@@ -17,7 +18,6 @@ import { useMemo, useRef, useState } from "react"
 import { useForm } from "react-hook-form"
 import { toast } from "sonner"
 import { createSeguradora } from "../../infra/remote/create-seguradora"
-import { uploadLogoSeguradora } from "@/modules/seguradoras-components/seguradora/infra/remote/upload-logo-seguradora"
 import {
   CreateSeguradoraSchema,
   createSeguradoraFormSchema,
@@ -81,11 +81,11 @@ export function CreateSeguradoraForm() {
 
     try {
       const response = await createSeguradora(data as Seguradora.CreateRequest)
-      
+
       if (logoFile && response?.id) {
         await uploadLogoSeguradora(response.id, logoFile)
       }
-      
+
       toast.success("Seguradora criada com sucesso!")
       setTimeout(() => push("/seguradoras"), 2000)
     } catch (error) {
@@ -105,11 +105,13 @@ export function CreateSeguradoraForm() {
             <label>Logo</label>
             <div className="relative">
               <label className="flex h-32 w-32 cursor-pointer items-center justify-center rounded border-2 border-dashed border-gray-300 bg-white hover:border-blue-500">
-                {logoPreview ? (
-                  <img src={logoPreview} alt="Logo preview" className="h-full w-full object-contain" />
-                ) : (
-                  <Image size={48} className="text-gray-400" />
-                )}
+                {logoPreview ?
+                  <img
+                    src={logoPreview}
+                    alt="Logo preview"
+                    className="h-full w-full object-contain"
+                  />
+                : <Image size={48} className="text-gray-400" />}
                 <input
                   ref={fileInputRef}
                   type="file"
@@ -131,78 +133,78 @@ export function CreateSeguradoraForm() {
           </div>
           <div className="flex flex-1 flex-col gap-4">
             <div className="flex gap-4">
-          <div className="flex flex-1 flex-col gap-2">
-            <label htmlFor="razaoSocial">Nome</label>
-            <Input.Root variant={errors.razaoSocial ? "error" : "primary"}>
-              <Input.Control {...register("razaoSocial")} type="text" />
-            </Input.Root>
-            {errors.razaoSocial && (
-              <span className="text-xs text-red-500">
-                {errors.razaoSocial.message}
-              </span>
-            )}
-          </div>
+              <div className="flex flex-1 flex-col gap-2">
+                <label htmlFor="razaoSocial">Nome *</label>
+                <Input.Root variant={errors.razaoSocial ? "error" : "primary"}>
+                  <Input.Control {...register("razaoSocial")} type="text" />
+                </Input.Root>
+                {errors.razaoSocial && (
+                  <span className="text-xs text-red-500">
+                    {errors.razaoSocial.message}
+                  </span>
+                )}
+              </div>
 
-          <div className="flex flex-1 flex-col gap-2">
-            <label htmlFor="codigoSusep">Susep</label>
-            <Input.Root variant={errors.codigoSusep ? "error" : "primary"}>
-              <Input.Control {...register("codigoSusep")} type="text" />
-            </Input.Root>
-            {errors.codigoSusep && (
-              <span className="text-xs text-red-500">
-                {errors.codigoSusep.message}
-              </span>
-            )}
-          </div>
-        </div>
+              <div className="flex flex-1 flex-col gap-2">
+                <label htmlFor="codigoSusep">Susep *</label>
+                <Input.Root variant={errors.codigoSusep ? "error" : "primary"}>
+                  <Input.Control {...register("codigoSusep")} type="text" />
+                </Input.Root>
+                {errors.codigoSusep && (
+                  <span className="text-xs text-red-500">
+                    {errors.codigoSusep.message}
+                  </span>
+                )}
+              </div>
+            </div>
 
-        <div className="flex gap-4">
-          <div className="flex flex-1 flex-col gap-2">
-            <label htmlFor="cnpj">CNPJ</label>
-            <Input.Root variant={errors.cnpj ? "error" : "primary"}>
-              <Input.Control
-                {...register("cnpj", {
-                  onChange: (e) => {
-                    const formatted = formatDocumentNumber(e.target.value)
-                    e.target.value = formatted
-                  },
-                })}
-                type="text"
-              />
-            </Input.Root>
-            {errors.cnpj && (
-              <span className="text-xs text-red-500">
-                {errors.cnpj.message}
-              </span>
-            )}
-          </div>
+            <div className="flex gap-4">
+              <div className="flex flex-1 flex-col gap-2">
+                <label htmlFor="cnpj">CNPJ *</label>
+                <Input.Root variant={errors.cnpj ? "error" : "primary"}>
+                  <Input.Control
+                    {...register("cnpj", {
+                      onChange: (e) => {
+                        const formatted = formatDocumentNumber(e.target.value)
+                        e.target.value = formatted
+                      },
+                    })}
+                    type="text"
+                  />
+                </Input.Root>
+                {errors.cnpj && (
+                  <span className="text-xs text-red-500">
+                    {errors.cnpj.message}
+                  </span>
+                )}
+              </div>
 
-          <div className="flex flex-1 flex-col gap-2">
-            <label htmlFor="fantasia">Fantasia</label>
-            <Input.Root variant="primary">
-              <Input.Control {...register("fantasia")} type="text" />
-            </Input.Root>
-            {errors.fantasia && (
-              <span className="text-xs text-red-500">
-                {errors.fantasia.message}
-              </span>
-            )}
-          </div>
+              <div className="flex flex-1 flex-col gap-2">
+                <label htmlFor="fantasia">Fantasia</label>
+                <Input.Root variant="primary">
+                  <Input.Control {...register("fantasia")} type="text" />
+                </Input.Root>
+                {errors.fantasia && (
+                  <span className="text-xs text-red-500">
+                    {errors.fantasia.message}
+                  </span>
+                )}
+              </div>
 
-          <div className="flex flex-1 flex-col gap-2">
-            <SelectInput
-              options={gruposOptions}
-              label="Grupo Econômico"
-              field_name="grupoEconomicoId"
-              {...register("grupoEconomicoId")}
-            />
-            {errors.grupoEconomicoId && (
-              <span className="text-xs text-red-500">
-                {errors.grupoEconomicoId.message}
-              </span>
-            )}
-          </div>
-        </div>
+              <div className="flex flex-1 flex-col gap-2">
+                <SelectInput
+                  options={gruposOptions}
+                  label="Grupo Econômico"
+                  field_name="grupoEconomicoId"
+                  {...register("grupoEconomicoId")}
+                />
+                {errors.grupoEconomicoId && (
+                  <span className="text-xs text-red-500">
+                    {errors.grupoEconomicoId.message}
+                  </span>
+                )}
+              </div>
+            </div>
           </div>
         </div>
       </div>
@@ -331,7 +333,7 @@ export function CreateSeguradoraForm() {
         <div className="flex flex-col gap-4">
           <div className="flex gap-4">
             <div className="flex flex-col gap-2">
-              <label htmlFor="cep">CEP</label>
+              <label htmlFor="cep">CEP *</label>
               <Input.Root variant={errors.cep ? "error" : "primary"}>
                 <Input.Icon>
                   <MagnifyingGlass className="mr-2 h-5 w-5" />
@@ -361,7 +363,7 @@ export function CreateSeguradoraForm() {
             </div>
 
             <div className="flex flex-1 flex-col gap-2">
-              <label htmlFor="city">Cidade</label>
+              <label htmlFor="city">Cidade *</label>
               <Input.Root variant={isCepSearched ? "primary" : "disabled"}>
                 <Input.Control {...register("cidade")} type="text" />
               </Input.Root>
@@ -373,7 +375,7 @@ export function CreateSeguradoraForm() {
             </div>
 
             <div className="flex flex-col gap-2">
-              <label htmlFor="state">Estado</label>
+              <label htmlFor="state">Estado *</label>
               <Input.Root variant={isCepSearched ? "primary" : "disabled"}>
                 <Input.Control {...register("uf")} type="state" />
               </Input.Root>
@@ -387,7 +389,7 @@ export function CreateSeguradoraForm() {
 
           <div className="flex gap-4">
             <div className="flex flex-1 flex-col gap-2">
-              <label htmlFor="endereco">Endereço</label>
+              <label htmlFor="endereco">Endereço *</label>
               <Input.Root variant={isCepSearched ? "primary" : "disabled"}>
                 <Input.Control
                   disabled={!isCepSearched}
@@ -403,7 +405,7 @@ export function CreateSeguradoraForm() {
             </div>
 
             <div className="flex max-w-[150px] flex-1 flex-col gap-2">
-              <label htmlFor="Número">Número</label>
+              <label htmlFor="Número">Número *</label>
               <Input.Root variant={isCepSearched ? "primary" : "disabled"}>
                 <Input.Control
                   disabled={!isCepSearched}
@@ -435,7 +437,7 @@ export function CreateSeguradoraForm() {
             </div>
 
             <div className="flex max-w-[200px] flex-1 flex-col gap-2">
-              <label htmlFor="bairro">Bairro</label>
+              <label htmlFor="bairro">Bairro *</label>
               <Input.Root variant={isCepSearched ? "primary" : "disabled"}>
                 <Input.Control
                   disabled={!isCepSearched}
