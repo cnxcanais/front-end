@@ -9,11 +9,12 @@ import { formatCep } from "@/core/utils/format-cep"
 import { formatDocumentNumber } from "@/core/utils/formatDocumentNumber"
 import { formatPhoneNumber } from "@/core/utils/formatPhoneNumber"
 import { normalizeDecimals } from "@/core/utils/normalizeDecimals"
+import { uploadLogoCorretora } from "@/modules/corretoras-components/corretora/infra/remote/upload-corretora-logo"
 import { useGrupoEconomicoQuery } from "@/modules/grupos-economicos-components/grupos-economicos/infra/hooks/use-grupo-economico-query"
 import { zodResolver } from "@hookform/resolvers/zod"
-import { MagnifyingGlass } from "@phosphor-icons/react"
+import { Image, MagnifyingGlass, X } from "@phosphor-icons/react"
 import { useRouter } from "next/navigation"
-import { useMemo, useState } from "react"
+import { useMemo, useRef, useState } from "react"
 import { useForm } from "react-hook-form"
 import { toast } from "sonner"
 import { createCorretora } from "../../infra/remote/create-corretora"
@@ -25,6 +26,9 @@ import {
 export function CreateCorretoraForm() {
   const { push } = useRouter()
   const [isCepSearched, setIsCepSearched] = useState(false)
+  const [logoFile, setLogoFile] = useState<File | null>(null)
+  const [logoPreview, setLogoPreview] = useState<string | null>(null)
+  const fileInputRef = useRef<HTMLInputElement>(null)
 
   const { data: gruposEconomicos } = useGrupoEconomicoQuery(1, 100)
 
@@ -48,9 +52,37 @@ export function CreateCorretoraForm() {
     resolver: zodResolver(createCorretoraFormSchema),
   })
 
+  const handleLogoChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0]
+    if (file) {
+      setLogoFile(file)
+      const reader = new FileReader()
+      reader.onloadend = () => {
+        setLogoPreview(reader.result as string)
+      }
+      reader.readAsDataURL(file)
+    }
+  }
+
+  const handleRemoveLogo = () => {
+    setLogoFile(null)
+    setLogoPreview(null)
+    if (fileInputRef.current) {
+      fileInputRef.current.value = ""
+    }
+  }
+
   async function onSubmit(data: Corretora.CreateRequest) {
+    if (logoFile && logoFile.size > 500 * 1024) {
+      toast.error("O logo deve ter no máximo 500KB")
+      return
+    }
     try {
-      await createCorretora(data)
+      const response = await createCorretora(data)
+      if (logoFile && response?.id) {
+        await uploadLogoCorretora(response.id, logoFile)
+      }
+
       toast.success("Corretora criada com sucesso!")
       setTimeout(() => push("/corretoras"), 2000)
     } catch (error) {
@@ -66,75 +98,110 @@ export function CreateCorretoraForm() {
       <div className="flex flex-col gap-4 bg-gray-50 p-4 shadow-md">
         <h3 className="text-lg font-semibold">Dados Cadastrais</h3>
         <div className="flex gap-4">
-          <div className="flex flex-1 flex-col gap-2">
-            <label htmlFor="razaoSocial">Razão Social *</label>
-            <Input.Root variant={errors.razaoSocial ? "error" : "primary"}>
-              <Input.Control {...register("razaoSocial")} type="text" />
-            </Input.Root>
-            {errors.razaoSocial && (
-              <span className="text-xs text-red-500">
-                {errors.razaoSocial.message}
-              </span>
-            )}
+          <div className="flex flex-col gap-2">
+            <label>Logo</label>
+            <div className="relative">
+              <label className="flex h-32 w-32 cursor-pointer items-center justify-center rounded border-2 border-dashed border-gray-300 bg-white hover:border-blue-500">
+                {logoPreview ?
+                  <img
+                    src={logoPreview}
+                    alt="Logo preview"
+                    className="h-full w-full object-contain"
+                  />
+                : <Image size={48} className="text-gray-400" />}
+                <input
+                  ref={fileInputRef}
+                  type="file"
+                  accept="image/*"
+                  onChange={handleLogoChange}
+                  className="hidden"
+                />
+              </label>
+              {logoPreview && (
+                <button
+                  type="button"
+                  onClick={handleRemoveLogo}
+                  className="absolute -right-2 -top-2 rounded-full bg-red-500 p-1 text-white hover:bg-red-600">
+                  <X size={16} />
+                </button>
+              )}
+            </div>
+            <span className="text-xs text-gray-500">Máx: 500KB</span>
           </div>
+          <div className="flex flex-1 flex-col gap-4">
+            <div className="flex gap-4">
+              <div className="flex flex-1 flex-col gap-2">
+                <label htmlFor="razaoSocial">Razão Social *</label>
+                <Input.Root variant={errors.razaoSocial ? "error" : "primary"}>
+                  <Input.Control {...register("razaoSocial")} type="text" />
+                </Input.Root>
+                {errors.razaoSocial && (
+                  <span className="text-xs text-red-500">
+                    {errors.razaoSocial.message}
+                  </span>
+                )}
+              </div>
 
-          <div className="flex flex-1 flex-col gap-2">
-            <label htmlFor="fantasia">Nome Fantasia</label>
-            <Input.Root variant={errors.fantasia ? "error" : "primary"}>
-              <Input.Control {...register("fantasia")} type="text" />
-            </Input.Root>
-            {errors.fantasia && (
-              <span className="text-xs text-red-500">
-                {errors.fantasia.message}
-              </span>
-            )}
-          </div>
-        </div>
+              <div className="flex flex-1 flex-col gap-2">
+                <label htmlFor="fantasia">Nome Fantasia</label>
+                <Input.Root variant={errors.fantasia ? "error" : "primary"}>
+                  <Input.Control {...register("fantasia")} type="text" />
+                </Input.Root>
+                {errors.fantasia && (
+                  <span className="text-xs text-red-500">
+                    {errors.fantasia.message}
+                  </span>
+                )}
+              </div>
+            </div>
 
-        <div className="flex gap-4">
-          <div className="flex flex-1 flex-col gap-2">
-            <label htmlFor="cnpjCpfFormatado">CNPJ/CPF *</label>
-            <Input.Root variant={errors.cnpjCpfFormatado ? "error" : "primary"}>
-              <Input.Control
-                {...register("cnpjCpfFormatado", {
-                  onChange: (e) => {
-                    e.target.value = formatDocumentNumber(e.target.value)
-                  },
-                })}
-                type="text"
-              />
-            </Input.Root>
-            {errors.cnpjCpfFormatado && (
-              <span className="text-xs text-red-500">
-                {errors.cnpjCpfFormatado.message}
-              </span>
-            )}
-          </div>
+            <div className="flex gap-4">
+              <div className="flex flex-1 flex-col gap-2">
+                <label htmlFor="cnpjCpfFormatado">CNPJ/CPF *</label>
+                <Input.Root
+                  variant={errors.cnpjCpfFormatado ? "error" : "primary"}>
+                  <Input.Control
+                    {...register("cnpjCpfFormatado", {
+                      onChange: (e) => {
+                        e.target.value = formatDocumentNumber(e.target.value)
+                      },
+                    })}
+                    type="text"
+                  />
+                </Input.Root>
+                {errors.cnpjCpfFormatado && (
+                  <span className="text-xs text-red-500">
+                    {errors.cnpjCpfFormatado.message}
+                  </span>
+                )}
+              </div>
 
-          <div className="flex flex-1 flex-col gap-2">
-            <label htmlFor="codigoSusep">Código Susep *</label>
-            <Input.Root variant={errors.codigoSusep ? "error" : "primary"}>
-              <Input.Control {...register("codigoSusep")} type="text" />
-            </Input.Root>
-            {errors.codigoSusep && (
-              <span className="text-xs text-red-500">
-                {errors.codigoSusep.message}
-              </span>
-            )}
-          </div>
+              <div className="flex flex-1 flex-col gap-2">
+                <label htmlFor="codigoSusep">Código Susep *</label>
+                <Input.Root variant={errors.codigoSusep ? "error" : "primary"}>
+                  <Input.Control {...register("codigoSusep")} type="text" />
+                </Input.Root>
+                {errors.codigoSusep && (
+                  <span className="text-xs text-red-500">
+                    {errors.codigoSusep.message}
+                  </span>
+                )}
+              </div>
 
-          <div className="flex flex-1 flex-col gap-2">
-            <SelectInput
-              options={gruposOptions}
-              label="Grupo Econômico"
-              field_name="grupoEconomicoId"
-              {...register("grupoEconomicoId")}
-            />
-            {errors.grupoEconomicoId && (
-              <span className="text-xs text-red-500">
-                {errors.grupoEconomicoId.message}
-              </span>
-            )}
+              <div className="flex flex-1 flex-col gap-2">
+                <SelectInput
+                  options={gruposOptions}
+                  label="Grupo Econômico"
+                  field_name="grupoEconomicoId"
+                  {...register("grupoEconomicoId")}
+                />
+                {errors.grupoEconomicoId && (
+                  <span className="text-xs text-red-500">
+                    {errors.grupoEconomicoId.message}
+                  </span>
+                )}
+              </div>
+            </div>
           </div>
         </div>
       </div>
@@ -274,7 +341,7 @@ export function CreateCorretoraForm() {
           </div>
 
           <div className="flex flex-1 flex-col gap-2">
-            <label htmlFor="telefone">Telefone</label>
+            <label htmlFor="telefone">Telefone *</label>
             <Input.Root variant={errors.telefone ? "error" : "primary"}>
               <Input.Control
                 {...register("telefone", {

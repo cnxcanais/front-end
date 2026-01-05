@@ -29,7 +29,7 @@ export async function createSeguradora({
 
     const { data } = await bffApi.post("/seguradoras", payload)
 
-    return data.message
+    return data
   } catch (error) {
     // all errors will return in a message property inside data
     if (error instanceof AxiosError) throw error.response.data.message

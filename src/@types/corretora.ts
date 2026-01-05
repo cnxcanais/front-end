@@ -26,6 +26,7 @@ export namespace Corretora {
     percentualImposto: number
     observacoes: string
     consentimentoLgpd: boolean
+    logoUrl: string
     dataConsentimentoLgpd: string
     createdAt: string
     updatedAt: string

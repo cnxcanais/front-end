@@ -36,6 +36,10 @@ export function CorretorasTable() {
     push(`/corretoras/edit/${id}`)
   }
 
+  useEffect(() => {
+    refetch()
+  }, [])
+
   const filterFields: FilterField[] = [
     {
       name: "razaoSocial",
@@ -106,6 +110,14 @@ export function CorretorasTable() {
 
   const columns = [
     { header: "Razão Social", accessor: "razaoSocial" },
+    {
+      header: "Logo",
+      accessor: "logoUrl",
+      render: (value: string) =>
+        value ?
+          <img src={value} alt="Logo" className="h-8 w-8 object-contain" />
+        : <span className="text-gray-400">-</span>,
+    },
     { header: "Nome Fantasia", accessor: "nomeFantasia" },
     { header: "CNPJ/CPF", accessor: "cnpjCpfFormatado" },
     {
