@@ -15,7 +15,7 @@ import { useSeguradoraQuery } from "@/modules/seguradoras-components/seguradora/
 import { removeSeguradora } from "@/modules/seguradoras-components/seguradora/infra/remote"
 import { FileXls, Pencil, Trash } from "@phosphor-icons/react"
 import { useRouter } from "next/navigation"
-import { useState } from "react"
+import { useEffect, useState } from "react"
 import { toast } from "sonner"
 
 export function SeguradorasTable() {
@@ -48,6 +48,10 @@ export function SeguradorasTable() {
       setOpen(false)
     }
   }
+
+  useEffect(() => {
+    refetch()
+  }, [])
 
   const brStates = [
     "AC",

@@ -68,19 +68,7 @@ export const createSeguradoraFormSchema = z.object({
     .string()
     .email({ message: "Email inválido" })
     .max(100, { message: "Campo deve ter no máximo 100 caracteres" })
-    .refine(
-      (val) => {
-        if (val === "") return true
-        try {
-          const url = new URL(val)
-          return /\.[a-z]{2,}$/i.test(url.hostname)
-        } catch {
-          return false
-        }
-      },
-      { message: "Url inválida" }
-    )
-    .optional(),
+    .or(z.literal("")),
 
   telefone: z.string().optional(),
   telefoneSecundario: z.string().optional(),

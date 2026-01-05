@@ -48,6 +48,8 @@ export function exportTableToPDF(
         "options",
         "controles",
         "controls",
+        "logo",
+        "arquivos",
       ]
     : []
 

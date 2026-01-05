@@ -264,38 +264,27 @@ export function ExportPropostasModal({
           <Input.Root className="mt-2">
             <Input.Control
               type="date"
-              value={exportFilters.inicioVigenciaMin || ""}
+              value={exportFilters.inicioVigenciaDe || ""}
               onChange={(e) =>
                 setExportFilters({
                   ...exportFilters,
-                  inicioVigenciaMin: e.target.value,
+                  inicioVigenciaDe: e.target.value,
                 })
               }
             />
           </Input.Root>
         </div>
         <div>
-          <label>Vigência Inicial (Até)</label>
+          <label>Vigência Final (Até)</label>
           <Input.Root className="mt-2">
             <Input.Control
               type="date"
-              value={exportFilters.inicioVigenciaMax || ""}
+              value={exportFilters.fimVigenciaAte || ""}
               onChange={(e) =>
                 setExportFilters({
                   ...exportFilters,
-                  inicioVigenciaMax: e.target.value,
+                  fimVigenciaAte: e.target.value,
                 })
-              }
-            />
-          </Input.Root>
-        </div>
-        <div>
-          <label>Busca Geral</label>
-          <Input.Root className="mt-2">
-            <Input.Control
-              value={exportFilters.search || ""}
-              onChange={(e) =>
-                setExportFilters({ ...exportFilters, search: e.target.value })
               }
             />
           </Input.Root>

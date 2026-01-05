@@ -257,7 +257,7 @@ export const exportNoPagination = (filename?: string) => {
     tableObject["Parcelas"][index] = Number(value)
   })
 
-  const { Arquivos, Ações, Obs, ...formattedTable } = tableObject
+  const { Arquivos, Ações, Obs, Logo, ...formattedTable } = tableObject
 
   const finalRows = formattedTable[Object.keys(formattedTable)[0]].map(
     (_, rowIndex) => {
