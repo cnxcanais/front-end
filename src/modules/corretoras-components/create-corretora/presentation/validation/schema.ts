@@ -6,7 +6,7 @@ export const createCorretoraFormSchema = z.object({
     .string()
     .nonempty({ message: "Obrigatório" })
     .max(255, { message: "Campo deve ter no máximo 255 caracteres" }),
-  nomeFantasia: z
+  fantasia: z
     .string()
     .nonempty({ message: "Obrigatório" })
     .max(255, { message: "Campo deve ter no máximo 255 caracteres" }),
@@ -78,7 +78,8 @@ export const createCorretoraFormSchema = z.object({
   email: z
     .string()
     .email({ message: "Email inválido" })
-    .max(255, { message: "Campo deve ter no máximo 255 caracteres" }),
+    .max(255, { message: "Campo deve ter no máximo 255 caracteres" })
+    .or(z.literal("")),
   telefone: z
     .string()
     .nonempty({ message: "Obrigatório" })

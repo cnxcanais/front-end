@@ -2,7 +2,7 @@ export namespace Corretora {
   export type Type = {
     id: string
     razaoSocial: string
-    nomeFantasia: string
+    fantasia: string
     cnpjCpf: string
     cnpjCpfFormatado: string
     codigoSusep: string
@@ -44,7 +44,7 @@ export namespace Corretora {
 
   export type CreateRequest = {
     razaoSocial: string
-    nomeFantasia: string
+    fantasia: string
     cnpjCpfFormatado: string
     codigoSusep: string
     grupoEconomicoId: string
@@ -70,7 +70,7 @@ export namespace Corretora {
   export type UpdateRequest = {
     id: string
     razaoSocial: string
-    nomeFantasia: string
+    fantasia: string
     codigoSusep: string
     cepFormatado: string
     grupoEconomicoId: string

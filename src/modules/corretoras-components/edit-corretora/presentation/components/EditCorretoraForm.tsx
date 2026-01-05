@@ -42,7 +42,7 @@ export function EditCorretoraForm({ id }: { id: string }) {
     resolver: zodResolver(editCorretoraFormSchema),
     values: {
       razaoSocial: corretora?.razaoSocial || "",
-      nomeFantasia: corretora?.nomeFantasia || "",
+      fantasia: corretora?.fantasia || "",
       codigoSusep: corretora?.codigoSusep || "",
       grupoEconomicoId: corretora?.grupoEconomicoId || "",
       gerente: corretora?.gerente || "",
@@ -102,7 +102,7 @@ export function EditCorretoraForm({ id }: { id: string }) {
         <h3 className="text-lg font-semibold">Dados Cadastrais</h3>
         <div className="flex gap-4">
           <div className="flex flex-1 flex-col gap-2">
-            <label htmlFor="razaoSocial">Razão Social</label>
+            <label htmlFor="razaoSocial">Razão Social *</label>
             <Input.Root variant={errors.razaoSocial ? "error" : "primary"}>
               <Input.Control {...register("razaoSocial")} type="text" />
             </Input.Root>
@@ -114,13 +114,13 @@ export function EditCorretoraForm({ id }: { id: string }) {
           </div>
 
           <div className="flex flex-1 flex-col gap-2">
-            <label htmlFor="nomeFantasia">Nome Fantasia</label>
-            <Input.Root variant={errors.nomeFantasia ? "error" : "primary"}>
-              <Input.Control {...register("nomeFantasia")} type="text" />
+            <label htmlFor="fantasia">Nome Fantasia</label>
+            <Input.Root variant={errors.fantasia ? "error" : "primary"}>
+              <Input.Control {...register("fantasia")} type="text" />
             </Input.Root>
-            {errors.nomeFantasia && (
+            {errors.fantasia && (
               <span className="text-xs text-red-500">
-                {errors.nomeFantasia.message}
+                {errors.fantasia.message}
               </span>
             )}
           </div>
@@ -128,7 +128,7 @@ export function EditCorretoraForm({ id }: { id: string }) {
 
         <div className="flex gap-4">
           <div className="flex flex-1 flex-col gap-2">
-            <label htmlFor="cnpjCpfFormatado">CNPJ/CPF</label>
+            <label htmlFor="cnpjCpfFormatado">CNPJ/CPF *</label>
             <Input.Root variant="disabled">
               <Input.Control
                 value={corretora.cnpjCpfFormatado}
@@ -139,7 +139,7 @@ export function EditCorretoraForm({ id }: { id: string }) {
           </div>
 
           <div className="flex flex-1 flex-col gap-2">
-            <label htmlFor="codigoSusep">Código Susep</label>
+            <label htmlFor="codigoSusep">Código Susep *</label>
             <Input.Root variant={errors.codigoSusep ? "error" : "primary"}>
               <Input.Control {...register("codigoSusep")} type="text" />
             </Input.Root>
@@ -181,7 +181,7 @@ export function EditCorretoraForm({ id }: { id: string }) {
         </div>
         <div className="flex gap-4">
           <div className="flex flex-col gap-2">
-            <label htmlFor="cepFormatado">CEP</label>
+            <label htmlFor="cepFormatado">CEP *</label>
             <Input.Root variant={errors.cepFormatado ? "error" : "primary"}>
               <Input.Icon>
                 <MagnifyingGlass className="mr-2 h-5 w-5" />
@@ -211,7 +211,7 @@ export function EditCorretoraForm({ id }: { id: string }) {
           </div>
 
           <div className="flex flex-1 flex-col gap-2">
-            <label htmlFor="cidade">Cidade</label>
+            <label htmlFor="cidade">Cidade *</label>
             <Input.Root variant={isCepSearched ? "primary" : "disabled"}>
               <Input.Control {...register("cidade")} type="text" />
             </Input.Root>
@@ -223,7 +223,7 @@ export function EditCorretoraForm({ id }: { id: string }) {
           </div>
 
           <div className="flex flex-col gap-2">
-            <label htmlFor="uf">Estado</label>
+            <label htmlFor="uf">Estado *</label>
             <Input.Root variant={isCepSearched ? "primary" : "disabled"}>
               <Input.Control {...register("uf")} type="text" />
             </Input.Root>
@@ -235,7 +235,7 @@ export function EditCorretoraForm({ id }: { id: string }) {
 
         <div className="flex gap-4">
           <div className="flex flex-1 flex-col gap-2">
-            <label htmlFor="endereco">Endereço</label>
+            <label htmlFor="endereco">Endereço *</label>
             <Input.Root variant={isCepSearched ? "primary" : "disabled"}>
               <Input.Control
                 disabled={!isCepSearched}
@@ -251,7 +251,7 @@ export function EditCorretoraForm({ id }: { id: string }) {
           </div>
 
           <div className="flex max-w-[150px] flex-1 flex-col gap-2">
-            <label htmlFor="numero">Número</label>
+            <label htmlFor="numero">Número *</label>
             <Input.Root variant={isCepSearched ? "primary" : "disabled"}>
               <Input.Control
                 disabled={!isCepSearched}
@@ -278,7 +278,7 @@ export function EditCorretoraForm({ id }: { id: string }) {
           </div>
 
           <div className="flex max-w-[200px] flex-1 flex-col gap-2">
-            <label htmlFor="bairro">Bairro</label>
+            <label htmlFor="bairro">Bairro *</label>
             <Input.Root variant={isCepSearched ? "primary" : "disabled"}>
               <Input.Control
                 disabled={!isCepSearched}
@@ -396,7 +396,7 @@ export function EditCorretoraForm({ id }: { id: string }) {
           </div>
 
           <div className="flex max-w-[200px] flex-1 flex-col gap-2">
-            <label htmlFor="percentualImposto">% Imposto</label>
+            <label htmlFor="percentualImposto">% Imposto *</label>
             <Input.Root
               variant={errors.percentualImposto ? "error" : "primary"}>
               <Input.Control

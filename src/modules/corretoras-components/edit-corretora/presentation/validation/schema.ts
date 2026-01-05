@@ -2,7 +2,7 @@ import { z } from "zod"
 
 export const editCorretoraFormSchema = z.object({
   razaoSocial: z.string().nonempty({ message: "Obrigatório" }).max(255),
-  nomeFantasia: z.string().nonempty({ message: "Obrigatório" }).max(255),
+  fantasia: z.string().nonempty({ message: "Obrigatório" }).max(255),
   codigoSusep: z.string().nonempty({ message: "Obrigatório" }).max(20),
   grupoEconomicoId: z.string().max(100).optional(),
   gerente: z.string().max(100).optional(),
@@ -15,7 +15,11 @@ export const editCorretoraFormSchema = z.object({
   bairro: z.string().nonempty({ message: "Obrigatório" }).max(100),
   cidade: z.string().nonempty({ message: "Obrigatório" }).max(100),
   uf: z.string().nonempty({ message: "Obrigatório" }).max(2),
-  email: z.string().email({ message: "Email inválido" }).max(255),
+  email: z
+    .string()
+    .email({ message: "Email inválido" })
+    .max(255)
+    .or(z.literal("")),
   telefone: z.string().nonempty({ message: "Obrigatório" }).max(20),
   telefoneSecundario: z.string().max(20).optional(),
   website: z
