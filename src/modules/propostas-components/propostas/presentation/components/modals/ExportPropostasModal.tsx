@@ -204,7 +204,7 @@ export function ExportPropostasModal({
           </Input.Root>
         </div>
         <div>
-          <label>Número da Apólice</label>
+          <label>Número da Apólice/Endosso</label>
           <Input.Root className="mt-2">
             <Input.Control
               value={exportFilters.numeroApolice || ""}
@@ -217,20 +217,7 @@ export function ExportPropostasModal({
             />
           </Input.Root>
         </div>
-        <div>
-          <label>Número do Endosso</label>
-          <Input.Root className="mt-2">
-            <Input.Control
-              value={exportFilters.numeroEndosso || ""}
-              onChange={(e) =>
-                setExportFilters({
-                  ...exportFilters,
-                  numeroEndosso: e.target.value,
-                })
-              }
-            />
-          </Input.Root>
-        </div>
+
         <div>
           <label>Placa do Veículo</label>
           <Input.Root className="mt-2">
