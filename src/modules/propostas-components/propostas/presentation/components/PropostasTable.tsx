@@ -3,6 +3,7 @@
 import { EntityType } from "@/@types/enums/entityType"
 
 import { Button } from "@/core/components/Button"
+import { ExportTableToPDFButton } from "@/core/components/ExportPDFButton"
 import { FilterField, FilterForm } from "@/core/components/FilterForm"
 import { LoadingScreen } from "@/core/components/LoadingScreen"
 import { Modal } from "@/core/components/Modals/Modal"
@@ -927,6 +928,14 @@ export function PropostasTable() {
             <FileXls size={22} />
             Exportar Parcelas
           </Button>
+
+          <ExportTableToPDFButton
+            filename={`propostas.${new Date().toLocaleDateString("pt-BR").replace(/\//g, "-")}`}
+            options={{ orientation: "portrait" }}
+            title="Propostas"
+            className="bg-red-500">
+            Exportar PDF
+          </ExportTableToPDFButton>
         </div>
       )}
 
@@ -955,6 +964,13 @@ export function PropostasTable() {
                 <FileXls size={22} />
                 Exportar
               </Button>
+              <ExportTableToPDFButton
+                filename={`propostas.${new Date().toLocaleDateString("pt-BR").replace(/\//g, "-")}`}
+                options={{ orientation: "portrait" }}
+                title="Propostas"
+                className="bg-red-500">
+                Exportar PDF
+              </ExportTableToPDFButton>
               <Button
                 className="flex items-center gap-1 bg-green-600 hover:bg-green-700"
                 variant="secondary"
