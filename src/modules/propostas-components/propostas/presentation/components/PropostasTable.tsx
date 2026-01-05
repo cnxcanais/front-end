@@ -774,6 +774,10 @@ export function PropostasTable() {
           { label: "Todos", value: "" },
           { label: "Ativo", value: "Ativo" },
           { label: "Inativo", value: "Inativo" },
+          { label: "Recusada", value: "Recusada" },
+          { label: "Renovada", value: "Renovada" },
+          { label: "Não Renovada", value: "Não Renovada" },
+          { label: "Cancelada", value: "Cancelada" },
         ],
       },
       {
