@@ -4,6 +4,7 @@ import { EntityType } from "@/@types/enums/entityType"
 
 import { Segurado } from "@/@types/segurado"
 import { Button } from "@/core/components/Button"
+import { ExportTableToPDFButton } from "@/core/components/ExportPDFButton"
 import { FilterField, FilterForm } from "@/core/components/FilterForm"
 import { LoadingScreen } from "@/core/components/LoadingScreen"
 import { Modal } from "@/core/components/Modals/Modal"
@@ -349,6 +350,18 @@ export function SeguradosTable() {
         </div>
       )}
 
+      {!isAdmin && (
+        <div className="mt-8 flex items-center justify-between">
+          <ExportTableToPDFButton
+            filename={`segurados.${new Date().toLocaleDateString("pt-BR").replace(/\//g, "-")}`}
+            options={{ orientation: "portrait" }}
+            title="Segurados"
+            className="bg-red-500">
+            Exportar PDF
+          </ExportTableToPDFButton>
+        </div>
+      )}
+
       {isAdmin && (
         <div className="mt-8 flex items-center justify-between">
           <div className="flex h-full gap-4">
@@ -374,6 +387,13 @@ export function SeguradosTable() {
                 <FileCsv size={22} />
                 Exportar Segurados
               </Button>
+              <ExportTableToPDFButton
+                filename={`segurados.${new Date().toLocaleDateString("pt-BR").replace(/\//g, "-")}`}
+                options={{ orientation: "portrait" }}
+                title="Segurados"
+                className="bg-red-500">
+                Exportar PDF
+              </ExportTableToPDFButton>
             </div>
           )}
         </div>

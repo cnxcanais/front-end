@@ -125,7 +125,11 @@ export function SeguradorasTable() {
     },
     { header: "Nome Fantasia", accessor: "fantasia" },
     { header: "Documento", accessor: "cnpjFormatado" },
-    { header: "Endereço", accessor: "enderecoCompleto" },
+    {
+      header: "Endereço",
+      accessor: "enderecoCompleto",
+      render: (value: string) => value.split(",").slice(0, 3).join(", "),
+    },
     { header: "Cidade", accessor: "cidade" },
     { header: "UF", accessor: "uf" },
     {
