@@ -66,8 +66,8 @@ export const editProdutorFormSchema = z
       .max(2, { message: "Campo deve ter no máximo 2 caracteres" }),
     banco: z
       .string()
-      .nonempty({ message: "Obrigatório" })
-      .max(100, { message: "Campo deve ter no máximo 100 caracteres" }),
+      .max(100, { message: "Campo deve ter no máximo 100 caracteres" })
+      .optional(),
     agencia: z
       .string()
       .max(10, { message: "Campo deve ter no máximo 100 caracteres" })
@@ -112,7 +112,9 @@ export const editProdutorFormSchema = z
       ),
     percentualRepasse: z
       .string()
-      .transform((val) => !val || val.trim() === "" ? undefined : val.replace(",", "."))
+      .transform((val) =>
+        !val || val.trim() === "" ? undefined : val.replace(",", ".")
+      )
       .pipe(
         z.coerce
           .number()
@@ -122,7 +124,9 @@ export const editProdutorFormSchema = z
       ),
     percentualRepasseIndicacao: z
       .string()
-      .transform((val) => !val || val.trim() === "" ? undefined : val.replace(",", "."))
+      .transform((val) =>
+        !val || val.trim() === "" ? undefined : val.replace(",", ".")
+      )
       .pipe(
         z.coerce
           .number()
@@ -132,24 +136,16 @@ export const editProdutorFormSchema = z
       ),
     valorRepasse: z
       .string()
-      .transform((val) => !val || val.trim() === "" ? undefined : val.replace(",", "."))
-      .pipe(
-        z.coerce
-          .number()
-          .min(0)
-          .max(100, { message: "Campo deve ter no máximo 100 caracteres" })
-          .optional()
-      ),
+      .transform((val) =>
+        !val || val.trim() === "" ? undefined : val.replace(",", ".")
+      )
+      .pipe(z.coerce.number().min(0).optional()),
     valorRepasseIndicacao: z
       .string()
-      .transform((val) => !val || val.trim() === "" ? undefined : val.replace(",", "."))
-      .pipe(
-        z.coerce
-          .number()
-          .min(0)
-          .max(100, { message: "Campo deve ter no máximo 100 caracteres" })
-          .optional()
-      ),
+      .transform((val) =>
+        !val || val.trim() === "" ? undefined : val.replace(",", ".")
+      )
+      .pipe(z.coerce.number().min(0).optional()),
     grupos: z
       .string()
       .max(255, { message: "Campo deve ter no máximo 255 caracteres" })

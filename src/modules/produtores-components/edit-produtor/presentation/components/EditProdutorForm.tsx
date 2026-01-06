@@ -107,6 +107,8 @@ export function EditProdutorForm({ id }: { id: string }) {
     },
   })
 
+  console.log(errors)
+
   const repasseSobre = watch("repasseSobre")
   const repasseSobreIndicacao = watch("repasseSobreIndicacao")
   const corretoraId = produtor?.corretoraId

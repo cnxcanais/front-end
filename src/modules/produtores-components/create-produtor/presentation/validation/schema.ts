@@ -151,24 +151,12 @@ export const createProdutorFormSchema = z
     valorRepasse: z
       .string()
       .transform((val) => val.replace(",", "."))
-      .pipe(
-        z.coerce
-          .number()
-          .min(0)
-          .max(100, { message: "Campo deve ter no máximo 100 caracteres" })
-          .optional()
-      ),
+      .pipe(z.coerce.number().min(0).optional()),
     valorRepasseIndicacao: z
       .string()
       .optional()
       .transform((val) => (val ? val.replace(",", ".") : undefined))
-      .pipe(
-        z.coerce
-          .number()
-          .min(0)
-          .max(100, { message: "Campo deve ter no máximo 100 caracteres" })
-          .optional()
-      ),
+      .pipe(z.coerce.number().min(0).optional()),
     grupos: z
       .string()
       .max(255, { message: "Campo deve ter no máximo 255 caracteres" })
