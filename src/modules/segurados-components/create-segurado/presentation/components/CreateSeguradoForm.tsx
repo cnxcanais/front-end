@@ -12,6 +12,7 @@ import { formatPhoneNumber } from "@/core/utils/formatPhoneNumber"
 import { useCorretoraQuery } from "@/modules/corretoras-components/corretora/infra/hooks/use-corretora-query"
 import { useBancosQuery } from "@/modules/produtores-components/produtor/infra/hooks/use-banco-query"
 import { useProdutorQuery } from "@/modules/produtores-components/produtor/infra/hooks/use-produtor-query"
+import { useRamoQuery } from "@/modules/ramos-components/ramos/infra/hooks/use-ramo-query"
 import {
   EstadoCivilLabels,
   SexoLabels,
@@ -39,11 +40,14 @@ export function CreateSeguradoForm() {
     register,
     handleSubmit,
     setValue,
+    watch,
     control,
     formState: { isSubmitting, errors },
   } = useForm<CreateSeguradoSchema>({
     resolver: zodResolver(createSeguradoFormSchema),
   })
+
+  console.log(errors)
 
   const tipoPessoa = useWatch({ control, name: "tipoPessoa" })
   const { data: corretorasData } = useCorretoraQuery()
@@ -53,7 +57,21 @@ export function CreateSeguradoForm() {
     name: "nomeRazaoSocial" as any,
   }) as string | undefined
 
-  const { data: produtoresData } = useProdutorQuery()
+  const corretoraId = watch("corretoraId")
+
+  const { data: produtoresData } = useProdutorQuery(1, -1, { corretoraId })
+  const { data: ramosData } = useRamoQuery()
+
+  const ramosOptions = useMemo(() => {
+    if (!ramosData?.data) return []
+
+    return ramosData.data
+      .sort((a, b) => a.descricao.localeCompare(b.descricao))
+      .map((ramo) => ({
+        text: ramo.descricao,
+        value: ramo.id,
+      }))
+  }, [corretorasData])
 
   const corretorasOptions = useMemo(() => {
     if (!corretorasData?.data) return []
@@ -201,10 +219,7 @@ export function CreateSeguradoForm() {
       <div className="flex flex-col gap-4 bg-gray-50 p-4 shadow-md">
         <h3 className="text-lg font-semibold">Dados Adicionais</h3>
         {tipoPessoa === "JURIDICA" && (
-          <div className="flex flex-col gap-4 border-l-4 border-yellow-400 bg-yellow-50 p-4">
-            <h4 className="font-semibold text-yellow-800">
-              Dados do Representante Legal
-            </h4>
+          <div className="flex flex-col gap-4">
             <div className="flex gap-4">
               <div className="flex flex-1 flex-col gap-2">
                 <label>Nome do Representante Legal *</label>
@@ -239,73 +254,111 @@ export function CreateSeguradoForm() {
                   </span>
                 )}
               </div>
+              <div className="flex flex-1 flex-col gap-2">
+                <SelectInput
+                  options={ramosOptions}
+                  label="Ramo de Atividade"
+                  field_name="ramoAtividade"
+                  {...register("ramoAtividade")}
+                />
+              </div>
             </div>
           </div>
         )}
 
-        <div className="flex gap-4">
-          <div className="flex flex-1 flex-col gap-2">
-            <label>RG</label>
-            <Input.Root variant="primary">
-              <Input.Control {...register("rg")} type="text" />
-            </Input.Root>
-          </div>
+        {tipoPessoa === "FISICA" && (
+          <>
+            <div className="flex gap-4">
+              <div className="flex flex-1 flex-col gap-2">
+                <label>RG *</label>
+                <Input.Root variant="primary">
+                  <Input.Control {...register("rg")} type="text" />
+                </Input.Root>
+                {errors.rg && (
+                  <span className="text-xs text-red-500">
+                    {errors.rg.message}
+                  </span>
+                )}
+              </div>
 
-          <div className="flex flex-1 flex-col gap-2">
-            <label>Órgão Emissor</label>
-            <Input.Root variant="primary">
-              <Input.Control {...register("orgaoEmissor")} type="text" />
-            </Input.Root>
-          </div>
+              <div className="flex flex-1 flex-col gap-2">
+                <label>Órgão Emissor *</label>
+                <Input.Root variant="primary">
+                  <Input.Control {...register("orgaoEmissor")} type="text" />
+                </Input.Root>
+                {errors.orgaoEmissor && (
+                  <span className="text-xs text-red-500">
+                    {errors.orgaoEmissor.message}
+                  </span>
+                )}
+              </div>
 
-          <div className="flex flex-1 flex-col gap-2">
-            <label>Data de Nascimento</label>
-            <Input.Root variant="primary">
-              <Input.Control {...register("dataNascimento")} type="date" />
-            </Input.Root>
-          </div>
-        </div>
-
-        <div className="flex gap-4">
-          <div className="flex flex-1 flex-col gap-2">
-            <SelectInput
-              options={SexoLabels}
-              label="Sexo"
-              field_name="sexo"
-              {...register("sexo")}
-            />
-          </div>
-
-          <div className="flex flex-1 flex-col gap-2">
-            <SelectInput
-              options={EstadoCivilLabels}
-              label="Estado Civil"
-              field_name="estadoCivil"
-              {...register("estadoCivil")}
-            />
-          </div>
-
-          <div className="flex flex-1 flex-col gap-2">
-            <div className="flex flex-1 flex-col gap-2">
-              <label>Ramo de Atividade</label>
-              <Input.Root variant="primary">
-                <Input.Control {...register("ramoAtividade")} type="text" />
-              </Input.Root>
+              <div className="flex flex-1 flex-col gap-2">
+                <label>Data de Nascimento *</label>
+                <Input.Root variant="primary">
+                  <Input.Control {...register("dataNascimento")} type="date" />
+                </Input.Root>
+                {errors.dataNascimento && (
+                  <span className="text-xs text-red-500">
+                    {errors.dataNascimento.message}
+                  </span>
+                )}
+              </div>
             </div>
+            <div className="flex gap-4">
+              <div className="flex flex-1 flex-col gap-2">
+                <SelectInput
+                  options={SexoLabels}
+                  label="Sexo *"
+                  field_name="sexo"
+                  {...register("sexo")}
+                />
+                {errors.sexo && (
+                  <span className="text-xs text-red-500">
+                    {errors.sexo.message}
+                  </span>
+                )}
+              </div>
 
-            <div className="flex flex-1 flex-col gap-2">
-              <label>Vencimento CNH *</label>
-              <Input.Root>
-                <Input.Control {...register("vencimentoCnh")} type="date" />
-              </Input.Root>
-              {errors.vencimentoCnh && (
-                <span className="text-xs text-red-500">
-                  {errors.vencimentoCnh.message}
-                </span>
-              )}
+              <div className="flex flex-1 flex-col gap-2">
+                <SelectInput
+                  options={EstadoCivilLabels}
+                  label="Estado Civil *"
+                  field_name="estadoCivil"
+                  {...register("estadoCivil")}
+                />
+                {errors.estadoCivil && (
+                  <span className="text-xs text-red-500">
+                    {errors.estadoCivil.message}
+                  </span>
+                )}
+              </div>
+
+              <div className="flex flex-1 flex-col gap-2">
+                <div className="flex flex-1 flex-col gap-2">
+                  <SelectInput
+                    options={ramosOptions}
+                    label="Ramo de Atividade"
+                    field_name="ramoAtividade"
+                    {...register("ramoAtividade")}
+                  />
+                </div>
+
+                <div className="flex flex-1 flex-col gap-2">
+                  <label>Vencimento CNH *</label>
+                  <Input.Root>
+                    <Input.Control {...register("vencimentoCnh")} type="date" />
+                  </Input.Root>
+                  {errors.vencimentoCnh && (
+                    <span className="text-xs text-red-500">
+                      {errors.vencimentoCnh.message}
+                    </span>
+                  )}
+                </div>
+              </div>
             </div>
-          </div>
-        </div>
+          </>
+        )}
       </div>
 
       {/* Contato (bloco separado) */}
@@ -350,6 +403,11 @@ export function CreateSeguradoForm() {
                 type="text"
               />
             </Input.Root>
+            {errors.celular && (
+              <span className="text-xs text-red-500">
+                {errors.celular.message}
+              </span>
+            )}
           </div>
         </div>
 
@@ -382,7 +440,7 @@ export function CreateSeguradoForm() {
         <h3 className="text-lg font-semibold">Endereço</h3>
         <div className="flex gap-4">
           <div className="flex flex-col gap-2">
-            <label>CEP</label>
+            <label>CEP *</label>
             <Input.Root variant={errors.cep ? "error" : "primary"}>
               <Input.Icon>
                 <MagnifyingGlass className="mr-2 h-5 w-5" />
@@ -410,7 +468,7 @@ export function CreateSeguradoForm() {
           </div>
 
           <div className="flex flex-1 flex-col gap-2">
-            <label>Logradouro</label>
+            <label>Logradouro *</label>
             <Input.Root variant={isCepSearched ? "primary" : "disabled"}>
               <Input.Control
                 disabled={!isCepSearched}
@@ -421,7 +479,7 @@ export function CreateSeguradoForm() {
           </div>
 
           <div className="flex max-w-[150px] flex-col gap-2">
-            <label>Número</label>
+            <label>Número *</label>
             <Input.Root variant={isCepSearched ? "primary" : "disabled"}>
               <Input.Control
                 disabled={!isCepSearched}
@@ -445,7 +503,7 @@ export function CreateSeguradoForm() {
 
         <div className="flex gap-4">
           <div className="flex flex-1 flex-col gap-2">
-            <label>Bairro</label>
+            <label>Bairro *</label>
             <Input.Root variant={isCepSearched ? "primary" : "disabled"}>
               <Input.Control
                 disabled={!isCepSearched}
@@ -456,7 +514,7 @@ export function CreateSeguradoForm() {
           </div>
 
           <div className="flex flex-1 flex-col gap-2">
-            <label>Cidade</label>
+            <label>Cidade *</label>
             <Input.Root variant={isCepSearched ? "primary" : "disabled"}>
               <Input.Control
                 disabled={!isCepSearched}
@@ -467,7 +525,7 @@ export function CreateSeguradoForm() {
           </div>
 
           <div className="flex max-w-[150px] flex-col gap-2">
-            <label>UF</label>
+            <label>UF *</label>
             <Input.Root variant={isCepSearched ? "primary" : "disabled"}>
               <Input.Control
                 disabled={!isCepSearched}
@@ -540,7 +598,7 @@ export function CreateSeguradoForm() {
           <div className="flex flex-1 flex-col gap-2">
             <AutocompleteInput
               options={produtoresOptions}
-              label="Produtor"
+              label="Produtor *"
               field_name="produtorId"
               {...register("produtorId")}
             />

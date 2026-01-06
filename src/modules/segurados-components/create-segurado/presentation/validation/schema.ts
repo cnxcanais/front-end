@@ -19,13 +19,13 @@ export const createSeguradoFormSchema = z
     telefone: z.string().optional(),
     celular: z.string().optional(),
     email: z.string().min(1, "Email é obrigatório").email("Email inválido"),
-    cep: z.string().optional(),
-    logradouro: z.string().optional(),
-    numero: z.string().optional(),
+    cep: z.string().min(1, "CEP é obrigatório"),
+    logradouro: z.string().min(1, "Logradouro é obrigatório"),
+    numero: z.string().min(1, "Número é obrigatório"),
     complemento: z.string().optional(),
-    bairro: z.string().optional(),
-    cidade: z.string().optional(),
-    uf: z.string().optional(),
+    bairro: z.string().min(1, "Bairro é obrigatório"),
+    cidade: z.string().min(1, "Cidade é obrigatória"),
+    uf: z.string().min(1, "UF é obrigatória"),
     nomeContato: z.string().optional(),
     cargoContato: z.string().optional(),
     ramoAtividade: z.string().optional(),
@@ -37,7 +37,7 @@ export const createSeguradoFormSchema = z
     digitoConta: z.string().optional(),
     tipoConta: z.string().optional(),
     pix: z.coerce.string().optional(),
-    produtorId: z.string().optional(),
+    produtorId: z.string().min(1, "Produtor é obrigatório"),
     supervisor: z.string().optional(),
     canalVendas: z.string().optional(),
     observacoes: z.string().optional(),
@@ -53,6 +53,78 @@ export const createSeguradoFormSchema = z
       message:
         "Nome e CPF do representante legal são obrigatórios para pessoa jurídica",
       path: ["representanteLegalNome"],
+    }
+  )
+  .refine(
+    (data) => {
+      if (data.tipoPessoa === "FISICA") {
+        return !!data.rg
+      }
+      return true
+    },
+    {
+      message: "RG é obrigatório para pessoa física",
+      path: ["rg"],
+    }
+  )
+  .refine(
+    (data) => {
+      if (data.tipoPessoa === "FISICA") {
+        return !!data.orgaoEmissor
+      }
+      return true
+    },
+    {
+      message: "Órgão emissor é obrigatório para pessoa física",
+      path: ["orgaoEmissor"],
+    }
+  )
+  .refine(
+    (data) => {
+      if (data.tipoPessoa === "FISICA") {
+        return !!data.dataNascimento
+      }
+      return true
+    },
+    {
+      message: "Data de nascimento é obrigatória para pessoa física",
+      path: ["dataNascimento"],
+    }
+  )
+  .refine(
+    (data) => {
+      if (data.tipoPessoa === "FISICA") {
+        return !!data.sexo
+      }
+      return true
+    },
+    {
+      message: "Sexo é obrigatório para pessoa física",
+      path: ["sexo"],
+    }
+  )
+  .refine(
+    (data) => {
+      if (data.tipoPessoa === "FISICA") {
+        return !!data.estadoCivil
+      }
+      return true
+    },
+    {
+      message: "Estado Civil é obrigatório para pessoa física",
+      path: ["estadoCivil"],
+    }
+  )
+  .refine(
+    (data) => {
+      if (data.tipoPessoa === "FISICA") {
+        return !!data.vencimentoCnh
+      }
+      return true
+    },
+    {
+      message: "Vencimento Cnh é obrigatório para pessoa física",
+      path: ["vencimentoCnh"],
     }
   )
   .refine(
@@ -79,6 +151,15 @@ export const createSeguradoFormSchema = z
     {
       message: "CPF ou CNPJ inválido",
       path: ["representanteLegalCpf"],
+    }
+  )
+  .refine(
+    (data) => {
+      return !!data.telefone || !!data.celular
+    },
+    {
+      message: "Preencha o telefone fixo ou o celular",
+      path: ["celular"],
     }
   )
 

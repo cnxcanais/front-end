@@ -4,7 +4,7 @@ import { getRamos } from "../remote"
 
 export function useRamoQuery(
   page = 1,
-  limit = 10,
+  limit = -1,
   filters?: Record<string, string>
 ) {
   try {

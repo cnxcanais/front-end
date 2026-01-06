@@ -44,6 +44,7 @@ export function SeguradosTable() {
     hasUrlIds ? -1 : limit,
     filters
   )
+  const { data: allData } = useSeguradoQuery(1, -1, filters)
   const { data: corretoras, isLoading: isLoadingCorretoras } =
     useCorretoraQuery()
   const { data: produtores, isLoading: isLoadingProdutores } =
@@ -67,6 +68,7 @@ export function SeguradosTable() {
   }, [corretoras, isLoadingCorretoras])
 
   const segurados = data?.data || []
+  const allSegurados = allData?.data || []
   const totalPages =
     dashboardFilter ?
       Math.ceil(filteredResults.length / limit)
@@ -336,7 +338,10 @@ export function SeguradosTable() {
         appliedFilters={filters}
       />
 
-      <SeguradosDashboard onFilterChange={handleDashboardFilterChange} />
+      <SeguradosDashboard
+        filteredData={allSegurados}
+        onFilterChange={handleDashboardFilterChange}
+      />
 
       {!isAdmin && segurados.length > 0 && (
         <div className="flex items-center gap-2">

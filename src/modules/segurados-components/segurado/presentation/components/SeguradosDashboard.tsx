@@ -14,11 +14,13 @@ import { useState } from "react"
 import { useSeguradoQuery } from "../../infra/hooks/use-segurado-query"
 
 interface SeguradosDashboardProps {
+  filteredData?: Segurado.Type[]
   onFilterChange?: (filterType: string, data: Segurado.Type[]) => void
   redirectOnClick?: boolean
 }
 
 export function SeguradosDashboard({
+  filteredData,
   onFilterChange,
   redirectOnClick = false,
 }: SeguradosDashboardProps) {
@@ -73,7 +75,7 @@ export function SeguradosDashboard({
 
   const allSegurados = useSeguradoQuery(1, -1, paramsPayload)
 
-  const segurados = allSegurados.data?.data || []
+  const segurados = filteredData || allSegurados.data?.data || []
 
   const pessoaFisica = segurados.filter((s) => s.tipoPessoa === "FISICA")
   const pessoaJuridica = segurados.filter((s) => s.tipoPessoa === "JURIDICA")
