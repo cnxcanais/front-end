@@ -107,6 +107,7 @@ export function EditSeguradoForm({
     | string
     | undefined
   const tipoPessoa = tipoPessoaWatch ?? seguradoData?.tipoPessoa
+  const produtorIdWatch = useWatch({ control, name: "produtorId" })
 
   const { data: bancosData } = useBancosQuery()
 
@@ -776,6 +777,7 @@ export function EditSeguradoForm({
               options={produtoresOptions}
               label="Produtor *"
               field_name="produtorId"
+              value={produtorIdWatch}
               readOnly={readOnly}
               {...register("produtorId")}
             />
