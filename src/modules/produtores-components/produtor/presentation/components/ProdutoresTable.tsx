@@ -39,6 +39,10 @@ export function ProdutoresTable() {
     }))
   }, [corretoras, isLoadingCorretoras])
 
+  useEffect(() => {
+    refetch()
+  }, [])
+
   const produtores = data?.data || []
   const totalPages = data?.totalPages || 1
 
