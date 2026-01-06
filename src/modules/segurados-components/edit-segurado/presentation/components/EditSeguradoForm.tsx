@@ -16,6 +16,7 @@ import { formatPhoneNumber } from "@/core/utils/formatPhoneNumber"
 import { useCorretoraQuery } from "@/modules/corretoras-components/corretora/infra/hooks/use-corretora-query"
 import { useBancosQuery } from "@/modules/produtores-components/produtor/infra/hooks/use-banco-query"
 import { useProdutorQuery } from "@/modules/produtores-components/produtor/infra/hooks/use-produtor-query"
+import { useRamoQuery } from "@/modules/ramos-components/ramos/infra/hooks/use-ramo-query"
 import { useSeguradoByIdQuery } from "@/modules/segurados-components/segurado/infra/hooks/use-segurado-by-id-query"
 import {
   EstadoCivilLabels,
@@ -48,17 +49,58 @@ export function EditSeguradoForm({
   const [isCepSearched, setIsCepSearched] = useState(false)
 
   const { data: seguradoData, isLoading } = useSeguradoByIdQuery(id)
-  const { data: produtoresData } = useProdutorQuery()
   const { data: corretorasData } = useCorretoraQuery()
+  const corretoraId = seguradoData?.corretoraId
+  const { data: produtoresData } = useProdutorQuery(1, -1, { corretoraId })
+  const { data: ramosData } = useRamoQuery()
 
   const {
     register,
     handleSubmit,
     setValue,
     control,
+    reset,
     formState: { isSubmitting, errors },
   } = useForm<UpdateSeguradoSchema>({
     resolver: zodResolver(updateSeguradoFormSchema),
+    defaultValues: {
+      tipoPessoa: "",
+      nomeRazaoSocial: "",
+      grupo: "",
+      status: "",
+      representanteLegalNome: "",
+      representanteLegalCpf: "",
+      rg: "",
+      orgaoEmissor: "",
+      dataNascimento: "",
+      sexo: "",
+      estadoCivil: "",
+      telefone: "",
+      celular: "",
+      email: "",
+      cep: "",
+      logradouro: "",
+      numero: "",
+      complemento: "",
+      bairro: "",
+      cidade: "",
+      uf: "",
+      nomeContato: "",
+      cargoContato: "",
+      ramoAtividade: "",
+      vencimentoCnh: "",
+      indicadoPor: "",
+      banco: "",
+      agencia: "",
+      conta: "",
+      digitoConta: "",
+      tipoConta: "",
+      pix: "",
+      produtorId: "",
+      supervisor: "",
+      canalVendas: "",
+      observacoes: "",
+    },
   })
 
   const tipoPessoaWatch = useWatch({ control, name: "tipoPessoa" as any }) as
@@ -67,6 +109,17 @@ export function EditSeguradoForm({
   const tipoPessoa = tipoPessoaWatch ?? seguradoData?.tipoPessoa
 
   const { data: bancosData } = useBancosQuery()
+
+  const ramosOptions = useMemo(() => {
+    if (!ramosData?.data) return []
+
+    return ramosData.data
+      .sort((a, b) => a.descricao.localeCompare(b.descricao))
+      .map((ramo) => ({
+        text: ramo.descricao,
+        value: ramo.id,
+      }))
+  }, [ramosData])
 
   const bancosOptions = useMemo(() => {
     if (!bancosData) return []
@@ -91,51 +144,50 @@ export function EditSeguradoForm({
   }, [produtoresData])
 
   useEffect(() => {
-    if (seguradoData) {
-      setValue("nomeRazaoSocial", seguradoData.nomeRazaoSocial)
-      setValue("grupo", seguradoData.grupo)
-      setValue("status", seguradoData.status)
-      setValue(
-        "representanteLegalNome",
-        seguradoData.representanteLegalNome || ""
-      )
-      setValue(
-        "representanteLegalCpf",
-        formatStaticDocument(seguradoData.representanteLegalCpf) || ""
-      )
-      setValue("rg", seguradoData.rg)
-      setValue("orgaoEmissor", seguradoData.orgaoEmissor)
-      setValue("dataNascimento", seguradoData.dataNascimento)
-      setValue("sexo", seguradoData.sexo)
-      setValue("estadoCivil", seguradoData.estadoCivil)
-      setValue("telefone", seguradoData.telefone)
-      setValue("celular", seguradoData.celular)
-      setValue("email", seguradoData.email)
-      setValue("cep", seguradoData.cep)
-      setValue("logradouro", seguradoData.logradouro)
-      setValue("numero", seguradoData.numero)
-      setValue("complemento", seguradoData.complemento)
-      setValue("bairro", seguradoData.bairro)
-      setValue("cidade", seguradoData.cidade)
-      setValue("uf", seguradoData.uf)
-      setValue("nomeContato", seguradoData.nomeContato)
-      setValue("cargoContato", seguradoData.cargoContato)
-      setValue("ramoAtividade", seguradoData.ramoAtividade)
-      setValue("vencimentoCnh", seguradoData.vencimentoCnh)
-      setValue("indicadoPor", seguradoData.indicadoPor)
-      setValue("banco", seguradoData.banco)
-      setValue("agencia", seguradoData.agencia)
-      setValue("conta", seguradoData.conta)
-      setValue("digitoConta", seguradoData.digitoConta)
-      setValue("tipoConta", seguradoData.tipoConta)
-      setValue("pix", seguradoData.pix)
-      setValue("produtorId", seguradoData.produtorId)
-      setValue("supervisor", seguradoData.supervisor)
-      setValue("canalVendas", seguradoData.canalVendas)
-      setValue("observacoes", seguradoData.observacoes)
+    if (seguradoData && produtoresData) {
+      console.log("seguradoData", seguradoData)
+      reset({
+        tipoPessoa: seguradoData.tipoPessoa,
+        nomeRazaoSocial: seguradoData.nomeRazaoSocial,
+        grupo: seguradoData.grupo,
+        status: seguradoData.status,
+        representanteLegalNome: seguradoData.representanteLegalNome || "",
+        representanteLegalCpf:
+          formatStaticDocument(seguradoData.representanteLegalCpf) || "",
+        rg: seguradoData.rg,
+        orgaoEmissor: seguradoData.orgaoEmissor,
+        dataNascimento: seguradoData.dataNascimento,
+        sexo: seguradoData.sexo,
+        estadoCivil: seguradoData.estadoCivil,
+        telefone: formatPhoneNumber(seguradoData.telefone),
+        celular: formatPhoneNumber(seguradoData.celular),
+        email: seguradoData.email,
+        cep: seguradoData.cep,
+        logradouro: seguradoData.logradouro,
+        numero: seguradoData.numero,
+        complemento: seguradoData.complemento,
+        bairro: seguradoData.bairro,
+        cidade: seguradoData.cidade,
+        uf: seguradoData.uf,
+        nomeContato: seguradoData.nomeContato,
+        cargoContato: seguradoData.cargoContato,
+        ramoAtividade: seguradoData.ramoAtividade,
+        vencimentoCnh: seguradoData.vencimentoCnh,
+        indicadoPor: seguradoData.indicadoPor,
+        banco: seguradoData.banco,
+        agencia: seguradoData.agencia,
+        conta: seguradoData.conta,
+        digitoConta: seguradoData.digitoConta,
+        tipoConta: seguradoData.tipoConta,
+        pix: seguradoData.pix,
+        produtorId: seguradoData.produtorId,
+        supervisor: seguradoData.supervisor,
+        canalVendas: seguradoData.canalVendas,
+        observacoes: seguradoData.observacoes,
+      })
       setIsCepSearched(true)
     }
-  }, [seguradoData, setValue])
+  }, [seguradoData, produtoresData, reset])
 
   async function onSubmit(data: Segurado.UpdateRequest) {
     try {
@@ -195,9 +247,10 @@ export function EditSeguradoForm({
             <Input.Root variant="disabled">
               <Input.Control
                 value={
-                  tipoPessoa === "JURIDICA" ? "Pessoa Jurídica" : (
+                  tipoPessoa === "JURIDICA" ? "Pessoa Jurídica"
+                  : tipoPessoa === "FISICA" ?
                     "Pessoa Física"
-                  )
+                  : ""
                 }
                 type="text"
                 disabled
@@ -211,7 +264,7 @@ export function EditSeguradoForm({
             <label>CPF/CNPJ</label>
             <Input.Root variant="disabled">
               <Input.Control
-                value={formatStaticDocument(seguradoData?.cnpjCpf)}
+                value={formatStaticDocument(seguradoData?.cnpjCpf) || ""}
                 type="text"
                 disabled
               />
@@ -225,7 +278,7 @@ export function EditSeguradoForm({
                 value={
                   corretorasData?.data?.filter(
                     (corretora) => corretora.id === seguradoData?.corretoraId
-                  )[0]?.razaoSocial
+                  )[0]?.razaoSocial || ""
                 }
                 type="text"
                 readOnly
@@ -248,6 +301,21 @@ export function EditSeguradoForm({
               </span>
             )}
           </div>
+          <div className="flex flex-1 flex-col gap-2">
+            <label>Vencimento CNH *</label>
+            <Input.Root>
+              <Input.Control
+                {...register("vencimentoCnh")}
+                type="date"
+                readOnly={readOnly}
+              />
+            </Input.Root>
+            {errors.vencimentoCnh && (
+              <span className="text-xs text-red-500">
+                {errors.vencimentoCnh.message}
+              </span>
+            )}
+          </div>
         </div>
       </div>
 
@@ -255,13 +323,10 @@ export function EditSeguradoForm({
       <div className="flex flex-col gap-4 bg-gray-50 p-4 shadow-md">
         <h3 className="text-lg font-semibold">Dados Adicionais</h3>
         {tipoPessoa === "JURIDICA" && (
-          <div className="flex flex-col gap-4 border-l-4 border-yellow-400 bg-yellow-50 p-4">
-            <h4 className="font-semibold text-yellow-800">
-              Dados do Representante Legal
-            </h4>
+          <div className="flex flex-col gap-4">
             <div className="flex gap-4">
               <div className="flex flex-1 flex-col gap-2">
-                <label>Nome do Representante Legal</label>
+                <label>Nome do Representante Legal *</label>
                 <Input.Root>
                   <Input.Control
                     {...register("representanteLegalNome")}
@@ -277,7 +342,7 @@ export function EditSeguradoForm({
               </div>
 
               <div className="flex flex-1 flex-col gap-2">
-                <label>CPF do Representante Legal</label>
+                <label>CPF do Representante Legal *</label>
                 <Input.Root>
                   <Input.Control
                     {...register("representanteLegalCpf", {
@@ -295,95 +360,115 @@ export function EditSeguradoForm({
                   </span>
                 )}
               </div>
+              <div className="flex flex-1 flex-col gap-2">
+                <SelectInput
+                  options={ramosOptions}
+                  label="Ramo de Atividade"
+                  field_name="ramoAtividade"
+                  {...register("ramoAtividade")}
+                  disabled={readOnly}
+                />
+              </div>
             </div>
           </div>
         )}
 
-        <div className="flex gap-4">
-          <div className="flex flex-1 flex-col gap-2">
-            <label>RG</label>
-            <Input.Root variant="primary">
-              <Input.Control
-                {...register("rg")}
-                type="text"
-                readOnly={readOnly}
-              />
-            </Input.Root>
-          </div>
+        {tipoPessoa === "FISICA" && (
+          <>
+            <div className="flex gap-4">
+              <div className="flex flex-1 flex-col gap-2">
+                <label>RG *</label>
+                <Input.Root variant="primary">
+                  <Input.Control
+                    {...register("rg")}
+                    type="text"
+                    readOnly={readOnly}
+                  />
+                </Input.Root>
+                {errors.rg && (
+                  <span className="text-xs text-red-500">
+                    {errors.rg.message}
+                  </span>
+                )}
+              </div>
 
-          <div className="flex flex-1 flex-col gap-2">
-            <label>Órgão Emissor</label>
-            <Input.Root variant="primary">
-              <Input.Control
-                {...register("orgaoEmissor")}
-                type="text"
-                readOnly={readOnly}
-              />
-            </Input.Root>
-          </div>
+              <div className="flex flex-1 flex-col gap-2">
+                <label>Órgão Emissor *</label>
+                <Input.Root variant="primary">
+                  <Input.Control
+                    {...register("orgaoEmissor")}
+                    type="text"
+                    readOnly={readOnly}
+                  />
+                </Input.Root>
+                {errors.orgaoEmissor && (
+                  <span className="text-xs text-red-500">
+                    {errors.orgaoEmissor.message}
+                  </span>
+                )}
+              </div>
 
-          <div className="flex flex-1 flex-col gap-2">
-            <label>Data de Nascimento</label>
-            <Input.Root variant="primary">
-              <Input.Control
-                {...register("dataNascimento")}
-                type="date"
-                readOnly={readOnly}
-              />
-            </Input.Root>
-          </div>
-        </div>
-
-        <div className="flex gap-4">
-          <div className="flex flex-1 flex-col gap-2">
-            <SelectInput
-              options={SexoLabels}
-              label="Sexo"
-              field_name="sexo"
-              {...register("sexo")}
-              disabled={readOnly}
-            />
-          </div>
-
-          <div className="flex flex-1 flex-col gap-2">
-            <SelectInput
-              options={EstadoCivilLabels}
-              label="Estado Civil"
-              field_name="estadoCivil"
-              {...register("estadoCivil")}
-              disabled={readOnly}
-            />
-          </div>
-
-          <div className="flex flex-1 flex-col gap-2">
-            <div className="flex flex-1 flex-col gap-2">
-              <label>Ramo de Atividade</label>
-              <Input.Root variant="primary">
-                <Input.Control
-                  {...register("ramoAtividade")}
-                  type="text"
-                  readOnly={readOnly}
-                />
-              </Input.Root>
+              <div className="flex flex-1 flex-col gap-2">
+                <label>Data de Nascimento *</label>
+                <Input.Root variant="primary">
+                  <Input.Control
+                    {...register("dataNascimento")}
+                    type="date"
+                    readOnly={readOnly}
+                  />
+                </Input.Root>
+                {errors.dataNascimento && (
+                  <span className="text-xs text-red-500">
+                    {errors.dataNascimento.message}
+                  </span>
+                )}
+              </div>
             </div>
-
-            <div className="flex flex-1 flex-col gap-2">
-              <label>Vencimento CNH</label>
-              <Input.Root>
-                <Input.Control
-                  {...register("vencimentoCnh")}
-                  type="date"
-                  readOnly={readOnly}
+            <div className="flex gap-4">
+              <div className="flex flex-1 flex-col gap-2">
+                <SelectInput
+                  options={SexoLabels}
+                  label="Sexo *"
+                  field_name="sexo"
+                  {...register("sexo")}
+                  disabled={readOnly}
                 />
-              </Input.Root>
-              {errors.vencimentoCnh && (
-                <span className="text-xs text-red-500">
-                  {errors.vencimentoCnh.message}
-                </span>
-              )}
+                {errors.sexo && (
+                  <span className="text-xs text-red-500">
+                    {errors.sexo.message}
+                  </span>
+                )}
+              </div>
+
+              <div className="flex flex-1 flex-col gap-2">
+                <SelectInput
+                  options={EstadoCivilLabels}
+                  label="Estado Civil *"
+                  field_name="estadoCivil"
+                  {...register("estadoCivil")}
+                  disabled={readOnly}
+                />
+                {errors.estadoCivil && (
+                  <span className="text-xs text-red-500">
+                    {errors.estadoCivil.message}
+                  </span>
+                )}
+              </div>
+
+              <div className="flex flex-1 flex-col gap-2">
+                <div className="flex flex-1 flex-col gap-2">
+                  <SelectInput
+                    options={ramosOptions}
+                    label="Ramo de Atividade"
+                    field_name="ramoAtividade"
+                    {...register("ramoAtividade")}
+                    disabled={readOnly}
+                  />
+                </div>
+              </div>
             </div>
-          </div>
-        </div>
+          </>
+        )}
       </div>
 
       {/* Contato */}
@@ -434,6 +519,11 @@ export function EditSeguradoForm({
                 readOnly={readOnly}
               />
             </Input.Root>
+            {errors.celular && (
+              <span className="text-xs text-red-500">
+                {errors.celular.message}
+              </span>
+            )}
           </div>
         </div>
 
@@ -478,7 +568,7 @@ export function EditSeguradoForm({
         <h3 className="text-lg font-semibold">Endereço</h3>
         <div className="flex gap-4">
           <div className="flex flex-col gap-2">
-            <label>CEP</label>
+            <label>CEP *</label>
             <Input.Root variant={errors.cep ? "error" : "primary"}>
               <Input.Icon>
                 <MagnifyingGlass className="mr-2 h-5 w-5" />
@@ -506,7 +596,7 @@ export function EditSeguradoForm({
           </div>
 
           <div className="flex flex-1 flex-col gap-2">
-            <label>Logradouro</label>
+            <label>Logradouro *</label>
             <Input.Root variant="primary">
               <Input.Control
                 {...register("logradouro")}
@@ -514,10 +604,15 @@ export function EditSeguradoForm({
                 readOnly={readOnly}
               />
             </Input.Root>
+            {errors.logradouro && (
+              <span className="text-xs text-red-500">
+                {errors.logradouro.message}
+              </span>
+            )}
           </div>
 
           <div className="flex max-w-[150px] flex-col gap-2">
-            <label>Número</label>
+            <label>Número *</label>
             <Input.Root variant="primary">
               <Input.Control
                 {...register("numero")}
@@ -525,6 +620,11 @@ export function EditSeguradoForm({
                 readOnly={readOnly}
               />
             </Input.Root>
+            {errors.numero && (
+              <span className="text-xs text-red-500">
+                {errors.numero.message}
+              </span>
+            )}
           </div>
 
           <div className="flex flex-1 flex-col gap-2">
@@ -541,7 +641,7 @@ export function EditSeguradoForm({
 
         <div className="flex gap-4">
           <div className="flex flex-1 flex-col gap-2">
-            <label>Bairro</label>
+            <label>Bairro *</label>
             <Input.Root variant="primary">
               <Input.Control
                 {...register("bairro")}
@@ -549,10 +649,15 @@ export function EditSeguradoForm({
                 readOnly={readOnly}
               />
             </Input.Root>
+            {errors.bairro && (
+              <span className="text-xs text-red-500">
+                {errors.bairro.message}
+              </span>
+            )}
           </div>
 
           <div className="flex flex-1 flex-col gap-2">
-            <label>Cidade</label>
+            <label>Cidade *</label>
             <Input.Root variant="primary">
               <Input.Control
                 {...register("cidade")}
@@ -560,10 +665,15 @@ export function EditSeguradoForm({
                 readOnly={readOnly}
               />
             </Input.Root>
+            {errors.cidade && (
+              <span className="text-xs text-red-500">
+                {errors.cidade.message}
+              </span>
+            )}
           </div>
 
           <div className="flex max-w-[150px] flex-col gap-2">
-            <label>UF</label>
+            <label>UF *</label>
             <Input.Root variant="primary">
               <Input.Control
                 {...register("uf")}
@@ -571,6 +681,9 @@ export function EditSeguradoForm({
                 readOnly={readOnly}
               />
             </Input.Root>
+            {errors.uf && (
+              <span className="text-xs text-red-500">{errors.uf.message}</span>
+            )}
           </div>
         </div>
       </div>
@@ -659,12 +772,18 @@ export function EditSeguradoForm({
         <div className="flex gap-4">
           <div className="flex flex-1 flex-col gap-2">
             <AutocompleteInput
+              key={`produtor-${seguradoData?.produtorId}-${produtoresData?.data?.length}`}
               options={produtoresOptions}
-              label="Produtor"
+              label="Produtor *"
               field_name="produtorId"
               readOnly={readOnly}
               {...register("produtorId")}
             />
+            {errors.produtorId && (
+              <span className="text-xs text-red-500">
+                {errors.produtorId.message}
+              </span>
+            )}
           </div>
 
           <div className="flex flex-1 flex-col gap-2">

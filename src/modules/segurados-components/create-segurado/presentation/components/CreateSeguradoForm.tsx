@@ -212,6 +212,17 @@ export function CreateSeguradoForm() {
               </span>
             )}
           </div>
+          <div className="flex flex-1 flex-col gap-2">
+            <label>Vencimento CNH *</label>
+            <Input.Root>
+              <Input.Control {...register("vencimentoCnh")} type="date" />
+            </Input.Root>
+            {errors.vencimentoCnh && (
+              <span className="text-xs text-red-500">
+                {errors.vencimentoCnh.message}
+              </span>
+            )}
+          </div>
         </div>
       </div>
 
@@ -342,18 +353,6 @@ export function CreateSeguradoForm() {
                     field_name="ramoAtividade"
                     {...register("ramoAtividade")}
                   />
-                </div>
-
-                <div className="flex flex-1 flex-col gap-2">
-                  <label>Vencimento CNH *</label>
-                  <Input.Root>
-                    <Input.Control {...register("vencimentoCnh")} type="date" />
-                  </Input.Root>
-                  {errors.vencimentoCnh && (
-                    <span className="text-xs text-red-500">
-                      {errors.vencimentoCnh.message}
-                    </span>
-                  )}
                 </div>
               </div>
             </div>
