@@ -31,7 +31,7 @@ export const createProdutorFormSchema = z
       .string()
       .max(255, { message: "Campo deve ter no máximo 255 caracteres" })
       .optional(),
-    produtorIndicadoId: z
+    produtorIndicadorId: z
       .string()
       .max(255, { message: "Campo deve ter no máximo 255 caracteres" })
       .optional(),
@@ -160,7 +160,8 @@ export const createProdutorFormSchema = z
       ),
     valorRepasseIndicacao: z
       .string()
-      .transform((val) => val.replace(",", "."))
+      .optional()
+      .transform((val) => (val ? val.replace(",", ".") : undefined))
       .pipe(
         z.coerce
           .number()
@@ -285,7 +286,7 @@ export const createProdutorFormSchema = z
   .refine(
     (data) => {
       let result = true
-      if (data.produtorIndicadoId) {
+      if (data.produtorIndicadorId.length > 0) {
         if (!data.percentualRepasseIndicacao && !data.valorRepasseIndicacao)
           result = false
         if (!data.repasseSobreIndicacao || !data.formaRepasseIndicacao)
@@ -295,7 +296,7 @@ export const createProdutorFormSchema = z
     },
     {
       message: "Preencha todos os dados do produtor indicado",
-      path: ["produtorIndicadoId"],
+      path: ["produtorIndicadorId"],
     }
   )
 
