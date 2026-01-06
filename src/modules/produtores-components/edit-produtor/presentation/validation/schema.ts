@@ -108,6 +108,16 @@ export const editProdutorFormSchema = z
           .max(100, { message: "Campo deve ter no máximo 100 caracteres" })
           .optional()
       ),
+    valorRepasse: z
+      .string()
+      .transform((val) => val.replace(",", "."))
+      .pipe(
+        z.coerce
+          .number()
+          .min(0)
+          .max(100, { message: "Campo deve ter no máximo 100 caracteres" })
+          .optional()
+      ),
     grupos: z
       .string()
       .max(255, { message: "Campo deve ter no máximo 255 caracteres" })

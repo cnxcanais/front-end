@@ -13,6 +13,7 @@ import { formatPhoneNumber } from "@/core/utils/formatPhoneNumber"
 import { normalizeDecimals } from "@/core/utils/normalizeDecimals"
 import { useCorretoraQuery } from "@/modules/corretoras-components/corretora/infra/hooks/use-corretora-query"
 import { useBancosQuery } from "@/modules/produtores-components/produtor/infra/hooks/use-banco-query"
+import { useProdutorQuery } from "@/modules/produtores-components/produtor/infra/hooks/use-produtor-query"
 import {
   FormaRepasseLabels,
   RepasseSobreLabels,
@@ -55,12 +56,18 @@ export function CreateProdutorForm() {
     register,
     handleSubmit,
     setValue,
+    watch,
     formState: { isSubmitting, errors },
   } = useForm<CreateProdutorSchema>({
     resolver: zodResolver(createProdutorFormSchema),
   })
 
   const { data: corretorasData } = useCorretoraQuery()
+
+  const repasseSobre = watch("repasseSobre")
+  const corretoraId = watch("corretoraId")
+
+  const { data: produtores } = useProdutorQuery(1, -1, { corretoraId })
 
   const corretorasOptions = useMemo(() => {
     if (!corretorasData?.data) return []
@@ -92,7 +99,7 @@ export function CreateProdutorForm() {
         <h3 className="text-lg font-semibold">Dados Pessoais</h3>
         <div className="flex gap-4">
           <div className="flex flex-1 flex-col gap-2">
-            <label>Nome</label>
+            <label>Nome *</label>
             <Input.Root variant={errors.nome ? "error" : "primary"}>
               <Input.Control {...register("nome")} type="text" />
             </Input.Root>
@@ -106,7 +113,7 @@ export function CreateProdutorForm() {
           <div className="flex flex-col gap-2">
             <SelectInput
               options={StatusProdutorLabels}
-              label="Situação"
+              label="Situação *"
               field_name="situacao"
               {...register("situacao")}
             />
@@ -120,7 +127,7 @@ export function CreateProdutorForm() {
           <div className="flex flex-col gap-2">
             <SelectInput
               options={TipoPessoaLabels}
-              label="Pessoa"
+              label="Tipo Pessoa *"
               field_name="pessoa"
               {...register("pessoa")}
             />
@@ -134,7 +141,7 @@ export function CreateProdutorForm() {
 
         <div className="flex gap-4">
           <div className="flex flex-1 flex-col gap-2">
-            <label>CPF/CNPJ</label>
+            <label>CPF/CNPJ *</label>
             <Input.Root variant={errors.cnpjCpf ? "error" : "primary"}>
               <Input.Control
                 {...register("cnpjCpf", {
@@ -155,7 +162,7 @@ export function CreateProdutorForm() {
           <div className="flex flex-1 flex-col gap-2">
             <SelectInput
               options={corretorasOptions}
-              label="Corretora"
+              label="Corretora *"
               field_name="corretoraId"
               {...register("corretoraId")}
             />
@@ -185,7 +192,7 @@ export function CreateProdutorForm() {
           </div>
 
           <div className="flex flex-1 flex-col gap-2">
-            <label>Email</label>
+            <label>Email *</label>
             <Input.Root variant={errors.email ? "error" : "primary"}>
               <Input.Control {...register("email")} type="email" />
             </Input.Root>
@@ -199,7 +206,7 @@ export function CreateProdutorForm() {
 
         <div className="flex gap-4">
           <div className="flex flex-1 flex-col gap-2">
-            <label>Telefone Celular</label>
+            <label>Telefone Celular *</label>
             <Input.Root variant={errors.telefoneCelular ? "error" : "primary"}>
               <Input.Control
                 {...register("telefoneCelular", {
@@ -252,7 +259,7 @@ export function CreateProdutorForm() {
         <h3 className="text-lg font-semibold">Endereço</h3>
         <div className="flex gap-4">
           <div className="flex flex-col gap-2">
-            <label>CEP</label>
+            <label>CEP *</label>
             <Input.Root variant={errors.cep ? "error" : "primary"}>
               <Input.Icon>
                 <MagnifyingGlass className="mr-2 h-5 w-5" />
@@ -280,7 +287,7 @@ export function CreateProdutorForm() {
           </div>
 
           <div className="flex flex-1 flex-col gap-2">
-            <label>Logradouro</label>
+            <label>Logradouro *</label>
             <Input.Root variant={isCepSearched ? "primary" : "disabled"}>
               <Input.Control
                 disabled={!isCepSearched}
@@ -296,7 +303,7 @@ export function CreateProdutorForm() {
           </div>
 
           <div className="flex max-w-[150px] flex-col gap-2">
-            <label>Número</label>
+            <label>Número *</label>
             <Input.Root variant={isCepSearched ? "primary" : "disabled"}>
               <Input.Control
                 disabled={!isCepSearched}
@@ -330,7 +337,7 @@ export function CreateProdutorForm() {
           </div>
 
           <div className="flex flex-1 flex-col gap-2">
-            <label>Bairro</label>
+            <label>Bairro *</label>
             <Input.Root variant={isCepSearched ? "primary" : "disabled"}>
               <Input.Control
                 disabled={!isCepSearched}
@@ -346,7 +353,7 @@ export function CreateProdutorForm() {
           </div>
 
           <div className="flex flex-1 flex-col gap-2">
-            <label>Cidade</label>
+            <label>Cidade *</label>
             <Input.Root variant={isCepSearched ? "primary" : "disabled"}>
               <Input.Control
                 disabled={!isCepSearched}
@@ -362,7 +369,7 @@ export function CreateProdutorForm() {
           </div>
 
           <div className="flex max-w-[100px] flex-col gap-2">
-            <label>UF</label>
+            <label>UF *</label>
             <Input.Root variant={isCepSearched ? "primary" : "disabled"}>
               <Input.Control
                 disabled={!isCepSearched}
@@ -464,7 +471,7 @@ export function CreateProdutorForm() {
         <h3 className="text-lg font-semibold">Repasse</h3>
         <div className="flex gap-4">
           <div className="flex flex-1 flex-col gap-2">
-            <label>Conta Contábil</label>
+            <label>Conta Contábil *</label>
             <Input.Root variant="primary">
               <Input.Control {...register("contaContabil")} type="text" />
             </Input.Root>
@@ -479,7 +486,7 @@ export function CreateProdutorForm() {
             <SelectInput
               options={RepasseSobreLabels}
               field_name="repasseSobre"
-              label="Repasse Sobre"
+              label="Repasse Sobre *"
               {...register("repasseSobre")}
             />
             {errors.repasseSobre && (
@@ -504,7 +511,7 @@ export function CreateProdutorForm() {
             <SelectInput
               options={TipoRepasseLabels}
               field_name="tipoRepasse"
-              label="Tipo Repasse"
+              label="Tipo Repasse *"
               {...register("tipoRepasse")}
             />
             {errors.tipoRepasse && (
@@ -518,7 +525,7 @@ export function CreateProdutorForm() {
             <SelectInput
               options={FormaRepasseLabels}
               field_name="formaRepasse"
-              label="Forma Repasse"
+              label="Forma Repasse *"
               {...register("formaRepasse")}
             />
             {errors.formaRepasse && (
@@ -546,25 +553,44 @@ export function CreateProdutorForm() {
               </span>
             )}
           </div>
-
-          <div className="flex flex-col gap-2">
-            <label>Percentual Repasse (%)</label>
-            <Input.Root variant="primary">
-              <Input.Control
-                {...register("percentualRepasse")}
-                type="text"
-                inputMode="decimal"
-                onChange={(e) => {
-                  normalizeDecimals(e.target, 2)
-                }}
-              />
-            </Input.Root>
-            {errors.percentualRepasse && (
-              <span className="text-xs text-red-500">
-                {errors.percentualRepasse.message}
-              </span>
-            )}
-          </div>
+          {repasseSobre === "VALOR_FIXO" ?
+            <div className="flex flex-col gap-2">
+              <label>Valor Fixo R$</label>
+              <Input.Root variant="primary">
+                <Input.Control
+                  {...register("valorRepasse")}
+                  type="text"
+                  inputMode="decimal"
+                  onChange={(e) => {
+                    normalizeDecimals(e.target, 2)
+                  }}
+                />
+              </Input.Root>
+              {errors.valorRepasse && (
+                <span className="text-xs text-red-500">
+                  {errors.valorRepasse.message}
+                </span>
+              )}
+            </div>
+          : <div className="flex flex-col gap-2">
+              <label>Percentual Repasse (%)</label>
+              <Input.Root variant="primary">
+                <Input.Control
+                  {...register("percentualRepasse")}
+                  type="text"
+                  inputMode="decimal"
+                  onChange={(e) => {
+                    normalizeDecimals(e.target, 2)
+                  }}
+                />
+              </Input.Root>
+              {errors.percentualRepasse && (
+                <span className="text-xs text-red-500">
+                  {errors.percentualRepasse.message}
+                </span>
+              )}
+            </div>
+          }
         </div>
       </div>
 
@@ -605,15 +631,15 @@ export function CreateProdutorForm() {
               id="lgpdConsentimento"
             />
             <label htmlFor="lgpdConsentimento">
-              Declaro que solicitei a prévia autorização para utilização dos dados
-              do(s) titular(es) conforme a base legal prevista no artigo 7º,
-              inciso V, da LGPD
+              Declaro que solicitei a prévia autorização para utilização dos
+              dados do(s) titular(es) conforme a base legal prevista no artigo
+              7º, inciso V, da LGPD
             </label>
           </div>
           <button
             type="button"
             onClick={() => setPrivacyModalOpen(true)}
-            className="text-sm text-blue-600 hover:underline w-fit">
+            className="w-fit text-sm text-blue-600 hover:underline">
             Ler política de privacidade
           </button>
         </div>
