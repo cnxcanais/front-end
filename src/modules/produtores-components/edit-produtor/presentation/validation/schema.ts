@@ -14,6 +14,10 @@ export const editProdutorFormSchema = z
       .string()
       .max(255, { message: "Campo deve ter no máximo 255 caracteres" })
       .optional(),
+    produtorIndicadorId: z
+      .string()
+      .max(255, { message: "Campo deve ter no máximo 255 caracteres" })
+      .optional(),
     telefoneComercial: z.string().optional(),
     contaContabil: z
       .string()
@@ -23,6 +27,10 @@ export const editProdutorFormSchema = z
       .string()
       .nonempty({ message: "Obrigatório" })
       .max(50, { message: "Campo deve ter no máximo 50 caracteres" }),
+    repasseSobreIndicacao: z
+      .string()
+      .max(50, { message: "Campo deve ter no máximo 50 caracteres" })
+      .optional(),
     excluirRepasse: z.boolean(),
     telefoneFixo: z.string().optional(),
     telefoneCelular: z.string().nonempty({ message: "Obrigatório" }),
@@ -88,6 +96,10 @@ export const editProdutorFormSchema = z
       .string()
       .nonempty({ message: "Obrigatório" })
       .max(20, { message: "Campo deve ter no máximo 20 caracteres" }),
+    formaRepasseIndicacao: z
+      .string()
+      .max(20, { message: "Campo deve ter no máximo 20 caracteres" })
+      .optional(),
     percentualImposto: z
       .string()
       .transform((val) => val.replace(",", "."))
@@ -100,7 +112,17 @@ export const editProdutorFormSchema = z
       ),
     percentualRepasse: z
       .string()
-      .transform((val) => val.replace(",", "."))
+      .transform((val) => !val || val.trim() === "" ? undefined : val.replace(",", "."))
+      .pipe(
+        z.coerce
+          .number()
+          .min(0)
+          .max(100, { message: "Campo deve ter no máximo 100 caracteres" })
+          .optional()
+      ),
+    percentualRepasseIndicacao: z
+      .string()
+      .transform((val) => !val || val.trim() === "" ? undefined : val.replace(",", "."))
       .pipe(
         z.coerce
           .number()
@@ -110,7 +132,17 @@ export const editProdutorFormSchema = z
       ),
     valorRepasse: z
       .string()
-      .transform((val) => val.replace(",", "."))
+      .transform((val) => !val || val.trim() === "" ? undefined : val.replace(",", "."))
+      .pipe(
+        z.coerce
+          .number()
+          .min(0)
+          .max(100, { message: "Campo deve ter no máximo 100 caracteres" })
+          .optional()
+      ),
+    valorRepasseIndicacao: z
+      .string()
+      .transform((val) => !val || val.trim() === "" ? undefined : val.replace(",", "."))
       .pipe(
         z.coerce
           .number()
@@ -242,6 +274,22 @@ export const editProdutorFormSchema = z
     {
       message: "Pix ou Conta deve ser preenchido",
       path: ["banco"],
+    }
+  )
+  .refine(
+    (data) => {
+      let result = true
+      if (data.produtorIndicadorId) {
+        if (!data.percentualRepasseIndicacao && !data.valorRepasseIndicacao)
+          result = false
+        if (!data.repasseSobreIndicacao || !data.formaRepasseIndicacao)
+          result = false
+      }
+      return result
+    },
+    {
+      message: "Preencha todos os dados do produtor indicador",
+      path: ["produtorIndicadorId"],
     }
   )
 export type EditProdutorSchema = z.infer<typeof editProdutorFormSchema>

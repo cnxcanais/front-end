@@ -16,6 +16,7 @@ import { useCorretoraByIdQuery } from "@/modules/corretoras-components/edit-corr
 import { useProdutorByIdQuery } from "@/modules/produtores-components/edit-produtor/infra/hooks/use-produtor-by-id-query"
 import { editProdutor } from "@/modules/produtores-components/edit-produtor/infra/remote"
 import { useBancosQuery } from "@/modules/produtores-components/produtor/infra/hooks/use-banco-query"
+import { useProdutorQuery } from "@/modules/produtores-components/produtor/infra/hooks/use-produtor-query"
 import {
   FormaRepasseLabels,
   RepasseSobreLabels,
@@ -94,7 +95,12 @@ export function EditProdutorForm({ id }: { id: string }) {
       formaRepasse: produtor?.formaRepasse || "",
       percentualImposto: produtor?.percentualImposto,
       percentualRepasse: produtor?.percentualRepasse,
+      percentualRepasseIndicacao: produtor?.percentualRepasseIndicacao,
       valorRepasse: produtor?.valorRepasse,
+      valorRepasseIndicacao: produtor?.valorRepasseIndicacao,
+      produtorIndicadorId: produtor?.produtorIndicadorId || "",
+      repasseSobreIndicacao: produtor?.repasseSobreIndicacao || "",
+      formaRepasseIndicacao: produtor?.formaRepasseIndicacao || "",
       grupos: produtor?.grupos || "",
       lgpdConsentimento: produtor?.lgpdConsentimento || false,
       observacoes: produtor?.observacoes || "",
@@ -102,6 +108,21 @@ export function EditProdutorForm({ id }: { id: string }) {
   })
 
   const repasseSobre = watch("repasseSobre")
+  const repasseSobreIndicacao = watch("repasseSobreIndicacao")
+  const corretoraId = produtor?.corretoraId
+
+  const { data: produtores } = useProdutorQuery(1, -1, { corretoraId })
+
+  const produtoresOptions = useMemo(() => {
+    if (!produtores) return []
+
+    return produtores.data
+      .sort((a, b) => a.nome.localeCompare(b.nome))
+      .map((produtor) => ({
+        text: produtor.nome,
+        value: produtor.id,
+      }))
+  }, [produtores])
 
   async function onSubmit(data: Produtor.UpdateRequest) {
     try {
@@ -616,6 +637,97 @@ export function EditProdutorForm({ id }: { id: string }) {
               {errors.percentualRepasse && (
                 <span className="text-xs text-red-500">
                   {errors.percentualRepasse.message}
+                </span>
+              )}
+            </div>
+          }
+        </div>
+      </div>
+
+      {/* Produtor Indicador */}
+      <div className="flex flex-col gap-4 bg-gray-50 p-4 shadow-md">
+        <h3 className="text-lg font-semibold">Produtor Indicador</h3>
+        <div className="flex gap-4">
+          <div className="flex flex-1 flex-col gap-2">
+            <AutocompleteInput
+              key={corretoraId}
+              options={produtoresOptions}
+              label="Nome do Produtor Indicador"
+              field_name="produtorIndicadorId"
+              {...register("produtorIndicadorId")}
+              defaultValue={produtor?.produtorIndicadorId}
+            />
+            {errors.produtorIndicadorId && (
+              <span className="text-xs text-red-500">
+                {errors.produtorIndicadorId.message}
+              </span>
+            )}
+          </div>
+
+          <div className="flex flex-1 flex-col gap-2">
+            <SelectInput
+              options={RepasseSobreLabels}
+              field_name="repasseSobreIndicacao"
+              label="Repasse Sobre"
+              {...register("repasseSobreIndicacao")}
+            />
+            {errors.repasseSobreIndicacao && (
+              <span className="text-xs text-red-500">
+                {errors.repasseSobreIndicacao.message}
+              </span>
+            )}
+          </div>
+        </div>
+
+        <div className="flex gap-4">
+          <div className="flex flex-col gap-2">
+            <SelectInput
+              options={FormaRepasseLabels}
+              field_name="formaRepasseIndicacao"
+              label="Forma Repasse"
+              {...register("formaRepasseIndicacao")}
+            />
+            {errors.formaRepasseIndicacao && (
+              <span className="text-xs text-red-500">
+                {errors.formaRepasseIndicacao.message}
+              </span>
+            )}
+          </div>
+
+          {repasseSobreIndicacao === "VALOR_FIXO" ?
+            <div className="flex flex-col gap-2">
+              <label>Valor Fixo R$</label>
+              <Input.Root variant="primary">
+                <Input.Control
+                  {...register("valorRepasseIndicacao")}
+                  type="text"
+                  inputMode="decimal"
+                  onChange={(e) => {
+                    normalizeDecimals(e.target, 2)
+                  }}
+                />
+              </Input.Root>
+              {errors.valorRepasseIndicacao && (
+                <span className="text-xs text-red-500">
+                  {errors.valorRepasseIndicacao.message}
+                </span>
+              )}
+            </div>
+          : <div className="flex flex-col gap-2">
+              <label>Percentual Repasse (%)</label>
+              <Input.Root variant="primary">
+                <Input.Control
+                  {...register("percentualRepasseIndicacao")}
+                  type="text"
+                  inputMode="decimal"
+                  onChange={(e) => {
+                    normalizeDecimals(e.target, 2)
+                  }}
+                />
+              </Input.Root>
+              {errors.percentualRepasseIndicacao && (
+                <span className="text-xs text-red-500">
+                  {errors.percentualRepasseIndicacao.message}
                 </span>
               )}
             </div>
