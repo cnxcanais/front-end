@@ -35,7 +35,7 @@ export function FileList({ entityId, entityType, isAdmin }: FileListProps) {
   }
 
   useEffect(() => {
-    if (fileList && fileList.length > 0) {
+    if (fileList) {
       setEntityFiles(fileList)
       setFilteredFiles(fileList)
     }
