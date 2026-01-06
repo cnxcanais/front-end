@@ -32,7 +32,7 @@ export async function createCorretora({
 
     const { data } = await bffApi.post("/corretoras", payload)
 
-    return data.message
+    return data
   } catch (error) {
     if (error instanceof AxiosError) throw error.response.data.message
     throw error

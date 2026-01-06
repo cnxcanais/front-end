@@ -145,7 +145,7 @@ export function CreateCorretoraForm() {
               </div>
 
               <div className="flex flex-1 flex-col gap-2">
-                <label htmlFor="fantasia">Nome Fantasia</label>
+                <label htmlFor="fantasia">Nome Fantasia *</label>
                 <Input.Root variant={errors.fantasia ? "error" : "primary"}>
                   <Input.Control {...register("fantasia")} type="text" />
                 </Input.Root>
@@ -473,15 +473,15 @@ export function CreateCorretoraForm() {
               id="consentimentoLgpd"
             />
             <label htmlFor="consentimentoLgpd">
-              Declaro que solicitei a prévia autorização para utilização dos dados
-              do(s) titular(es) conforme a base legal prevista no artigo 7º,
-              inciso V, da LGPD
+              Declaro que solicitei a prévia autorização para utilização dos
+              dados do(s) titular(es) conforme a base legal prevista no artigo
+              7º, inciso V, da LGPD
             </label>
           </div>
           <button
             type="button"
             onClick={() => setPrivacyModalOpen(true)}
-            className="text-sm text-blue-600 hover:underline w-fit">
+            className="w-fit text-sm text-blue-600 hover:underline">
             Ler política de privacidade
           </button>
         </div>

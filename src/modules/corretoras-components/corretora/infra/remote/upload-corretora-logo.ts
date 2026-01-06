@@ -15,7 +15,7 @@ export async function uploadLogoCorretora(id: string, file: File) {
     formData.append("logo", file)
     formData.append("id", id)
 
-    const response = await bffApi.post(`/corretora/${id}/logo`, formData, {
+    const response = await bffApi.post(`/corretoras/${id}/logo`, formData, {
       headers: {
         "Content-Type": "multipart/form-data",
       },
