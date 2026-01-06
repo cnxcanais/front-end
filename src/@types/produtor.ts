@@ -30,13 +30,19 @@ export namespace Produtor {
     tipoRepasse: string
     formaRepasse: string
     percentualImposto: number
-    primeiraRepasse: number
+    percentualRepasse: number
+    valorRepasse: number
     grupos: string
     lgpdConsentimento: boolean
     lgpdConsentimentoData: string
     createdAt: string
     updatedAt: string
     digitoConta: string
+    produtorIndicadorId: string
+    percentualRepasseIndicacao: number
+    valorRepasseIndicacao: number
+    repasseSobreIndicacao: string
+    formaRepasseIndicacao: string
   }
 
   export type GetResponse = {

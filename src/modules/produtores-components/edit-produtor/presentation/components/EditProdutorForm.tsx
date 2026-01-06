@@ -6,6 +6,7 @@ import { Button } from "@/core/components/Button"
 import * as Input from "@/core/components/Input"
 import { LoadingScreen } from "@/core/components/LoadingScreen"
 import { MapModal } from "@/core/components/MapModal"
+import { PrivacyPolicyModal } from "@/core/components/Modals/PrivacyPolicyModal"
 import { SelectInput } from "@/core/components/SelectInput"
 import { fetchCep } from "@/core/utils/findCep"
 import { formatCep } from "@/core/utils/format-cep"
@@ -37,6 +38,7 @@ export function EditProdutorForm({ id }: { id: string }) {
   const { push } = useRouter()
   const [isCepSearched, setIsCepSearched] = useState(false)
   const [showMapModal, setShowMapModal] = useState(false)
+  const [privacyModalOpen, setPrivacyModalOpen] = useState(false)
 
   const { data: bancosData, isLoading: isLoadingBancos } = useBancosQuery()
 
@@ -90,7 +92,7 @@ export function EditProdutorForm({ id }: { id: string }) {
       tipoRepasse: produtor?.tipoRepasse || "",
       formaRepasse: produtor?.formaRepasse || "",
       percentualImposto: produtor?.percentualImposto,
-      primeiraRepasse: produtor?.primeiraRepasse,
+      percentualRepasse: produtor?.percentualRepasse,
       grupos: produtor?.grupos || "",
       lgpdConsentimento: produtor?.lgpdConsentimento || false,
       observacoes: produtor?.observacoes || "",
@@ -577,10 +579,10 @@ export function EditProdutorForm({ id }: { id: string }) {
           </div>
 
           <div className="flex flex-col gap-2">
-            <label>Primeira Repasse (%)</label>
+            <label>Percentual Repasse (%)</label>
             <Input.Root variant="primary">
               <Input.Control
-                {...register("primeiraRepasse")}
+                {...register("percentualRepasse")}
                 type="text"
                 inputMode="decimal"
                 onChange={(e) => {
@@ -588,9 +590,9 @@ export function EditProdutorForm({ id }: { id: string }) {
                 }}
               />
             </Input.Root>
-            {errors.primeiraRepasse && (
+            {errors.percentualRepasse && (
               <span className="text-xs text-red-500">
-                {errors.primeiraRepasse.message}
+                {errors.percentualRepasse.message}
               </span>
             )}
           </div>
@@ -624,20 +626,38 @@ export function EditProdutorForm({ id }: { id: string }) {
               </span>
             )}
           </div>
+        </div>
+
+        <div className="flex flex-col gap-2">
           <div className="flex items-center gap-2">
             <input
               {...register("lgpdConsentimento")}
               type="checkbox"
               id="lgpdConsentimento"
             />
-            <label htmlFor="lgpdConsentimento">Consentimento LGPD</label>
+            <label htmlFor="lgpdConsentimento">
+              Declaro que solicitei a prévia autorização para utilização dos dados
+              do(s) titular(es) conforme a base legal prevista no artigo 7º,
+              inciso V, da LGPD
+            </label>
           </div>
+          <button
+            type="button"
+            onClick={() => setPrivacyModalOpen(true)}
+            className="text-sm text-blue-600 hover:underline w-fit">
+            Ler política de privacidade
+          </button>
         </div>
       </div>
       <MapModal
         open={showMapModal}
         onClose={() => setShowMapModal(false)}
         address={fullAddress}
+      />
+
+      <PrivacyPolicyModal
+        open={privacyModalOpen}
+        onClose={() => setPrivacyModalOpen(false)}
       />
 
       <div className="my-2 flex gap-4">

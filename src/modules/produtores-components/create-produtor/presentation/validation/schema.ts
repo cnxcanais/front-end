@@ -115,7 +115,7 @@ export const createProdutorFormSchema = z
           .max(100, { message: "Campo deve ter no máximo 100 caracteres" })
           .optional()
       ),
-    primeiraRepasse: z
+    percentualRepasse: z
       .string()
       .transform((val) => val.replace(",", "."))
       .pipe(
