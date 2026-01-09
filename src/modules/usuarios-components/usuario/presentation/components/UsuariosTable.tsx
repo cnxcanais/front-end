@@ -1,14 +1,16 @@
 "use client"
 
 import { Button } from "@/core/components/Button"
+import { ExportTableToPDFButton } from "@/core/components/ExportPDFButton"
 import { FilterField, FilterForm } from "@/core/components/FilterForm"
 import { LoadingScreen } from "@/core/components/LoadingScreen"
 import { Modal } from "@/core/components/Modals/Modal"
 import { Pagination } from "@/core/components/Pagination"
 import { Table } from "@/core/components/Table"
+import { exportNoPagination } from "@/core/utils/exportToExcel/exportNoPagination"
 import { useCorretoraQuery } from "@/modules/corretoras-components/corretora/infra/hooks/use-corretora-query"
 import { usePerfilQuery } from "@/modules/perfis-components/perfis/infra/hooks/use-perfil-query"
-import { LockKey, Pencil, Trash } from "@phosphor-icons/react"
+import { FileXls, LockKey, Pencil, Trash } from "@phosphor-icons/react"
 import { useRouter } from "next/navigation"
 import { useMemo, useState } from "react"
 import { toast } from "sonner"
@@ -20,7 +22,7 @@ export function UsuariosTable() {
   const [limit, setLimit] = useState(10)
   const [filters, setFilters] = useState<Record<string, string>>({})
   const { data, isLoading, refetch } = useUsuarioQuery(page, limit, filters)
-  const { data: corretoras } = useCorretoraQuery(1, 100)
+  const { data: corretoras } = useCorretoraQuery(1, -1)
   const { data: perfis } = usePerfilQuery()
   const { push } = useRouter()
 
@@ -157,19 +159,24 @@ export function UsuariosTable() {
       options: [
         { label: "Ativo", value: "ATIVO" },
         { label: "Inativo", value: "INATIVO" },
+        { label: "Pendente", value: "PENDENTE" },
+        { label: "Bloqueado", value: "BLOQUEADO" },
       ],
+      placeholder: "Selecione",
     },
     {
       name: "corretoraId",
       label: "Corretora",
       type: "select",
       options: corretorasOptions,
+      placeholder: "Selecione",
     },
     {
       name: "perfilId",
       label: "Perfil",
       type: "select",
       options: perfisOptions,
+      placeholder: "Selecione",
     },
   ]
 
@@ -224,6 +231,22 @@ export function UsuariosTable() {
         <Button onClick={() => push("/usuarios/create")} variant="secondary">
           Cadastrar
         </Button>
+        <div className="flex items-center gap-2">
+          <ExportTableToPDFButton
+            filename={`perfis.${new Date().toLocaleDateString("pt-BR").replace(/\//g, "-")}`}
+            options={{ orientation: "portrait" }}
+            title="Perfis"
+            className="bg-red-500">
+            Exportar PDF
+          </ExportTableToPDFButton>
+          <Button
+            className="flex items-center gap-1"
+            variant="secondary"
+            onClick={() => exportNoPagination("perfis")}>
+            <FileXls size={22} />
+            Exportar
+          </Button>
+        </div>
       </div>
 
       {usuarios.length == 0 ?

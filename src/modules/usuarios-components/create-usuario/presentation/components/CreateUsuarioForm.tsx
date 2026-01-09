@@ -64,7 +64,7 @@ export function CreateUsuarioForm() {
         <h3 className="text-lg font-semibold">Dados do Usuário</h3>
         <div className="flex gap-4">
           <div className="flex flex-1 flex-col gap-2">
-            <label htmlFor="nome">Nome</label>
+            <label htmlFor="nome">Nome *</label>
             <Input.Root variant={errors.nome ? "error" : "primary"}>
               <Input.Control {...register("nome")} type="text" />
             </Input.Root>
@@ -76,7 +76,7 @@ export function CreateUsuarioForm() {
           </div>
 
           <div className="flex flex-1 flex-col gap-2">
-            <label htmlFor="email">Email</label>
+            <label htmlFor="email">Email *</label>
             <Input.Root variant={errors.email ? "error" : "primary"}>
               <Input.Control {...register("email")} type="email" />
             </Input.Root>
@@ -92,7 +92,7 @@ export function CreateUsuarioForm() {
           <div className="flex flex-1 flex-col gap-2">
             <SelectInput
               options={perfisOptions}
-              label="Perfil"
+              label="Perfil *"
               field_name="perfilId"
               {...register("perfilId")}
             />
