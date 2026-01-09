@@ -53,19 +53,24 @@ export function PerfisTable() {
       accessor: "id",
       render: (value: string) => (
         <div className="flex space-x-4">
-          <Pencil
-            className="cursor-pointer duration-300 ease-in-out hover:text-blue-500"
-            size={24}
-            onClick={() => handleEdit(value)}
-          />
-          <Trash
-            className="cursor-pointer duration-300 ease-in-out hover:text-blue-500"
-            size={24}
-            onClick={() => {
-              setId(value)
-              setOpen(true)
-            }}
-          />
+          {!perfis?.data?.find((p) => p.id === value).isSistema && (
+            <>
+              <Pencil
+                className="cursor-pointer duration-300 ease-in-out hover:text-blue-500"
+                size={24}
+                onClick={() => handleEdit(value)}
+              />
+
+              <Trash
+                className="cursor-pointer duration-300 ease-in-out hover:text-blue-500"
+                size={24}
+                onClick={() => {
+                  setId(value)
+                  setOpen(true)
+                }}
+              />
+            </>
+          )}
         </div>
       ),
     },

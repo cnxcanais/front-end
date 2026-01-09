@@ -7,6 +7,6 @@ export async function getPerfilById(id: string) {
 }
 
 export async function editPerfil(id: string, data: Perfil.UpdateRequest) {
-  const response = await bffApi.put(`/perfis/${id}`, data)
+  const response = await bffApi.patch(`/perfis/${id}`, data)
   return response.data
 }

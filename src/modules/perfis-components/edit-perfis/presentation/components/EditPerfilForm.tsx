@@ -35,7 +35,8 @@ export function EditPerfilForm({ id }: { id: string }) {
       toast.success("Perfil editado com sucesso!")
       setTimeout(() => push("/perfis"), 2000)
     } catch (error) {
-      toast.error("Erro ao editar Perfil: " + error)
+      console.log(error)
+      toast.error("Erro ao editar Perfil: " + error.response?.data?.message)
     }
   }
 
@@ -49,7 +50,7 @@ export function EditPerfilForm({ id }: { id: string }) {
         <h3 className="text-lg font-semibold">Dados do Perfil</h3>
         <div className="flex gap-4">
           <div className="flex flex-1 flex-col gap-2">
-            <label htmlFor="nome">Nome</label>
+            <label htmlFor="nome">Nome *</label>
             <Input.Root variant={errors.nome ? "error" : "primary"}>
               <Input.Control {...register("nome")} type="text" />
             </Input.Root>
@@ -61,7 +62,7 @@ export function EditPerfilForm({ id }: { id: string }) {
           </div>
 
           <div className="flex flex-1 flex-col gap-2">
-            <label htmlFor="descricao">Descrição</label>
+            <label htmlFor="descricao">Descrição *</label>
             <Input.Root variant={errors.descricao ? "error" : "primary"}>
               <Input.Control {...register("descricao")} type="text" />
             </Input.Root>

@@ -42,7 +42,7 @@ export function CreatePerfilForm() {
         <h3 className="text-lg font-semibold">Dados do Perfil</h3>
         <div className="flex gap-4">
           <div className="flex flex-1 flex-col gap-2">
-            <label htmlFor="nome">Nome</label>
+            <label htmlFor="nome">Nome *</label>
             <Input.Root variant={errors.nome ? "error" : "primary"}>
               <Input.Control {...register("nome")} type="text" />
             </Input.Root>
@@ -54,7 +54,7 @@ export function CreatePerfilForm() {
           </div>
 
           <div className="flex flex-1 flex-col gap-2">
-            <label htmlFor="descricao">Descrição</label>
+            <label htmlFor="descricao">Descrição *</label>
             <Input.Root variant={errors.descricao ? "error" : "primary"}>
               <Input.Control {...register("descricao")} type="text" />
             </Input.Root>
