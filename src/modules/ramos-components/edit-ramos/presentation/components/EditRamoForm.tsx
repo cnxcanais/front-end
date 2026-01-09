@@ -5,19 +5,20 @@ import * as Input from "@/core/components/Input"
 import { LoadingScreen } from "@/core/components/LoadingScreen"
 import { useRamoByIdQuery } from "@/modules/ramos-components/edit-ramos/infra/hooks/use-ramo-by-id-query"
 import { editRamo } from "@/modules/ramos-components/edit-ramos/infra/remote"
+import { useRamoQuery } from "@/modules/ramos-components/ramos/infra/hooks/use-ramo-query"
 import { zodResolver } from "@hookform/resolvers/zod"
+import { useQueryClient } from "@tanstack/react-query"
 import { useRouter } from "next/navigation"
 import { useForm } from "react-hook-form"
 import { toast } from "sonner"
-import {
-  EditRamoSchema,
-  editRamoFormSchema,
-} from "../validation/schema"
+import { EditRamoSchema, editRamoFormSchema } from "../validation/schema"
 
 export function EditRamoForm({ id }: { id: string }) {
   const { push } = useRouter()
 
   const { data: ramo, isLoading } = useRamoByIdQuery(id)
+  const { refetch } = useRamoQuery()
+  const queryClient = useQueryClient()
 
   const {
     register,
@@ -35,6 +36,9 @@ export function EditRamoForm({ id }: { id: string }) {
     try {
       await editRamo(data)
       toast.success("Ramo editado com sucesso!")
+      await queryClient.invalidateQueries({
+        queryKey: ["ramos"],
+      })
       setTimeout(() => push("/ramos"), 2000)
     } catch (error) {
       toast.error("Erro ao editar ramo: " + error)

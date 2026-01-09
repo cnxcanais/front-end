@@ -39,8 +39,7 @@ export function RamosTable() {
       toast.success("Ramo removido com sucesso!")
       refetch()
     } catch (error) {
-      const message =
-        error?.response?.data?.message || "Erro ao remover ramo"
+      const message = error?.response?.data?.message || "Erro ao remover ramo"
       toast.error(message)
     } finally {
       setOpen(false)
@@ -116,9 +115,7 @@ export function RamosTable() {
 
       <div className="mt-8 flex items-center justify-between">
         <div className="flex h-full gap-4">
-          <Button
-            onClick={() => push("/ramos/create")}
-            variant="secondary">
+          <Button onClick={() => push("/ramos/create")} variant="secondary">
             Cadastrar
           </Button>
         </div>
@@ -143,9 +140,7 @@ export function RamosTable() {
       </div>
 
       {ramos.length == 0 ?
-        <h2 className="mt-6 text-xl font-semibold">
-          Nenhum ramo cadastrado.
-        </h2>
+        <h2 className="mt-6 text-xl font-semibold">Nenhum ramo cadastrado.</h2>
       : <>
           <Table columns={columns} data={filteredResults} />
           <Pagination

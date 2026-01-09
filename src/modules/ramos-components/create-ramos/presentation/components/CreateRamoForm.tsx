@@ -7,10 +7,7 @@ import { useRouter } from "next/navigation"
 import { useForm } from "react-hook-form"
 import { toast } from "sonner"
 import { createRamo } from "../../infra/remote/create-ramo"
-import {
-  CreateRamoSchema,
-  createRamoFormSchema,
-} from "../validation/schema"
+import { CreateRamoSchema, createRamoFormSchema } from "../validation/schema"
 
 export function CreateRamoForm() {
   const { push } = useRouter()
@@ -29,7 +26,7 @@ export function CreateRamoForm() {
       toast.success("Ramo criado com sucesso!")
       setTimeout(() => push("/ramos"), 2000)
     } catch (error) {
-      toast.error("Erro ao criar ramo: " + error)
+      toast.error("Erro ao criar ramo: " + error?.response?.data?.message)
     }
   }
 
