@@ -12,9 +12,10 @@ import { formatPhoneNumber } from "@/core/utils/formatPhoneNumber"
 import { useCorretoraQuery } from "@/modules/corretoras-components/corretora/infra/hooks/use-corretora-query"
 import { useBancosQuery } from "@/modules/produtores-components/produtor/infra/hooks/use-banco-query"
 import { useProdutorQuery } from "@/modules/produtores-components/produtor/infra/hooks/use-produtor-query"
-import { useRamoQuery } from "@/modules/ramos-components/ramos/infra/hooks/use-ramo-query"
 import {
   EstadoCivilLabels,
+  RamoAtividadePJLabels,
+  RamoPFLabels,
   SexoLabels,
   StatusSeguradoLabels,
   TipoContaLabels,
@@ -47,31 +48,13 @@ export function CreateSeguradoForm() {
     resolver: zodResolver(createSeguradoFormSchema),
   })
 
-  console.log(errors)
-
   const tipoPessoa = useWatch({ control, name: "tipoPessoa" })
   const { data: corretorasData } = useCorretoraQuery()
   const { data: bancosData } = useBancosQuery()
-  const nomeRazaoSocialValue = useWatch({
-    control,
-    name: "nomeRazaoSocial" as any,
-  }) as string | undefined
 
   const corretoraId = watch("corretoraId")
 
   const { data: produtoresData } = useProdutorQuery(1, -1, { corretoraId })
-  const { data: ramosData } = useRamoQuery()
-
-  const ramosOptions = useMemo(() => {
-    if (!ramosData?.data) return []
-
-    return ramosData.data
-      .sort((a, b) => a.descricao.localeCompare(b.descricao))
-      .map((ramo) => ({
-        text: ramo.descricao,
-        value: ramo.id,
-      }))
-  }, [corretorasData])
 
   const corretorasOptions = useMemo(() => {
     if (!corretorasData?.data) return []
@@ -267,7 +250,7 @@ export function CreateSeguradoForm() {
               </div>
               <div className="flex flex-1 flex-col gap-2">
                 <SelectInput
-                  options={ramosOptions}
+                  options={RamoAtividadePJLabels}
                   label="Ramo de Atividade"
                   field_name="ramoAtividade"
                   {...register("ramoAtividade")}
@@ -348,7 +331,7 @@ export function CreateSeguradoForm() {
               <div className="flex flex-1 flex-col gap-2">
                 <div className="flex flex-1 flex-col gap-2">
                   <SelectInput
-                    options={ramosOptions}
+                    options={RamoPFLabels}
                     label="Ramo de Atividade"
                     field_name="ramoAtividade"
                     {...register("ramoAtividade")}

@@ -210,7 +210,7 @@ export function RevisaoTab({
 
           <div>
             <SelectInput
-              label="Produto *"
+              label="Produto"
               field_name="produtoId"
               value={formData.produtoId}
               onChange={(e) => setValue("produtoId", e.target.value)}
