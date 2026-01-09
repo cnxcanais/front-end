@@ -5,7 +5,6 @@ import * as Input from "@/core/components/Input"
 import { LoadingScreen } from "@/core/components/LoadingScreen"
 import { useRamoByIdQuery } from "@/modules/ramos-components/edit-ramos/infra/hooks/use-ramo-by-id-query"
 import { editRamo } from "@/modules/ramos-components/edit-ramos/infra/remote"
-import { useRamoQuery } from "@/modules/ramos-components/ramos/infra/hooks/use-ramo-query"
 import { zodResolver } from "@hookform/resolvers/zod"
 import { useQueryClient } from "@tanstack/react-query"
 import { useRouter } from "next/navigation"
@@ -17,7 +16,6 @@ export function EditRamoForm({ id }: { id: string }) {
   const { push } = useRouter()
 
   const { data: ramo, isLoading } = useRamoByIdQuery(id)
-  const { refetch } = useRamoQuery()
   const queryClient = useQueryClient()
 
   const {

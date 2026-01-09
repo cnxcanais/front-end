@@ -6,6 +6,7 @@ import { LoadingScreen } from "@/core/components/LoadingScreen"
 import { useProdutoByIdQuery } from "@/modules/produtos-components/edit-produtos/infra/hooks/use-produto-by-id-query"
 import { editProduto } from "@/modules/produtos-components/edit-produtos/infra/remote"
 import { zodResolver } from "@hookform/resolvers/zod"
+import { useQueryClient } from "@tanstack/react-query"
 import { useRouter } from "next/navigation"
 import { useForm } from "react-hook-form"
 import { toast } from "sonner"
@@ -15,6 +16,7 @@ export function EditProdutoForm({ id }: { id: string }) {
   const { push } = useRouter()
 
   const { data: produto, isLoading } = useProdutoByIdQuery(id)
+  const queryClient = useQueryClient()
 
   const {
     register,
@@ -34,10 +36,10 @@ export function EditProdutoForm({ id }: { id: string }) {
     id: string
     seguroRenovavel: boolean
   }) {
-    console.log(data)
     try {
       await editProduto(data)
       toast.success("Produto editado com sucesso!")
+      queryClient.invalidateQueries({ queryKey: ["produtos"] })
       setTimeout(() => push("/produtos"), 2000)
     } catch (error) {
       toast.error("Erro ao editar produto: " + error)
@@ -53,7 +55,7 @@ export function EditProdutoForm({ id }: { id: string }) {
       <div className="flex flex-col gap-4">
         <div className="flex gap-4">
           <div className="flex flex-1 flex-col gap-2">
-            <label htmlFor="ramoId">Ramo</label>
+            <label htmlFor="ramoId">Ramo *</label>
             <Input.Root>
               <Input.Control
                 value={produto?.ramo?.descricao}
@@ -80,7 +82,7 @@ export function EditProdutoForm({ id }: { id: string }) {
         </div>
         <div className="flex gap-4">
           <div className="flex flex-1 flex-col gap-2">
-            <label htmlFor="descricao">Descrição</label>
+            <label htmlFor="descricao">Descrição *</label>
             <Input.Root variant={errors.descricao ? "error" : "primary"}>
               <Input.Control {...register("descricao")} type="text" />
             </Input.Root>

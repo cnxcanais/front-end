@@ -4,6 +4,7 @@ import { Button } from "@/core/components/Button"
 import * as Input from "@/core/components/Input"
 import { useRamoQuery } from "@/modules/ramos-components/ramos/infra/hooks/use-ramo-query"
 import { zodResolver } from "@hookform/resolvers/zod"
+import { useQueryClient } from "@tanstack/react-query"
 import { useRouter } from "next/navigation"
 import { useMemo } from "react"
 import { useForm } from "react-hook-form"
@@ -17,6 +18,7 @@ import {
 export function CreateProdutoForm() {
   const { push } = useRouter()
   const { data: ramos } = useRamoQuery(1, 100)
+  const queryClient = useQueryClient()
 
   const {
     register,
@@ -42,6 +44,7 @@ export function CreateProdutoForm() {
     try {
       await createProduto(data)
       toast.success("Produto criado com sucesso!")
+      queryClient.invalidateQueries({ queryKey: ["produtos"] })
       setTimeout(() => push("/produtos"), 2000)
     } catch (error) {
       toast.error("Erro ao criar produto: " + error)
@@ -55,7 +58,7 @@ export function CreateProdutoForm() {
       <div className="flex flex-col gap-4">
         <div className="flex gap-4">
           <div className="flex flex-1 flex-col gap-2">
-            <label htmlFor="ramoId">Ramo</label>
+            <label htmlFor="ramoId">Ramo *</label>
             <select
               {...register("ramoId")}
               className="rounded border border-gray-300 p-2">
@@ -85,7 +88,7 @@ export function CreateProdutoForm() {
         </div>
         <div className="flex gap-4">
           <div className="flex flex-1 flex-col gap-2">
-            <label htmlFor="descricao">Descrição</label>
+            <label htmlFor="descricao">Descrição *</label>
             <Input.Root variant={errors.descricao ? "error" : "primary"}>
               <Input.Control {...register("descricao")} type="text" />
             </Input.Root>
