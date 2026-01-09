@@ -109,14 +109,14 @@ export const createProdutorFormSchema = z
     tipoRepasse: z
       .string()
       .nonempty({ message: "Obrigatório" })
-      .max(20, { message: "Campo deve ter no máximo 20 caracteres" }),
+      .max(50, { message: "Campo deve ter no máximo 50 caracteres" }),
     formaRepasse: z
       .string()
       .nonempty({ message: "Obrigatório" })
-      .max(20, { message: "Campo deve ter no máximo 20 caracteres" }),
+      .max(50, { message: "Campo deve ter no máximo 50 caracteres" }),
     formaRepasseIndicacao: z
       .string()
-      .max(20, { message: "Campo deve ter no máximo 20 caracteres" })
+      .max(50, { message: "Campo deve ter no máximo 50 caracteres" })
       .optional(),
     percentualImposto: z
       .string()
