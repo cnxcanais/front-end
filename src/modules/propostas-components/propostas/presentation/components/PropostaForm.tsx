@@ -76,6 +76,8 @@ export function PropostaForm({
   const [showParcelasModal, setShowParcelasModal] = useState(false)
   const [numParcelasInput, setNumParcelasInput] = useState("")
   const [dataPrimeiroVencimento, setDataPrimeiroVencimento] = useState("")
+  const [diaVencimentoDemaisParcelas, setDiaVencimentoDemaisParcelas] =
+    useState("")
 
   const sourceData = propostaToDuplicate || proposta
 
@@ -259,8 +261,15 @@ export function PropostaForm({
   const handleGenerateParcelas = () => {
     const numParcelas = Number(numParcelasInput)
     const vencimentoPrimeiraParcela = new Date(dataPrimeiroVencimento)
+    const diaVencimento = Number(diaVencimentoDemaisParcelas)
+
     if (!numParcelas || numParcelas < 1) {
       toast.error("Informe um número válido de parcelas")
+      return
+    }
+
+    if (!diaVencimento || diaVencimento < 1 || diaVencimento > 31) {
+      toast.error("Informe um dia válido (1-31)")
       return
     }
 
@@ -280,9 +289,27 @@ export function PropostaForm({
       ) / 100
 
     const parcelas = Array.from({ length: numParcelas }, (_, i) => {
-      const dataVencimento = addMonthsToDate(vencimentoPrimeiraParcela, i)
-        .toISOString()
-        .slice(0, 10)
+      let dataVencimento: string
+
+      if (i === 0) {
+        dataVencimento = vencimentoPrimeiraParcela.toISOString().slice(0, 10)
+      } else {
+        const year = vencimentoPrimeiraParcela.getFullYear()
+        const month = vencimentoPrimeiraParcela.getMonth() + i
+        
+        const targetDate = new Date(year, month, 1)
+        
+        const lastDayOfMonth = new Date(
+          targetDate.getFullYear(),
+          targetDate.getMonth() + 1,
+          0
+        ).getDate()
+        
+        const finalDay = Math.min(diaVencimento, lastDayOfMonth)
+        targetDate.setDate(finalDay)
+        
+        dataVencimento = targetDate.toISOString().slice(0, 10)
+      }
 
       return {
         numeroParcela: i + 1,
@@ -298,6 +325,7 @@ export function PropostaForm({
     setValue("parcelas", parcelas)
     setShowParcelasModal(false)
     setNumParcelasInput("")
+    setDiaVencimentoDemaisParcelas("")
     toast.success("Parcelas geradas com sucesso!")
   }
 
@@ -706,6 +734,8 @@ export function PropostaForm({
           handleGenerateParcelas={handleGenerateParcelas}
           setDataPrimeiroVencimento={setDataPrimeiroVencimento}
           dataPrimeiroVencimento={dataPrimeiroVencimento}
+          diaVencimentoDemaisParcelas={diaVencimentoDemaisParcelas}
+          setDiaVencimentoDemaisParcelas={setDiaVencimentoDemaisParcelas}
         />
       )}
     </div>
