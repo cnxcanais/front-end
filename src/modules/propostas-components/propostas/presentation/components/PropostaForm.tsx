@@ -150,7 +150,11 @@ export function PropostaForm({
   console.log(errors)
 
   const { push } = useRouter()
-  const { data: segurados } = useSeguradoQuery(1, -1, { status: "ATIVO" })
+  const { data: segurados, refetch: refetchSegurados } = useSeguradoQuery(
+    1,
+    -1,
+    { status: "ATIVO" }
+  )
   const { data: corretoras } = useCorretoraQuery(1, -1)
   const { data: produtores } = useProdutorQuery(1, -1)
   const { data: seguradoras } = useSeguradoraQuery(1, -1)
@@ -619,6 +623,7 @@ export function PropostaForm({
             isEndosso={isEndosso}
             isRenovacao={isRenovacao}
             readOnly={readOnly}
+            refetchSegurados={refetchSegurados}
           />
         )}
 

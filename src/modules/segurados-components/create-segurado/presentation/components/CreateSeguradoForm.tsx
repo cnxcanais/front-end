@@ -33,7 +33,13 @@ import {
   createSeguradoFormSchema,
 } from "../validation/schema"
 
-export function CreateSeguradoForm() {
+export function CreateSeguradoForm({
+  onSuccess,
+  isModal = false,
+}: {
+  onSuccess?: (seguradoId: string) => void
+  isModal?: boolean
+}) {
   const { push } = useRouter()
   const [isCepSearched, setIsCepSearched] = useState(false)
 
@@ -91,9 +97,13 @@ export function CreateSeguradoForm() {
 
   async function onSubmit(data: Segurado.CreateRequest) {
     try {
-      await createSegurado(data)
+      const response = await createSegurado(data)
       toast.success("Segurado criado com sucesso!")
-      setTimeout(() => push("/segurados"), 2000)
+      if (isModal && onSuccess) {
+        onSuccess(response.id)
+      } else {
+        setTimeout(() => push("/segurados"), 2000)
+      }
     } catch (error) {
       toast.error("Erro ao criar segurado: " + error)
     }
@@ -610,12 +620,14 @@ export function CreateSeguradoForm() {
       </div>
 
       <div className="mb-5 flex justify-end gap-4">
-        <Button
-          type="button"
-          variant="tertiary"
-          onClick={() => push("/segurados")}>
-          Cancelar
-        </Button>
+        {!isModal && (
+          <Button
+            type="button"
+            variant="tertiary"
+            onClick={() => push("/segurados")}>
+            Cancelar
+          </Button>
+        )}
         <Button type="submit" variant="secondary" disabled={isSubmitting}>
           {isSubmitting ? "Salvando..." : "Salvar"}
         </Button>

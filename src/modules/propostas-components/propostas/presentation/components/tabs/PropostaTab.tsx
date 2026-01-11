@@ -4,7 +4,11 @@ import { Ramo } from "@/@types/ramo"
 import { Segurado } from "@/@types/segurado"
 import { Seguradora } from "@/@types/seguradora"
 import * as Input from "@/core/components/Input"
+import { Modal } from "@/core/components/Modals/Modal"
 import { SelectInput } from "@/core/components/SelectInput"
+import { CreateSeguradoForm } from "@/modules/segurados-components/create-segurado/presentation/components/CreateSeguradoForm"
+import { Plus } from "@phosphor-icons/react"
+import { useState } from "react"
 import { PropostaFormSchema } from "../../validation/schema"
 
 interface PropostaTabProps {
@@ -24,6 +28,7 @@ interface PropostaTabProps {
   isEndosso?: boolean
   isRenovacao?: boolean
   readOnly?: boolean
+  refetchSegurados: () => void
 }
 
 export function PropostaTab({
@@ -40,7 +45,9 @@ export function PropostaTab({
   isEndosso = false,
   isRenovacao = false,
   readOnly = false,
+  refetchSegurados,
 }: PropostaTabProps) {
+  const [showCreateSeguradoModal, setShowCreateSeguradoModal] = useState(false)
   const isDisabled = isEndosso || isRenovacao || readOnly
   const RAMO_ID_GARANTIA = process.env.NEXT_PUBLIC_RAMO_GARANTIA_ID
 
@@ -61,32 +68,43 @@ export function PropostaTab({
         )}
       </div>
       <div>
-        <SelectInput
-          label="Segurado *"
-          field_name="seguradoId"
-          value={formData.seguradoId}
-          onChange={(e) => {
-            const seguradoId = e.target.value
-            setValue("seguradoId", seguradoId)
-            const produtorId = segurados?.data?.find(
-              (s) => s.id === seguradoId
-            ).produtorId
-            const corretoraId = segurados?.data?.find(
-              (s) => s.id === seguradoId
-            ).corretoraId
-
-            setValue("corretoraId", corretoraId || "")
-            setValue("produtorId", produtorId || "")
-          }}
-          options={
-            segurados?.data?.map((s: Segurado.Type) => ({
-              text: s.nomeRazaoSocial,
-              value: s.id,
-            })) || []
-          }
-          required
-          disabled={isDisabled}
-        />
+        <label>Segurado *</label>
+        <div className="flex items-center gap-2">
+          <div className="flex-1">
+            <SelectInput
+              label=""
+              field_name="seguradoId"
+              value={formData.seguradoId}
+              onChange={(e) => {
+                const seguradoId = e.target.value
+                setValue("seguradoId", seguradoId)
+                const segurado = segurados?.data?.find(
+                  (s) => s.id === seguradoId
+                )
+                if (segurado) {
+                  setValue("corretoraId", segurado.corretoraId || "")
+                  setValue("produtorId", segurado.produtorId || "")
+                }
+              }}
+              options={
+                segurados?.data?.map((s: Segurado.Type) => ({
+                  text: s.nomeRazaoSocial,
+                  value: s.id,
+                })) || []
+              }
+              required
+              disabled={isDisabled}
+            />
+          </div>
+          {!isDisabled && (
+            <button
+              type="button"
+              onClick={() => setShowCreateSeguradoModal(true)}
+              className="flex h-10 w-10 flex-shrink-0 items-center justify-center rounded bg-blue-600 text-white hover:bg-blue-700">
+              <Plus size={20} weight="bold" />
+            </button>
+          )}
+        </div>
         {errors.seguradoId && (
           <span className="text-xs text-red-500">
             {errors.seguradoId.message}
@@ -258,6 +276,20 @@ export function PropostaTab({
           <span className="text-xs text-red-500">{errors.origem.message}</span>
         )}
       </div>
+
+      <Modal
+        title="Criar Novo Segurado"
+        open={showCreateSeguradoModal}
+        onClose={() => setShowCreateSeguradoModal(false)}>
+        <CreateSeguradoForm
+          onSuccess={(seguradoId) => {
+            refetchSegurados()
+            setValue("seguradoId", seguradoId)
+            setShowCreateSeguradoModal(false)
+          }}
+          isModal
+        />
+      </Modal>
     </div>
   )
 }
