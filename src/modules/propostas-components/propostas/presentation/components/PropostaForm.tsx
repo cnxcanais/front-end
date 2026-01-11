@@ -79,6 +79,8 @@ export function PropostaForm({
     useState("")
   const [percentualComissaoInput, setPercentualComissaoInput] = useState("")
   const [numParcelasComComissao, setNumParcelasComComissao] = useState("")
+  const [numParcelasAgenciadas, setNumParcelasAgenciadas] = useState("")
+  const [percentualAgenciamento, setPercentualAgenciamento] = useState("")
 
   const sourceData = propostaToDuplicate || proposta
 
@@ -285,6 +287,16 @@ export function PropostaForm({
       return
     }
 
+    if (
+      (numParcelasAgenciadas && !percentualAgenciamento) ||
+      (!numParcelasAgenciadas && percentualAgenciamento)
+    ) {
+      toast.error(
+        "Preencha tanto a quantidade de parcelas agenciadas quanto o percentual de agenciamento"
+      )
+      return
+    }
+
     const premioTotal =
       Number(formData.premioLiquido) +
       Number(formData.valoresAdicionais || 0) +
@@ -322,14 +334,26 @@ export function PropostaForm({
         : numParcelas
       const aplicarComissao = i < parcelasComComissao
 
+      const qtdParcelasAgenciadas = numParcelasAgenciadas
+        ? Number(numParcelasAgenciadas)
+        : 0
+      const totalAgenciamento = percentualAgenciamento
+        ? parseFloat(percentualAgenciamento)
+        : 0
+
+      let comissaoParcela = null
+
+      if (qtdParcelasAgenciadas > 0 && totalAgenciamento > 0 && i < qtdParcelasAgenciadas) {
+        comissaoParcela = Math.min(totalAgenciamento / qtdParcelasAgenciadas, 100)
+      } else if (percentualComissaoInput && aplicarComissao) {
+        comissaoParcela = Math.min(parseFloat(percentualComissaoInput), 100)
+      }
+
       return {
         numeroParcela: i + 1,
         valor: i === 0 ? primeiraParcela : valorParcela,
         dataVencimento: dataVencimento,
-        percentualComissao:
-          percentualComissaoInput && aplicarComissao
-            ? parseFloat(percentualComissaoInput)
-            : null,
+        percentualComissao: comissaoParcela,
         previsaoPagamento: dataVencimento,
         situacao: "Pendente",
       }
@@ -341,6 +365,8 @@ export function PropostaForm({
     setDiaVencimentoDemaisParcelas("")
     setPercentualComissaoInput("")
     setNumParcelasComComissao("")
+    setNumParcelasAgenciadas("")
+    setPercentualAgenciamento("")
     toast.success("Parcelas geradas com sucesso!")
   }
 
@@ -531,7 +557,7 @@ export function PropostaForm({
           : undefined,
         parcelas: data.parcelas.map((p) => ({
           ...p,
-          percentualComissao: data.percentualComissao,
+          percentualComissao: p.percentualComissao ?? 0,
           dataVencimento:
             p.dataVencimento ? new Date(p.dataVencimento).toISOString() : "",
           previsaoPagamento:
@@ -761,6 +787,10 @@ export function PropostaForm({
           setPercentualComissaoInput={setPercentualComissaoInput}
           numParcelasComComissao={numParcelasComComissao}
           setNumParcelasComComissao={setNumParcelasComComissao}
+          numParcelasAgenciadas={numParcelasAgenciadas}
+          setNumParcelasAgenciadas={setNumParcelasAgenciadas}
+          percentualAgenciamento={percentualAgenciamento}
+          setPercentualAgenciamento={setPercentualAgenciamento}
         />
       )}
     </div>

@@ -130,7 +130,7 @@ export function PremioParcelasTab({
           <h4 className="mb-2 font-semibold">Parcelas</h4>
           {formData.parcelas.map((parcela: any, index: number) => (
             <div key={index} className="mb-2 rounded border p-2">
-              <div className="grid grid-cols-5 gap-2">
+              <div className="grid grid-cols-[80px_1fr_100px_1fr_1fr] gap-2">
                 <div>
                   <label>Parcela</label>
                   <Input.Root variant="disabled">
@@ -160,12 +160,14 @@ export function PremioParcelasTab({
                     <Input.Control
                       type="number"
                       step="0.01"
+                      max="100"
                       value={parcela.percentualComissao ?? ""}
                       disabled={readOnly}
                       onChange={(e) => {
                         const newParcelas = [...formData.parcelas]
+                        const value = parseFloat(e.target.value)
                         newParcelas[index].percentualComissao =
-                          parseFloat(e.target.value) || null
+                          value ? Math.min(value, 100) : null
                         setValue("parcelas", newParcelas)
                       }}
                     />
