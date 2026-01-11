@@ -130,10 +130,12 @@ export function RevisaoTab({
                 if (corretoraId) setValue("corretoraId", corretoraId)
               }}
               options={
-                produtores?.data?.map((p: any) => ({
-                  text: p.nome,
-                  value: p.id,
-                })) || []
+                produtores?.data
+                  ?.filter((p) => p.corretoraId === formData.corretoraId)
+                  ?.map((p: any) => ({
+                    text: p.nome,
+                    value: p.id,
+                  })) || []
               }
               disabled={readOnly}
             />

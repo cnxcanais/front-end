@@ -9,11 +9,11 @@ import { Plus } from "@phosphor-icons/react"
 import { useState } from "react"
 import { PropostaFormSchema } from "../../validation/schema"
 import { CreateCorretoraModal } from "../modals/CreateCorretoraModal"
-import { CreateProdutorModal } from "../modals/CreateProdutorModal"
 import { CreateProdutoModal } from "../modals/CreateProdutoModal"
+import { CreateProdutorModal } from "../modals/CreateProdutorModal"
 import { CreateRamoModal } from "../modals/CreateRamoModal"
-import { CreateSeguradoraModal } from "../modals/CreateSeguradoraModal"
 import { CreateSeguradoModal } from "../modals/CreateSeguradoModal"
+import { CreateSeguradoraModal } from "../modals/CreateSeguradoraModal"
 
 interface PropostaTabProps {
   register: any
@@ -179,10 +179,12 @@ export function PropostaTab({
                 setValue("produtorId", produtorId)
               }}
               options={
-                produtores?.data?.map((p: Produtor.Type) => ({
-                  text: p.nome,
-                  value: p.id,
-                })) || []
+                produtores?.data
+                  ?.filter((p) => p.corretoraId === formData.corretoraId)
+                  ?.map((p: Produtor.Type) => ({
+                    text: p.nome,
+                    value: p.id,
+                  })) || []
               }
               required
               disabled={isDisabled}
