@@ -9,10 +9,12 @@ type Props = {
   dataPrimeiroVencimento: string
   diaVencimentoDemaisParcelas: string
   percentualComissaoInput: string
+  numParcelasComComissao: string
   setNumParcelasInput: Dispatch<SetStateAction<string>>
   setDataPrimeiroVencimento: Dispatch<SetStateAction<string>>
   setDiaVencimentoDemaisParcelas: Dispatch<SetStateAction<string>>
   setPercentualComissaoInput: Dispatch<SetStateAction<string>>
+  setNumParcelasComComissao: Dispatch<SetStateAction<string>>
   setShowParcelasModal: Dispatch<SetStateAction<boolean>>
   handleGenerateParcelas: () => void
 }
@@ -28,6 +30,8 @@ export function ParcelasModal({
   setDiaVencimentoDemaisParcelas,
   percentualComissaoInput,
   setPercentualComissaoInput,
+  numParcelasComComissao,
+  setNumParcelasComComissao,
 }: Props) {
   return (
     <div className="bg-black fixed inset-0 z-50 flex items-center justify-center bg-opacity-50">
@@ -80,6 +84,18 @@ export function ParcelasModal({
               value={percentualComissaoInput}
               onChange={(e) => setPercentualComissaoInput(e.target.value)}
               placeholder="Digite o percentual"
+            />
+          </Input.Root>
+          <label className="mb-2 mt-2 block text-sm font-medium">
+            Qtd. parcelas com comissão (opcional)
+          </label>
+          <Input.Root className="mt-2">
+            <Input.Control
+              type="number"
+              min="1"
+              value={numParcelasComComissao}
+              onChange={(e) => setNumParcelasComComissao(e.target.value)}
+              placeholder="Deixe em branco para todas"
             />
           </Input.Root>
         </div>

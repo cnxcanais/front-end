@@ -78,6 +78,7 @@ export function PropostaForm({
   const [diaVencimentoDemaisParcelas, setDiaVencimentoDemaisParcelas] =
     useState("")
   const [percentualComissaoInput, setPercentualComissaoInput] = useState("")
+  const [numParcelasComComissao, setNumParcelasComComissao] = useState("")
 
   const sourceData = propostaToDuplicate || proposta
 
@@ -316,13 +317,19 @@ export function PropostaForm({
         dataVencimento = targetDate.toISOString().slice(0, 10)
       }
 
+      const parcelasComComissao = numParcelasComComissao
+        ? Number(numParcelasComComissao)
+        : numParcelas
+      const aplicarComissao = i < parcelasComComissao
+
       return {
         numeroParcela: i + 1,
         valor: i === 0 ? primeiraParcela : valorParcela,
         dataVencimento: dataVencimento,
-        percentualComissao: percentualComissaoInput
-          ? parseFloat(percentualComissaoInput)
-          : null,
+        percentualComissao:
+          percentualComissaoInput && aplicarComissao
+            ? parseFloat(percentualComissaoInput)
+            : null,
         previsaoPagamento: dataVencimento,
         situacao: "Pendente",
       }
@@ -333,6 +340,7 @@ export function PropostaForm({
     setNumParcelasInput("")
     setDiaVencimentoDemaisParcelas("")
     setPercentualComissaoInput("")
+    setNumParcelasComComissao("")
     toast.success("Parcelas geradas com sucesso!")
   }
 
@@ -751,6 +759,8 @@ export function PropostaForm({
           setDiaVencimentoDemaisParcelas={setDiaVencimentoDemaisParcelas}
           percentualComissaoInput={percentualComissaoInput}
           setPercentualComissaoInput={setPercentualComissaoInput}
+          numParcelasComComissao={numParcelasComComissao}
+          setNumParcelasComComissao={setNumParcelasComComissao}
         />
       )}
     </div>
