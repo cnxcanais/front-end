@@ -23,7 +23,13 @@ import {
   createSeguradoraFormSchema,
 } from "../validation/schema"
 
-export function CreateSeguradoraForm() {
+export function CreateSeguradoraForm({
+  onSuccess,
+  isModal = false,
+}: {
+  onSuccess?: (seguradoraId: string) => void
+  isModal?: boolean
+}) {
   const { push } = useRouter()
 
   const [isCepSearched, setIsCepSearched] = useState(false)
@@ -87,7 +93,11 @@ export function CreateSeguradoraForm() {
       }
 
       toast.success("Seguradora criada com sucesso!")
-      setTimeout(() => push("/seguradoras"), 2000)
+      if (isModal && onSuccess) {
+        onSuccess(response.id)
+      } else {
+        setTimeout(() => push("/seguradoras"), 2000)
+      }
     } catch (error) {
       toast.error("Erro ao criar seguradora: " + error)
     }
@@ -539,13 +549,15 @@ export function CreateSeguradoraForm() {
         <Button type="submit" disabled={isSubmitting} variant="primary">
           Salvar
         </Button>
-        <Button
-          type="button"
-          disabled={isSubmitting}
-          onClick={() => push("/seguradoras")}
-          variant="tertiary">
-          Voltar
-        </Button>
+        {!isModal && (
+          <Button
+            type="button"
+            disabled={isSubmitting}
+            onClick={() => push("/seguradoras")}
+            variant="tertiary">
+            Voltar
+          </Button>
+        )}
       </div>
     </form>
   )

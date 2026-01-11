@@ -15,7 +15,13 @@ import {
   createProdutoFormSchema,
 } from "../validation/schema"
 
-export function CreateProdutoForm() {
+export function CreateProdutoForm({
+  onSuccess,
+  isModal = false,
+}: {
+  onSuccess?: (produtoId: string) => void
+  isModal?: boolean
+}) {
   const { push } = useRouter()
   const { data: ramos } = useRamoQuery(1, 100)
   const queryClient = useQueryClient()
@@ -42,10 +48,14 @@ export function CreateProdutoForm() {
     seguroRenovavel: boolean
   }) {
     try {
-      await createProduto(data)
+      const response = await createProduto(data)
       toast.success("Produto criado com sucesso!")
       queryClient.invalidateQueries({ queryKey: ["produtos"] })
-      setTimeout(() => push("/produtos"), 2000)
+      if (isModal && onSuccess) {
+        onSuccess(response.id)
+      } else {
+        setTimeout(() => push("/produtos"), 2000)
+      }
     } catch (error) {
       toast.error("Erro ao criar produto: " + error?.response?.data?.message)
     }
@@ -105,13 +115,15 @@ export function CreateProdutoForm() {
         <Button type="submit" disabled={isSubmitting} variant="primary">
           Salvar
         </Button>
-        <Button
-          type="button"
-          disabled={isSubmitting}
-          onClick={() => push("/produtos")}
-          variant="tertiary">
-          Voltar
-        </Button>
+        {!isModal && (
+          <Button
+            type="button"
+            disabled={isSubmitting}
+            onClick={() => push("/produtos")}
+            variant="tertiary">
+            Voltar
+          </Button>
+        )}
       </div>
     </form>
   )

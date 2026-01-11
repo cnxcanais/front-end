@@ -9,7 +9,13 @@ import { toast } from "sonner"
 import { createRamo } from "../../infra/remote/create-ramo"
 import { CreateRamoSchema, createRamoFormSchema } from "../validation/schema"
 
-export function CreateRamoForm() {
+export function CreateRamoForm({
+  onSuccess,
+  isModal = false,
+}: {
+  onSuccess?: (ramoId: string) => void
+  isModal?: boolean
+}) {
   const { push } = useRouter()
 
   const {
@@ -22,9 +28,13 @@ export function CreateRamoForm() {
 
   async function onSubmit(data: { descricao: string }) {
     try {
-      await createRamo(data)
+      const response = await createRamo(data)
       toast.success("Ramo criado com sucesso!")
-      setTimeout(() => push("/ramos"), 2000)
+      if (isModal && onSuccess) {
+        onSuccess(response.id)
+      } else {
+        setTimeout(() => push("/ramos"), 2000)
+      }
     } catch (error) {
       toast.error("Erro ao criar ramo: " + error?.response?.data?.message)
     }
@@ -54,13 +64,15 @@ export function CreateRamoForm() {
         <Button type="submit" disabled={isSubmitting} variant="primary">
           Salvar
         </Button>
-        <Button
-          type="button"
-          disabled={isSubmitting}
-          onClick={() => push("/ramos")}
-          variant="tertiary">
-          Voltar
-        </Button>
+        {!isModal && (
+          <Button
+            type="button"
+            disabled={isSubmitting}
+            onClick={() => push("/ramos")}
+            variant="tertiary">
+            Voltar
+          </Button>
+        )}
       </div>
     </form>
   )

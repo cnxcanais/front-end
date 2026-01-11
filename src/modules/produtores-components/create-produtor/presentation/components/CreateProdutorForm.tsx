@@ -34,7 +34,13 @@ import {
   createProdutorFormSchema,
 } from "../validation/schema"
 
-export function CreateProdutorForm() {
+export function CreateProdutorForm({
+  onSuccess,
+  isModal = false,
+}: {
+  onSuccess?: (produtorId: string) => void
+  isModal?: boolean
+}) {
   const { push } = useRouter()
   const [isCepSearched, setIsCepSearched] = useState(false)
   const [privacyModalOpen, setPrivacyModalOpen] = useState(false)
@@ -100,9 +106,13 @@ export function CreateProdutorForm() {
 
   async function onSubmit(data: Produtor.CreateRequest) {
     try {
-      await createProdutor(data)
+      const response = await createProdutor(data)
       toast.success("Produtor criado com sucesso!")
-      setTimeout(() => push("/produtores"), 2000)
+      if (isModal && onSuccess) {
+        onSuccess(response.id)
+      } else {
+        setTimeout(() => push("/produtores"), 2000)
+      }
     } catch (error) {
       toast.error("Erro ao criar produtor: " + error)
     }
@@ -762,13 +772,15 @@ export function CreateProdutorForm() {
         <Button type="submit" disabled={isSubmitting} variant="primary">
           Salvar
         </Button>
-        <Button
-          type="button"
-          disabled={isSubmitting}
-          onClick={() => push("/produtores")}
-          variant="tertiary">
-          Voltar
-        </Button>
+        {!isModal && (
+          <Button
+            type="button"
+            disabled={isSubmitting}
+            onClick={() => push("/produtores")}
+            variant="tertiary">
+            Voltar
+          </Button>
+        )}
       </div>
     </form>
   )

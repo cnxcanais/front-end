@@ -24,7 +24,13 @@ import {
   createCorretoraFormSchema,
 } from "../validation/schema"
 
-export function CreateCorretoraForm() {
+export function CreateCorretoraForm({
+  onSuccess,
+  isModal = false,
+}: {
+  onSuccess?: (corretoraId: string) => void
+  isModal?: boolean
+}) {
   const { push } = useRouter()
   const [isCepSearched, setIsCepSearched] = useState(false)
   const [logoFile, setLogoFile] = useState<File | null>(null)
@@ -86,7 +92,11 @@ export function CreateCorretoraForm() {
       }
 
       toast.success("Corretora criada com sucesso!")
-      setTimeout(() => push("/corretoras"), 2000)
+      if (isModal && onSuccess) {
+        onSuccess(response.id)
+      } else {
+        setTimeout(() => push("/corretoras"), 2000)
+      }
     } catch (error) {
       toast.error("Erro ao criar corretora: " + error)
     }
@@ -496,13 +506,15 @@ export function CreateCorretoraForm() {
         <Button type="submit" disabled={isSubmitting} variant="primary">
           Salvar
         </Button>
-        <Button
-          type="button"
-          disabled={isSubmitting}
-          onClick={() => push("/corretoras")}
-          variant="tertiary">
-          Voltar
-        </Button>
+        {!isModal && (
+          <Button
+            type="button"
+            disabled={isSubmitting}
+            onClick={() => push("/corretoras")}
+            variant="tertiary">
+            Voltar
+          </Button>
+        )}
       </div>
     </form>
   )

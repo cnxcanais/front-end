@@ -22,7 +22,7 @@ export async function createProdutor({
     })
 
     const response = await bffApi.post("/produtores", payload)
-    return response.data.message
+    return response.data
   } catch (error) {
     if (error instanceof AxiosError) throw error.response.data.message
     throw error
