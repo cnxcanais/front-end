@@ -93,12 +93,9 @@ export const propostaFormSchema = z
       .min(-100, "Percentual deve ser maior ou igual a -100")
       .max(100, "Percentual deve ser menor ou igual a 100")
       .nullable(),
-    comissaoSobre: z.enum(
-      ["Premio Liquido", "Premio Comercial", "Premio Total"],
-      {
-        errorMap: () => ({ message: "Comissão sobre é obrigatória" }),
-      }
-    ),
+    comissaoSobre: z.enum(["Premio Liquido"], {
+      errorMap: () => ({ message: "Comissão sobre é obrigatória" }),
+    }),
     formaComissao: z.enum(["Na Parcela", "Antecipado", "Recorrencia"], {
       errorMap: () => ({ message: "Forma de comissão é obrigatória" }),
     }),

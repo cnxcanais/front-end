@@ -27,9 +27,14 @@ export enum RenovacaoEnum {
 
 export enum ComissaoSobreEnum {
   PREMIO_LIQUIDO = "Premio Liquido",
-  COMISSAO_CORRETORA = "Comissão da Corretora",
-  VALOR_FIXO = "Valor Fixo",
 }
+
+export const comissaoSobreOptions = [
+  {
+    text: ComissaoSobreEnum.PREMIO_LIQUIDO,
+    value: ComissaoSobreEnum.PREMIO_LIQUIDO,
+  },
+]
 
 export enum FormaComissaoEnum {
   NA_PARCELA = "Na Parcela",

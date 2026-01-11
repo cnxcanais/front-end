@@ -1,5 +1,6 @@
 import * as Input from "@/core/components/Input"
 import { SelectInput } from "@/core/components/SelectInput"
+import { comissaoSobreOptions } from "@/modules/propostas-components/types/enums"
 
 interface ComissaoTabProps {
   register: any
@@ -40,11 +41,7 @@ export function ComissaoTab({
           field_name="comissaoSobre"
           value={formData.comissaoSobre}
           onChange={(e) => setValue("comissaoSobre", e.target.value as any)}
-          options={[
-            { text: "Prêmio Líquido", value: "Premio Liquido" },
-            { text: "Prêmio Comercial", value: "Premio Comercial" },
-            { text: "Prêmio Total", value: "Premio Total" },
-          ]}
+          options={comissaoSobreOptions}
           required
           disabled={readOnly}
         />

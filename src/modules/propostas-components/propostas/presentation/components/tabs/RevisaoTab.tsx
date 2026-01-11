@@ -5,6 +5,7 @@ import { Seguradora } from "@/@types/seguradora"
 import { Button } from "@/core/components/Button"
 import * as Input from "@/core/components/Input"
 import { SelectInput } from "@/core/components/SelectInput"
+import { comissaoSobreOptions } from "@/modules/propostas-components/types/enums"
 import dynamic from "next/dynamic"
 import { PropostaFormSchema } from "../../validation/schema"
 
@@ -400,11 +401,7 @@ export function RevisaoTab({
               field_name="comissaoSobre"
               value={formData.comissaoSobre}
               onChange={(e) => setValue("comissaoSobre", e.target.value as any)}
-              options={[
-                { text: "Prêmio Líquido", value: "Premio Liquido" },
-                { text: "Prêmio Comercial", value: "Premio Comercial" },
-                { text: "Prêmio Total", value: "Premio Total" },
-              ]}
+              options={comissaoSobreOptions}
               disabled={readOnly}
             />
           </div>
