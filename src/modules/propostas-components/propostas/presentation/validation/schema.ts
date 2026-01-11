@@ -37,17 +37,9 @@ const repasseSchema = z.object({
       errorMap: () => ({ message: "Repasse sobre é obrigatório" }),
     }
   ),
-  formaRepasse: z.enum(
-    [
-      "No recebimento",
-      "Antecipado 1a parcela",
-      "Antecipado parcela",
-      "Antecipado emissão",
-    ],
-    {
-      errorMap: () => ({ message: "Forma de repasse é obrigatória" }),
-    }
-  ),
+  formaRepasse: z.enum(["No recebimento"], {
+    errorMap: () => ({ message: "Forma de repasse é obrigatória" }),
+  }),
 })
 
 export const propostaFormSchema = z
@@ -96,7 +88,7 @@ export const propostaFormSchema = z
     comissaoSobre: z.enum(["Premio Liquido"], {
       errorMap: () => ({ message: "Comissão sobre é obrigatória" }),
     }),
-    formaComissao: z.enum(["Na Parcela", "Antecipado", "Recorrencia"], {
+    formaComissao: z.enum(["Na Parcela", "Antecipado"], {
       errorMap: () => ({ message: "Forma de comissão é obrigatória" }),
     }),
     valorComissao: z

@@ -5,7 +5,11 @@ import { Seguradora } from "@/@types/seguradora"
 import { Button } from "@/core/components/Button"
 import * as Input from "@/core/components/Input"
 import { SelectInput } from "@/core/components/SelectInput"
-import { comissaoSobreOptions } from "@/modules/propostas-components/types/enums"
+import {
+  comissaoSobreOptions,
+  formaComissaoOptions,
+  formaRepasseOptions,
+} from "@/modules/propostas-components/types/enums"
 import dynamic from "next/dynamic"
 import { PropostaFormSchema } from "../../validation/schema"
 
@@ -151,10 +155,7 @@ export function RevisaoTab({
               label="Corretora *"
               disabled={readOnly}
               field_name="corretoraId"
-              value={
-                produtores?.data?.find((p: any) => p.id === formData.produtorId)
-                  ?.corretoraId || ""
-              }
+              value={formData.corretoraId}
               onChange={(e) => setValue("corretoraId", e.target.value)}
               options={
                 corretoras?.data?.map((c: any) => ({
@@ -411,11 +412,7 @@ export function RevisaoTab({
               field_name="formaComissao"
               value={formData.formaComissao}
               onChange={(e) => setValue("formaComissao", e.target.value as any)}
-              options={[
-                { text: "Na Parcela", value: "Na Parcela" },
-                { text: "Antecipado", value: "Antecipado" },
-                { text: "Recorrência", value: "Recorrencia" },
-              ]}
+              options={formaComissaoOptions}
               disabled={readOnly}
             />
           </div>
@@ -597,21 +594,7 @@ export function RevisaoTab({
                         newRepasses[index].formaRepasse = e.target.value as any
                         setValue("repasses", newRepasses)
                       }}
-                      options={[
-                        { text: "No recebimento", value: "No recebimento" },
-                        {
-                          text: "Antecipado 1a parcela",
-                          value: "Antecipado 1a parcela",
-                        },
-                        {
-                          text: "Antecipado parcela",
-                          value: "Antecipado parcela",
-                        },
-                        {
-                          text: "Antecipado emissão",
-                          value: "Antecipado emissão",
-                        },
-                      ]}
+                      options={formaRepasseOptions}
                       disabled={readOnly}
                     />
                   </div>

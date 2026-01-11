@@ -15,13 +15,13 @@ import { useCorretoraQuery } from "@/modules/corretoras-components/corretora/inf
 import { useBancosQuery } from "@/modules/produtores-components/produtor/infra/hooks/use-banco-query"
 import { useProdutorQuery } from "@/modules/produtores-components/produtor/infra/hooks/use-produtor-query"
 import {
-  FormaRepasseLabels,
   RepasseSobreLabels,
   StatusProdutorLabels,
   TipoContaLabels,
   TipoPessoaLabels,
   TipoRepasseLabels,
 } from "@/modules/produtores-components/types/form-enums"
+import { formaRepasseOptions } from "@/modules/propostas-components/types/enums"
 import { zodResolver } from "@hookform/resolvers/zod"
 import { MagnifyingGlass } from "@phosphor-icons/react"
 import { useRouter } from "next/navigation"
@@ -551,7 +551,7 @@ export function CreateProdutorForm({
 
           <div className="flex flex-col gap-2">
             <SelectInput
-              options={FormaRepasseLabels}
+              options={formaRepasseOptions}
               field_name="formaRepasse"
               label="Forma Repasse *"
               {...register("formaRepasse")}
@@ -659,7 +659,7 @@ export function CreateProdutorForm({
         <div className="flex gap-4">
           <div className="flex flex-col gap-2">
             <SelectInput
-              options={FormaRepasseLabels}
+              options={formaRepasseOptions}
               field_name="formaRepasseIndicacao"
               label="Forma Repasse"
               {...register("formaRepasseIndicacao")}

@@ -39,8 +39,18 @@ export const comissaoSobreOptions = [
 export enum FormaComissaoEnum {
   NA_PARCELA = "Na Parcela",
   ANTECIPADO = "Antecipado",
-  RECORRENCIA = "Recorrencia",
 }
+
+export const formaComissaoOptions = [
+  {
+    text: FormaComissaoEnum.NA_PARCELA,
+    value: FormaComissaoEnum.NA_PARCELA,
+  },
+  {
+    text: FormaComissaoEnum.ANTECIPADO,
+    value: FormaComissaoEnum.ANTECIPADO,
+  },
+]
 
 export enum SituacaoParcelaEnum {
   PENDENTE = "Pendente",
@@ -57,7 +67,11 @@ export enum RepasseSobreEnum {
 
 export enum FormaRepasseEnum {
   NO_RECEBIMENTO = "No recebimento",
-  ANTECIPADO_1A_PARCELA = "Antecipado 1a parcela",
-  ANTECIPADO_PARCELA = "Antecipado parcela",
-  ANTECIPADO_EMISSAO = "Antecipado emissão",
 }
+
+export const formaRepasseOptions = [
+  {
+    text: FormaRepasseEnum.NO_RECEBIMENTO,
+    value: FormaRepasseEnum.NO_RECEBIMENTO,
+  },
+]

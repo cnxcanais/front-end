@@ -2,6 +2,7 @@ import { Produtor } from "@/@types/produtor"
 import { Button } from "@/core/components/Button"
 import * as Input from "@/core/components/Input"
 import { SelectInput } from "@/core/components/SelectInput"
+import { formaRepasseOptions } from "@/modules/propostas-components/types/enums"
 import { PropostaFormSchema } from "../../validation/schema"
 
 interface RepassesTabProps {
@@ -72,10 +73,12 @@ export function RepassesTab({
                     setValue("repasses", newRepasses)
                   }}
                   options={
-                    produtores?.data?.map((p: any) => ({
-                      text: p.nome,
-                      value: p.id,
-                    })) || []
+                    produtores?.data
+                      ?.filter((p) => p.corretoraId === formData.corretoraId)
+                      ?.map((p: any) => ({
+                        text: p.nome,
+                        value: p.id,
+                      })) || []
                   }
                   disabled={readOnly}
                 />
@@ -138,21 +141,7 @@ export function RepassesTab({
                     newRepasses[index].formaRepasse = e.target.value as any
                     setValue("repasses", newRepasses)
                   }}
-                  options={[
-                    { text: "No recebimento", value: "No recebimento" },
-                    {
-                      text: "Antecipado 1a parcela",
-                      value: "Antecipado 1a parcela",
-                    },
-                    {
-                      text: "Antecipado parcela",
-                      value: "Antecipado parcela",
-                    },
-                    {
-                      text: "Antecipado emissão",
-                      value: "Antecipado emissão",
-                    },
-                  ]}
+                  options={formaRepasseOptions}
                   disabled={readOnly}
                 />
                 {errors.repasses?.[index]?.formaRepasse && (
