@@ -18,9 +18,7 @@ const parcelaSchema = z.object({
       .nullable()
       .optional()
   ),
-  previsaoRecebimento: z
-    .string()
-    .min(1, "Previsão de recebimento é obrigatória"),
+  previsaoPagamento: z.string().min(1, "Previsão de recebimento é obrigatória"),
   situacao: z.string().min(1, "Situação é obrigatória"),
 })
 

@@ -147,7 +147,8 @@ export function PremioParcelasTab({
                       disabled={readOnly}
                       onChange={(e) => {
                         const newParcelas = [...formData.parcelas]
-                        newParcelas[index].valor = parseFloat(e.target.value) || 0
+                        newParcelas[index].valor =
+                          parseFloat(e.target.value) || 0
                         setValue("parcelas", newParcelas)
                       }}
                     />
@@ -169,14 +170,14 @@ export function PremioParcelasTab({
                   </Input.Root>
                 </div>
                 <div>
-                  <label>Previsão Recebimento</label>
+                  <label>Previsão Pagamento</label>
                   <Input.Root>
                     <Input.Control
                       type="date"
-                      value={parcela.previsaoRecebimento}
+                      value={parcela.previsaoPagamento}
                       onChange={(e) => {
                         const newParcelas = [...formData.parcelas]
-                        newParcelas[index].previsaoRecebimento = e.target.value
+                        newParcelas[index].previsaoPagamento = e.target.value
                         setValue("parcelas", newParcelas)
                       }}
                       disabled={readOnly}

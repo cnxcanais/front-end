@@ -1,7 +1,6 @@
 "use client"
 
 import { Button } from "@/core/components/Button"
-import { addMonthsToDate } from "@/core/utils/dateFunctions"
 import { useCorretoraQuery } from "@/modules/corretoras-components/corretora/infra/hooks/use-corretora-query"
 import { useProdutorQuery } from "@/modules/produtores-components/produtor/infra/hooks/use-produtor-query"
 import { useProdutoQuery } from "@/modules/produtos-components/produtos/infra/hooks/use-produto-query"
@@ -132,7 +131,7 @@ export function PropostaForm({
           valor: Number(p.valor),
           valorLiquido: Number(p.valorLiquido),
           percentualCorretora: Number(p.percentualCorretora),
-          previsaoRecebimento: p.previsaoRecebimento,
+          previsaoPagamento: p.previsaoPagamento,
           situacao: p.situacao,
         })) || [],
       repasses:
@@ -163,8 +162,10 @@ export function PropostaForm({
     1,
     -1
   )
-  const { data: seguradoras, refetch: refetchSeguradoras } =
-    useSeguradoraQuery(1, -1)
+  const { data: seguradoras, refetch: refetchSeguradoras } = useSeguradoraQuery(
+    1,
+    -1
+  )
   const { data: ramos, refetch: refetchRamos } = useRamoQuery(1, -1)
   const { data: produtos, refetch: refetchProdutos } = useProdutoQuery(1, -1)
 
@@ -246,7 +247,7 @@ export function PropostaForm({
               valor: Number(p.valor),
               valorLiquido: Number(p.valorLiquido),
               percentualCorretora: Number(p.percentualCorretora),
-              previsaoRecebimento: p.previsaoRecebimento,
+              previsaoPagamento: p.previsaoPagamento,
               situacao: p.situacao,
             })) || []
           ),
@@ -307,18 +308,18 @@ export function PropostaForm({
       } else {
         const year = vencimentoPrimeiraParcela.getFullYear()
         const month = vencimentoPrimeiraParcela.getMonth() + i
-        
+
         const targetDate = new Date(year, month, 1)
-        
+
         const lastDayOfMonth = new Date(
           targetDate.getFullYear(),
           targetDate.getMonth() + 1,
           0
         ).getDate()
-        
+
         const finalDay = Math.min(diaVencimento, lastDayOfMonth)
         targetDate.setDate(finalDay)
-        
+
         dataVencimento = targetDate.toISOString().slice(0, 10)
       }
 
@@ -328,7 +329,7 @@ export function PropostaForm({
         valorLiquido: i === 0 ? primeiroValorLiquido : valorLiquido,
         dataVencimento: dataVencimento,
         percentualCorretora: formData.percentualComissao ?? null,
-        previsaoRecebimento: dataVencimento,
+        previsaoPagamento: dataVencimento,
         situacao: "Pendente",
       }
     })
@@ -381,7 +382,7 @@ export function PropostaForm({
           }
           if (formData.parcelas.length > 0) {
             const hasEmptyDates = formData.parcelas.some(
-              (p: any) => !p.dataVencimento || !p.previsaoRecebimento
+              (p: any) => !p.dataVencimento || !p.previsaoPagamento
             )
             if (hasEmptyDates) {
               toast.error(
@@ -413,7 +414,7 @@ export function PropostaForm({
           }
           if (formData.parcelas.length > 0) {
             const hasEmptyDates = formData.parcelas.some(
-              (p: any) => !p.dataVencimento || !p.previsaoRecebimento
+              (p: any) => !p.dataVencimento || !p.previsaoPagamento
             )
             if (hasEmptyDates) {
               toast.error(
@@ -530,9 +531,9 @@ export function PropostaForm({
           percentualCorretora: data.percentualComissao,
           dataVencimento:
             p.dataVencimento ? new Date(p.dataVencimento).toISOString() : "",
-          previsaoRecebimento:
-            p.previsaoRecebimento ?
-              new Date(p.previsaoRecebimento).toISOString()
+          previsaoPagamento:
+            p.previsaoPagamento ?
+              new Date(p.previsaoPagamento).toISOString()
             : "",
         })),
         propostaOriginalId,
