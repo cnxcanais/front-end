@@ -23,22 +23,6 @@ export function ComissaoTab({
   return (
     <div className="grid grid-cols-2 gap-4">
       <div>
-        <label>% Comissão *</label>
-        <Input.Root className="mt-2">
-          <Input.Control
-            type="number"
-            {...register("percentualComissao", { valueAsNumber: true })}
-            required
-            disabled={readOnly}
-          />
-        </Input.Root>
-        {errors.percentualComissao && (
-          <span className="text-xs text-red-500">
-            {errors.percentualComissao.message}
-          </span>
-        )}
-      </div>
-      <div>
         <SelectInput
           label="Comissão Sobre *"
           field_name="comissaoSobre"

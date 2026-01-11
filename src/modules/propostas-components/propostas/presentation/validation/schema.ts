@@ -5,8 +5,7 @@ const parcelaSchema = z.object({
   numeroParcela: z.number().min(1, "Número da parcela é obrigatório"),
   dataVencimento: z.string().min(1, "Data de vencimento é obrigatória"),
   valor: z.number(),
-  valorLiquido: z.number().nullable(),
-  percentualCorretora: z.preprocess(
+  percentualComissao: z.preprocess(
     (val) =>
       val === "" || val === null || (typeof val === "number" && isNaN(val)) ?
         null

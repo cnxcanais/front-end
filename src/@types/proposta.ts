@@ -14,8 +14,7 @@ export interface Parcela {
   numeroParcela: number
   dataVencimento: string
   valor: string
-  valorLiquido: string
-  percentualCorretora: string
+  percentualComissao: string
   previsaoPagamento: string
   situacao: SituacaoParcelaEnum
   createdAt: string

@@ -77,6 +77,7 @@ export function PropostaForm({
   const [dataPrimeiroVencimento, setDataPrimeiroVencimento] = useState("")
   const [diaVencimentoDemaisParcelas, setDiaVencimentoDemaisParcelas] =
     useState("")
+  const [percentualComissaoInput, setPercentualComissaoInput] = useState("")
 
   const sourceData = propostaToDuplicate || proposta
 
@@ -129,8 +130,7 @@ export function PropostaForm({
           numeroParcela: p.numeroParcela,
           dataVencimento: p.dataVencimento,
           valor: Number(p.valor),
-          valorLiquido: Number(p.valorLiquido),
-          percentualCorretora: Number(p.percentualCorretora),
+          percentualComissao: Number(p.percentualComissao),
           previsaoPagamento: p.previsaoPagamento,
           situacao: p.situacao,
         })) || [],
@@ -245,8 +245,7 @@ export function PropostaForm({
               numeroParcela: p.numeroParcela,
               dataVencimento: p.dataVencimento,
               valor: Number(p.valor),
-              valorLiquido: Number(p.valorLiquido),
-              percentualCorretora: Number(p.percentualCorretora),
+              percentualComissao: Number(p.percentualComissao),
               previsaoPagamento: p.previsaoPagamento,
               situacao: p.situacao,
             })) || []
@@ -290,15 +289,9 @@ export function PropostaForm({
       Number(formData.valoresAdicionais || 0) +
       Number(formData.iof || 0)
     const valorParcela = Math.floor((premioTotal / numParcelas) * 100) / 100
-    const valorLiquido =
-      Math.floor((Number(formData.premioLiquido) / numParcelas) * 100) / 100
+
     const primeiraParcela =
       Math.round((premioTotal - valorParcela * (numParcelas - 1)) * 100) / 100
-    const primeiroValorLiquido =
-      Math.round(
-        (Number(formData.premioLiquido) - valorLiquido * (numParcelas - 1)) *
-          100
-      ) / 100
 
     const parcelas = Array.from({ length: numParcelas }, (_, i) => {
       let dataVencimento: string
@@ -326,9 +319,10 @@ export function PropostaForm({
       return {
         numeroParcela: i + 1,
         valor: i === 0 ? primeiraParcela : valorParcela,
-        valorLiquido: i === 0 ? primeiroValorLiquido : valorLiquido,
         dataVencimento: dataVencimento,
-        percentualCorretora: formData.percentualComissao ?? null,
+        percentualComissao: percentualComissaoInput
+          ? parseFloat(percentualComissaoInput)
+          : null,
         previsaoPagamento: dataVencimento,
         situacao: "Pendente",
       }
@@ -338,6 +332,7 @@ export function PropostaForm({
     setShowParcelasModal(false)
     setNumParcelasInput("")
     setDiaVencimentoDemaisParcelas("")
+    setPercentualComissaoInput("")
     toast.success("Parcelas geradas com sucesso!")
   }
 
@@ -528,7 +523,7 @@ export function PropostaForm({
           : undefined,
         parcelas: data.parcelas.map((p) => ({
           ...p,
-          percentualCorretora: data.percentualComissao,
+          percentualComissao: data.percentualComissao,
           dataVencimento:
             p.dataVencimento ? new Date(p.dataVencimento).toISOString() : "",
           previsaoPagamento:
@@ -754,6 +749,8 @@ export function PropostaForm({
           dataPrimeiroVencimento={dataPrimeiroVencimento}
           diaVencimentoDemaisParcelas={diaVencimentoDemaisParcelas}
           setDiaVencimentoDemaisParcelas={setDiaVencimentoDemaisParcelas}
+          percentualComissaoInput={percentualComissaoInput}
+          setPercentualComissaoInput={setPercentualComissaoInput}
         />
       )}
     </div>
