@@ -57,7 +57,7 @@ export const propostaFormSchema = z
     numeroProposta: z
       .string()
       .min(1, "Número da proposta é obrigatório")
-      .max(20),
+      .max(40, "Máximo de 40 caracteres"),
     seguradoId: z.string().min(1, "Segurado é obrigatório"),
     corretoraId: z.string().min(1, "Corretora é obrigatória"),
     produtorId: z.string().min(1, "Produtor é obrigatório"),
