@@ -150,6 +150,7 @@ export const createProdutorFormSchema = z
       ),
     valorRepasse: z
       .string()
+      .optional()
       .transform((val) => val.replace(",", "."))
       .pipe(z.coerce.number().min(0).optional()),
     valorRepasseIndicacao: z

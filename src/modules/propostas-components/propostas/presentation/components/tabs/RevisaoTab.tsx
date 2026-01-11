@@ -146,7 +146,7 @@ export function RevisaoTab({
           <div>
             <SelectInput
               label="Corretora *"
-              disabled
+              disabled={readOnly}
               field_name="corretoraId"
               value={
                 produtores?.data?.find((p: any) => p.id === formData.produtorId)

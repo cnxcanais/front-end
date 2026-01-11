@@ -42,7 +42,7 @@ export function EditProdutoForm({ id }: { id: string }) {
       queryClient.invalidateQueries({ queryKey: ["produtos"] })
       setTimeout(() => push("/produtos"), 2000)
     } catch (error) {
-      toast.error("Erro ao editar produto: " + error)
+      toast.error("Erro ao editar produto: " + error?.response?.data?.message)
     }
   }
 

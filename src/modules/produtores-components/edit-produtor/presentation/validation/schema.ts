@@ -91,7 +91,7 @@ export const editProdutorFormSchema = z
     tipoRepasse: z
       .string()
       .nonempty({ message: "Obrigatório" })
-      .max(50, { message: "Campo deve ter no máximo 50 caracteres" }),
+      .max(50, { message: "Campo deve ter no máximo 0 caracteres" }),
     formaRepasse: z
       .string()
       .nonempty({ message: "Obrigatório" })
@@ -136,6 +136,7 @@ export const editProdutorFormSchema = z
       ),
     valorRepasse: z
       .string()
+      .optional()
       .transform((val) =>
         !val || val.trim() === "" ? undefined : val.replace(",", ".")
       )

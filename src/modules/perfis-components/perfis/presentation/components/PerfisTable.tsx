@@ -53,7 +53,7 @@ export function PerfisTable() {
       accessor: "id",
       render: (value: string) => (
         <div className="flex space-x-4">
-          {!perfis?.data?.find((p) => p.id === value).isSistema && (
+          {!perfis?.data?.find((p) => p.id === value)?.isSistema && (
             <>
               <Pencil
                 className="cursor-pointer duration-300 ease-in-out hover:text-blue-500"

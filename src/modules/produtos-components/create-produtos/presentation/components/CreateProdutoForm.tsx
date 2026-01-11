@@ -47,7 +47,7 @@ export function CreateProdutoForm() {
       queryClient.invalidateQueries({ queryKey: ["produtos"] })
       setTimeout(() => push("/produtos"), 2000)
     } catch (error) {
-      toast.error("Erro ao criar produto: " + error)
+      toast.error("Erro ao criar produto: " + error?.response?.data?.message)
     }
   }
 

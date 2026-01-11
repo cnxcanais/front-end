@@ -233,7 +233,7 @@ export function UsuariosTable() {
         </Button>
         <div className="flex items-center gap-2">
           <ExportTableToPDFButton
-            filename={`perfis.${new Date().toLocaleDateString("pt-BR").replace(/\//g, "-")}`}
+            filename={`usuario.${new Date().toLocaleDateString("pt-BR").replace(/\//g, "-")}`}
             options={{ orientation: "portrait" }}
             title="Perfis"
             className="bg-red-500">
@@ -242,7 +242,7 @@ export function UsuariosTable() {
           <Button
             className="flex items-center gap-1"
             variant="secondary"
-            onClick={() => exportNoPagination("perfis")}>
+            onClick={() => exportNoPagination("usuario")}>
             <FileXls size={22} />
             Exportar
           </Button>

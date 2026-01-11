@@ -141,8 +141,8 @@ export function PropostaTab({
       <div>
         <SelectInput
           label="Corretora *"
-          disabled
           field_name="corretoraId"
+          disabled={readOnly}
           value={formData.corretoraId}
           onChange={(e) => setValue("corretoraId", e.target.value)}
           options={
