@@ -155,11 +155,18 @@ export function PropostaForm({
     -1,
     { status: "ATIVO" }
   )
-  const { data: corretoras } = useCorretoraQuery(1, -1)
-  const { data: produtores } = useProdutorQuery(1, -1)
-  const { data: seguradoras } = useSeguradoraQuery(1, -1)
-  const { data: ramos } = useRamoQuery(1, -1)
-  const { data: produtos } = useProdutoQuery(1, -1)
+  const { data: corretoras, refetch: refetchCorretoras } = useCorretoraQuery(
+    1,
+    -1
+  )
+  const { data: produtores, refetch: refetchProdutores } = useProdutorQuery(
+    1,
+    -1
+  )
+  const { data: seguradoras, refetch: refetchSeguradoras } =
+    useSeguradoraQuery(1, -1)
+  const { data: ramos, refetch: refetchRamos } = useRamoQuery(1, -1)
+  const { data: produtos, refetch: refetchProdutos } = useProdutoQuery(1, -1)
 
   const produtosOptions = useMemo(() => {
     if (!produtos?.data || !formData.ramoId) return []
@@ -624,6 +631,11 @@ export function PropostaForm({
             isRenovacao={isRenovacao}
             readOnly={readOnly}
             refetchSegurados={refetchSegurados}
+            refetchSeguradoras={refetchSeguradoras}
+            refetchProdutores={refetchProdutores}
+            refetchCorretoras={refetchCorretoras}
+            refetchRamos={refetchRamos}
+            refetchProdutos={refetchProdutos}
           />
         )}
 

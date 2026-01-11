@@ -4,12 +4,16 @@ import { Ramo } from "@/@types/ramo"
 import { Segurado } from "@/@types/segurado"
 import { Seguradora } from "@/@types/seguradora"
 import * as Input from "@/core/components/Input"
-import { Modal } from "@/core/components/Modals/Modal"
 import { SelectInput } from "@/core/components/SelectInput"
-import { CreateSeguradoForm } from "@/modules/segurados-components/create-segurado/presentation/components/CreateSeguradoForm"
 import { Plus } from "@phosphor-icons/react"
 import { useState } from "react"
 import { PropostaFormSchema } from "../../validation/schema"
+import { CreateCorretoraModal } from "../modals/CreateCorretoraModal"
+import { CreateProdutorModal } from "../modals/CreateProdutorModal"
+import { CreateProdutoModal } from "../modals/CreateProdutoModal"
+import { CreateRamoModal } from "../modals/CreateRamoModal"
+import { CreateSeguradoraModal } from "../modals/CreateSeguradoraModal"
+import { CreateSeguradoModal } from "../modals/CreateSeguradoModal"
 
 interface PropostaTabProps {
   register: any
@@ -29,6 +33,11 @@ interface PropostaTabProps {
   isRenovacao?: boolean
   readOnly?: boolean
   refetchSegurados: () => void
+  refetchSeguradoras: () => void
+  refetchProdutores: () => void
+  refetchCorretoras: () => void
+  refetchRamos: () => void
+  refetchProdutos: () => void
 }
 
 export function PropostaTab({
@@ -46,8 +55,20 @@ export function PropostaTab({
   isRenovacao = false,
   readOnly = false,
   refetchSegurados,
+  refetchSeguradoras,
+  refetchProdutores,
+  refetchCorretoras,
+  refetchRamos,
+  refetchProdutos,
 }: PropostaTabProps) {
   const [showCreateSeguradoModal, setShowCreateSeguradoModal] = useState(false)
+  const [showCreateSeguradoraModal, setShowCreateSeguradoraModal] =
+    useState(false)
+  const [showCreateProdutorModal, setShowCreateProdutorModal] = useState(false)
+  const [showCreateCorretoraModal, setShowCreateCorretoraModal] =
+    useState(false)
+  const [showCreateRamoModal, setShowCreateRamoModal] = useState(false)
+  const [showCreateProdutoModal, setShowCreateProdutoModal] = useState(false)
   const isDisabled = isEndosso || isRenovacao || readOnly
   const RAMO_ID_GARANTIA = process.env.NEXT_PUBLIC_RAMO_GARANTIA_ID
 
@@ -112,20 +133,33 @@ export function PropostaTab({
         )}
       </div>
       <div>
-        <SelectInput
-          label="Seguradora *"
-          field_name="seguradoraId"
-          value={formData.seguradoraId}
-          onChange={(e) => setValue("seguradoraId", e.target.value)}
-          options={
-            seguradoras?.data?.map((s: Seguradora.Type) => ({
-              text: s.razaoSocial,
-              value: s.id,
-            })) || []
-          }
-          required
-          disabled={isDisabled}
-        />
+        <label>Seguradora *</label>
+        <div className="flex items-center gap-2">
+          <div className="flex-1">
+            <SelectInput
+              label=""
+              field_name="seguradoraId"
+              value={formData.seguradoraId}
+              onChange={(e) => setValue("seguradoraId", e.target.value)}
+              options={
+                seguradoras?.data?.map((s: Seguradora.Type) => ({
+                  text: s.razaoSocial,
+                  value: s.id,
+                })) || []
+              }
+              required
+              disabled={isDisabled}
+            />
+          </div>
+          {!isDisabled && (
+            <button
+              type="button"
+              onClick={() => setShowCreateSeguradoraModal(true)}
+              className="flex h-10 w-10 flex-shrink-0 items-center justify-center rounded bg-blue-600 text-white hover:bg-blue-700">
+              <Plus size={20} weight="bold" />
+            </button>
+          )}
+        </div>
         {errors.seguradoraId && (
           <span className="text-xs text-red-500">
             {errors.seguradoraId.message}
@@ -133,23 +167,36 @@ export function PropostaTab({
         )}
       </div>
       <div>
-        <SelectInput
-          label="Produtor *"
-          field_name="produtorId"
-          value={formData.produtorId}
-          onChange={(e) => {
-            const produtorId = e.target.value
-            setValue("produtorId", produtorId)
-          }}
-          options={
-            produtores?.data?.map((p: Produtor.Type) => ({
-              text: p.nome,
-              value: p.id,
-            })) || []
-          }
-          required
-          disabled={isDisabled}
-        />
+        <label>Produtor *</label>
+        <div className="flex items-center gap-2">
+          <div className="flex-1">
+            <SelectInput
+              label=""
+              field_name="produtorId"
+              value={formData.produtorId}
+              onChange={(e) => {
+                const produtorId = e.target.value
+                setValue("produtorId", produtorId)
+              }}
+              options={
+                produtores?.data?.map((p: Produtor.Type) => ({
+                  text: p.nome,
+                  value: p.id,
+                })) || []
+              }
+              required
+              disabled={isDisabled}
+            />
+          </div>
+          {!isDisabled && (
+            <button
+              type="button"
+              onClick={() => setShowCreateProdutorModal(true)}
+              className="flex h-10 w-10 flex-shrink-0 items-center justify-center rounded bg-blue-600 text-white hover:bg-blue-700">
+              <Plus size={20} weight="bold" />
+            </button>
+          )}
+        </div>
         {errors.produtorId && (
           <span className="text-xs text-red-500">
             {errors.produtorId.message}
@@ -157,20 +204,33 @@ export function PropostaTab({
         )}
       </div>
       <div>
-        <SelectInput
-          label="Corretora *"
-          field_name="corretoraId"
-          disabled={readOnly}
-          value={formData.corretoraId}
-          onChange={(e) => setValue("corretoraId", e.target.value)}
-          options={
-            corretoras?.data?.map((c: Corretora.Type) => ({
-              text: c.razaoSocial,
-              value: c.id,
-            })) || []
-          }
-          required
-        />
+        <label>Corretora *</label>
+        <div className="flex items-center gap-2">
+          <div className="flex-1">
+            <SelectInput
+              label=""
+              field_name="corretoraId"
+              disabled={readOnly}
+              value={formData.corretoraId}
+              onChange={(e) => setValue("corretoraId", e.target.value)}
+              options={
+                corretoras?.data?.map((c: Corretora.Type) => ({
+                  text: c.razaoSocial,
+                  value: c.id,
+                })) || []
+              }
+              required
+            />
+          </div>
+          {!readOnly && (
+            <button
+              type="button"
+              onClick={() => setShowCreateCorretoraModal(true)}
+              className="flex h-10 w-10 flex-shrink-0 items-center justify-center rounded bg-blue-600 text-white hover:bg-blue-700">
+              <Plus size={20} weight="bold" />
+            </button>
+          )}
+        </div>
         {errors.corretoraId && (
           <span className="text-xs text-red-500">
             {errors.corretoraId.message}
@@ -178,22 +238,35 @@ export function PropostaTab({
         )}
       </div>
       <div>
-        <SelectInput
-          label="Ramo *"
-          field_name="ramoId"
-          value={formData.ramoId}
-          onChange={(e) => {
-            setValue("ramoId", e.target.value)
-          }}
-          options={
-            ramos?.data?.map((r: Ramo) => ({
-              text: r.descricao,
-              value: r.id,
-            })) || []
-          }
-          required
-          disabled={isDisabled}
-        />
+        <label>Ramo *</label>
+        <div className="flex items-center gap-2">
+          <div className="flex-1">
+            <SelectInput
+              label=""
+              field_name="ramoId"
+              value={formData.ramoId}
+              onChange={(e) => {
+                setValue("ramoId", e.target.value)
+              }}
+              options={
+                ramos?.data?.map((r: Ramo) => ({
+                  text: r.descricao,
+                  value: r.id,
+                })) || []
+              }
+              required
+              disabled={isDisabled}
+            />
+          </div>
+          {!isDisabled && (
+            <button
+              type="button"
+              onClick={() => setShowCreateRamoModal(true)}
+              className="flex h-10 w-10 flex-shrink-0 items-center justify-center rounded bg-blue-600 text-white hover:bg-blue-700">
+              <Plus size={20} weight="bold" />
+            </button>
+          )}
+        </div>
         {errors.ramoId && (
           <span className="text-xs text-red-500">{errors.ramoId.message}</span>
         )}
@@ -223,14 +296,27 @@ export function PropostaTab({
       )}
 
       <div>
-        <SelectInput
-          label="Produto"
-          field_name="produtoId"
-          value={formData.produtoId}
-          onChange={(e) => setValue("produtoId", e.target.value)}
-          options={produtosOptions || []}
-          disabled={isDisabled}
-        />
+        <label>Produto</label>
+        <div className="flex items-center gap-2">
+          <div className="flex-1">
+            <SelectInput
+              label=""
+              field_name="produtoId"
+              value={formData.produtoId}
+              onChange={(e) => setValue("produtoId", e.target.value)}
+              options={produtosOptions || []}
+              disabled={isDisabled}
+            />
+          </div>
+          {!isDisabled && (
+            <button
+              type="button"
+              onClick={() => setShowCreateProdutoModal(true)}
+              className="flex h-10 w-10 flex-shrink-0 items-center justify-center rounded bg-blue-600 text-white hover:bg-blue-700">
+              <Plus size={20} weight="bold" />
+            </button>
+          )}
+        </div>
         {errors.produtoId && (
           <span className="text-xs text-red-500">
             {errors.produtoId.message}
@@ -277,19 +363,65 @@ export function PropostaTab({
         )}
       </div>
 
-      <Modal
-        title="Criar Novo Segurado"
+      <CreateSeguradoModal
         open={showCreateSeguradoModal}
-        onClose={() => setShowCreateSeguradoModal(false)}>
-        <CreateSeguradoForm
-          onSuccess={(seguradoId) => {
-            refetchSegurados()
-            setValue("seguradoId", seguradoId)
-            setShowCreateSeguradoModal(false)
-          }}
-          isModal
-        />
-      </Modal>
+        onClose={() => setShowCreateSeguradoModal(false)}
+        onSuccess={(seguradoId) => {
+          refetchSegurados()
+          setValue("seguradoId", seguradoId)
+          setShowCreateSeguradoModal(false)
+        }}
+      />
+
+      <CreateSeguradoraModal
+        open={showCreateSeguradoraModal}
+        onClose={() => setShowCreateSeguradoraModal(false)}
+        onSuccess={(seguradoraId) => {
+          refetchSeguradoras()
+          setValue("seguradoraId", seguradoraId)
+          setShowCreateSeguradoraModal(false)
+        }}
+      />
+
+      <CreateProdutorModal
+        open={showCreateProdutorModal}
+        onClose={() => setShowCreateProdutorModal(false)}
+        onSuccess={(produtorId) => {
+          refetchProdutores()
+          setValue("produtorId", produtorId)
+          setShowCreateProdutorModal(false)
+        }}
+      />
+
+      <CreateCorretoraModal
+        open={showCreateCorretoraModal}
+        onClose={() => setShowCreateCorretoraModal(false)}
+        onSuccess={(corretoraId) => {
+          refetchCorretoras()
+          setValue("corretoraId", corretoraId)
+          setShowCreateCorretoraModal(false)
+        }}
+      />
+
+      <CreateRamoModal
+        open={showCreateRamoModal}
+        onClose={() => setShowCreateRamoModal(false)}
+        onSuccess={(ramoId) => {
+          refetchRamos()
+          setValue("ramoId", ramoId)
+          setShowCreateRamoModal(false)
+        }}
+      />
+
+      <CreateProdutoModal
+        open={showCreateProdutoModal}
+        onClose={() => setShowCreateProdutoModal(false)}
+        onSuccess={(produtoId) => {
+          refetchProdutos()
+          setValue("produtoId", produtoId)
+          setShowCreateProdutoModal(false)
+        }}
+      />
     </div>
   )
 }
