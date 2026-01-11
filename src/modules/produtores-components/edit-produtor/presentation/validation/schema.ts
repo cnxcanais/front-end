@@ -143,6 +143,7 @@ export const editProdutorFormSchema = z
       .pipe(z.coerce.number().min(0).optional()),
     valorRepasseIndicacao: z
       .string()
+      .optional()
       .transform((val) =>
         !val || val.trim() === "" ? undefined : val.replace(",", ".")
       )

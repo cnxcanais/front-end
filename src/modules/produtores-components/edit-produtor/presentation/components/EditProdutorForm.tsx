@@ -141,6 +141,7 @@ export function EditProdutorForm({ id }: { id: string }) {
 
   const fullAddress = `${produtor.logradouro}, ${produtor.numero} - ${produtor.bairro}, ${produtor.cidade} - ${produtor.uf}, ${produtor.cep}`
 
+  console.log(errors)
   return (
     <form
       className="mt-6 flex max-w-[1200px] flex-col gap-6"

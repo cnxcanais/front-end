@@ -72,6 +72,6 @@ export enum FormaRepasseEnum {
 export const formaRepasseOptions = [
   {
     text: FormaRepasseEnum.NO_RECEBIMENTO,
-    value: FormaRepasseEnum.NO_RECEBIMENTO,
+    value: Object.keys(FormaRepasseEnum)[0],
   },
 ]
