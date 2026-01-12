@@ -2,7 +2,10 @@ import { Produtor } from "@/@types/produtor"
 import { Button } from "@/core/components/Button"
 import * as Input from "@/core/components/Input"
 import { SelectInput } from "@/core/components/SelectInput"
-import { formaRepasseOptions } from "@/modules/propostas-components/types/enums"
+import {
+  formaRepasseOptions,
+  RepasseSobreOptions,
+} from "@/modules/propostas-components/types/enums"
 import { PropostaFormSchema } from "../../validation/schema"
 
 interface RepassesTabProps {
@@ -88,23 +91,50 @@ export function RepassesTab({
                   </span>
                 )}
               </div>
-              <div>
-                <label>% Repasse *</label>
-                <Input.Root className="mt-2">
-                  <Input.Control
-                    type="number"
-                    {...register(`repasses.${index}.percentualRepasse` as any, {
-                      valueAsNumber: true,
-                    })}
-                    disabled={readOnly}
-                  />
-                </Input.Root>
-                {errors.repasses?.[index]?.percentualRepasse && (
-                  <span className="text-xs text-red-500">
-                    {errors.repasses[index].percentualRepasse.message}
-                  </span>
-                )}
-              </div>
+              {formData.repasses[index].repasseSobre === "Valor Fixo" ?
+                <>
+                  <div>
+                    <label>Valor Repasse R$ *</label>
+                    <Input.Root className="mt-2">
+                      <Input.Control
+                        type="number"
+                        {...register(`repasses.${index}.valorRepasse` as any, {
+                          valueAsNumber: true,
+                        })}
+                        disabled={readOnly}
+                      />
+                    </Input.Root>
+                    {errors.repasses?.[index]?.valorRepasse && (
+                      <span className="text-xs text-red-500">
+                        {errors.repasses[index].valorRepasse.message}
+                      </span>
+                    )}
+                  </div>
+                </>
+              : <>
+                  <div>
+                    <label>% Repasse *</label>
+                    <Input.Root className="mt-2">
+                      <Input.Control
+                        type="number"
+                        {...register(
+                          `repasses.${index}.percentualRepasse` as any,
+                          {
+                            valueAsNumber: true,
+                          }
+                        )}
+                        disabled={readOnly}
+                      />
+                    </Input.Root>
+                    {errors.repasses?.[index]?.percentualRepasse && (
+                      <span className="text-xs text-red-500">
+                        {errors.repasses[index].percentualRepasse.message}
+                      </span>
+                    )}
+                  </div>
+                </>
+              }
+
               <div>
                 <SelectInput
                   label="Repasse Sobre *"
@@ -115,14 +145,7 @@ export function RepassesTab({
                     newRepasses[index].repasseSobre = e.target.value as any
                     setValue("repasses", newRepasses)
                   }}
-                  options={[
-                    { text: "Prêmio Líquido", value: "Premio Liquido" },
-                    {
-                      text: "Comissão da Corretora",
-                      value: "Comissão da Corretora",
-                    },
-                    { text: "Valor Fixo", value: "Valor Fixo" },
-                  ]}
+                  options={RepasseSobreOptions}
                   disabled={readOnly}
                 />
                 {errors.repasses?.[index]?.repasseSobre && (

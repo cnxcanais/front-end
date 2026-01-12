@@ -65,13 +65,35 @@ export enum RepasseSobreEnum {
   VALOR_FIXO = "Valor Fixo",
 }
 
+export const RepasseSobreOptions = [
+  {
+    text: RepasseSobreEnum.PREMIO_LIQUIDO,
+    value: RepasseSobreEnum.PREMIO_LIQUIDO,
+  },
+  {
+    text: RepasseSobreEnum.COMISSAO_CORRETORA,
+    value: RepasseSobreEnum.COMISSAO_CORRETORA,
+  },
+  {
+    text: RepasseSobreEnum.VALOR_FIXO,
+    value: RepasseSobreEnum.VALOR_FIXO,
+  },
+]
+
 export enum FormaRepasseEnum {
   NO_RECEBIMENTO = "No recebimento",
 }
 
-export const formaRepasseOptions = [
+export const formaRepasseProdutorOptions = [
   {
     text: FormaRepasseEnum.NO_RECEBIMENTO,
     value: Object.keys(FormaRepasseEnum)[0],
+  },
+]
+
+export const formaRepasseOptions = [
+  {
+    text: FormaRepasseEnum.NO_RECEBIMENTO,
+    value: "No Recebimento",
   },
 ]

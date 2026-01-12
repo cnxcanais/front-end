@@ -30,13 +30,20 @@ const repasseSchema = z.object({
     .min(0, "Percentual deve ser maior ou igual a 0")
     .max(100, "Percentual deve ser menor ou igual a 100")
     .nullable(),
+  valorRepasse: z
+    .number({
+      invalid_type_error: "Percentual de repasse deve ser um número válido",
+    })
+    .min(0, "Valor deve ser maior ou igual a 0")
+    .nullable()
+    .optional(),
   repasseSobre: z.enum(
     ["Premio Liquido", "Comissão da Corretora", "Valor Fixo"],
     {
       errorMap: () => ({ message: "Repasse sobre é obrigatório" }),
     }
   ),
-  formaRepasse: z.enum(["No recebimento"], {
+  formaRepasse: z.enum(["No Recebimento"], {
     errorMap: () => ({ message: "Forma de repasse é obrigatória" }),
   }),
 })

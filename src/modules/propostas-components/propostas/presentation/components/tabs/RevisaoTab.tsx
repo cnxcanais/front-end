@@ -550,19 +550,53 @@ export function RevisaoTab({
                       disabled={readOnly}
                     />
                   </div>
-                  <div>
-                    <label>% Repasse *</label>
-                    <Input.Root className="mt-2">
-                      <Input.Control
-                        type="number"
-                        {...register(
-                          `repasses.${index}.percentualRepasse` as any,
-                          { valueAsNumber: true }
+                  {formData.repasses[index].repasseSobre === "Valor Fixo" ?
+                    <>
+                      <div>
+                        <label>Valor Repasse R$ *</label>
+                        <Input.Root className="mt-2">
+                          <Input.Control
+                            type="number"
+                            {...register(
+                              `repasses.${index}.valorRepasse` as any,
+                              {
+                                valueAsNumber: true,
+                              }
+                            )}
+                            disabled={readOnly}
+                          />
+                        </Input.Root>
+                        {errors.repasses?.[index]?.valorRepasse && (
+                          <span className="text-xs text-red-500">
+                            {errors.repasses[index].valorRepasse.message}
+                          </span>
                         )}
-                        disabled={readOnly}
-                      />
-                    </Input.Root>
-                  </div>
+                      </div>
+                    </>
+                  : <>
+                      <div>
+                        <label>% Repasse *</label>
+                        <Input.Root className="mt-2">
+                          <Input.Control
+                            type="number"
+                            {...register(
+                              `repasses.${index}.percentualRepasse` as any,
+                              {
+                                valueAsNumber: true,
+                              }
+                            )}
+                            disabled={readOnly}
+                          />
+                        </Input.Root>
+                        {errors.repasses?.[index]?.percentualRepasse && (
+                          <span className="text-xs text-red-500">
+                            {errors.repasses[index].percentualRepasse.message}
+                          </span>
+                        )}
+                      </div>
+                    </>
+                  }
+
                   <div>
                     <SelectInput
                       label="Repasse Sobre *"

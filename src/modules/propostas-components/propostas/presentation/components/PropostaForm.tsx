@@ -141,6 +141,7 @@ export function PropostaForm({
         sourceData?.repasses?.map((r) => ({
           produtorId: r.produtorId,
           percentualRepasse: Number(r.percentualRepasse),
+          valorRepasse: Number(r.valorRepasse),
           repasseSobre: r.repasseSobre as any,
           formaRepasse: r.formaRepasse as any,
         })) || [],
@@ -148,8 +149,6 @@ export function PropostaForm({
   })
 
   const formData = watch()
-
-  console.log(errors)
 
   const { push } = useRouter()
   const { data: segurados, refetch: refetchSegurados } = useSeguradoQuery(
@@ -329,22 +328,26 @@ export function PropostaForm({
         dataVencimento = targetDate.toISOString().slice(0, 10)
       }
 
-      const parcelasComComissao = numParcelasComComissao
-        ? Number(numParcelasComComissao)
-        : numParcelas
+      const parcelasComComissao =
+        numParcelasComComissao ? Number(numParcelasComComissao) : numParcelas
       const aplicarComissao = i < parcelasComComissao
 
-      const qtdParcelasAgenciadas = numParcelasAgenciadas
-        ? Number(numParcelasAgenciadas)
-        : 0
-      const totalAgenciamento = percentualAgenciamento
-        ? parseFloat(percentualAgenciamento)
-        : 0
+      const qtdParcelasAgenciadas =
+        numParcelasAgenciadas ? Number(numParcelasAgenciadas) : 0
+      const totalAgenciamento =
+        percentualAgenciamento ? parseFloat(percentualAgenciamento) : 0
 
       let comissaoParcela = null
 
-      if (qtdParcelasAgenciadas > 0 && totalAgenciamento > 0 && i < qtdParcelasAgenciadas) {
-        comissaoParcela = Math.min(totalAgenciamento / qtdParcelasAgenciadas, 100)
+      if (
+        qtdParcelasAgenciadas > 0 &&
+        totalAgenciamento > 0 &&
+        i < qtdParcelasAgenciadas
+      ) {
+        comissaoParcela = Math.min(
+          totalAgenciamento / qtdParcelasAgenciadas,
+          100
+        )
       } else if (percentualComissaoInput && aplicarComissao) {
         comissaoParcela = Math.min(parseFloat(percentualComissaoInput), 100)
       }
@@ -360,6 +363,13 @@ export function PropostaForm({
     })
 
     setValue("parcelas", parcelas)
+    setValue(
+      "valorComissao",
+      parcelas.reduce(
+        (acc, p) => acc + (Number(p.percentualComissao) / 100) * p.valor,
+        0
+      )
+    )
     setShowParcelasModal(false)
     setNumParcelasInput("")
     setDiaVencimentoDemaisParcelas("")
@@ -465,34 +475,27 @@ export function PropostaForm({
             }
           }
         } else {
-          fieldsToValidate = [
-            "percentualComissao",
-            "comissaoSobre",
-            "formaComissao",
-            "valorComissao",
-          ]
+          fieldsToValidate = ["comissaoSobre", "formaComissao", "valorComissao"]
         }
         break
       case 5:
         if (isAutomovelRamo) {
-          fieldsToValidate = [
-            "percentualComissao",
-            "comissaoSobre",
-            "formaComissao",
-            "valorComissao",
-          ]
+          fieldsToValidate = ["comissaoSobre", "formaComissao", "valorComissao"]
         } else {
           if (formData.repasses.length > 0) {
-            const hasInvalidRepasse = formData.repasses.some(
-              (r: any) =>
+            const hasInvalidRepasse = formData.repasses.some((r: any) => {
+              return (
                 !r.produtorId ||
                 r.percentualRepasse === undefined ||
                 r.percentualRepasse === null ||
                 !r.repasseSobre ||
                 !r.formaRepasse
-            )
+              )
+            })
             if (hasInvalidRepasse) {
+              console.log("I entered invalid repasse block")
               toast.error("Preencha todos os campos obrigatórios dos repasses")
+              return
             }
           }
           fieldsToValidate = ["repasses"]
@@ -511,6 +514,7 @@ export function PropostaForm({
             )
             if (hasInvalidRepasse) {
               toast.error("Preencha todos os campos obrigatórios dos repasses")
+              return
             }
           }
           fieldsToValidate = ["repasses"]

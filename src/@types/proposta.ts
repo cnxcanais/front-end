@@ -30,6 +30,7 @@ export interface Repasse {
   propostaApoliceId: string
   produtorId: string
   percentualRepasse: string
+  valorRepasse: string
   repasseSobre: RepasseSobreEnum
   formaRepasse: FormaRepasseEnum
   createdAt: string

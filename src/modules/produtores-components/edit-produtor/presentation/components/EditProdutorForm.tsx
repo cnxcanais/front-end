@@ -23,7 +23,7 @@ import {
   TipoContaLabels,
   TipoRepasseLabels,
 } from "@/modules/produtores-components/types/form-enums"
-import { formaRepasseOptions } from "@/modules/propostas-components/types/enums"
+import { formaRepasseProdutorOptions } from "@/modules/propostas-components/types/enums"
 import { zodResolver } from "@hookform/resolvers/zod"
 import { MagnifyingGlass, MapPin } from "@phosphor-icons/react"
 import { useRouter } from "next/navigation"
@@ -575,7 +575,7 @@ export function EditProdutorForm({ id }: { id: string }) {
 
           <div className="flex flex-col gap-2">
             <SelectInput
-              options={formaRepasseOptions}
+              options={formaRepasseProdutorOptions}
               field_name="formaRepasse"
               label="Forma Repasse *"
               {...register("formaRepasse")}
@@ -685,7 +685,7 @@ export function EditProdutorForm({ id }: { id: string }) {
         <div className="flex gap-4">
           <div className="flex flex-col gap-2">
             <SelectInput
-              options={formaRepasseOptions}
+              options={formaRepasseProdutorOptions}
               field_name="formaRepasseIndicacao"
               label="Forma Repasse"
               {...register("formaRepasseIndicacao")}
