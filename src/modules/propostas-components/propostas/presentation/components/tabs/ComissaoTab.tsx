@@ -1,4 +1,3 @@
-import * as Input from "@/core/components/Input"
 import { SelectInput } from "@/core/components/SelectInput"
 import {
   comissaoSobreOptions,
@@ -51,21 +50,6 @@ export function ComissaoTab({
         {errors.formaComissao && (
           <span className="text-xs text-red-500">
             {errors.formaComissao.message}
-          </span>
-        )}
-      </div>
-      <div>
-        <label>Valor de Comissão</label>
-        <Input.Root className="mt-2">
-          <Input.Control
-            type="number"
-            value={formData.valorComissao}
-            disabled
-          />
-        </Input.Root>
-        {errors.valorComissao && (
-          <span className="text-xs text-red-500">
-            {errors.valorComissao.message}
           </span>
         )}
       </div>

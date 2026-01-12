@@ -121,10 +121,9 @@ export function PropostaForm({
       dataEmissao: sourceData?.dataEmissao || "",
       numeroApolice: sourceData?.numeroApolice || "",
       motivoNaoRenovacao: sourceData?.motivoNaoRenovacao || "",
-      percentualComissao: sourceData?.percentualComissao || undefined,
       comissaoSobre: (sourceData?.comissaoSobre as any) || "Premio Liquido",
       formaComissao: sourceData?.formaComissao || "Na Parcela",
-      valorComissao: sourceData?.valorComissao || undefined,
+      valorComissao: sourceData?.valorComissao || 0,
       premioLiquido: sourceData?.premioLiquido || undefined,
       valoresAdicionais: sourceData?.valoresAdicionais || undefined,
       iof: sourceData?.iof || undefined,
@@ -149,6 +148,9 @@ export function PropostaForm({
   })
 
   const formData = watch()
+
+  console.log(errors)
+  console.log(formData)
 
   const { push } = useRouter()
   const { data: segurados, refetch: refetchSegurados } = useSeguradoQuery(
@@ -233,7 +235,6 @@ export function PropostaForm({
           : propostaToDuplicate.numeroApolice,
 
         motivoNaoRenovacao: propostaToDuplicate.motivoNaoRenovacao,
-        percentualComissao: propostaToDuplicate.percentualComissao,
         comissaoSobre: propostaToDuplicate.comissaoSobre as any,
         formaComissao: propostaToDuplicate.formaComissao,
         valorComissao: propostaToDuplicate.valorComissao,
@@ -262,14 +263,6 @@ export function PropostaForm({
       })
     }
   }, [propostaToDuplicate])
-
-  useEffect(() => {
-    const premio = Number(formData.premioLiquido) || 0
-    const adicionais = Number(formData.valoresAdicionais) || 0
-    const iof = Number(formData.iof) || 0
-    const comissao = (premio * Number(formData.percentualComissao)) / 100
-    setValue("valorComissao", Number(comissao.toFixed(2)))
-  }, [formData.premioLiquido, formData.percentualComissao])
 
   const handleGenerateParcelas = () => {
     const numParcelas = Number(numParcelasInput)
@@ -363,13 +356,6 @@ export function PropostaForm({
     })
 
     setValue("parcelas", parcelas)
-    setValue(
-      "valorComissao",
-      parcelas.reduce(
-        (acc, p) => acc + (Number(p.percentualComissao) / 100) * p.valor,
-        0
-      )
-    )
     setShowParcelasModal(false)
     setNumParcelasInput("")
     setDiaVencimentoDemaisParcelas("")
@@ -493,7 +479,6 @@ export function PropostaForm({
               )
             })
             if (hasInvalidRepasse) {
-              console.log("I entered invalid repasse block")
               toast.error("Preencha todos os campos obrigatórios dos repasses")
               return
             }

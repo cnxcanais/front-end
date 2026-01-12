@@ -43,7 +43,7 @@ const repasseSchema = z.object({
       errorMap: () => ({ message: "Repasse sobre é obrigatório" }),
     }
   ),
-  formaRepasse: z.enum(["No Recebimento"], {
+  formaRepasse: z.enum(["No recebimento"], {
     errorMap: () => ({ message: "Forma de repasse é obrigatória" }),
   }),
 })
@@ -84,13 +84,6 @@ export const propostaFormSchema = z
     motivoCancelamento: z.string().optional(),
     numeroApolice: z.string().nullable().optional(),
     motivoNaoRenovacao: z.string().nullable().optional(),
-    percentualComissao: z
-      .number({
-        invalid_type_error: "Percentual de comissão deve ser um número válido",
-      })
-      .min(-100, "Percentual deve ser maior ou igual a -100")
-      .max(100, "Percentual deve ser menor ou igual a 100")
-      .nullable(),
     comissaoSobre: z.enum(["Premio Liquido"], {
       errorMap: () => ({ message: "Comissão sobre é obrigatória" }),
     }),

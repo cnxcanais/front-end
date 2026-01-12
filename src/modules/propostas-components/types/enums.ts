@@ -94,6 +94,6 @@ export const formaRepasseProdutorOptions = [
 export const formaRepasseOptions = [
   {
     text: FormaRepasseEnum.NO_RECEBIMENTO,
-    value: "No Recebimento",
+    value: "No recebimento",
   },
 ]

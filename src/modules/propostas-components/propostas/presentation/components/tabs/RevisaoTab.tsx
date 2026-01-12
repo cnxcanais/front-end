@@ -387,16 +387,6 @@ export function RevisaoTab({
         <h3 className="mb-4 text-lg font-semibold">Comissão</h3>
         <div className="grid grid-cols-2 gap-4">
           <div>
-            <label>% Comissão *</label>
-            <Input.Root className="mt-2">
-              <Input.Control
-                type="number"
-                {...register("percentualComissao", { valueAsNumber: true })}
-                disabled={readOnly}
-              />
-            </Input.Root>
-          </div>
-          <div>
             <SelectInput
               label="Comissão Sobre *"
               field_name="comissaoSobre"
@@ -415,16 +405,6 @@ export function RevisaoTab({
               options={formaComissaoOptions}
               disabled={readOnly}
             />
-          </div>
-          <div>
-            <label>Valor de Comissão</label>
-            <Input.Root className="mt-2" variant="disabled">
-              <Input.Control
-                type="number"
-                value={formData.valorComissao}
-                disabled
-              />
-            </Input.Root>
           </div>
         </div>
       </div>
