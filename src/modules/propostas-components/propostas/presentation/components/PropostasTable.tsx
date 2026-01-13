@@ -45,6 +45,7 @@ import {
   CurrencyCircleDollar,
   Eye,
   FileXls,
+  LinkSimple,
   MoneyWavy,
   Note,
   Pencil,
@@ -68,12 +69,18 @@ import { ImportPropostasModal } from "./modals/ImportPropostasModal"
 import { MotivoNaoRenovacaoModal } from "./modals/MotivoNaoRenovacao"
 import { RenovarApoliceModal } from "./modals/RenovarApoliceModal"
 
-import { Parcela } from "@/@types/proposta"
+import { Parcela, Proposta, UltimoEndossoResponse } from "@/@types/proposta"
+import { getPropostaChain } from "../../infra/remote"
+import { CadeiaPropostaModal } from "./modals/CadeiaPropostaModal"
 import { PrevisaoPagamentoModal } from "./modals/PrevisaoPagamentoModal"
 
 export function PropostasTable() {
   const [showPrevisaoModal, setShowPrevisaoModal] = useState(false)
   const [selectedParcelaId, setSelectedParcelaId] = useState<string | null>(
+    null
+  )
+  const [showCadeiaModal, setShowCadeiaModal] = useState(false)
+  const [cadeiaData, setCadeiaData] = useState<UltimoEndossoResponse | null>(
     null
   )
   const searchParams = useSearchParams()
@@ -541,7 +548,7 @@ export function PropostasTable() {
     {
       header: "Ação",
       accessor: "id",
-      render: (value: string, row: any) => (
+      render: (value: string, row: Proposta) => (
         <div className="flex min-w-[100px] max-w-[150px] flex-wrap gap-2">
           <span title="Visualizar">
             <Eye
@@ -589,6 +596,23 @@ export function PropostasTable() {
                 </span>
               </>
             )}
+          {row.tipoDocumento !== "Proposta" && (
+            <span title="Ver Cadeia">
+              <LinkSimple
+                className="cursor-pointer hover:text-blue-500"
+                size={24}
+                onClick={async () => {
+                  try {
+                    const data = await getPropostaChain(row.numeroApolice)
+                    setCadeiaData(data)
+                    setShowCadeiaModal(true)
+                  } catch (error) {
+                    toast.error("Erro ao buscar cadeia")
+                  }
+                }}
+              />
+            </span>
+          )}
 
           {(row.tipoDocumento === TipoDocumentoEnum.APOLICE ||
             row.tipoDocumento === TipoDocumentoEnum.ENDOSSO ||
@@ -1373,6 +1397,15 @@ export function PropostasTable() {
             refetch()
           }
         }}
+      />
+
+      <CadeiaPropostaModal
+        open={showCadeiaModal}
+        onClose={() => {
+          setShowCadeiaModal(false)
+          setCadeiaData(null)
+        }}
+        data={cadeiaData}
       />
     </>
   )

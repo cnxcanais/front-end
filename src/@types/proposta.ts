@@ -132,5 +132,8 @@ export interface UltimoEndossoResponse {
     id: string
     numeroProposta: string
     numeroVersao: number
+    numeroApolice: string
+    tipoDocumento: string
+    situacao: string
   }[]
 }

@@ -178,6 +178,21 @@ export async function importPropostas(file: File) {
   }
 }
 
+export async function getPropostaChain(id: string) {
+  try {
+    const response = await bffApi.get<UltimoEndossoResponse>(
+      `/propostas-apolices/ultimo-endosso-por-numero?numeroApolice=${id}`
+    )
+    return response.data
+  } catch (error: any) {
+    toast.error(
+      "Erro ao buscar proposta: " + error?.response?.data?.message ||
+        "Erro ao buscar proposta"
+    )
+    throw error
+  }
+}
+
 export async function setParcelaToPaid(id: string) {
   try {
     const response = await bffApi.patch(`/parcelas/${id}/marcar-como-paga`)
