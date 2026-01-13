@@ -194,7 +194,9 @@ export async function setParcelaToPaid(id: string) {
 
 export async function editPrevisaoPagamento(id: string, date: string) {
   try {
-    const response = await bffApi.patch(`/parcelas/${id}/previsao-pagamento`)
+    const response = await bffApi.patch(`/parcelas/${id}/previsao-pagamento`, {
+      previsaoPagamento: date,
+    })
     toast.success("Parcela atualizada com sucesso!")
     return response.data
   } catch (error: any) {

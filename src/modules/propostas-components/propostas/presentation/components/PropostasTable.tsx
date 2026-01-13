@@ -68,7 +68,11 @@ import { ImportPropostasModal } from "./modals/ImportPropostasModal"
 import { MotivoNaoRenovacaoModal } from "./modals/MotivoNaoRenovacao"
 import { RenovarApoliceModal } from "./modals/RenovarApoliceModal"
 
+import { PrevisaoPagamentoModal } from "./modals/PrevisaoPagamentoModal"
+
 export function PropostasTable() {
+  const [showPrevisaoModal, setShowPrevisaoModal] = useState(false)
+  const [selectedParcelaId, setSelectedParcelaId] = useState<string | null>(null)
   const searchParams = useSearchParams()
   const [page, setPage] = useState(1)
   const [limit, setLimit] = useState(10)
@@ -1255,9 +1259,7 @@ export function PropostasTable() {
                             <tr key={index} className="border-b">
                               <td className="py-2">{parcela.numeroParcela}</td>
                               <td className="py-2">
-                                {new Date(
-                                  parcela.dataVencimento
-                                ).toLocaleDateString("pt-BR")}
+                                {parcela.dataVencimento.split("T")[0].split("-").reverse().join("/")}
                               </td>
                               <td className="py-2">{parcela.situacao}</td>
                               <td className="py-2">
@@ -1267,9 +1269,7 @@ export function PropostasTable() {
                                 })}
                               </td>
                               <td className="py-2">
-                                {new Date(
-                                  parcela.previsaoPagamento
-                                ).toLocaleDateString("pt-BR")}
+                                {parcela.previsaoPagamento.split("T")[0].split("-").reverse().join("/")}
                               </td>
                               <td className="flex items-center gap-4 py-2">
                                 {(parcela.situacao === "Pendente" ||
@@ -1292,12 +1292,9 @@ export function PropostasTable() {
                                     <Calendar
                                       className="cursor-pointer text-blue-600 hover:text-blue-700"
                                       size={20}
-                                      onClick={async () => {
-                                        await editPrevisaoPagamento(
-                                          parcela.id,
-                                          new Date().toISOString().split("T")[0]
-                                        )
-                                        refetch()
+                                      onClick={() => {
+                                        setSelectedParcelaId(parcela.id)
+                                        setShowPrevisaoModal(true)
                                       }}
                                     />
                                   </div>
@@ -1325,6 +1322,20 @@ export function PropostasTable() {
           />
         </>
       }
+
+      <PrevisaoPagamentoModal
+        open={showPrevisaoModal}
+        onClose={() => {
+          setShowPrevisaoModal(false)
+          setSelectedParcelaId(null)
+        }}
+        onConfirm={async (date) => {
+          if (selectedParcelaId) {
+            await editPrevisaoPagamento(selectedParcelaId, date)
+            refetch()
+          }
+        }}
+      />
     </>
   )
 }
