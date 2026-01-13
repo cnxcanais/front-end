@@ -181,6 +181,21 @@ export async function importPropostas(file: File) {
 export async function setParcelaToPaid(id: string) {
   try {
     const response = await bffApi.patch(`/parcelas/${id}/marcar-como-paga`)
+    toast.success("Parcela atualizada com sucesso!")
+    return response.data
+  } catch (error: any) {
+    toast.error(
+      "Erro ao atualizar parcela: " + error?.response?.data?.message ||
+        "Erro ao atualizar parcela"
+    )
+    throw error
+  }
+}
+
+export async function editPrevisaoPagamento(id: string, date: string) {
+  try {
+    const response = await bffApi.patch(`/parcelas/${id}/previsao-pagamento`)
+    toast.success("Parcela atualizada com sucesso!")
     return response.data
   } catch (error: any) {
     toast.error(

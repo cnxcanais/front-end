@@ -17,6 +17,7 @@ import { useProdutoQuery } from "@/modules/produtos-components/produtos/infra/ho
 import { usePropostaQuery } from "@/modules/propostas-components/propostas/infra/hooks/use-proposta-query"
 import {
   cancelarApolice,
+  editPrevisaoPagamento,
   emitirApolice,
   exportParcelas,
   exportPropostas,
@@ -38,6 +39,7 @@ import { useRamoQuery } from "@/modules/ramos-components/ramos/infra/hooks/use-r
 import { useSeguradoraQuery } from "@/modules/seguradoras-components/seguradora/infra/hooks/use-seguradora-query"
 import { useSeguradoQuery } from "@/modules/segurados-components/segurado/infra/hooks/use-segurado-query"
 import {
+  Calendar,
   Coins,
   Copy,
   CurrencyCircleDollar,
@@ -1242,6 +1244,9 @@ export function PropostasTable() {
                             <th className="pb-2 text-left">Data</th>
                             <th className="pb-2 text-left">Situação</th>
                             <th className="pb-2 text-left">Valor</th>
+                            <th className="pb-2 text-left">
+                              Previsão de Pagamento{" "}
+                            </th>
                             <th className="pb-2 text-left">Ação</th>
                           </tr>
                         </thead>
@@ -1262,27 +1267,41 @@ export function PropostasTable() {
                                 })}
                               </td>
                               <td className="py-2">
+                                {new Date(
+                                  parcela.previsaoPagamento
+                                ).toLocaleDateString("pt-BR")}
+                              </td>
+                              <td className="flex items-center gap-4 py-2">
                                 {(parcela.situacao === "Pendente" ||
                                   parcela.situacao === "Em Atraso") &&
                                   row.tipoDocumento !== "Proposta" && (
-                                    <CurrencyCircleDollar
-                                      className="cursor-pointer text-green-600 hover:text-green-700"
+                                    <div title="Quitar Parcela">
+                                      <CurrencyCircleDollar
+                                        className="cursor-pointer text-green-600 hover:text-green-700"
+                                        size={20}
+                                        onClick={async () => {
+                                          await setParcelaToPaid(parcela.id)
+                                          refetch()
+                                        }}
+                                      />
+                                    </div>
+                                  )}
+
+                                {parcela.tipoDocumento !== "Proposta" && (
+                                  <div title="Alterar Previsão de Pagamento">
+                                    <Calendar
+                                      className="cursor-pointer text-blue-600 hover:text-blue-700"
                                       size={20}
                                       onClick={async () => {
-                                        try {
-                                          await setParcelaToPaid(parcela.id)
-                                          toast.success(
-                                            "Parcela marcada como paga!"
-                                          )
-                                          refetch()
-                                        } catch (error) {
-                                          toast.error(
-                                            "Erro ao marcar parcela como paga"
-                                          )
-                                        }
+                                        await editPrevisaoPagamento(
+                                          parcela.id,
+                                          new Date().toISOString().split("T")[0]
+                                        )
+                                        refetch()
                                       }}
                                     />
-                                  )}
+                                  </div>
+                                )}
                               </td>
                             </tr>
                           ))}
