@@ -68,11 +68,14 @@ import { ImportPropostasModal } from "./modals/ImportPropostasModal"
 import { MotivoNaoRenovacaoModal } from "./modals/MotivoNaoRenovacao"
 import { RenovarApoliceModal } from "./modals/RenovarApoliceModal"
 
+import { Parcela } from "@/@types/proposta"
 import { PrevisaoPagamentoModal } from "./modals/PrevisaoPagamentoModal"
 
 export function PropostasTable() {
   const [showPrevisaoModal, setShowPrevisaoModal] = useState(false)
-  const [selectedParcelaId, setSelectedParcelaId] = useState<string | null>(null)
+  const [selectedParcelaId, setSelectedParcelaId] = useState<string | null>(
+    null
+  )
   const searchParams = useSearchParams()
   const [page, setPage] = useState(1)
   const [limit, setLimit] = useState(10)
@@ -787,9 +790,17 @@ export function PropostasTable() {
         ],
       },
       {
-        name: "search",
-        label: "Complemento",
-        placeholder: "Buscar por complemento",
+        name: "situacaoParcela",
+        label: "Situação da Parcela",
+        placeholder: "Buscar por situação da parcela",
+        type: "select",
+        options: [
+          { label: "Todos", value: "" },
+          { label: "Cancelada", value: "Cancelada" },
+          { label: "Pendente", value: "Pendente" },
+          { label: "Em Atraso", value: "Em Atraso" },
+          { label: "Paga", value: "Paga" },
+        ],
       },
       {
         name: "inicioVigenciaMin",
@@ -1248,46 +1259,73 @@ export function PropostasTable() {
                             <th className="pb-2 text-left">Data</th>
                             <th className="pb-2 text-left">Situação</th>
                             <th className="pb-2 text-left">Valor</th>
+                            <th className="pb-2 text-left"> % Comissão</th>
+                            <th className="pb-2 text-left"> R$ Comissão</th>
                             <th className="pb-2 text-left">
+                              {" "}
                               Previsão de Pagamento{" "}
                             </th>
                             <th className="pb-2 text-left">Ação</th>
                           </tr>
                         </thead>
                         <tbody>
-                          {row.parcelas.map((parcela: any, index: number) => (
-                            <tr key={index} className="border-b">
-                              <td className="py-2">{parcela.numeroParcela}</td>
-                              <td className="py-2">
-                                {parcela.dataVencimento.split("T")[0].split("-").reverse().join("/")}
-                              </td>
-                              <td className="py-2">{parcela.situacao}</td>
-                              <td className="py-2">
-                                {Number(parcela.valor).toLocaleString("pt-BR", {
-                                  style: "currency",
-                                  currency: "BRL",
-                                })}
-                              </td>
-                              <td className="py-2">
-                                {parcela.previsaoPagamento.split("T")[0].split("-").reverse().join("/")}
-                              </td>
-                              <td className="flex items-center gap-4 py-2">
-                                {(parcela.situacao === "Pendente" ||
-                                  parcela.situacao === "Em Atraso") &&
-                                  row.tipoDocumento !== "Proposta" && (
-                                    <div title="Quitar Parcela">
-                                      <CurrencyCircleDollar
-                                        className="cursor-pointer text-green-600 hover:text-green-700"
-                                        size={20}
-                                        onClick={async () => {
-                                          await setParcelaToPaid(parcela.id)
-                                          refetch()
-                                        }}
-                                      />
-                                    </div>
+                          {row.parcelas.map(
+                            (parcela: Parcela, index: number) => (
+                              <tr key={index} className="border-b">
+                                <td className="py-2">
+                                  {parcela.numeroParcela}
+                                </td>
+                                <td className="py-2">
+                                  {parcela.dataVencimento
+                                    .split("T")[0]
+                                    .split("-")
+                                    .reverse()
+                                    .join("/")}
+                                </td>
+                                <td className="py-2">{parcela.situacao}</td>
+                                <td className="py-2">
+                                  {Number(parcela.valor).toLocaleString(
+                                    "pt-BR",
+                                    {
+                                      style: "currency",
+                                      currency: "BRL",
+                                    }
                                   )}
+                                </td>
+                                <td className="py-2">
+                                  {parcela.percentualComissao === null ?
+                                    "-"
+                                  : `${parcela.percentualComissao} %`}
+                                </td>
+                                <td className="py-2">
+                                  {parcela.valorComissao?.toLocaleString(
+                                    "pt-br",
+                                    { style: "currency", currency: "BRL" }
+                                  ) ?? "-"}
+                                </td>
+                                <td className="py-2">
+                                  {parcela.previsaoPagamento
+                                    .split("T")[0]
+                                    .split("-")
+                                    .reverse()
+                                    .join("/")}
+                                </td>
+                                <td className="flex items-center gap-4 py-2">
+                                  {(parcela.situacao === "Pendente" ||
+                                    parcela.situacao === "Em Atraso") &&
+                                    row.tipoDocumento !== "Proposta" && (
+                                      <div title="Quitar Parcela">
+                                        <CurrencyCircleDollar
+                                          className="cursor-pointer text-green-600 hover:text-green-700"
+                                          size={20}
+                                          onClick={async () => {
+                                            await setParcelaToPaid(parcela.id)
+                                            refetch()
+                                          }}
+                                        />
+                                      </div>
+                                    )}
 
-                                {parcela.tipoDocumento !== "Proposta" && (
                                   <div title="Alterar Previsão de Pagamento">
                                     <Calendar
                                       className="cursor-pointer text-blue-600 hover:text-blue-700"
@@ -1298,10 +1336,10 @@ export function PropostasTable() {
                                       }}
                                     />
                                   </div>
-                                )}
-                              </td>
-                            </tr>
-                          ))}
+                                </td>
+                              </tr>
+                            )
+                          )}
                         </tbody>
                       </table>
                     </div>

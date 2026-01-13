@@ -57,6 +57,7 @@ export enum SituacaoParcelaEnum {
   PAGO = "Pago",
   VENCIDO = "Vencido",
   CANCELADO = "Cancelado",
+  EM_ATRASO = "Em Atraso",
 }
 
 export enum RepasseSobreEnum {

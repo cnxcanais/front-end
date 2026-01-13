@@ -23,6 +23,8 @@ export interface Parcela {
   createdBy: string | null
   updatedBy: string | null
   deletedBy: string | null
+  valorComissao: number
+  valorBaseComissao: number
 }
 
 export interface Repasse {
