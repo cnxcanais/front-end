@@ -131,7 +131,6 @@ export async function emitirApolice(
   id: string,
   data: {
     dataEmissao: string
-    numeroApolice: string
     inicioVigencia: string
     fimVigencia: string
   }

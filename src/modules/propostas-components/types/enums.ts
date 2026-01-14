@@ -54,7 +54,7 @@ export const formaComissaoOptions = [
 
 export enum SituacaoParcelaEnum {
   PENDENTE = "Pendente",
-  PAGO = "Pago",
+  PAGO = "Paga",
   VENCIDO = "Vencido",
   CANCELADO = "Cancelado",
   EM_ATRASO = "Em Atraso",

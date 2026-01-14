@@ -1350,16 +1350,18 @@ export function PropostasTable() {
                                       </div>
                                     )}
 
-                                  <div title="Alterar Previsão de Pagamento">
-                                    <Calendar
-                                      className="cursor-pointer text-blue-600 hover:text-blue-700"
-                                      size={20}
-                                      onClick={() => {
-                                        setSelectedParcelaId(parcela.id)
-                                        setShowPrevisaoModal(true)
-                                      }}
-                                    />
-                                  </div>
+                                  {parcela.situacao !== "Paga" && (
+                                    <div title="Alterar Previsão de Pagamento">
+                                      <Calendar
+                                        className="cursor-pointer text-blue-600 hover:text-blue-700"
+                                        size={20}
+                                        onClick={() => {
+                                          setSelectedParcelaId(parcela.id)
+                                          setShowPrevisaoModal(true)
+                                        }}
+                                      />
+                                    </div>
+                                  )}
                                 </td>
                               </tr>
                             )
