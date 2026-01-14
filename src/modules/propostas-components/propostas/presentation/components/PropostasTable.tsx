@@ -568,13 +568,6 @@ export function PropostasTable() {
                     onClick={() => handleEdit(value)}
                   />
                 </span>
-                <span title="Clonar Proposta">
-                  <Copy
-                    className="cursor-pointer hover:text-green-500"
-                    size={24}
-                    onClick={() => handleDuplicate(value)}
-                  />
-                </span>
 
                 <span title="Recusar Proposta">
                   <XCircle
@@ -596,7 +589,7 @@ export function PropostasTable() {
                 </span>
               </>
             )}
-          {row.tipoDocumento !== "Proposta" && (
+          {row.tipoDocumento !== TipoDocumentoEnum.PROPOSTA && (
             <span title="Ver Cadeia">
               <LinkSimple
                 className="cursor-pointer hover:text-blue-500"
@@ -706,6 +699,13 @@ export function PropostasTable() {
                 />
               </span>
             )}
+          <span title="Clonar Proposta">
+            <Copy
+              className="cursor-pointer hover:text-green-500"
+              size={24}
+              onClick={() => handleDuplicate(value)}
+            />
+          </span>
         </div>
       ),
     },
