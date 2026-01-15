@@ -149,9 +149,6 @@ export function PropostaForm({
 
   const formData = watch()
 
-  console.log(errors)
-  console.log(formData)
-
   const { push } = useRouter()
   const { data: segurados, refetch: refetchSegurados } = useSeguradoQuery(
     1,

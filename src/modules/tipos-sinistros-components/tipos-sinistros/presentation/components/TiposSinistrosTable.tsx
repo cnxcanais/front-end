@@ -8,49 +8,38 @@ import { Modal } from "@/core/components/Modals/Modal"
 import { Pagination } from "@/core/components/Pagination"
 import { Table } from "@/core/components/Table"
 import { exportNoPagination } from "@/core/utils/exportToExcel/exportNoPagination"
-import { useProdutoQuery } from "@/modules/produtos-components/produtos/infra/hooks/use-produto-query"
-import { removeProduto } from "@/modules/produtos-components/produtos/infra/remote"
-import { useRamoQuery } from "@/modules/ramos-components/ramos/infra/hooks/use-ramo-query"
 import { FileXls, Pencil, Trash } from "@phosphor-icons/react"
 import { useRouter } from "next/navigation"
-import { useEffect, useMemo, useState } from "react"
+import { useEffect, useState } from "react"
 import { toast } from "sonner"
+import { useTipoSinistroQuery } from "../../infra/hooks/use-tipo-sinistro-query"
+import { removeTipoSinistro } from "../../infra/remote"
 
-export function ProdutosTable() {
+export function TiposSinistrosTable() {
   const [page, setPage] = useState(1)
   const [limit, setLimit] = useState(10)
   const [filters, setFilters] = useState<Record<string, string>>({})
-  const { data, isLoading, refetch } = useProdutoQuery(page, limit, filters)
-  const { data: ramos, isLoading: isLoadingRamos } = useRamoQuery(1, 100)
+  const { data, isLoading, refetch } = useTipoSinistroQuery(page, limit, filters)
   const { push } = useRouter()
 
   const [open, setOpen] = useState(false)
   const [id, setId] = useState("")
   const [filteredResults, setFilteredResults] = useState([])
 
-  const ramosOptions = useMemo(() => {
-    if (isLoadingRamos || !ramos) return []
-    return ramos.data.map((ramo) => ({
-      label: ramo.descricao,
-      value: ramo.id,
-    }))
-  }, [ramos, isLoadingRamos])
-
-  const produtos = data?.data || []
+  const tiposSinistros = data?.data || []
   const totalPages = data?.meta?.totalPages || 1
 
   const handleEdit = (id: string) => {
-    push(`/produtos/edit/${id}`)
+    push(`/tipos-sinistros/edit/${id}`)
   }
 
   const handleConfirmDelete = async () => {
     try {
-      await removeProduto(id)
-      toast.success("Produto removido com sucesso!")
+      await removeTipoSinistro(id)
+      toast.success("Tipo de sinistro removido com sucesso!")
       refetch()
     } catch (error) {
-      const message =
-        error?.response?.data?.message || "Erro ao remover produto"
+      const message = error?.response?.data?.message || "Erro ao remover tipo de sinistro"
       toast.error(message)
     } finally {
       setOpen(false)
@@ -59,10 +48,10 @@ export function ProdutosTable() {
 
   const columns = [
     { header: "Descrição", accessor: "descricao" },
-    {
-      header: "Ramo",
+    { 
+      header: "Ramo", 
       accessor: "ramo",
-      render: (value: { descricao: string }) => value?.descricao || "-",
+      render: (value: { descricao: string }) => value?.descricao || "-"
     },
     {
       header: "Ações",
@@ -95,10 +84,8 @@ export function ProdutosTable() {
     },
     {
       name: "ramoId",
-      label: "Ramo",
+      label: "Ramo ID",
       placeholder: "Buscar por ramo",
-      type: "select",
-      options: ramosOptions,
     },
   ]
 
@@ -108,16 +95,16 @@ export function ProdutosTable() {
   }
 
   useEffect(() => {
-    if (produtos.length > 0) setFilteredResults(produtos)
-  }, [produtos])
+    if (tiposSinistros.length > 0) setFilteredResults(tiposSinistros)
+  }, [tiposSinistros])
 
   if (isLoading) return <LoadingScreen />
 
   return (
     <>
       <Modal
-        title="Remover Produto"
-        content="Você tem certeza de que deseja remover este produto?"
+        title="Remover Tipo de Sinistro"
+        content="Você tem certeza de que deseja remover este tipo de sinistro?"
         onClose={() => setOpen(false)}
         open={open}>
         <div className="flex items-center justify-center gap-4">
@@ -138,23 +125,23 @@ export function ProdutosTable() {
 
       <div className="mt-8 flex items-center justify-between">
         <div className="flex h-full gap-4">
-          <Button onClick={() => push("/produtos/create")} variant="secondary">
+          <Button onClick={() => push("/tipos-sinistros/create")} variant="secondary">
             Cadastrar
           </Button>
         </div>
-        {produtos.length > 0 && (
+        {tiposSinistros.length > 0 && (
           <div className="flex items-center gap-2">
             <ExportTableToPDFButton
-              filename={`produtos.${new Date().toLocaleDateString("pt-BR").replace(/\//g, "-")}`}
+              filename={`tipos-sinistros.${new Date().toLocaleDateString("pt-BR").replace(/\//g, "-")}`}
               options={{ orientation: "portrait" }}
-              title="Produtos"
+              title="Tipos de Sinistros"
               className="bg-red-500">
               Exportar PDF
             </ExportTableToPDFButton>
             <Button
               className="flex items-center gap-1"
               variant="secondary"
-              onClick={() => exportNoPagination("produtos")}>
+              onClick={() => exportNoPagination("tipos-sinistros")}>
               <FileXls size={22} />
               Exportar
             </Button>
@@ -162,10 +149,8 @@ export function ProdutosTable() {
         )}
       </div>
 
-      {produtos.length == 0 ?
-        <h2 className="mt-6 text-xl font-semibold">
-          Nenhum produto cadastrado.
-        </h2>
+      {tiposSinistros.length == 0 ?
+        <h2 className="mt-6 text-xl font-semibold">Nenhum tipo de sinistro cadastrado.</h2>
       : <>
           <Table columns={columns} data={filteredResults} />
           <Pagination

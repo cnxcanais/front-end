@@ -50,7 +50,7 @@ export function CreateProdutoForm({
     try {
       const response = await createProduto(data)
       toast.success("Produto criado com sucesso!")
-      queryClient.invalidateQueries({ queryKey: ["produtos"] })
+      await queryClient.invalidateQueries({ queryKey: ["produtos"] })
       if (isModal && onSuccess) {
         onSuccess(response.id)
       } else {

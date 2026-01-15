@@ -2,6 +2,7 @@ import { Icon } from "@phosphor-icons/react"
 import {
   BuildingOffice,
   Buildings,
+  Car,
   FileText,
   IdentificationBadge,
   Package,
@@ -10,6 +11,7 @@ import {
   Tag,
   User,
   UsersFour,
+  Warning,
 } from "@phosphor-icons/react/dist/ssr"
 
 type SidebarOptionProps = {
@@ -84,6 +86,12 @@ export const sidebar_options: SidebarOptionProps[] = [
     group: "Cadastros",
   },
   {
+    name: "Tipos de Sinistros",
+    href: "/tipos-sinistros",
+    Icon: Warning,
+    group: "Cadastros",
+  },
+  {
     name: "Produtos",
     href: "/produtos",
     Icon: Package,
@@ -93,6 +101,12 @@ export const sidebar_options: SidebarOptionProps[] = [
     name: "Propostas",
     href: "/propostas",
     Icon: FileText,
+    group: "Operações",
+  },
+  {
+    name: "Sinistros",
+    href: "/sinistros",
+    Icon: Car,
     group: "Operações",
   },
   {

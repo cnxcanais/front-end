@@ -1,8 +1,14 @@
 import { Sinistro } from "@/@types/sinistro"
 import { bffApi } from "@/lib/axios"
 
-export async function getSinistros() {
-  const response = await bffApi.get<Sinistro.GetResponse>("/sinistros")
+export async function getSinistros(
+  page: number,
+  limit: number,
+  filters?: Record<string, string>
+) {
+  const response = await bffApi.get<Sinistro.GetResponse>("/sinistros", {
+    params: { page, limit, ...filters },
+  })
   return response.data
 }
 
