@@ -2,7 +2,7 @@ import { useQuery } from "@tanstack/react-query"
 import { toast } from "sonner"
 import { getSinistroById } from "../remote"
 
-export function useSinistroQuery(id: string) {
+export function useSinistroByIdQuery(id: string) {
   try {
     return useQuery({
       queryKey: ["sinistro", id],

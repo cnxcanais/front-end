@@ -24,6 +24,21 @@ export namespace Sinistro {
     updatedAt: string
     createdBy: string
     updatedBy: string
+    proposta?: {
+      seguradoNome: string
+      seguradoraId: string
+      seguradoraNome: string
+      seguradoraLogo?: string
+      corretoraId: string
+      corretoraNome: string
+      corretoraLogo?: string
+    }
+    tipoSinistro?: {
+      descricao: string
+    }
+    responsavelUsuario?: {
+      nome: string
+    }
   }
 
   export type GetResponse = {
