@@ -34,6 +34,19 @@ export namespace Sinistro {
     totalPages: number
   }
 
+  export type PostBody = {
+    numeroSinistro: string
+    apoliceId: string
+    tipoSinistroId: string
+    emailSegurado: string
+    dataHoraOcorrido: string
+    descricaoOcorrido: string
+    prestadora: string
+    andamento: string
+    dataUltimaTratativa: string
+    responsavelUsuarioId: string
+  }
+
   export type PatchBody = Partial<
     Omit<
       Type,
