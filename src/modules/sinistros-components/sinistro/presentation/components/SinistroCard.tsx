@@ -2,11 +2,31 @@
 
 import { SinistroStatusEnum } from "@/@types/enums/sinistroEnum"
 import { Sinistro } from "@/@types/sinistro"
-import { CaretDown, CaretUp } from "@phosphor-icons/react"
+import { CaretDown, CaretUp, X } from "@phosphor-icons/react"
 import { useState } from "react"
+import { toast } from "sonner"
+import { deleteSinistro } from "../../infra/remote"
 
-export function SinistroCard({ sinistro }: { sinistro: Sinistro.Type }) {
+type Props = {
+  sinistro: Sinistro.Type
+  onDelete: () => void
+}
+
+export function SinistroCard({ sinistro, onDelete }: Props) {
   const [expanded, setExpanded] = useState(false)
+
+  const handleDelete = async (e: React.MouseEvent) => {
+    e.stopPropagation()
+    if (window.confirm(`Tem certeza que deseja excluir o sinistro ${sinistro.numeroSinistro}?`)) {
+      try {
+        await deleteSinistro(sinistro.id)
+        toast.success("Sinistro excluído com sucesso!")
+        onDelete()
+      } catch (error) {
+        toast.error("Erro ao excluir sinistro")
+      }
+    }
+  }
 
   const getStatusColor = () => {
     switch (sinistro.status) {
@@ -31,7 +51,15 @@ export function SinistroCard({ sinistro }: { sinistro: Sinistro.Type }) {
 
   return (
     <div
-      className={`rounded-lg bg-white p-3 shadow-sm hover:shadow-md transition-shadow ${getStatusColor()}`}>
+      className={`relative rounded-lg bg-white p-3 shadow-sm hover:shadow-md transition-shadow break-words ${getStatusColor()}`}>
+      {sinistro.status === SinistroStatusEnum.NOVO_SINISTRO && (
+        <button
+          onClick={handleDelete}
+          className="absolute right-2 top-2 rounded-full p-1 text-gray-400 hover:bg-red-100 hover:text-red-600 transition-colors">
+          <X size={16} weight="bold" />
+        </button>
+      )}
+      
       <div className="mb-2 text-sm font-medium text-gray-700">
         {sinistro.descricaoOcorrido}
       </div>

@@ -1,14 +1,10 @@
+import { EntityType } from "@/@types/enums/entityType"
 import { useQuery } from "@tanstack/react-query"
 import { fetchFiles } from "./fetch-files"
 
 type UseFetchFilesQueryProps = {
   entityId: string
-  entityType:
-    | "seguradora"
-    | "produtor"
-    | "corretora"
-    | "segurado"
-    | "proposta-apolice"
+  entityType: EntityType
 }
 
 export function useFetchFilesQuery({

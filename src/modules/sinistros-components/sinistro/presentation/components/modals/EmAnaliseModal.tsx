@@ -1,16 +1,18 @@
 "use client"
 
-import { EntityType } from "@/@types/enums/entityType"
+import { SinistroStatusEnum } from "@/@types/enums/sinistroEnum"
 import { Button } from "@/core/components/Button"
 import { Modal } from "@/core/components/Modals/Modal"
-import { ModalFilesTrigger } from "@/core/components/Modals/ModalFiles/ModalFilesTrigger"
+import { saveFile } from "@/core/components/Modals/ModalFiles/remote"
+import { queryClient } from "@/lib/react-query"
+import { changeSinistroStatus } from "@/modules/sinistros-components/sinistro/infra/remote"
 import { useState } from "react"
 import { toast } from "sonner"
 
 type Props = {
   open: boolean
   onClose: () => void
-  onConfirm: (data: EmAnaliseData) => void
+  onConfirm: () => void
   sinistroId: string
   sinistroNumero: string
 }
@@ -20,6 +22,7 @@ export type EmAnaliseData = {
   cnhDocumento: File | null
   laudoInicial: File | null
   observacaoAnalista: string
+  andamento: string
 }
 
 export function EmAnaliseModal({
@@ -34,9 +37,10 @@ export function EmAnaliseModal({
     cnhDocumento: null,
     laudoInicial: null,
     observacaoAnalista: "",
+    andamento: "",
   })
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
 
     if (!formData.documentosRecebidos) {
@@ -54,7 +58,58 @@ export function EmAnaliseModal({
       return
     }
 
-    onConfirm(formData)
+    if (
+      !formData.andamento ||
+      formData.andamento.trim() === "" ||
+      formData.andamento.trim().length < 10
+    ) {
+      toast.error("Andamento é obrigatório e deve ter pelo menos 10 caracteres")
+      return
+    }
+
+    if (
+      !formData.observacaoAnalista ||
+      formData.observacaoAnalista.trim() === "" ||
+      formData.observacaoAnalista.trim().length < 10
+    ) {
+      toast.error(
+        "Observação do Analista é obrigatória e deve ter pelo menos 10 caracteres"
+      )
+      return
+    }
+
+    try {
+      // Update status with observacao if provided
+      const payload: any = {
+        statusNovo: SinistroStatusEnum.EM_ANALISE,
+        andamento: formData.andamento,
+      }
+
+      if (formData.observacaoAnalista) {
+        payload.observacao = formData.observacaoAnalista
+      }
+
+      const response = await changeSinistroStatus(sinistroId, payload)
+
+      if (!response.id) throw new Error(response.response?.data?.message)
+
+      await queryClient.invalidateQueries({ queryKey: ["sinistro"] })
+
+      // Upload files
+      await saveFile({
+        entity: "sinistro",
+        entityId: sinistroId,
+        files: [formData.cnhDocumento, formData.laudoInicial].filter(
+          (file): file is File => file !== null
+        ),
+      })
+
+      toast.success("Status atualizado com sucesso!")
+      onConfirm()
+      handleClose()
+    } catch (error) {
+      toast.error("Erro ao atualizar status: " + error?.response?.data?.message)
+    }
   }
 
   const handleClose = () => {
@@ -63,6 +118,7 @@ export function EmAnaliseModal({
       cnhDocumento: null,
       laudoInicial: null,
       observacaoAnalista: "",
+      andamento: "",
     })
     onClose()
   }
@@ -96,13 +152,20 @@ export function EmAnaliseModal({
           </label>
         </div>
 
-        <div className="flex items-center gap-4">
+        <div>
           <label className="mb-2 block text-sm font-medium">
             CNH / Documento do Segurado *
           </label>
-          <ModalFilesTrigger
-            entityId={sinistroId}
-            entityType={EntityType.SINISTRO}
+          <input
+            type="file"
+            accept=".pdf,.jpg,.jpeg,.png"
+            onChange={(e) =>
+              setFormData({
+                ...formData,
+                cnhDocumento: e.target.files?.[0] || null,
+              })
+            }
+            className="w-full text-sm"
           />
           {formData.cnhDocumento && (
             <p className="mt-1 text-xs text-gray-600">
@@ -131,6 +194,19 @@ export function EmAnaliseModal({
               Arquivo: {formData.laudoInicial.name}
             </p>
           )}
+        </div>
+
+        <div>
+          <label className="mb-2 block text-sm font-medium">Andamento *</label>
+          <input
+            type="text"
+            value={formData.andamento}
+            onChange={(e) =>
+              setFormData({ ...formData, andamento: e.target.value })
+            }
+            className="w-full rounded-md border border-gray-300 p-2 text-sm focus:border-blue-500 focus:outline-none"
+            placeholder="Descreva o andamento atual..."
+          />
         </div>
 
         <div>

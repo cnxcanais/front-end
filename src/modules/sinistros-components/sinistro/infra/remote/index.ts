@@ -36,7 +36,7 @@ export async function changeSinistroStatus(
   id: string,
   data: Sinistro.PostStatusBody
 ) {
-  const response = await bffApi.patch(`/sinistros/${id}/status`, data)
+  const response = await bffApi.post(`/sinistros/${id}/status`, data)
   return response.data
 }
 
@@ -44,6 +44,6 @@ export async function changeObservacaoSinistro(
   id: string,
   data: Sinistro.PostObservacaoBody
 ) {
-  const response = await bffApi.patch(`/sinistros/${id}/observacao`, data)
+  const response = await bffApi.post(`/sinistros/${id}/observacao`, data)
   return response.data
 }

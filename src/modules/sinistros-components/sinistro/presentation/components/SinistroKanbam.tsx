@@ -10,6 +10,7 @@ import { changeSinistroStatus } from "../../infra/remote"
 import { useSinistroQuery } from "../../infra/hooks/use-sinistro-query"
 import { CreateSinistroModal } from "./modals/CreateSinistroModal"
 import { EmAnaliseModal, type EmAnaliseData } from "./modals/EmAnaliseModal"
+import { BackwardJustificationModal } from "./modals/BackwardJustificationModal"
 import { SinistroCard } from "./SinistroCard"
 
 const COLUMNS = [
@@ -73,6 +74,14 @@ export function SinistroKanbam() {
       sinistroNumero: "",
       newStatus: SinistroStatusEnum.EM_ANALISE as SinistroStatusEnum,
     },
+    backward: {
+      open: false,
+      sinistroId: "",
+      sinistroNumero: "",
+      fromStatus: "",
+      toStatus: "",
+      newStatus: SinistroStatusEnum.NOVO_SINISTRO as SinistroStatusEnum,
+    },
   })
   const { data: sinistrosData, refetch } = useSinistroQuery(1, -1)
 
@@ -107,9 +116,37 @@ export function SinistroKanbam() {
       return
 
     const newStatus = destination.droppableId as SinistroStatusEnum
+    const oldStatus = source.droppableId as SinistroStatusEnum
     const sinistro = sinistrosData?.items?.find((s) => s.id === draggableId)
 
     if (!sinistro) return
+
+    // Check if movement is only to neighbor columns
+    const sourceIndex = COLUMNS.findIndex((col) => col.id === oldStatus)
+    const destIndex = COLUMNS.findIndex((col) => col.id === newStatus)
+    
+    if (Math.abs(destIndex - sourceIndex) > 1) {
+      toast.error("Você só pode mover para colunas vizinhas")
+      return
+    }
+
+    // Check if moving backwards
+    const isMovingBackward = destIndex < sourceIndex
+
+    if (isMovingBackward) {
+      setModalState({
+        ...modalState,
+        backward: {
+          open: true,
+          sinistroId: draggableId,
+          sinistroNumero: sinistro.numeroSinistro,
+          fromStatus: COLUMNS[sourceIndex].title,
+          toStatus: COLUMNS[destIndex].title,
+          newStatus,
+        },
+      })
+      return
+    }
 
     // If moving to Em Análise, open modal to collect required data
     if (newStatus === SinistroStatusEnum.EM_ANALISE) {
@@ -126,28 +163,43 @@ export function SinistroKanbam() {
     }
 
     // For other status changes, update directly
-    handleStatusChange(draggableId, newStatus)
-  }
-
-  const handleStatusChange = async (sinistroId: string, newStatus: SinistroStatusEnum, data?: EmAnaliseData) => {
-    try {
-      await changeSinistroStatus(sinistroId, {
-        statusNovo: newStatus,
-        // TODO: Add other fields from data if provided
+    changeSinistroStatus(draggableId, { statusNovo: newStatus })
+      .then(() => {
+        toast.success("Status atualizado com sucesso!")
+        refetch()
       })
-      toast.success("Status atualizado com sucesso!")
-      refetch()
-    } catch (error) {
-      toast.error("Erro ao atualizar status")
-    }
+      .catch(() => toast.error("Erro ao atualizar status"))
   }
 
-  const handleEmAnaliseConfirm = (data: EmAnaliseData) => {
-    handleStatusChange(modalState.emAnalise.sinistroId, modalState.emAnalise.newStatus, data)
+  const handleEmAnaliseConfirm = () => {
     setModalState({
       ...modalState,
       emAnalise: { open: false, sinistroId: "", sinistroNumero: "", newStatus: SinistroStatusEnum.EM_ANALISE },
     })
+    refetch()
+  }
+
+  const handleBackwardConfirm = (justification: string) => {
+    changeSinistroStatus(modalState.backward.sinistroId, {
+      statusNovo: modalState.backward.newStatus,
+      observacao: justification,
+    })
+      .then(() => {
+        toast.success("Sinistro retornado com sucesso!")
+        setModalState({
+          ...modalState,
+          backward: {
+            open: false,
+            sinistroId: "",
+            sinistroNumero: "",
+            fromStatus: "",
+            toStatus: "",
+            newStatus: SinistroStatusEnum.NOVO_SINISTRO,
+          },
+        })
+        refetch()
+      })
+      .catch(() => toast.error("Erro ao retornar sinistro"))
   }
 
   return (
@@ -191,7 +243,7 @@ export function SinistroKanbam() {
                             {...provided.draggableProps}
                             {...provided.dragHandleProps}
                             className={snapshot.isDragging ? "shadow-lg" : ""}>
-                            <SinistroCard sinistro={sinistro} />
+                            <SinistroCard sinistro={sinistro} onDelete={() => refetch()} />
                           </div>
                         )}
                       </Draggable>
@@ -222,6 +274,27 @@ export function SinistroKanbam() {
         onConfirm={handleEmAnaliseConfirm}
         sinistroId={modalState.emAnalise.sinistroId}
         sinistroNumero={modalState.emAnalise.sinistroNumero}
+      />
+
+      <BackwardJustificationModal
+        open={modalState.backward.open}
+        onClose={() =>
+          setModalState({
+            ...modalState,
+            backward: {
+              open: false,
+              sinistroId: "",
+              sinistroNumero: "",
+              fromStatus: "",
+              toStatus: "",
+              newStatus: SinistroStatusEnum.NOVO_SINISTRO,
+            },
+          })
+        }
+        onConfirm={handleBackwardConfirm}
+        fromStatus={modalState.backward.fromStatus}
+        toStatus={modalState.backward.toStatus}
+        sinistroNumero={modalState.backward.sinistroNumero}
       />
     </div>
   )
