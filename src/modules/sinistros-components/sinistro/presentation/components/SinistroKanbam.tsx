@@ -4,10 +4,13 @@ import { SinistroStatusEnum } from "@/@types/enums/sinistroEnum"
 import { Sinistro } from "@/@types/sinistro"
 import { Button } from "@/core/components/Button"
 import { DragDropContext, Draggable, Droppable } from "@hello-pangea/dnd"
-import { CaretDown, CaretUp } from "@phosphor-icons/react"
 import { useMemo, useState } from "react"
+import { toast } from "sonner"
+import { changeSinistroStatus } from "../../infra/remote"
 import { useSinistroQuery } from "../../infra/hooks/use-sinistro-query"
 import { CreateSinistroModal } from "./modals/CreateSinistroModal"
+import { EmAnaliseModal, type EmAnaliseData } from "./modals/EmAnaliseModal"
+import { SinistroCard } from "./SinistroCard"
 
 const COLUMNS = [
   {
@@ -15,156 +18,62 @@ const COLUMNS = [
     title: "Novo Sinistro",
     description: "Aviso inicial registrado",
     headerColor: "text-blue-600",
+    bgColor: "bg-blue-50/30",
   },
   {
     id: SinistroStatusEnum.EM_ANALISE,
     title: "Em Análise",
     description: "Documentação em validação",
     headerColor: "text-yellow-600",
+    bgColor: "bg-yellow-50/30",
   },
   {
     id: SinistroStatusEnum.EM_REGULACAO,
     title: "Em Regulação",
     description: "Avaliação técnica",
     headerColor: "text-orange-600",
+    bgColor: "bg-orange-50/30",
   },
   {
     id: SinistroStatusEnum.APROVADO,
     title: "Aprovado",
     description: "Sinistro aprovado",
     headerColor: "text-green-600",
+    bgColor: "bg-green-50/30",
   },
   {
     id: SinistroStatusEnum.REPROVADO,
     title: "Reprovado",
     description: "Sinistro negado",
     headerColor: "text-red-600",
+    bgColor: "bg-red-50/30",
   },
   {
     id: SinistroStatusEnum.PAGAMENTO,
     title: "Pagamento",
     description: "Indenização em processamento",
     headerColor: "text-purple-600",
+    bgColor: "bg-purple-50/30",
   },
   {
     id: SinistroStatusEnum.ENCERRADO,
     title: "Encerrado",
     description: "Processo finalizado",
     headerColor: "text-gray-600",
+    bgColor: "bg-gray-50",
   },
 ]
 
-function SinistroCard({ sinistro }: { sinistro: Sinistro.Type }) {
-  const [expanded, setExpanded] = useState(false)
-
-  const getStatusColor = () => {
-    switch (sinistro.status) {
-      case SinistroStatusEnum.NOVO_SINISTRO:
-        return "border-l-4 border-blue-500"
-      case SinistroStatusEnum.EM_ANALISE:
-        return "border-l-4 border-yellow-500"
-      case SinistroStatusEnum.EM_REGULACAO:
-        return "border-l-4 border-orange-500"
-      case SinistroStatusEnum.APROVADO:
-        return "border-l-4 border-green-500"
-      case SinistroStatusEnum.REPROVADO:
-        return "border-l-4 border-red-500"
-      case SinistroStatusEnum.PAGAMENTO:
-        return "border-l-4 border-purple-500"
-      case SinistroStatusEnum.ENCERRADO:
-        return "border-l-4 border-gray-500"
-      default:
-        return "border-l-4 border-gray-300"
-    }
-  }
-
-  return (
-    <div className={`rounded-lg bg-white p-3 shadow-sm hover:shadow-md transition-shadow ${getStatusColor()}`}>
-      <div className="mb-2 text-sm font-medium text-gray-700">
-        {sinistro.descricaoOcorrido}
-      </div>
-      <div className="mb-1 text-xs font-semibold text-gray-900">
-        {sinistro.numeroSinistro}
-      </div>
-      <div className="mb-2 text-xs text-gray-600">
-        {sinistro.proposta?.seguradoNome || "-"}
-      </div>
-
-      <button
-        onClick={() => setExpanded(!expanded)}
-        className="flex w-full items-center justify-between text-xs text-blue-600 hover:text-blue-800">
-        <span>{expanded ? "Ocultar" : "Ver"} detalhes</span>
-        {expanded ?
-          <CaretUp size={16} />
-        : <CaretDown size={16} />}
-      </button>
-
-      {expanded && (
-        <div className="mt-3 space-y-2 border-t pt-3 text-xs">
-          <div>
-            <span className="font-semibold">Tipo:</span>{" "}
-            {sinistro.tipoSinistro?.descricao || "-"}
-          </div>
-          <div>
-            <span className="font-semibold">Data Ocorrido:</span>{" "}
-            {new Date(sinistro.dataHoraOcorrido).toLocaleDateString("pt-BR")}
-          </div>
-          <div>
-            <span className="font-semibold">Valor Estimado:</span>{" "}
-            {sinistro.valorEstimado ?
-              new Intl.NumberFormat("pt-BR", {
-                style: "currency",
-                currency: "BRL",
-              }).format(sinistro.valorEstimado)
-            : "-"}
-          </div>
-
-          {sinistro.proposta?.seguradoraNome && (
-            <div className="flex items-center gap-2">
-              {sinistro.proposta.seguradoraLogo && (
-                <img
-                  src={sinistro.proposta.seguradoraLogo}
-                  alt={sinistro.proposta.seguradoraNome}
-                  className="h-6 w-6 rounded object-contain"
-                />
-              )}
-              <div>
-                <div className="font-semibold">Seguradora:</div>
-                <div>{sinistro.proposta.seguradoraNome}</div>
-              </div>
-            </div>
-          )}
-
-          {sinistro.proposta?.corretoraNome && (
-            <div className="flex items-center gap-2">
-              {sinistro.proposta.corretoraLogo && (
-                <img
-                  src={sinistro.proposta.corretoraLogo}
-                  alt={sinistro.proposta.corretoraNome}
-                  className="h-6 w-6 rounded object-contain"
-                />
-              )}
-              <div>
-                <div className="font-semibold">Corretora:</div>
-                <div>{sinistro.proposta.corretoraNome}</div>
-              </div>
-            </div>
-          )}
-
-          {sinistro.responsavelUsuario?.nome && (
-            <div>
-              <span className="font-semibold">Responsável:</span>{" "}
-              {sinistro.responsavelUsuario.nome}
-            </div>
-          )}
-        </div>
-      )}
-    </div>
-  )
-}
-
 export function SinistroKanbam() {
-  const [modalState, setModalState] = useState({ sinistro: false })
+  const [modalState, setModalState] = useState({
+    sinistro: { open: false },
+    emAnalise: {
+      open: false,
+      sinistroId: "",
+      sinistroNumero: "",
+      newStatus: SinistroStatusEnum.EM_ANALISE as SinistroStatusEnum,
+    },
+  })
   const { data: sinistrosData, refetch } = useSinistroQuery(1, -1)
 
   const sinistrosByStatus = useMemo(() => {
@@ -197,21 +106,54 @@ export function SinistroKanbam() {
     )
       return
 
-    // TODO: Call API to update sinistro status
-    console.log(
-      "Move sinistro",
-      draggableId,
-      "from",
-      source.droppableId,
-      "to",
-      destination.droppableId
-    )
+    const newStatus = destination.droppableId as SinistroStatusEnum
+    const sinistro = sinistrosData?.items?.find((s) => s.id === draggableId)
+
+    if (!sinistro) return
+
+    // If moving to Em Análise, open modal to collect required data
+    if (newStatus === SinistroStatusEnum.EM_ANALISE) {
+      setModalState({
+        ...modalState,
+        emAnalise: {
+          open: true,
+          sinistroId: draggableId,
+          sinistroNumero: sinistro.numeroSinistro,
+          newStatus,
+        },
+      })
+      return
+    }
+
+    // For other status changes, update directly
+    handleStatusChange(draggableId, newStatus)
+  }
+
+  const handleStatusChange = async (sinistroId: string, newStatus: SinistroStatusEnum, data?: EmAnaliseData) => {
+    try {
+      await changeSinistroStatus(sinistroId, {
+        statusNovo: newStatus,
+        // TODO: Add other fields from data if provided
+      })
+      toast.success("Status atualizado com sucesso!")
+      refetch()
+    } catch (error) {
+      toast.error("Erro ao atualizar status")
+    }
+  }
+
+  const handleEmAnaliseConfirm = (data: EmAnaliseData) => {
+    handleStatusChange(modalState.emAnalise.sinistroId, modalState.emAnalise.newStatus, data)
+    setModalState({
+      ...modalState,
+      emAnalise: { open: false, sinistroId: "", sinistroNumero: "", newStatus: SinistroStatusEnum.EM_ANALISE },
+    })
   }
 
   return (
     <div>
       <div className="mb-4">
-        <Button onClick={() => setModalState({ sinistro: true })}>
+        <Button onClick={() => setModalState({ ...modalState, sinistro: { open: true } })}>
           Criar Sinistro +
         </Button>
       </div>
@@ -221,7 +163,7 @@ export function SinistroKanbam() {
           {COLUMNS.map((column) => (
             <div
               key={column.id}
-              className="flex min-w-[300px] flex-col rounded-lg bg-gray-50 p-4">
+              className={`flex min-w-[300px] flex-col rounded-lg ${column.bgColor} p-4`}>
               <div className="mb-4">
                 <h3 className={`text-lg font-semibold ${column.headerColor}`}>{column.title}</h3>
                 <p className="text-xs text-gray-600">{column.description}</p>
@@ -264,9 +206,22 @@ export function SinistroKanbam() {
       </DragDropContext>
 
       <CreateSinistroModal
-        open={modalState.sinistro}
-        onClose={() => setModalState({ sinistro: false })}
+        open={modalState.sinistro.open}
+        onClose={() => setModalState({ ...modalState, sinistro: { open: false } })}
         onSuccess={() => refetch()}
+      />
+
+      <EmAnaliseModal
+        open={modalState.emAnalise.open}
+        onClose={() =>
+          setModalState({
+            ...modalState,
+            emAnalise: { open: false, sinistroId: "", sinistroNumero: "", newStatus: SinistroStatusEnum.EM_ANALISE },
+          })
+        }
+        onConfirm={handleEmAnaliseConfirm}
+        sinistroId={modalState.emAnalise.sinistroId}
+        sinistroNumero={modalState.emAnalise.sinistroNumero}
       />
     </div>
   )

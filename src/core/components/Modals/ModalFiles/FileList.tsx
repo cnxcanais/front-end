@@ -41,9 +41,9 @@ export function FileList({ entityId, entityType, isAdmin }: FileListProps) {
     }
   }, [fileList])
 
-  if (!fileList || isLoading) return <LoadingScreen fullScreen={false} />
+  if (isLoading) return <LoadingScreen fullScreen={false} />
 
-  if (entityFiles.length === 0)
+  if (!fileList || entityFiles.length === 0)
     return (
       <h3 className="text-sm font-medium text-gray-500">
         Nenhum arquivo salvo.

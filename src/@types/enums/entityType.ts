@@ -4,4 +4,5 @@ export enum EntityType {
   PRODUTOR = "produtor",
   SEGURADO = "segurado",
   PROPOSTA_APOLICE = "proposta-apolice",
+  SINISTRO = "sinistro",
 }
