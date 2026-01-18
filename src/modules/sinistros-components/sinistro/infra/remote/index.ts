@@ -54,3 +54,8 @@ export async function changeObservacaoSinistro(
   const response = await bffApi.post(`/sinistros/${id}/observacao`, data)
   return response.data
 }
+
+export async function getSinistroHistorico(id: string) {
+  const response = await bffApi.get(`/sinistros/${id}/historico`)
+  return response.data
+}

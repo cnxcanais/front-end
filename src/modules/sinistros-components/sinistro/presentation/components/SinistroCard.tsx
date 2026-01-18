@@ -2,11 +2,12 @@
 
 import { SinistroStatusEnum } from "@/@types/enums/sinistroEnum"
 import { Sinistro } from "@/@types/sinistro"
-import { CaretDown, CaretUp, Eye, X } from "@phosphor-icons/react"
+import { CaretDown, CaretUp, ClockCounterClockwise, Eye, X } from "@phosphor-icons/react"
 import { useState } from "react"
 import { toast } from "sonner"
 import { deleteSinistro } from "../../infra/remote"
 import { SinistroDetailsModal } from "./modals/SinistroDetailsModal"
+import { SinistroHistoryModal } from "./modals/SinistroHistoryModal"
 
 type Props = {
   sinistro: Sinistro.Type
@@ -16,6 +17,7 @@ type Props = {
 export function SinistroCard({ sinistro, onDelete }: Props) {
   const [expanded, setExpanded] = useState(false)
   const [detailsOpen, setDetailsOpen] = useState(false)
+  const [historyOpen, setHistoryOpen] = useState(false)
   const [andamentoExpanded, setAndamentoExpanded] = useState(false)
 
   const getDaysOpen = () => {
@@ -75,6 +77,15 @@ export function SinistroCard({ sinistro, onDelete }: Props) {
       <div
         className={`relative break-words rounded-lg bg-white p-3 shadow-sm transition-shadow hover:shadow-md ${getStatusColor()}`}>
         <div className="absolute right-2 top-2 flex gap-1">
+          <button
+            onClick={(e) => {
+              e.stopPropagation()
+              setHistoryOpen(true)
+            }}
+            className="rounded-full p-1 text-gray-400 transition-colors hover:bg-purple-100 hover:text-purple-600"
+            title="Ver histórico">
+            <ClockCounterClockwise size={16} weight="bold" />
+          </button>
           <button
             onClick={(e) => {
               e.stopPropagation()
@@ -184,6 +195,13 @@ export function SinistroCard({ sinistro, onDelete }: Props) {
         open={detailsOpen}
         onClose={() => setDetailsOpen(false)}
         sinistro={sinistro}
+      />
+
+      <SinistroHistoryModal
+        open={historyOpen}
+        onClose={() => setHistoryOpen(false)}
+        sinistroId={sinistro.id}
+        sinistroNumero={sinistro.numeroSinistro}
       />
     </>
   )
