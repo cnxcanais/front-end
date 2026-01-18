@@ -25,9 +25,15 @@ type Props = {
   open: boolean
   onClose: () => void
   onSuccess: () => void
+  isAdmin?: boolean
 }
 
-export function CreateSinistroModal({ open, onClose, onSuccess }: Props) {
+export function CreateSinistroModal({
+  open,
+  onClose,
+  onSuccess,
+  isAdmin,
+}: Props) {
   const {
     register,
     handleSubmit,
@@ -48,9 +54,15 @@ export function CreateSinistroModal({ open, onClose, onSuccess }: Props) {
   const corretoraId = getCookie("corretoraId")
   const apoliceId = watch("apoliceId")
 
-  const { data: usuarios } = useUsuarioQuery(1, -1, {
-    corretoraId: corretoraId,
-  })
+  const { data: usuarios } = useUsuarioQuery(1, -1)
+
+  const filteredUsuarios = useMemo(() => {
+    if (!usuarios) return []
+    if (isAdmin) {
+      return usuarios.data
+    }
+    return usuarios.data.filter((u) => u.props.corretoraId === corretoraId)
+  }, [usuarios, isAdmin, corretoraId])
 
   useEffect(() => {
     if (propostas && apoliceId) {
@@ -72,23 +84,25 @@ export function CreateSinistroModal({ open, onClose, onSuccess }: Props) {
   }, [tiposSinistros, selectedProposta])
 
   const usuariosOptions = useMemo(() => {
-    if (!usuarios) return []
-    return usuarios.data.map((usuario) => ({
+    if (!filteredUsuarios) return []
+    return filteredUsuarios.map((usuario) => ({
       text: usuario.props.nome,
       value: usuario.props.id,
     }))
-  }, [usuarios])
+  }, [filteredUsuarios])
 
   const propostasOptions = useMemo(() => {
     if (!propostas) return []
-    return propostas.data
-      .filter(
-        (p) => p.tipoDocumento !== "Proposta" && p.corretoraId === corretoraId
-      )
-      .map((proposta) => ({
-        text: `${proposta.numeroProposta} - ${proposta.seguradoNome}`,
-        value: proposta.id,
-      }))
+    const filteredPropostas =
+      isAdmin ?
+        propostas.data.filter((p) => p.tipoDocumento !== "Proposta")
+      : propostas.data.filter(
+          (p) => p.corretoraId === corretoraId && p.tipoDocumento !== "Proposta"
+        )
+    return filteredPropostas.map((proposta) => ({
+      text: `${proposta.numeroProposta} - ${proposta.seguradoNome}`,
+      value: proposta.id,
+    }))
   }, [propostas])
 
   const onSubmit = async (data: CreateSinistroSchema) => {

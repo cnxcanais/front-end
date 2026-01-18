@@ -110,6 +110,12 @@ export function SinistroKanbam() {
       [SinistroStatusEnum.ENCERRADO]: [],
     }
 
+    // const filteredSinistros = isAdmin
+    //   ? sinistrosData?.items || []
+    //   : sinistrosData?.items.filter(
+    //       (s) => s.apolice.corretoraId === corretoraId
+    //     ) || []
+
     sinistrosData?.items?.forEach((sinistro) => {
       if (grouped[sinistro.status]) {
         grouped[sinistro.status].push(sinistro)
@@ -318,6 +324,7 @@ export function SinistroKanbam() {
           setModalState({ ...modalState, sinistro: { open: false } })
         }
         onSuccess={() => refetch()}
+        isAdmin={isAdmin || false}
       />
 
       <EmAnaliseModal
