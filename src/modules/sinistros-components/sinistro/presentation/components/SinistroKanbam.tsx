@@ -10,10 +10,14 @@ import { useMemo, useState } from "react"
 import { toast } from "sonner"
 import { useSinistroQuery } from "../../infra/hooks/use-sinistro-query"
 import { changeSinistroStatus, moveSinistroBackwards } from "../../infra/remote"
+import { AprovadoModal } from "./modals/AprovadoModal"
 import { BackwardJustificationModal } from "./modals/BackwardJustificationModal"
 import { CreateSinistroModal } from "./modals/CreateSinistroModal"
 import { EmAnaliseModal } from "./modals/EmAnaliseModal"
 import { EmRegulacaoModal } from "./modals/EmRegulacaoModal"
+import { EncerradoModal } from "./modals/EncerradoModal"
+import { PagamentoModal } from "./modals/PagamentoModal"
+import { ReprovadoModal } from "./modals/ReprovadoModal"
 import { SinistroCard } from "./SinistroCard"
 
 const COLUMNS = [
@@ -39,11 +43,18 @@ const COLUMNS = [
     bgColor: "bg-orange-50/30",
   },
   {
-    id: "APROVACAO",
-    title: "Aprovação",
-    description: "Aprovação/Reprovação do sinistro",
+    id: SinistroStatusEnum.APROVADO,
+    title: "Aprovado",
+    description: "Aprovado",
     headerColor: "text-green-600",
     bgColor: "bg-green-50/30",
+  },
+  {
+    id: SinistroStatusEnum.REPROVADO,
+    title: "Reprovado",
+    description: "Reprovado",
+    headerColor: "text-red-600",
+    bgColor: "bg-red-50/30",
   },
   {
     id: SinistroStatusEnum.PAGAMENTO,
@@ -61,31 +72,62 @@ const COLUMNS = [
   },
 ]
 
+// Define allowed transitions for each status
+const ALLOWED_TRANSITIONS: Record<string, string[]> = {
+  [SinistroStatusEnum.NOVO_SINISTRO]: [SinistroStatusEnum.EM_ANALISE],
+  [SinistroStatusEnum.EM_ANALISE]: [
+    SinistroStatusEnum.NOVO_SINISTRO,
+    SinistroStatusEnum.EM_REGULACAO,
+    SinistroStatusEnum.REPROVADO,
+  ],
+  [SinistroStatusEnum.EM_REGULACAO]: [
+    SinistroStatusEnum.EM_ANALISE,
+    SinistroStatusEnum.APROVADO,
+    SinistroStatusEnum.REPROVADO,
+  ],
+  [SinistroStatusEnum.APROVADO]: [
+    SinistroStatusEnum.PAGAMENTO,
+    SinistroStatusEnum.ENCERRADO,
+  ],
+  [SinistroStatusEnum.REPROVADO]: [SinistroStatusEnum.ENCERRADO],
+  [SinistroStatusEnum.PAGAMENTO]: [SinistroStatusEnum.ENCERRADO],
+  [SinistroStatusEnum.ENCERRADO]: [],
+}
+
 export function SinistroKanbam() {
+  const baseState = {
+    open: false,
+    sinistroId: "",
+    sinistroNumero: "",
+  }
   const [modalState, setModalState] = useState({
     sinistro: { open: false },
     emAnalise: {
-      open: false,
-      sinistroId: "",
-      sinistroNumero: "",
+      ...baseState,
       newStatus: SinistroStatusEnum.EM_ANALISE,
     },
     emRegulacao: {
-      open: false,
-      sinistroId: "",
-      sinistroNumero: "",
+      ...baseState,
       newStatus: SinistroStatusEnum.EM_REGULACAO,
     },
-    emAprovacao: {
-      open: false,
-      sinistroId: "",
-      sinistroNumero: "",
-      newStatus: SinistroStatusEnum.APROVADO || SinistroStatusEnum.REPROVADO,
+    aprovado: {
+      ...baseState,
+      newStatus: SinistroStatusEnum.APROVADO,
+    },
+    reprovado: {
+      ...baseState,
+      newStatus: SinistroStatusEnum.REPROVADO,
+    },
+    pagamento: {
+      ...baseState,
+      newStatus: SinistroStatusEnum.PAGAMENTO,
+    },
+    encerrado: {
+      ...baseState,
+      newStatus: SinistroStatusEnum.ENCERRADO,
     },
     backward: {
-      open: false,
-      sinistroId: "",
-      sinistroNumero: "",
+      ...baseState,
       fromStatus: "",
       toStatus: "",
       newStatus: SinistroStatusEnum.NOVO_SINISTRO as SinistroStatusEnum,
@@ -103,7 +145,8 @@ export function SinistroKanbam() {
       [SinistroStatusEnum.NOVO_SINISTRO]: [],
       [SinistroStatusEnum.EM_ANALISE]: [],
       [SinistroStatusEnum.EM_REGULACAO]: [],
-      APROVACAO: [],
+      [SinistroStatusEnum.APROVADO]: [],
+      [SinistroStatusEnum.REPROVADO]: [],
       [SinistroStatusEnum.PAGAMENTO]: [],
       [SinistroStatusEnum.ENCERRADO]: [],
     }
@@ -115,14 +158,7 @@ export function SinistroKanbam() {
     //     ) || []
 
     sinistrosData?.items?.forEach((sinistro) => {
-      if (
-        sinistro.status === SinistroStatusEnum.APROVADO ||
-        sinistro.status === SinistroStatusEnum.REPROVADO
-      ) {
-        grouped.APROVACAO.push(sinistro)
-      } else if (grouped[sinistro.status]) {
-        grouped[sinistro.status].push(sinistro)
-      }
+      grouped[sinistro.status].push(sinistro)
     })
 
     return grouped
@@ -144,14 +180,15 @@ export function SinistroKanbam() {
 
     if (!sinistro) return
 
-    // Check if movement is only to neighbor columns
-    const sourceIndex = COLUMNS.findIndex((col) => col.id === oldStatus)
-    const destIndex = COLUMNS.findIndex((col) => col.id === newStatus)
-
-    if (Math.abs(destIndex - sourceIndex) > 1) {
-      toast.error("Você só pode mover para colunas vizinhas")
+    // Check if transition is allowed
+    const allowedDestinations = ALLOWED_TRANSITIONS[oldStatus] || []
+    if (!allowedDestinations.includes(newStatus)) {
+      toast.error("Movimento não permitido para esta coluna")
       return
     }
+
+    const sourceIndex = COLUMNS.findIndex((col) => col.id === oldStatus)
+    const destIndex = COLUMNS.findIndex((col) => col.id === newStatus)
 
     // Check if moving backwards
     const isMovingBackward = destIndex < sourceIndex
@@ -171,16 +208,19 @@ export function SinistroKanbam() {
       return
     }
 
-    // If moving to Em Análise, open modal to collect required data
+    const baseSwitchState = {
+      open: true,
+      sinistroId: draggableId,
+      sinistroNumero: sinistro.numeroSinistro,
+      newStatus,
+    }
+
     switch (newStatus) {
       case SinistroStatusEnum.EM_ANALISE:
         setModalState({
           ...modalState,
           emAnalise: {
-            open: true,
-            sinistroId: draggableId,
-            sinistroNumero: sinistro.numeroSinistro,
-            newStatus,
+            ...baseSwitchState,
           },
         })
         return
@@ -188,10 +228,39 @@ export function SinistroKanbam() {
         setModalState({
           ...modalState,
           emRegulacao: {
-            open: true,
-            sinistroId: draggableId,
-            sinistroNumero: sinistro.numeroSinistro,
-            newStatus,
+            ...baseSwitchState,
+          },
+        })
+        return
+      case SinistroStatusEnum.APROVADO:
+        setModalState({
+          ...modalState,
+          aprovado: {
+            ...baseSwitchState,
+          },
+        })
+        return
+      case SinistroStatusEnum.REPROVADO:
+        setModalState({
+          ...modalState,
+          reprovado: {
+            ...baseSwitchState,
+          },
+        })
+        return
+      case SinistroStatusEnum.PAGAMENTO:
+        setModalState({
+          ...modalState,
+          pagamento: {
+            ...baseSwitchState,
+          },
+        })
+        return
+      case SinistroStatusEnum.ENCERRADO:
+        setModalState({
+          ...modalState,
+          encerrado: {
+            ...baseSwitchState,
           },
         })
         return
@@ -228,6 +297,24 @@ export function SinistroKanbam() {
           emRegulacao: {
             ...baseStatus,
             newStatus: SinistroStatusEnum.EM_REGULACAO,
+          },
+        })
+        break
+      case SinistroStatusEnum.APROVADO:
+        setModalState({
+          ...modalState,
+          aprovado: {
+            ...baseStatus,
+            newStatus: status,
+          },
+        })
+        break
+      case SinistroStatusEnum.REPROVADO:
+        setModalState({
+          ...modalState,
+          reprovado: {
+            ...baseStatus,
+            newStatus: status,
           },
         })
         break
@@ -363,6 +450,78 @@ export function SinistroKanbam() {
         usuarios={usuarios}
         sinistroId={modalState.emRegulacao.sinistroId}
         sinistroNumero={modalState.emRegulacao.sinistroNumero}
+      />
+
+      <AprovadoModal
+        open={modalState.aprovado.open}
+        onClose={() =>
+          setModalState({
+            ...modalState,
+            aprovado: {
+              open: false,
+              sinistroId: "",
+              sinistroNumero: "",
+              newStatus: SinistroStatusEnum.APROVADO,
+            },
+          })
+        }
+        onConfirm={() => handleForwardConfirm(SinistroStatusEnum.APROVADO)}
+        sinistroId={modalState.aprovado.sinistroId}
+        sinistroNumero={modalState.aprovado.sinistroNumero}
+      />
+
+      <ReprovadoModal
+        open={modalState.reprovado.open}
+        onClose={() =>
+          setModalState({
+            ...modalState,
+            reprovado: {
+              open: false,
+              sinistroId: "",
+              sinistroNumero: "",
+              newStatus: SinistroStatusEnum.REPROVADO,
+            },
+          })
+        }
+        onConfirm={() => handleForwardConfirm(SinistroStatusEnum.REPROVADO)}
+        sinistroId={modalState.reprovado.sinistroId}
+        sinistroNumero={modalState.reprovado.sinistroNumero}
+      />
+
+      <PagamentoModal
+        open={modalState.pagamento.open}
+        onClose={() =>
+          setModalState({
+            ...modalState,
+            pagamento: {
+              open: false,
+              sinistroId: "",
+              sinistroNumero: "",
+              newStatus: SinistroStatusEnum.PAGAMENTO,
+            },
+          })
+        }
+        onConfirm={() => handleForwardConfirm(SinistroStatusEnum.PAGAMENTO)}
+        sinistroId={modalState.pagamento.sinistroId}
+        sinistroNumero={modalState.pagamento.sinistroNumero}
+      />
+
+      <EncerradoModal
+        open={modalState.encerrado.open}
+        onClose={() =>
+          setModalState({
+            ...modalState,
+            encerrado: {
+              open: false,
+              sinistroId: "",
+              sinistroNumero: "",
+              newStatus: SinistroStatusEnum.ENCERRADO,
+            },
+          })
+        }
+        onConfirm={() => handleForwardConfirm(SinistroStatusEnum.ENCERRADO)}
+        sinistroId={modalState.encerrado.sinistroId}
+        sinistroNumero={modalState.encerrado.sinistroNumero}
       />
 
       <BackwardJustificationModal

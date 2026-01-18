@@ -1,10 +1,12 @@
 import { SinistroStatusEnum } from "./enums/sinistroEnum"
+import { Proposta } from "./proposta"
 
 export namespace Sinistro {
   export type Type = {
     id: string
     numeroSinistro: string
     apoliceId: string
+    apolice: Proposta
     tipoSinistroId: string
     emailSegurado: string
     dataHoraOcorrido: string
