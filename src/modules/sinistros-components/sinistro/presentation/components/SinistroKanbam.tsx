@@ -9,7 +9,7 @@ import { DragDropContext, Draggable, Droppable } from "@hello-pangea/dnd"
 import { useMemo, useState } from "react"
 import { toast } from "sonner"
 import { useSinistroQuery } from "../../infra/hooks/use-sinistro-query"
-import { changeSinistroStatus } from "../../infra/remote"
+import { changeSinistroStatus, moveSinistroBackwards } from "../../infra/remote"
 import { BackwardJustificationModal } from "./modals/BackwardJustificationModal"
 import { CreateSinistroModal } from "./modals/CreateSinistroModal"
 import { EmAnaliseModal } from "./modals/EmAnaliseModal"
@@ -233,10 +233,7 @@ export function SinistroKanbam() {
   }
 
   const handleBackwardConfirm = (justification: string) => {
-    changeSinistroStatus(modalState.backward.sinistroId, {
-      statusNovo: modalState.backward.newStatus,
-      observacao: justification,
-    })
+    moveSinistroBackwards(modalState.backward.sinistroId, justification)
       .then(() => {
         toast.success("Sinistro retornado com sucesso!")
         setModalState({

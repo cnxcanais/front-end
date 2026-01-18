@@ -40,6 +40,13 @@ export async function changeSinistroStatus(
   return response.data
 }
 
+export async function moveSinistroBackwards(id: string, observacao?: string) {
+  const response = await bffApi.post(`/sinistros/${id}/reverter-status`, {
+    observacao,
+  })
+  return response.data
+}
+
 export async function changeObservacaoSinistro(
   id: string,
   data: Sinistro.PostObservacaoBody
