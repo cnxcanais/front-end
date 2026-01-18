@@ -39,18 +39,11 @@ const COLUMNS = [
     bgColor: "bg-orange-50/30",
   },
   {
-    id: SinistroStatusEnum.APROVADO,
-    title: "Aprovado",
-    description: "Sinistro aprovado",
+    id: "APROVACAO",
+    title: "Aprovação",
+    description: "Aprovação/Reprovação do sinistro",
     headerColor: "text-green-600",
     bgColor: "bg-green-50/30",
-  },
-  {
-    id: SinistroStatusEnum.REPROVADO,
-    title: "Reprovado",
-    description: "Sinistro negado",
-    headerColor: "text-red-600",
-    bgColor: "bg-red-50/30",
   },
   {
     id: SinistroStatusEnum.PAGAMENTO,
@@ -100,12 +93,11 @@ export function SinistroKanbam() {
   const isAdmin = user?.props?.perfilId === process.env.NEXT_PUBLIC_ADM_ID
 
   const sinistrosByStatus = useMemo(() => {
-    const grouped: Record<SinistroStatusEnum, Sinistro.Type[]> = {
+    const grouped: Record<string, Sinistro.Type[]> = {
       [SinistroStatusEnum.NOVO_SINISTRO]: [],
       [SinistroStatusEnum.EM_ANALISE]: [],
       [SinistroStatusEnum.EM_REGULACAO]: [],
-      [SinistroStatusEnum.APROVADO]: [],
-      [SinistroStatusEnum.REPROVADO]: [],
+      APROVACAO: [],
       [SinistroStatusEnum.PAGAMENTO]: [],
       [SinistroStatusEnum.ENCERRADO]: [],
     }
@@ -117,7 +109,12 @@ export function SinistroKanbam() {
     //     ) || []
 
     sinistrosData?.items?.forEach((sinistro) => {
-      if (grouped[sinistro.status]) {
+      if (
+        sinistro.status === SinistroStatusEnum.APROVADO ||
+        sinistro.status === SinistroStatusEnum.REPROVADO
+      ) {
+        grouped.APROVACAO.push(sinistro)
+      } else if (grouped[sinistro.status]) {
         grouped[sinistro.status].push(sinistro)
       }
     })
