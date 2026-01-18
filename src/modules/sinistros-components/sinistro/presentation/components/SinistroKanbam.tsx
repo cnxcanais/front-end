@@ -13,7 +13,7 @@ import { changeSinistroStatus, moveSinistroBackwards } from "../../infra/remote"
 import { BackwardJustificationModal } from "./modals/BackwardJustificationModal"
 import { CreateSinistroModal } from "./modals/CreateSinistroModal"
 import { EmAnaliseModal } from "./modals/EmAnaliseModal"
-import { EmRegulacaoModal } from "./modals/RegulacaoModal"
+import { EmRegulacaoModal } from "./modals/EmRegulacaoModal"
 import { SinistroCard } from "./SinistroCard"
 
 const COLUMNS = [
@@ -68,13 +68,19 @@ export function SinistroKanbam() {
       open: false,
       sinistroId: "",
       sinistroNumero: "",
-      newStatus: SinistroStatusEnum.EM_ANALISE as SinistroStatusEnum,
+      newStatus: SinistroStatusEnum.EM_ANALISE,
     },
     emRegulacao: {
       open: false,
       sinistroId: "",
       sinistroNumero: "",
-      newStatus: SinistroStatusEnum.EM_REGULACAO as SinistroStatusEnum,
+      newStatus: SinistroStatusEnum.EM_REGULACAO,
+    },
+    emAprovacao: {
+      open: false,
+      sinistroId: "",
+      sinistroNumero: "",
+      newStatus: SinistroStatusEnum.APROVADO || SinistroStatusEnum.REPROVADO,
     },
     backward: {
       open: false,
