@@ -110,6 +110,8 @@ export function EmRegulacaoModal({
     }
   }
 
+  console.log(usuarios)
+
   const usuariosOptions =
     isAdmin ?
       usuarios?.data.map((user) => ({

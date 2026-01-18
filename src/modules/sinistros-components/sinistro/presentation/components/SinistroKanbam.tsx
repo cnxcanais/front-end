@@ -135,6 +135,7 @@ export function SinistroKanbam() {
   })
   const { data: sinistrosData, refetch } = useSinistroQuery(1, -1)
   const { data: usuarios } = useUsuarioQuery()
+  console.log("usuarios", usuarios)
   const corretoraId = getCookie("corretoraId")
   const userId = getCookie("userId")
   const user = usuarios?.data.find((u) => u.props?.id === userId)
@@ -151,13 +152,14 @@ export function SinistroKanbam() {
       [SinistroStatusEnum.ENCERRADO]: [],
     }
 
-    // const filteredSinistros = isAdmin
-    //   ? sinistrosData?.items || []
-    //   : sinistrosData?.items.filter(
-    //       (s) => s.apolice.corretoraId === corretoraId
-    //     ) || []
+    const filteredSinistros =
+      isAdmin ?
+        sinistrosData?.items || []
+      : sinistrosData?.items.filter(
+          (s) => s.apolice.corretoraId === corretoraId
+        ) || []
 
-    sinistrosData?.items?.forEach((sinistro) => {
+    filteredSinistros?.forEach((sinistro) => {
       grouped[sinistro.status].push(sinistro)
     })
 

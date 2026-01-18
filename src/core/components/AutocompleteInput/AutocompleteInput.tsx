@@ -60,7 +60,7 @@ export const AutocompleteInput = forwardRef<
       }
     }, [value, defaultValue, options, initialized])
 
-    const filteredOptions = options.filter(
+    const filteredOptions = options?.filter(
       (option) =>
         option.text?.toLowerCase().includes(search.toLowerCase()) ||
         String(option.value || "")
@@ -136,7 +136,7 @@ export const AutocompleteInput = forwardRef<
           {...rest}
         />
 
-        {isOpen && !readOnly && filteredOptions.length > 0 && (
+        {isOpen && !readOnly && filteredOptions?.length > 0 && (
           <div className="absolute top-full z-50 mt-1 max-h-60 w-full overflow-auto rounded-md border border-gray-300 bg-white shadow-lg">
             {filteredOptions.map((option, index) => (
               <div
