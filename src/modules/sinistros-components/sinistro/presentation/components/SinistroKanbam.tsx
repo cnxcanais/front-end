@@ -3,14 +3,17 @@
 import { SinistroStatusEnum } from "@/@types/enums/sinistroEnum"
 import { Sinistro } from "@/@types/sinistro"
 import { Button } from "@/core/components/Button"
+import { getCookie } from "@/lib/cookies"
+import { useUsuarioQuery } from "@/modules/usuarios-components/usuario/infra/hooks/use-usuario-query"
 import { DragDropContext, Draggable, Droppable } from "@hello-pangea/dnd"
 import { useMemo, useState } from "react"
 import { toast } from "sonner"
-import { changeSinistroStatus } from "../../infra/remote"
 import { useSinistroQuery } from "../../infra/hooks/use-sinistro-query"
-import { CreateSinistroModal } from "./modals/CreateSinistroModal"
-import { EmAnaliseModal, type EmAnaliseData } from "./modals/EmAnaliseModal"
+import { changeSinistroStatus } from "../../infra/remote"
 import { BackwardJustificationModal } from "./modals/BackwardJustificationModal"
+import { CreateSinistroModal } from "./modals/CreateSinistroModal"
+import { EmAnaliseModal } from "./modals/EmAnaliseModal"
+import { EmRegulacaoModal } from "./modals/RegulacaoModal"
 import { SinistroCard } from "./SinistroCard"
 
 const COLUMNS = [
@@ -74,6 +77,12 @@ export function SinistroKanbam() {
       sinistroNumero: "",
       newStatus: SinistroStatusEnum.EM_ANALISE as SinistroStatusEnum,
     },
+    emRegulacao: {
+      open: false,
+      sinistroId: "",
+      sinistroNumero: "",
+      newStatus: SinistroStatusEnum.EM_REGULACAO as SinistroStatusEnum,
+    },
     backward: {
       open: false,
       sinistroId: "",
@@ -84,6 +93,11 @@ export function SinistroKanbam() {
     },
   })
   const { data: sinistrosData, refetch } = useSinistroQuery(1, -1)
+  const { data: usuarios } = useUsuarioQuery()
+  const corretoraId = getCookie("corretoraId")
+  const userId = getCookie("userId")
+  const user = usuarios?.data.find((u) => u.props?.id === userId)
+  const isAdmin = user?.props?.perfilId === process.env.NEXT_PUBLIC_ADM_ID
 
   const sinistrosByStatus = useMemo(() => {
     const grouped: Record<SinistroStatusEnum, Sinistro.Type[]> = {
@@ -124,7 +138,7 @@ export function SinistroKanbam() {
     // Check if movement is only to neighbor columns
     const sourceIndex = COLUMNS.findIndex((col) => col.id === oldStatus)
     const destIndex = COLUMNS.findIndex((col) => col.id === newStatus)
-    
+
     if (Math.abs(destIndex - sourceIndex) > 1) {
       toast.error("Você só pode mover para colunas vizinhas")
       return
@@ -149,17 +163,29 @@ export function SinistroKanbam() {
     }
 
     // If moving to Em Análise, open modal to collect required data
-    if (newStatus === SinistroStatusEnum.EM_ANALISE) {
-      setModalState({
-        ...modalState,
-        emAnalise: {
-          open: true,
-          sinistroId: draggableId,
-          sinistroNumero: sinistro.numeroSinistro,
-          newStatus,
-        },
-      })
-      return
+    switch (newStatus) {
+      case SinistroStatusEnum.EM_ANALISE:
+        setModalState({
+          ...modalState,
+          emAnalise: {
+            open: true,
+            sinistroId: draggableId,
+            sinistroNumero: sinistro.numeroSinistro,
+            newStatus,
+          },
+        })
+        return
+      case SinistroStatusEnum.EM_REGULACAO:
+        setModalState({
+          ...modalState,
+          emRegulacao: {
+            open: true,
+            sinistroId: draggableId,
+            sinistroNumero: sinistro.numeroSinistro,
+            newStatus,
+          },
+        })
+        return
     }
 
     // For other status changes, update directly
@@ -171,11 +197,32 @@ export function SinistroKanbam() {
       .catch(() => toast.error("Erro ao atualizar status"))
   }
 
-  const handleEmAnaliseConfirm = () => {
-    setModalState({
-      ...modalState,
-      emAnalise: { open: false, sinistroId: "", sinistroNumero: "", newStatus: SinistroStatusEnum.EM_ANALISE },
-    })
+  const handleForwardConfirm = (status: SinistroStatusEnum) => {
+    const baseStatus = {
+      sinistroId: "",
+      sinistroNumero: "",
+      open: false,
+    }
+    switch (status) {
+      case SinistroStatusEnum.EM_ANALISE:
+        setModalState({
+          ...modalState,
+          emAnalise: {
+            ...baseStatus,
+            newStatus: SinistroStatusEnum.EM_ANALISE,
+          },
+        })
+        break
+      case SinistroStatusEnum.EM_REGULACAO:
+        setModalState({
+          ...modalState,
+          emRegulacao: {
+            ...baseStatus,
+            newStatus: SinistroStatusEnum.EM_REGULACAO,
+          },
+        })
+        break
+    }
     refetch()
   }
 
@@ -205,7 +252,10 @@ export function SinistroKanbam() {
   return (
     <div>
       <div className="mb-4">
-        <Button onClick={() => setModalState({ ...modalState, sinistro: { open: true } })}>
+        <Button
+          onClick={() =>
+            setModalState({ ...modalState, sinistro: { open: true } })
+          }>
           Criar Sinistro +
         </Button>
       </div>
@@ -217,7 +267,9 @@ export function SinistroKanbam() {
               key={column.id}
               className={`flex min-w-[300px] flex-col rounded-lg ${column.bgColor} p-4`}>
               <div className="mb-4">
-                <h3 className={`text-lg font-semibold ${column.headerColor}`}>{column.title}</h3>
+                <h3 className={`text-lg font-semibold ${column.headerColor}`}>
+                  {column.title}
+                </h3>
                 <p className="text-xs text-gray-600">{column.description}</p>
                 <span className="mt-1 text-sm text-gray-500">
                   {sinistrosByStatus[column.id]?.length || 0} sinistro(s)
@@ -243,7 +295,10 @@ export function SinistroKanbam() {
                             {...provided.draggableProps}
                             {...provided.dragHandleProps}
                             className={snapshot.isDragging ? "shadow-lg" : ""}>
-                            <SinistroCard sinistro={sinistro} onDelete={() => refetch()} />
+                            <SinistroCard
+                              sinistro={sinistro}
+                              onDelete={() => refetch()}
+                            />
                           </div>
                         )}
                       </Draggable>
@@ -259,7 +314,9 @@ export function SinistroKanbam() {
 
       <CreateSinistroModal
         open={modalState.sinistro.open}
-        onClose={() => setModalState({ ...modalState, sinistro: { open: false } })}
+        onClose={() =>
+          setModalState({ ...modalState, sinistro: { open: false } })
+        }
         onSuccess={() => refetch()}
       />
 
@@ -268,12 +325,37 @@ export function SinistroKanbam() {
         onClose={() =>
           setModalState({
             ...modalState,
-            emAnalise: { open: false, sinistroId: "", sinistroNumero: "", newStatus: SinistroStatusEnum.EM_ANALISE },
+            emAnalise: {
+              open: false,
+              sinistroId: "",
+              sinistroNumero: "",
+              newStatus: SinistroStatusEnum.EM_ANALISE,
+            },
           })
         }
-        onConfirm={handleEmAnaliseConfirm}
+        onConfirm={() => handleForwardConfirm(SinistroStatusEnum.EM_ANALISE)}
         sinistroId={modalState.emAnalise.sinistroId}
         sinistroNumero={modalState.emAnalise.sinistroNumero}
+      />
+
+      <EmRegulacaoModal
+        open={modalState.emRegulacao.open}
+        onClose={() =>
+          setModalState({
+            ...modalState,
+            emRegulacao: {
+              open: false,
+              sinistroId: "",
+              sinistroNumero: "",
+              newStatus: SinistroStatusEnum.EM_REGULACAO,
+            },
+          })
+        }
+        onConfirm={() => handleForwardConfirm(SinistroStatusEnum.EM_REGULACAO)}
+        isAdmin={isAdmin || false}
+        usuarios={usuarios}
+        sinistroId={modalState.emRegulacao.sinistroId}
+        sinistroNumero={modalState.emRegulacao.sinistroNumero}
       />
 
       <BackwardJustificationModal

@@ -4,7 +4,7 @@ import { getUsuarios } from "../remote"
 
 export function useUsuarioQuery(
   page = 1,
-  limit = 10,
+  limit = -1,
   filters?: Record<string, string>
 ) {
   try {
