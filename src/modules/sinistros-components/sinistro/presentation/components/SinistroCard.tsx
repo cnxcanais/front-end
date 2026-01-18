@@ -151,18 +151,18 @@ export function SinistroCard({ sinistro, onDelete }: Props) {
             </div>
             <div>
               <span className="font-semibold">Andamento:</span>{" "}
-              {sinistro.andamento && sinistro.andamento.length > 20 ? (
+              {sinistro.andamento && sinistro.andamento.length > 20 ?
                 <>
-                  {andamentoExpanded ? sinistro.andamento : `${sinistro.andamento.slice(0, 20)}...`}
+                  {andamentoExpanded ?
+                    sinistro.andamento
+                  : `${sinistro.andamento.slice(0, 20)}...`}
                   <button
                     onClick={() => setAndamentoExpanded(!andamentoExpanded)}
                     className="ml-1 text-blue-600 hover:text-blue-800">
                     {andamentoExpanded ? "-" : "+"}
                   </button>
                 </>
-              ) : (
-                sinistro.andamento || "-"
-              )}
+              : sinistro.andamento || "-"}
             </div>
             <div>
               <span className="font-semibold">Data Última Tratativa:</span>{" "}
@@ -174,7 +174,7 @@ export function SinistroCard({ sinistro, onDelete }: Props) {
             </div>
             <div>
               <span className="font-semibold">Responsável:</span>{" "}
-              {sinistro.responsavelUsuario?.nome}
+              {sinistro.responsavelUsuario?.nome || "-"}
             </div>
           </div>
         )}
