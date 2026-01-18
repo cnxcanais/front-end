@@ -2,10 +2,11 @@
 
 import { SinistroStatusEnum } from "@/@types/enums/sinistroEnum"
 import { Sinistro } from "@/@types/sinistro"
-import { CaretDown, CaretUp, X } from "@phosphor-icons/react"
+import { Eye, X } from "@phosphor-icons/react"
 import { useState } from "react"
 import { toast } from "sonner"
 import { deleteSinistro } from "../../infra/remote"
+import { SinistroDetailsModal } from "./modals/SinistroDetailsModal"
 
 type Props = {
   sinistro: Sinistro.Type
@@ -13,7 +14,7 @@ type Props = {
 }
 
 export function SinistroCard({ sinistro, onDelete }: Props) {
-  const [expanded, setExpanded] = useState(false)
+  const [detailsOpen, setDetailsOpen] = useState(false)
 
   const handleDelete = async (e: React.MouseEvent) => {
     e.stopPropagation()
@@ -50,93 +51,48 @@ export function SinistroCard({ sinistro, onDelete }: Props) {
   }
 
   return (
-    <div
-      className={`relative rounded-lg bg-white p-3 shadow-sm hover:shadow-md transition-shadow break-words ${getStatusColor()}`}>
-      {sinistro.status === SinistroStatusEnum.NOVO_SINISTRO && (
-        <button
-          onClick={handleDelete}
-          className="absolute right-2 top-2 rounded-full p-1 text-gray-400 hover:bg-red-100 hover:text-red-600 transition-colors">
-          <X size={16} weight="bold" />
-        </button>
-      )}
-      
-      <div className="mb-2 text-sm font-medium text-gray-700">
-        {sinistro.descricaoOcorrido}
-      </div>
-      <div className="mb-1 text-xs font-semibold text-gray-900">
-        {sinistro.numeroSinistro}
-      </div>
-      <div className="mb-2 text-xs text-gray-600">
-        {sinistro.proposta?.seguradoNome || "-"}
-      </div>
-
-      <button
-        onClick={() => setExpanded(!expanded)}
-        className="flex w-full items-center justify-between text-xs text-blue-600 hover:text-blue-800">
-        <span>{expanded ? "Ocultar" : "Ver"} detalhes</span>
-        {expanded ? <CaretUp size={16} /> : <CaretDown size={16} />}
-      </button>
-
-      {expanded && (
-        <div className="mt-3 space-y-2 border-t pt-3 text-xs">
-          <div>
-            <span className="font-semibold">Tipo:</span>{" "}
-            {sinistro.tipoSinistro?.descricao || "-"}
-          </div>
-          <div>
-            <span className="font-semibold">Data Ocorrido:</span>{" "}
-            {new Date(sinistro.dataHoraOcorrido).toLocaleDateString("pt-BR")}
-          </div>
-          <div>
-            <span className="font-semibold">Valor Estimado:</span>{" "}
-            {sinistro.valorEstimado ?
-              new Intl.NumberFormat("pt-BR", {
-                style: "currency",
-                currency: "BRL",
-              }).format(sinistro.valorEstimado)
-            : "-"}
-          </div>
-
-          {sinistro.proposta?.seguradoraNome && (
-            <div className="flex items-center gap-2">
-              {sinistro.proposta.seguradoraLogo && (
-                <img
-                  src={sinistro.proposta.seguradoraLogo}
-                  alt={sinistro.proposta.seguradoraNome}
-                  className="h-6 w-6 rounded object-contain"
-                />
-              )}
-              <div>
-                <div className="font-semibold">Seguradora:</div>
-                <div>{sinistro.proposta.seguradoraNome}</div>
-              </div>
-            </div>
-          )}
-
-          {sinistro.proposta?.corretoraNome && (
-            <div className="flex items-center gap-2">
-              {sinistro.proposta.corretoraLogo && (
-                <img
-                  src={sinistro.proposta.corretoraLogo}
-                  alt={sinistro.proposta.corretoraNome}
-                  className="h-6 w-6 rounded object-contain"
-                />
-              )}
-              <div>
-                <div className="font-semibold">Corretora:</div>
-                <div>{sinistro.proposta.corretoraNome}</div>
-              </div>
-            </div>
-          )}
-
-          {sinistro.responsavelUsuario?.nome && (
-            <div>
-              <span className="font-semibold">Responsável:</span>{" "}
-              {sinistro.responsavelUsuario.nome}
-            </div>
+    <>
+      <div
+        className={`relative rounded-lg bg-white p-3 shadow-sm hover:shadow-md transition-shadow break-words ${getStatusColor()}`}>
+        <div className="absolute right-2 top-2 flex gap-1">
+          <button
+            onClick={(e) => {
+              e.stopPropagation()
+              setDetailsOpen(true)
+            }}
+            className="rounded-full p-1 text-gray-400 hover:bg-blue-100 hover:text-blue-600 transition-colors"
+            title="Ver detalhes">
+            <Eye size={16} weight="bold" />
+          </button>
+          {sinistro.status === SinistroStatusEnum.NOVO_SINISTRO && (
+            <button
+              onClick={handleDelete}
+              className="rounded-full p-1 text-gray-400 hover:bg-red-100 hover:text-red-600 transition-colors"
+              title="Excluir">
+              <X size={16} weight="bold" />
+            </button>
           )}
         </div>
-      )}
-    </div>
+        
+        <div className="mb-2 pr-12 text-sm font-medium text-gray-700">
+          {sinistro.descricaoOcorrido}
+        </div>
+        <div className="mb-1 text-xs font-semibold text-gray-900">
+          {sinistro.numeroSinistro}
+        </div>
+        <div className="mb-2 text-xs text-gray-600">
+          {sinistro.apolice?.seguradoNome || "-"}
+        </div>
+        <div className="text-xs text-gray-500">
+          {new Date(sinistro.dataHoraOcorrido).toLocaleDateString("pt-BR")}
+        </div>
+      </div>
+
+      <SinistroDetailsModal
+        open={detailsOpen}
+        onClose={() => setDetailsOpen(false)}
+        sinistro={sinistro}
+      />
+    </>
   )
 }
