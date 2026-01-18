@@ -40,6 +40,12 @@ const sidebar_options_not_admin: SidebarOptionProps[] = [
     Icon: FileText,
     group: "Gerenciamento",
   },
+  {
+    name: "Sinistros",
+    href: "/sinistros",
+    Icon: Car,
+    group: "Gerenciamento",
+  },
 ]
 
 export const sidebar_options: SidebarOptionProps[] = [
