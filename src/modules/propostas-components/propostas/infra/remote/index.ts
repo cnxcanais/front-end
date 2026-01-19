@@ -1,4 +1,5 @@
 import { bffApi } from "@/lib/axios"
+import { queryClient } from "@/lib/react-query"
 import {
   SituacaoEnum,
   TipoDocumentoEnum,
@@ -274,5 +275,21 @@ export async function importParcelas(file: File) {
         "Erro ao importar parcelas"
     )
     throw error
+  }
+}
+
+export async function calcularComissaoApolice(propostaId: string) {
+  try {
+    const response = await bffApi.post(`/comissoes/calcular`, {
+      propostaApoliceId: propostaId,
+    })
+    queryClient.invalidateQueries({ queryKey: ["propostas"] })
+    toast.success("Cálculo de comissão realizado com sucesso!")
+    return response.data
+  } catch (error: any) {
+    toast.error(
+      "Erro ao atualizar parcelas: " + error?.response?.data?.message ||
+        "Erro ao atualizar parcelas"
+    )
   }
 }

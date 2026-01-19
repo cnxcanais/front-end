@@ -89,8 +89,14 @@ const ALLOWED_TRANSITIONS: Record<string, string[]> = {
   [SinistroStatusEnum.APROVADO]: [
     SinistroStatusEnum.PAGAMENTO,
     SinistroStatusEnum.ENCERRADO,
+    SinistroStatusEnum.EM_REGULACAO,
+    SinistroStatusEnum.EM_ANALISE,
   ],
-  [SinistroStatusEnum.REPROVADO]: [SinistroStatusEnum.ENCERRADO],
+  [SinistroStatusEnum.REPROVADO]: [
+    SinistroStatusEnum.ENCERRADO,
+    SinistroStatusEnum.EM_REGULACAO,
+    SinistroStatusEnum.EM_ANALISE,
+  ],
   [SinistroStatusEnum.PAGAMENTO]: [SinistroStatusEnum.ENCERRADO],
   [SinistroStatusEnum.ENCERRADO]: [],
 }

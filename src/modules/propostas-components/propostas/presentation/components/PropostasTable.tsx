@@ -16,6 +16,7 @@ import { useProdutorQuery } from "@/modules/produtores-components/produtor/infra
 import { useProdutoQuery } from "@/modules/produtos-components/produtos/infra/hooks/use-produto-query"
 import { usePropostaQuery } from "@/modules/propostas-components/propostas/infra/hooks/use-proposta-query"
 import {
+  calcularComissaoApolice,
   cancelarApolice,
   editPrevisaoPagamento,
   emitirApolice,
@@ -51,6 +52,7 @@ import {
   Pencil,
   ProhibitInset,
   Recycle,
+  TipJar,
   Trash,
   X,
   XCircle,
@@ -590,21 +592,32 @@ export function PropostasTable() {
               </>
             )}
           {row.tipoDocumento !== TipoDocumentoEnum.PROPOSTA && (
-            <span title="Ver Cadeia">
-              <LinkSimple
-                className="cursor-pointer hover:text-blue-500"
-                size={24}
-                onClick={async () => {
-                  try {
-                    const data = await getPropostaChain(row.numeroApolice)
-                    setCadeiaData(data)
-                    setShowCadeiaModal(true)
-                  } catch (error) {
-                    toast.error("Erro ao buscar cadeia")
-                  }
-                }}
-              />
-            </span>
+            <>
+              <span title="Calcular Comissão">
+                <TipJar
+                  className="cursor-pointer hover:text-orange-500"
+                  size={24}
+                  onClick={() => {
+                    calcularComissaoApolice(value)
+                  }}
+                />
+              </span>
+              <span title="Ver Cadeia">
+                <LinkSimple
+                  className="cursor-pointer hover:text-blue-500"
+                  size={24}
+                  onClick={async () => {
+                    try {
+                      const data = await getPropostaChain(row.numeroApolice)
+                      setCadeiaData(data)
+                      setShowCadeiaModal(true)
+                    } catch (error) {
+                      toast.error("Erro ao buscar cadeia")
+                    }
+                  }}
+                />
+              </span>
+            </>
           )}
 
           {(row.tipoDocumento === TipoDocumentoEnum.APOLICE ||
