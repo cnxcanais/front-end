@@ -3,6 +3,7 @@
 import { SinistroStatusEnum } from "@/@types/enums/sinistroEnum"
 import { Sinistro } from "@/@types/sinistro"
 import { Button } from "@/core/components/Button"
+import { LoadingScreen } from "@/core/components/LoadingScreen"
 import { getCookie } from "@/lib/cookies"
 import { useUsuarioQuery } from "@/modules/usuarios-components/usuario/infra/hooks/use-usuario-query"
 import { DragDropContext, Draggable, Droppable } from "@hello-pangea/dnd"
@@ -133,9 +134,8 @@ export function SinistroKanbam() {
       newStatus: SinistroStatusEnum.NOVO_SINISTRO as SinistroStatusEnum,
     },
   })
-  const { data: sinistrosData, refetch } = useSinistroQuery(1, -1)
+  const { data: sinistrosData, refetch, isLoading } = useSinistroQuery(1, -1)
   const { data: usuarios } = useUsuarioQuery()
-  console.log("usuarios", usuarios)
   const corretoraId = getCookie("corretoraId")
   const userId = getCookie("userId")
   const user = usuarios?.data.find((u) => u.props?.id === userId)
@@ -167,6 +167,10 @@ export function SinistroKanbam() {
   }, [sinistrosData])
 
   const onDragEnd = (result: any) => {
+    if (!isAdmin) {
+      toast.error("Apenas administradores podem mover cards")
+      return
+    }
     const { destination, source, draggableId } = result
 
     if (!destination) return
@@ -344,6 +348,8 @@ export function SinistroKanbam() {
       .catch(() => toast.error("Erro ao retornar sinistro"))
   }
 
+  if (isLoading) return <LoadingScreen />
+
   return (
     <div>
       <div className="mb-4">
@@ -383,7 +389,8 @@ export function SinistroKanbam() {
                       <Draggable
                         key={sinistro.id}
                         draggableId={sinistro.id}
-                        index={index}>
+                        index={index}
+                        isDragDisabled={!isAdmin}>
                         {(provided, snapshot) => (
                           <div
                             ref={provided.innerRef}
@@ -391,6 +398,7 @@ export function SinistroKanbam() {
                             {...provided.dragHandleProps}
                             className={snapshot.isDragging ? "shadow-lg" : ""}>
                             <SinistroCard
+                              isAdmin={isAdmin}
                               sinistro={sinistro}
                               onDelete={() => refetch()}
                             />

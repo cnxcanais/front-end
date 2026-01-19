@@ -2,7 +2,13 @@
 
 import { SinistroStatusEnum } from "@/@types/enums/sinistroEnum"
 import { Sinistro } from "@/@types/sinistro"
-import { CaretDown, CaretUp, ClockCounterClockwise, Eye, X } from "@phosphor-icons/react"
+import {
+  CaretDown,
+  CaretUp,
+  ClockCounterClockwise,
+  Eye,
+  X,
+} from "@phosphor-icons/react"
 import { useState } from "react"
 import { toast } from "sonner"
 import { deleteSinistro } from "../../infra/remote"
@@ -12,9 +18,10 @@ import { SinistroHistoryModal } from "./modals/SinistroHistoryModal"
 type Props = {
   sinistro: Sinistro.Type
   onDelete: () => void
+  isAdmin: boolean
 }
 
-export function SinistroCard({ sinistro, onDelete }: Props) {
+export function SinistroCard({ sinistro, onDelete, isAdmin }: Props) {
   const [expanded, setExpanded] = useState(false)
   const [detailsOpen, setDetailsOpen] = useState(false)
   const [historyOpen, setHistoryOpen] = useState(false)
@@ -192,6 +199,7 @@ export function SinistroCard({ sinistro, onDelete }: Props) {
       </div>
 
       <SinistroDetailsModal
+        isAdmin={isAdmin}
         open={detailsOpen}
         onClose={() => setDetailsOpen(false)}
         sinistro={sinistro}

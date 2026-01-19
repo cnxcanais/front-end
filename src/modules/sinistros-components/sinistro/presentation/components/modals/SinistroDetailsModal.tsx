@@ -10,9 +10,15 @@ type Props = {
   open: boolean
   onClose: () => void
   sinistro: Sinistro.Type | null
+  isAdmin: boolean
 }
 
-export function SinistroDetailsModal({ open, onClose, sinistro }: Props) {
+export function SinistroDetailsModal({
+  open,
+  onClose,
+  sinistro,
+  isAdmin,
+}: Props) {
   if (!sinistro) return null
 
   const formatCurrency = (value: number | null) => {
@@ -211,6 +217,7 @@ export function SinistroDetailsModal({ open, onClose, sinistro }: Props) {
           <ModalFilesTrigger
             entityId={sinistro.id}
             entityType={EntityType.SINISTRO}
+            isAdmin={isAdmin}
           />
         </div>
 
