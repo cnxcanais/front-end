@@ -19,7 +19,11 @@ export function TiposSinistrosTable() {
   const [page, setPage] = useState(1)
   const [limit, setLimit] = useState(10)
   const [filters, setFilters] = useState<Record<string, string>>({})
-  const { data, isLoading, refetch } = useTipoSinistroQuery(page, limit, filters)
+  const { data, isLoading, refetch } = useTipoSinistroQuery(
+    page,
+    limit,
+    filters
+  )
   const { push } = useRouter()
 
   const [open, setOpen] = useState(false)
@@ -39,7 +43,8 @@ export function TiposSinistrosTable() {
       toast.success("Tipo de sinistro removido com sucesso!")
       refetch()
     } catch (error) {
-      const message = error?.response?.data?.message || "Erro ao remover tipo de sinistro"
+      const message =
+        error?.response?.data?.message || "Erro ao remover tipo de sinistro"
       toast.error(message)
     } finally {
       setOpen(false)
@@ -48,10 +53,10 @@ export function TiposSinistrosTable() {
 
   const columns = [
     { header: "Descrição", accessor: "descricao" },
-    { 
-      header: "Ramo", 
+    {
+      header: "Ramo",
       accessor: "ramo",
-      render: (value: { descricao: string }) => value?.descricao || "-"
+      render: (value: { descricao: string }) => value?.descricao || "-",
     },
     {
       header: "Ações",
@@ -62,6 +67,7 @@ export function TiposSinistrosTable() {
             className="cursor-pointer duration-300 ease-in-out hover:text-blue-500"
             size={24}
             onClick={() => handleEdit(value)}
+            color="#00dfa7"
           />
           <Trash
             className="cursor-pointer duration-300 ease-in-out hover:text-blue-500"
@@ -70,6 +76,7 @@ export function TiposSinistrosTable() {
               setId(value)
               setOpen(true)
             }}
+            color="#00dfa7"
           />
         </div>
       ),
@@ -125,7 +132,9 @@ export function TiposSinistrosTable() {
 
       <div className="mt-8 flex items-center justify-between">
         <div className="flex h-full gap-4">
-          <Button onClick={() => push("/tipos-sinistros/create")} variant="secondary">
+          <Button
+            onClick={() => push("/tipos-sinistros/create")}
+            variant="secondary">
             Cadastrar
           </Button>
         </div>
@@ -150,7 +159,9 @@ export function TiposSinistrosTable() {
       </div>
 
       {tiposSinistros.length == 0 ?
-        <h2 className="mt-6 text-xl font-semibold">Nenhum tipo de sinistro cadastrado.</h2>
+        <h2 className="mt-6 text-xl font-semibold">
+          Nenhum tipo de sinistro cadastrado.
+        </h2>
       : <>
           <Table columns={columns} data={filteredResults} />
           <Pagination

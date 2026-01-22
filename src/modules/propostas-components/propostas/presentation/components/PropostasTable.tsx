@@ -454,7 +454,7 @@ export function PropostasTable() {
       accessor: "ramoId",
       render: (value: string, row: any) => (
         <div>
-          <div>{getRamoName(value)}</div>
+          <div className="text-green-100">{getRamoName(value)}</div>
           <div className="text-sm text-gray-600">
             Vigência: {row.inicioVigencia} a {row.fimVigencia}
           </div>
@@ -472,29 +472,54 @@ export function PropostasTable() {
     {
       header: "Status",
       accessor: "situacao",
-      render: (value: string, row: any) => (
-        <div className="flex items-center gap-2">
-          <div
-            className={`h-3 w-3 rounded-full ${
-              row.situacao === "Cancelada" ? "bg-red-500"
-              : row.situacao !== "Ativo" ? "bg-blue-100"
-              : new Date(row.fimVigencia) > new Date() ? "bg-green-500"
-              : new Date(row.fimVigencia) === new Date() ? "bg-yellow-500"
-              : "bg-red-500"
-            }`}
-          />
-          <div>
-            <div className="font-medium">{row.tipoDocumento}</div>
-            <div className="text-sm text-gray-600">{row.numeroProposta}</div>
-            <div>{row.situacao}</div>
+      render: (value: string, row: any) => {
+        const endDate = new Date(row.fimVigencia)
+        const today = new Date()
+        today.setHours(0, 0, 0, 0)
+
+        let bgColor = ""
+
+        if (row.situacao === "Cancelada") {
+          bgColor = "#ef4444"
+        } else if (row.situacao !== "Ativo") {
+          bgColor = "#dbeafe"
+        } else if (endDate.getTime() > today.getTime()) {
+          bgColor = "#22c55e"
+        } else {
+          bgColor = "#ef4444"
+        }
+
+        return (
+          <div className="flex items-center gap-2">
+            <div
+              className="rounded-full"
+              style={{
+                backgroundColor: bgColor,
+                width: "12px !important",
+                height: "12px !important",
+                minWidth: "12px",
+                minHeight: "12px",
+                flexShrink: 0,
+              }}
+            />
+            <div>
+              <div className="font-medium text-green-100">
+                {row.tipoDocumento}
+              </div>
+              <div className="text-sm text-gray-600">{row.numeroProposta}</div>
+              <div className="text-green-100">{row.situacao}</div>
+            </div>
           </div>
-        </div>
-      ),
+        )
+      },
     },
+
     {
       header: "Produtor",
       accessor: "produtorId",
-      render: (value: string) => getProdutorName(value),
+      render: (value: string) => (
+        <div className="text-green-100">{getProdutorName(value)}</div>
+      ),
     },
     {
       header: "Seguradora",
@@ -508,7 +533,7 @@ export function PropostasTable() {
               className="h-8 w-8 object-contain"
             />
           : <div className="h-8 w-8" />}
-          <span>{getSeguradoraName(value)}</span>
+          <span className="text-green-100">{getSeguradoraName(value)}</span>
         </div>
       ),
     },
@@ -557,6 +582,7 @@ export function PropostasTable() {
               className="cursor-pointer hover:text-gray-500"
               size={24}
               onClick={() => push(`/propostas/view/${value}`)}
+              color="#00dfa7"
             />
           </span>
           {row.tipoDocumento === TipoDocumentoEnum.PROPOSTA &&
@@ -568,6 +594,7 @@ export function PropostasTable() {
                     className="cursor-pointer hover:text-blue-500"
                     size={24}
                     onClick={() => handleEdit(value)}
+                    color="#00dfa7"
                   />
                 </span>
 
@@ -576,6 +603,7 @@ export function PropostasTable() {
                     className="cursor-pointer hover:text-red-500"
                     size={24}
                     onClick={() => handleRefuseProposta(value)}
+                    color="#00dfa7"
                   />
                 </span>
 
@@ -587,6 +615,7 @@ export function PropostasTable() {
                       setSelectedPropostaId(value)
                       setOpenEmitirApoliceModal(true)
                     }}
+                    color="#00dfa7"
                   />
                 </span>
               </>
@@ -600,6 +629,7 @@ export function PropostasTable() {
                   onClick={() => {
                     calcularComissaoApolice(value)
                   }}
+                  color="#00dfa7"
                 />
               </span>
               <span title="Ver Cadeia">
@@ -615,6 +645,7 @@ export function PropostasTable() {
                       toast.error("Erro ao buscar cadeia")
                     }
                   }}
+                  color="#00dfa7"
                 />
               </span>
             </>
@@ -634,6 +665,7 @@ export function PropostasTable() {
                     setSelectedPropostaId(ultimoEndosso?.ultimaVersao?.id)
                     setOpenEndossarApoliceModal(true)
                   }}
+                  color="#00dfa7"
                 />
               </span>
             )}
@@ -650,6 +682,7 @@ export function PropostasTable() {
                       setSelectedPropostaId(value)
                       setOpenRenovarApoliceModal(true)
                     }}
+                    color="#00dfa7"
                   />
                 </span>
                 <span title="Não Renovar Apólice">
@@ -660,6 +693,7 @@ export function PropostasTable() {
                       setSelectedPropostaId(value)
                       setOpenNaoRenovarModal(true)
                     }}
+                    color="#00dfa7"
                   />
                 </span>
               </>
@@ -677,6 +711,7 @@ export function PropostasTable() {
                     setSelectedPropostaId(value)
                     setOpenNaoRenovarModal(true)
                   }}
+                  color="#00dfa7"
                 />
               </span>
             )}
@@ -694,6 +729,7 @@ export function PropostasTable() {
                     setSelectedPropostaId(value)
                     setOpenCancelarApoliceModal(true)
                   }}
+                  color="#00dfa7"
                 />
               </span>
             )}
@@ -709,6 +745,7 @@ export function PropostasTable() {
                     setId(value)
                     setOpen(true)
                   }}
+                  color="#00dfa7"
                 />
               </span>
             )}
@@ -717,6 +754,7 @@ export function PropostasTable() {
               className="cursor-pointer hover:text-green-500"
               size={24}
               onClick={() => handleDuplicate(value)}
+              color="#00dfa7"
             />
           </span>
         </div>
@@ -1030,14 +1068,14 @@ export function PropostasTable() {
                 Exportar PDF
               </ExportTableToPDFButton>
               <Button
-                className="flex items-center gap-1 bg-green-600 hover:bg-green-700"
+                className="flex items-center gap-1"
                 variant="secondary"
                 onClick={() => setOpenImportParcelasModal(true)}>
                 <FileXls size={22} />
                 Importar Parcelas
               </Button>
               <Button
-                className="flex items-center gap-1 bg-green-600 hover:bg-green-700"
+                className="flex items-center gap-1"
                 variant="secondary"
                 onClick={() => setOpenExportParcelasModal(true)}>
                 <FileXls size={22} />
@@ -1268,7 +1306,7 @@ export function PropostasTable() {
                               p.situacao === "Em Atraso"
                           ) && (
                             <button
-                              className="rounded bg-green-600 px-3 py-1 text-sm text-white shadow hover:bg-green-700"
+                              className="rounded bg-green-100 px-3 py-1 text-sm text-white shadow hover:bg-yellow-100"
                               onClick={async () => {
                                 try {
                                   await setAllParcelasToPaid(row.id)
@@ -1283,7 +1321,7 @@ export function PropostasTable() {
                                 }
                               }}>
                               <div className="flex items-center gap-1">
-                                <Coins />
+                                <Coins color="white" />
                                 Pagar Todas Vencidas
                               </div>
                             </button>
@@ -1359,6 +1397,7 @@ export function PropostasTable() {
                                             await setParcelaToPaid(parcela.id)
                                             refetch()
                                           }}
+                                          color="#00dfa7"
                                         />
                                       </div>
                                     )}
@@ -1372,6 +1411,7 @@ export function PropostasTable() {
                                           setSelectedParcelaId(parcela.id)
                                           setShowPrevisaoModal(true)
                                         }}
+                                        color="#00dfa7"
                                       />
                                     </div>
                                   )}

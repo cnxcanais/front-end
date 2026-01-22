@@ -59,6 +59,7 @@ export function PerfisTable() {
                 className="cursor-pointer duration-300 ease-in-out hover:text-blue-500"
                 size={24}
                 onClick={() => handleEdit(value)}
+                color="#00dfa7"
               />
 
               <Trash
@@ -68,6 +69,7 @@ export function PerfisTable() {
                   setId(value)
                   setOpen(true)
                 }}
+                color="#00dfa7"
               />
             </>
           )}

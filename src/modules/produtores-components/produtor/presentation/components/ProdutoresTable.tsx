@@ -94,6 +94,7 @@ export function ProdutoresTable() {
             className="cursor-pointer duration-300 ease-in-out hover:text-blue-500"
             size={24}
             onClick={() => handleEdit(value)}
+            color="#00dfa7"
           />
           <Trash
             className="cursor-pointer duration-300 ease-in-out hover:text-blue-500"
@@ -102,6 +103,7 @@ export function ProdutoresTable() {
               setId(value)
               setOpen(true)
             }}
+            color="#00dfa7"
           />
         </div>
       ),

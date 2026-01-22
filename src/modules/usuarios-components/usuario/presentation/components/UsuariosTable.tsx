@@ -127,6 +127,7 @@ export function UsuariosTable() {
             className="cursor-pointer hover:text-blue-500"
             size={24}
             onClick={() => handleEdit(value)}
+            color="#00dfa7"
           />
           <LockKey
             className={`cursor-pointer ${row.status === "ATIVO" ? "hover:text-yellow-500" : "text-red-500 hover:text-red-600"}`}
@@ -136,6 +137,7 @@ export function UsuariosTable() {
               setUserStatus(row.status)
               setOpenBlockModal(true)
             }}
+            color="#00dfa7"
           />
           <Trash
             className="cursor-pointer hover:text-red-500"
@@ -144,6 +146,7 @@ export function UsuariosTable() {
               setId(value)
               setOpen(true)
             }}
+            color="#00dfa7"
           />
         </div>
       ),

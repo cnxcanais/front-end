@@ -12,7 +12,9 @@ import { SidebarItem } from "./SidebarItem"
 
 export function Sidebar() {
   const [isOpen, setIsOpen] = useState(true)
-  const [collapsedGroups, setCollapsedGroups] = useState<Record<string, boolean>>({})
+  const [collapsedGroups, setCollapsedGroups] = useState<
+    Record<string, boolean>
+  >({})
   const pathname = usePathname()
   const { push } = useRouter()
 
@@ -51,7 +53,7 @@ export function Sidebar() {
           }`}
           onClick={() => push("/dashboard")}
         />
-        <button onClick={toggleSidebar} className="text-white">
+        <button onClick={toggleSidebar} className="text-black">
           {isOpen ?
             <X size={24} />
           : <List size={24} />}
@@ -69,10 +71,17 @@ export function Sidebar() {
               <ul role="list" className="-mx-2 space-y-1">
                 {Object.keys(sidebarGroupedByGroups).map((group) => (
                   <Fragment key={group}>
-                    <h3 
-                      className="!my-3 flex cursor-pointer items-center gap-2 border-b-2 pb-0.5 text-lg font-semibold text-white hover:opacity-80"
-                      onClick={() => setCollapsedGroups(prev => ({ ...prev, [group]: !prev[group] }))}>
-                      {collapsedGroups[group] ? <CaretRight size={16} /> : <CaretDown size={16} />}
+                    <h3
+                      className="text-black !my-3 flex cursor-pointer items-center gap-2 border-b-2 pb-0.5 text-lg font-semibold hover:opacity-80"
+                      onClick={() =>
+                        setCollapsedGroups((prev) => ({
+                          ...prev,
+                          [group]: !prev[group],
+                        }))
+                      }>
+                      {collapsedGroups[group] ?
+                        <CaretRight size={16} />
+                      : <CaretDown size={16} />}
                       {group}
                     </h3>
                     {!collapsedGroups[group] && (
@@ -98,7 +107,7 @@ export function Sidebar() {
       {!isOpen && (
         <button
           onClick={toggleSidebar}
-          className="fixed left-2 top-4 animate-bounce rounded-full bg-blue-500 p-2 text-white shadow-lg">
+          className="text-black fixed left-2 top-4 animate-bounce rounded-full bg-blue-500 p-2 shadow-lg">
           <List size={28} />
         </button>
       )}

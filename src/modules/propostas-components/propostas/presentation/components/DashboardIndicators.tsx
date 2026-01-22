@@ -180,7 +180,7 @@ export function DashboardIndicators({
             <ArrowClockwise size={18} className="text-gray-600" />
           </button>
         </div>
-        <div className="mb-4 text-xs text-gray-500">
+        <div className="mb-4 text-xs text-green-100">
           Atualizado em: {formatDate(lastUpdated)}
         </div>
         <div className="grid grid-cols-2 gap-4">
@@ -194,7 +194,7 @@ export function DashboardIndicators({
                 )
               }
               className="transition hover:opacity-80">
-              <div className="text-3xl font-bold text-green-600">
+              <div className="text-3xl font-bold text-green-100">
                 {propostasVigentes?.length}
               </div>
               <div className="mt-1 text-xs text-gray-600">Vigentes</div>
@@ -224,7 +224,7 @@ export function DashboardIndicators({
       <div className="rounded-lg border border-gray-200 bg-white p-6 shadow">
         <div className="mb-4 flex items-center justify-between">
           <div className="flex items-center gap-2">
-            <CheckCircle size={20} className="text-green-600" />
+            <CheckCircle size={20} className="text-green-100" />
             <h3 className="font-semibold text-gray-900">Apólices</h3>
           </div>
           <button
@@ -234,7 +234,7 @@ export function DashboardIndicators({
             <ArrowClockwise size={18} className="text-gray-600" />
           </button>
         </div>
-        <div className="mb-4 text-xs text-gray-500">
+        <div className="mb-4 text-xs text-green-100">
           Atualizado em: {formatDate(lastUpdated)}
         </div>
         <div className="grid grid-cols-2 gap-4">
@@ -248,7 +248,7 @@ export function DashboardIndicators({
                 )
               }
               className="transition hover:opacity-80">
-              <div className="text-3xl font-bold text-green-600">
+              <div className="text-3xl font-bold text-green-100">
                 {apolicesVigentes?.length}
               </div>
               <div className="mt-1 text-xs text-gray-600">Vigentes</div>
@@ -288,7 +288,7 @@ export function DashboardIndicators({
             <ArrowClockwise size={18} className="text-gray-600" />
           </button>
         </div>
-        <div className="mb-4 text-xs text-gray-500">
+        <div className="mb-4 text-xs text-green-100">
           Atualizado em: {formatDate(lastUpdated)}
         </div>
         <div className="grid grid-cols-2 gap-4">

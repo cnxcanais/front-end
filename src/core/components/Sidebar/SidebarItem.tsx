@@ -28,14 +28,16 @@ export function SidebarItem({ current, href, Icon, name }: SidebarItemProps) {
         href={clientHref}
         className={classNames(
           current ?
-            "bg-gray-50 text-blue-500"
-          : "text-white hover:bg-gray-50 hover:text-blue-500",
+            "bg-gray-50 text-green-100"
+          : "text-yellow-300 hover:bg-gray-50 hover:text-blue-400",
           "group flex gap-x-3 text-nowrap rounded-md p-2 text-sm/6 font-semibold"
         )}>
         <Icon
           aria-hidden="true"
           className={classNames(
-            current ? "text-blue-500" : "text-white group-hover:text-blue-500",
+            current ? "text-green-100" : (
+              "text-yellow-300 group-hover:text-blue-400"
+            ),
             "size-6 shrink-0"
           )}
         />

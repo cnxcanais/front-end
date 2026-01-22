@@ -11,8 +11,8 @@ const button = tv({
 
   variants: {
     variant: {
-      primary: "bg-yellow-100 text-white hover:bg-yellow-200",
-      secondary: "bg-yellow-200 hover:bg-yellow-100 text-white",
+      primary: "bg-green-100 text-white hover:bg-yellow-200",
+      secondary: "bg-green-100 hover:bg-yellow-100 text-white",
       tertiary: "bg-blue-100 hover:bg-blue-200",
     },
   },

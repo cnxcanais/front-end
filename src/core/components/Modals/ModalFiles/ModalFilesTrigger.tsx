@@ -29,6 +29,7 @@ export function ModalFilesTrigger({
         onClick={() => setIsOpen(true)}
         className="cursor-pointer duration-300 ease-in-out hover:text-blue-500"
         size={24}
+        color="#00dfa7"
       />
     </>
   )
