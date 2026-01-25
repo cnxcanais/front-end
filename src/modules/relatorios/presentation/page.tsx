@@ -34,6 +34,8 @@ export function ReportsPage() {
   const [pivotData, setPivotData] = useState<any[]>([])
   const [loading, setLoading] = useState(false)
   const [loadingMeta, setLoadingMeta] = useState(true)
+  const [dimensionsCollapsed, setDimensionsCollapsed] = useState(false)
+  const [measuresCollapsed, setMeasuresCollapsed] = useState(false)
   const [draggedItem, setDraggedItem] = useState<{
     type: "measure" | "dimension"
     name: string
@@ -54,7 +56,9 @@ export function ReportsPage() {
         setMeasures(
           cube.measures.map((m: any) => ({
             name: m.name,
-            title: (m.title || m.name).replace("Proposta Analítica ", ""),
+            title: (m.title || m.name)
+              .replace("Propostas Analítica ", "")
+              .replace("Proposta Analítica ", ""),
           }))
         )
 
@@ -63,7 +67,9 @@ export function ReportsPage() {
             .filter((d: any) => d.public !== false)
             .map((d: any) => ({
               name: d.name,
-              title: (d.title || d.name).replace("Proposta Analítica ", ""),
+              title: (d.title || d.name)
+                .replace("Propostas Analítica ", "")
+                .replace("Proposta Analítica ", ""),
               type: d.type,
             }))
         )
@@ -89,8 +95,9 @@ export function ReportsPage() {
         dimensions: allDimensions,
       }
 
-      if (filters.length > 0) {
-        query.filters = filters.map((f) => ({
+      const validFilters = filters.filter((f) => f.values.length > 0)
+      if (validFilters.length > 0) {
+        query.filters = validFilters.map((f) => ({
           member: f.dimension,
           operator: f.operator as any,
           values: f.values,
@@ -236,33 +243,47 @@ export function ReportsPage() {
             <h2 className="mb-3 text-sm font-semibold text-gray-700">Campos Disponíveis</h2>
             
             <div className="mb-4">
-              <h3 className="mb-2 text-xs font-medium text-gray-600">Dimensões</h3>
-              <div className="space-y-1">
-                {dimensions.map((dimension) => (
-                  <div
-                    key={dimension.name}
-                    draggable
-                    onDragStart={(e) => handleDragStart(e, "dimension", dimension.name)}
-                    className="cursor-move rounded bg-gray-50 px-2 py-1.5 text-xs hover:bg-gray-100">
-                    📊 {dimension.title}
-                  </div>
-                ))}
-              </div>
+              <h3 
+                className="mb-2 flex cursor-pointer items-center justify-between text-xs font-medium text-gray-600 hover:text-gray-800"
+                onClick={() => setDimensionsCollapsed(!dimensionsCollapsed)}>
+                <span>Dimensões</span>
+                <span>{dimensionsCollapsed ? '▶' : '▼'}</span>
+              </h3>
+              {!dimensionsCollapsed && (
+                <div className="grid grid-cols-2 gap-1">
+                  {dimensions.map((dimension) => (
+                    <div
+                      key={dimension.name}
+                      draggable
+                      onDragStart={(e) => handleDragStart(e, "dimension", dimension.name)}
+                      className="cursor-move rounded bg-gray-50 px-2 py-1.5 text-xs hover:bg-gray-100">
+                      📊 {dimension.title}
+                    </div>
+                  ))}
+                </div>
+              )}
             </div>
 
             <div>
-              <h3 className="mb-2 text-xs font-medium text-gray-600">Medidas</h3>
-              <div className="space-y-1">
-                {measures.map((measure) => (
-                  <div
-                    key={measure.name}
-                    draggable
-                    onDragStart={(e) => handleDragStart(e, "measure", measure.name)}
-                    className="cursor-move rounded bg-gray-50 px-2 py-1.5 text-xs hover:bg-gray-100">
-                    Σ {measure.title}
-                  </div>
-                ))}
-              </div>
+              <h3 
+                className="mb-2 flex cursor-pointer items-center justify-between text-xs font-medium text-gray-600 hover:text-gray-800"
+                onClick={() => setMeasuresCollapsed(!measuresCollapsed)}>
+                <span>Medidas</span>
+                <span>{measuresCollapsed ? '▶' : '▼'}</span>
+              </h3>
+              {!measuresCollapsed && (
+                <div className="space-y-1">
+                  {measures.map((measure) => (
+                    <div
+                      key={measure.name}
+                      draggable
+                      onDragStart={(e) => handleDragStart(e, "measure", measure.name)}
+                      className="cursor-move rounded bg-gray-50 px-2 py-1.5 text-xs hover:bg-gray-100">
+                      Σ {measure.title}
+                    </div>
+                  ))}
+                </div>
+              )}
             </div>
           </div>
         </div>
@@ -275,19 +296,35 @@ export function ReportsPage() {
             onDrop={handleDropFilters}
             className="min-h-[60px] rounded-lg border-2 border-dashed border-gray-300 bg-gray-50 p-3">
             <h3 className="mb-2 text-xs font-semibold text-gray-600">🔍 FILTROS</h3>
-            <div className="flex flex-wrap gap-2">
+            <div className="space-y-2">
               {filters.length === 0 && (
                 <p className="text-xs text-gray-400">Arraste dimensões aqui para filtrar</p>
               )}
               {filters.map((filter, idx) => {
                 const dim = dimensions.find((d) => d.name === filter.dimension)
                 return (
-                  <div key={idx} className="flex items-center gap-2 rounded bg-white px-2 py-1 text-xs shadow-sm">
-                    <span>{dim?.title}</span>
+                  <div key={idx} className="flex items-center gap-2 rounded bg-white p-2 shadow-sm">
+                    <span className="text-xs font-medium">{dim?.title}:</span>
+                    <input
+                      type="text"
+                      placeholder="Digite o valor"
+                      className="flex-1 rounded border border-gray-300 px-2 py-1 text-xs"
+                      onKeyDown={(e) => {
+                        if (e.key === 'Enter' && e.currentTarget.value.trim()) {
+                          const newFilters = [...filters]
+                          newFilters[idx].values = [e.currentTarget.value.trim()]
+                          setFilters(newFilters)
+                          e.currentTarget.value = ''
+                        }
+                      }}
+                    />
+                    {filter.values.length > 0 && (
+                      <span className="text-xs text-gray-600">({filter.values[0]})</span>
+                    )}
                     <button
                       onClick={() => setFilters(filters.filter((_, i) => i !== idx))}
                       className="text-red-600 hover:text-red-800">
-                      <X size={12} />
+                      <X size={14} />
                     </button>
                   </div>
                 )
@@ -375,22 +412,23 @@ export function ReportsPage() {
               </div>
             </div>
           </div>
-        </div>
-      </div>
 
-      <div className="flex gap-2">
-        <Button onClick={handleRunQuery} disabled={loading}>
-          {loading ? "Carregando..." : "Executar Consulta"}
-        </Button>
-        {pivotData.length > 0 && (
-          <Button
-            variant="secondary"
-            onClick={handleExport}
-            className="flex items-center gap-2">
-            <FileXls size={20} />
-            Exportar CSV
-          </Button>
-        )}
+          {/* Action Buttons */}
+          <div className="flex gap-2">
+            <Button onClick={handleRunQuery} disabled={loading}>
+              {loading ? "Carregando..." : "Executar Consulta"}
+            </Button>
+            {pivotData.length > 0 && (
+              <Button
+                variant="secondary"
+                onClick={handleExport}
+                className="flex items-center gap-2">
+                <FileXls size={20} />
+                Exportar CSV
+              </Button>
+            )}
+          </div>
+        </div>
       </div>
 
       {pivotData.length > 0 && (
@@ -407,16 +445,17 @@ export function ReportsPage() {
                       <th
                         key={key}
                         className="px-6 py-3 text-left text-xs font-medium uppercase tracking-wider text-gray-500">
-                        {colValue}
+                        {colValue.replace("Proposta Analítica ", "").replace("Propostas Analítica ", "")}
                       </th>
                     )
                   }
                   // Otherwise it's a row dimension
+                  const cleanKey = key.split(".").pop()?.replace("Proposta Analítica ", "").replace("Propostas Analítica ", "") || key
                   return (
                     <th
                       key={key}
                       className="px-6 py-3 text-left text-xs font-medium uppercase tracking-wider text-gray-500">
-                      {key.split(".").pop()?.replace("Proposta Analítica ", "")}
+                      {cleanKey}
                     </th>
                   )
                 })}
