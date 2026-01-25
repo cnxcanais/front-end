@@ -4,6 +4,7 @@ import {
   Buildings,
   Car,
   FileText,
+  Graph,
   IdentificationBadge,
   Package,
   ProjectorScreenChart,
@@ -44,6 +45,12 @@ const sidebar_options_not_admin: SidebarOptionProps[] = [
     name: "Sinistros",
     href: "/sinistros",
     Icon: Car,
+    group: "Gerenciamento",
+  },
+  {
+    name: "Relatórios",
+    href: "/relatorios",
+    Icon: Graph,
     group: "Gerenciamento",
   },
 ]
@@ -126,6 +133,12 @@ export const sidebar_options: SidebarOptionProps[] = [
     href: "/usuarios",
     Icon: User,
     group: "Gerenciamento",
+  },
+  {
+    name: "Apólices",
+    href: "/relatorios",
+    Icon: Graph,
+    group: "Relatórios",
   },
 ]
 
