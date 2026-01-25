@@ -22,6 +22,9 @@ type Filter = {
   dimension: string
   operator: string
   values: string[]
+  options?: string[]
+  dateFrom?: string
+  dateUntil?: string
 }
 
 export function ReportsPage() {
@@ -40,6 +43,18 @@ export function ReportsPage() {
     type: "measure" | "dimension"
     name: string
   } | null>(null)
+
+  const fetchDimensionValues = async (dimensionName: string) => {
+    try {
+      const result = await cubeApi.load({
+        dimensions: [dimensionName],
+        limit: 1000
+      })
+      return result.tablePivot().map((row: any) => row[dimensionName]).filter(Boolean)
+    } catch {
+      return []
+    }
+  }
 
   useEffect(() => {
     loadMetadata()
@@ -95,17 +110,49 @@ export function ReportsPage() {
         dimensions: allDimensions,
       }
 
-      const validFilters = filters.filter((f) => f.values.length > 0)
+      const validFilters = filters.filter((f) => {
+        const dim = dimensions.find((d) => d.name === f.dimension)
+        if (dim?.type === "time") {
+          return f.dateFrom || f.dateUntil
+        }
+        return f.values.length > 0
+      })
+      
       if (validFilters.length > 0) {
-        query.filters = validFilters.map((f) => ({
-          member: f.dimension,
-          operator: f.operator as any,
-          values: f.values,
-        }))
+        query.filters = validFilters.flatMap((f) => {
+          const dim = dimensions.find((d) => d.name === f.dimension)
+          if (dim?.type === "time") {
+            const isInicioVigencia = f.dimension.toLowerCase().includes('inicio')
+            const isFimVigencia = f.dimension.toLowerCase().includes('fim')
+            
+            if (isInicioVigencia && f.dateFrom) {
+              return [{ member: f.dimension, operator: "gte", values: [f.dateFrom] }]
+            }
+            if (isFimVigencia && f.dateUntil) {
+              return [{ member: f.dimension, operator: "lte", values: [f.dateUntil] }]
+            }
+            
+            const dateFilters = []
+            if (f.dateFrom) {
+              dateFilters.push({ member: f.dimension, operator: "gte", values: [f.dateFrom] })
+            }
+            if (f.dateUntil) {
+              dateFilters.push({ member: f.dimension, operator: "lte", values: [f.dateUntil] })
+            }
+            return dateFilters
+          }
+          return [{ member: f.dimension, operator: f.operator as any, values: f.values }]
+        })
       }
 
       const resultSet = await cubeApi.load(query)
       const rawData = resultSet.tablePivot()
+
+      if (rawData.length === 0) {
+        toast.info("Nenhum resultado encontrado")
+        setPivotData([])
+        return
+      }
 
       // If we have both row and column dimensions, create a proper pivot
       if (rowDimensions.length > 0 && columnDimensions.length > 0) {
@@ -129,34 +176,45 @@ export function ReportsPage() {
   ) => {
     if (data.length === 0) return []
 
-    // Get unique values for columns
-    const colValues = new Set<string>()
-    data.forEach((row) => {
-      cols.forEach((col) => {
-        const colKey = row[col]
-        if (colKey) colValues.add(colKey)
-      })
-    })
+    // Get unique column values
+    const colValues = Array.from(new Set(
+      data.map((row) => cols.map((c) => row[c]).join('|'))
+    ))
 
     // Group by row dimensions
     const grouped = new Map<string, any>()
     data.forEach((row) => {
       const rowKey = rows.map((r) => row[r]).join('|')
       if (!grouped.has(rowKey)) {
-        const newRow: any = {}
-        rows.forEach((r) => {
-          newRow[r] = row[r]
-        })
-        grouped.set(rowKey, newRow)
+        grouped.set(rowKey, {})
       }
-
       const colKey = cols.map((c) => row[c]).join('|')
       values.forEach((val) => {
         grouped.get(rowKey)![`${colKey}_${val}`] = row[val] || 0
       })
     })
 
-    return Array.from(grouped.values())
+    // Create rows: one row per measure per row dimension combination
+    const result: any[] = []
+    grouped.forEach((colData, rowKey) => {
+      const rowValues = rowKey.split('|')
+      
+      values.forEach((measure) => {
+        const newRow: any = {}
+        rows.forEach((r, idx) => {
+          newRow[r] = rowValues[idx]
+        })
+        newRow['_measure'] = measures.find(m => m.name === measure)?.title || measure
+        
+        colValues.forEach((colKey) => {
+          newRow[colKey] = colData[`${colKey}_${measure}`] || 0
+        })
+        
+        result.push(newRow)
+      })
+    })
+
+    return result
   }
 
   const handleExport = () => {
@@ -217,12 +275,20 @@ export function ReportsPage() {
     setDraggedItem(null)
   }
 
-  const handleDropFilters = (e: React.DragEvent) => {
+  const handleDropFilters = async (e: React.DragEvent) => {
     e.preventDefault()
     if (draggedItem?.type === "dimension") {
       const existingFilter = filters.find((f) => f.dimension === draggedItem.name)
       if (!existingFilter) {
-        setFilters([...filters, { dimension: draggedItem.name, operator: "equals", values: [] }])
+        const dim = dimensions.find((d) => d.name === draggedItem.name)
+        const newFilter: Filter = { dimension: draggedItem.name, operator: "equals", values: [] }
+        
+        if (dim?.type === "string") {
+          const options = await fetchDimensionValues(draggedItem.name)
+          newFilter.options = options
+        }
+        
+        setFilters([...filters, newFilter])
       }
     }
     setDraggedItem(null)
@@ -302,25 +368,90 @@ export function ReportsPage() {
               )}
               {filters.map((filter, idx) => {
                 const dim = dimensions.find((d) => d.name === filter.dimension)
+                const isDate = dim?.type === "time"
+                const hasOptions = filter.options && filter.options.length > 0
+                
                 return (
                   <div key={idx} className="flex items-center gap-2 rounded bg-white p-2 shadow-sm">
                     <span className="text-xs font-medium">{dim?.title}:</span>
-                    <input
-                      type="text"
-                      placeholder="Digite o valor"
-                      className="flex-1 rounded border border-gray-300 px-2 py-1 text-xs"
-                      onKeyDown={(e) => {
-                        if (e.key === 'Enter' && e.currentTarget.value.trim()) {
+                    
+                    {hasOptions ? (
+                      <select
+                        className="flex-1 rounded border border-gray-300 px-2 py-1 text-xs"
+                        value={filter.values[0] || ""}
+                        onChange={(e) => {
                           const newFilters = [...filters]
-                          newFilters[idx].values = [e.currentTarget.value.trim()]
+                          newFilters[idx].values = e.target.value ? [e.target.value] : []
                           setFilters(newFilters)
-                          e.currentTarget.value = ''
-                        }
-                      }}
-                    />
-                    {filter.values.length > 0 && (
-                      <span className="text-xs text-gray-600">({filter.values[0]})</span>
+                        }}>
+                        <option value="">Selecione...</option>
+                        {filter.options.map((opt) => (
+                          <option key={opt} value={opt}>{opt}</option>
+                        ))}
+                      </select>
+                    ) : isDate ? (
+                      filter.dimension.toLowerCase().includes('inicio') ? (
+                        <input
+                          type="date"
+                          className="flex-1 rounded border border-gray-300 px-2 py-1 text-xs"
+                          value={filter.dateFrom || ""}
+                          onChange={(e) => {
+                            const newFilters = [...filters]
+                            newFilters[idx].dateFrom = e.target.value
+                            setFilters(newFilters)
+                          }}
+                        />
+                      ) : filter.dimension.toLowerCase().includes('fim') ? (
+                        <input
+                          type="date"
+                          className="flex-1 rounded border border-gray-300 px-2 py-1 text-xs"
+                          value={filter.dateUntil || ""}
+                          onChange={(e) => {
+                            const newFilters = [...filters]
+                            newFilters[idx].dateUntil = e.target.value
+                            setFilters(newFilters)
+                          }}
+                        />
+                      ) : (
+                        <div className="flex flex-1 gap-2">
+                          <input
+                            type="date"
+                            placeholder="De"
+                            className="flex-1 rounded border border-gray-300 px-2 py-1 text-xs"
+                            value={filter.dateFrom || ""}
+                            onChange={(e) => {
+                              const newFilters = [...filters]
+                              newFilters[idx].dateFrom = e.target.value
+                              setFilters(newFilters)
+                            }}
+                          />
+                          <input
+                            type="date"
+                            placeholder="Até"
+                            className="flex-1 rounded border border-gray-300 px-2 py-1 text-xs"
+                            value={filter.dateUntil || ""}
+                            onChange={(e) => {
+                              const newFilters = [...filters]
+                              newFilters[idx].dateUntil = e.target.value
+                              setFilters(newFilters)
+                            }}
+                          />
+                        </div>
+                      )
+                    ) : (
+                      <input
+                        type="text"
+                        placeholder="Digite o valor"
+                        className="flex-1 rounded border border-gray-300 px-2 py-1 text-xs"
+                        value={filter.values[0] || ""}
+                        onChange={(e) => {
+                          const newFilters = [...filters]
+                          newFilters[idx].values = e.target.value ? [e.target.value] : []
+                          setFilters(newFilters)
+                        }}
+                      />
                     )}
+                    
                     <button
                       onClick={() => setFilters(filters.filter((_, i) => i !== idx))}
                       className="text-red-600 hover:text-red-800">
@@ -437,19 +568,15 @@ export function ReportsPage() {
             <thead className="bg-gray-50">
               <tr>
                 {Object.keys(pivotData[0]).map((key) => {
-                  // If key contains underscore, it's a pivoted column (colValue_measure)
-                  if (key.includes('_')) {
-                    const parts = key.split('_')
-                    const colValue = parts.slice(0, -1).join('_') // Everything before last underscore
+                  if (key === '_measure') {
                     return (
                       <th
                         key={key}
                         className="px-6 py-3 text-left text-xs font-medium uppercase tracking-wider text-gray-500">
-                        {colValue.replace("Proposta Analítica ", "").replace("Propostas Analítica ", "")}
+                        Medida
                       </th>
                     )
                   }
-                  // Otherwise it's a row dimension
                   const cleanKey = key.split(".").pop()?.replace("Proposta Analítica ", "").replace("Propostas Analítica ", "") || key
                   return (
                     <th
@@ -464,15 +591,18 @@ export function ReportsPage() {
             <tbody className="divide-y divide-gray-200 bg-white">
               {pivotData.map((row, idx) => (
                 <tr key={idx}>
-                  {Object.values(row).map((value: any, cellIdx) => (
-                    <td
-                      key={cellIdx}
-                      className="whitespace-nowrap px-6 py-4 text-sm text-gray-900">
-                      {typeof value === "number" ?
-                        value.toLocaleString("pt-BR")
-                      : value || "-"}
-                    </td>
-                  ))}
+                  {Object.values(row).map((value: any, cellIdx) => {
+                    const numValue = typeof value === "string" ? parseFloat(value) : value
+                    return (
+                      <td
+                        key={cellIdx}
+                        className="whitespace-nowrap px-6 py-4 text-sm text-gray-900">
+                        {typeof numValue === "number" && !isNaN(numValue) ?
+                          numValue.toLocaleString("pt-BR", { minimumFractionDigits: 2, maximumFractionDigits: 2 })
+                        : value || "-"}
+                      </td>
+                    )
+                  })}
                 </tr>
               ))}
             </tbody>
