@@ -18,11 +18,19 @@ type Dimension = {
   type: string
 }
 
+type Filter = {
+  dimension: string
+  operator: string
+  values: string[]
+}
+
 export function ReportsPage() {
   const [measures, setMeasures] = useState<Measure[]>([])
   const [dimensions, setDimensions] = useState<Dimension[]>([])
-  const [selectedMeasures, setSelectedMeasures] = useState<string[]>([])
-  const [selectedDimensions, setSelectedDimensions] = useState<string[]>([])
+  const [rowDimensions, setRowDimensions] = useState<string[]>([])
+  const [columnDimensions, setColumnDimensions] = useState<string[]>([])
+  const [valueMeasures, setValueMeasures] = useState<string[]>([])
+  const [filters, setFilters] = useState<Filter[]>([])
   const [pivotData, setPivotData] = useState<any[]>([])
   const [loading, setLoading] = useState(false)
   const [loadingMeta, setLoadingMeta] = useState(true)
@@ -68,24 +76,80 @@ export function ReportsPage() {
   }
 
   const handleRunQuery = async () => {
-    if (selectedMeasures.length === 0) {
-      toast.error("Selecione pelo menos uma medida")
+    if (valueMeasures.length === 0) {
+      toast.error("Adicione pelo menos uma medida em Valores")
       return
     }
 
     setLoading(true)
     try {
-      const resultSet = await cubeApi.load({
-        measures: selectedMeasures,
-        dimensions: selectedDimensions,
-      })
+      const allDimensions = [...rowDimensions, ...columnDimensions]
+      const query: any = {
+        measures: valueMeasures,
+        dimensions: allDimensions,
+      }
 
-      setPivotData(resultSet.tablePivot())
+      if (filters.length > 0) {
+        query.filters = filters.map((f) => ({
+          member: f.dimension,
+          operator: f.operator as any,
+          values: f.values,
+        }))
+      }
+
+      const resultSet = await cubeApi.load(query)
+      const rawData = resultSet.tablePivot()
+
+      // If we have both row and column dimensions, create a proper pivot
+      if (rowDimensions.length > 0 && columnDimensions.length > 0) {
+        const pivoted = createPivotTable(rawData, rowDimensions, columnDimensions, valueMeasures)
+        setPivotData(pivoted)
+      } else {
+        setPivotData(rawData)
+      }
     } catch (error) {
       toast.error("Erro ao executar consulta")
     } finally {
       setLoading(false)
     }
+  }
+
+  const createPivotTable = (
+    data: any[],
+    rows: string[],
+    cols: string[],
+    values: string[]
+  ) => {
+    if (data.length === 0) return []
+
+    // Get unique values for columns
+    const colValues = new Set<string>()
+    data.forEach((row) => {
+      cols.forEach((col) => {
+        const colKey = row[col]
+        if (colKey) colValues.add(colKey)
+      })
+    })
+
+    // Group by row dimensions
+    const grouped = new Map<string, any>()
+    data.forEach((row) => {
+      const rowKey = rows.map((r) => row[r]).join('|')
+      if (!grouped.has(rowKey)) {
+        const newRow: any = {}
+        rows.forEach((r) => {
+          newRow[r] = row[r]
+        })
+        grouped.set(rowKey, newRow)
+      }
+
+      const colKey = cols.map((c) => row[c]).join('|')
+      values.forEach((val) => {
+        grouped.get(rowKey)![`${colKey}_${val}`] = row[val] || 0
+      })
+    })
+
+    return Array.from(grouped.values())
   }
 
   const handleExport = () => {
@@ -122,34 +186,39 @@ export function ReportsPage() {
     e.dataTransfer.dropEffect = "move"
   }
 
-  const handleDropMeasures = (e: React.DragEvent) => {
+  const handleDropRows = (e: React.DragEvent) => {
     e.preventDefault()
-    if (
-      draggedItem?.type === "measure" &&
-      !selectedMeasures.includes(draggedItem.name)
-    ) {
-      setSelectedMeasures([...selectedMeasures, draggedItem.name])
+    if (draggedItem?.type === "dimension" && !rowDimensions.includes(draggedItem.name)) {
+      setRowDimensions([...rowDimensions, draggedItem.name])
     }
     setDraggedItem(null)
   }
 
-  const handleDropDimensions = (e: React.DragEvent) => {
+  const handleDropColumns = (e: React.DragEvent) => {
     e.preventDefault()
-    if (
-      draggedItem?.type === "dimension" &&
-      !selectedDimensions.includes(draggedItem.name)
-    ) {
-      setSelectedDimensions([...selectedDimensions, draggedItem.name])
+    if (draggedItem?.type === "dimension" && !columnDimensions.includes(draggedItem.name)) {
+      setColumnDimensions([...columnDimensions, draggedItem.name])
     }
     setDraggedItem(null)
   }
 
-  const removeMeasure = (name: string) => {
-    setSelectedMeasures(selectedMeasures.filter((m) => m !== name))
+  const handleDropValues = (e: React.DragEvent) => {
+    e.preventDefault()
+    if (draggedItem?.type === "measure" && !valueMeasures.includes(draggedItem.name)) {
+      setValueMeasures([...valueMeasures, draggedItem.name])
+    }
+    setDraggedItem(null)
   }
 
-  const removeDimension = (name: string) => {
-    setSelectedDimensions(selectedDimensions.filter((d) => d !== name))
+  const handleDropFilters = (e: React.DragEvent) => {
+    e.preventDefault()
+    if (draggedItem?.type === "dimension") {
+      const existingFilter = filters.find((f) => f.dimension === draggedItem.name)
+      if (!existingFilter) {
+        setFilters([...filters, { dimension: draggedItem.name, operator: "equals", values: [] }])
+      }
+    }
+    setDraggedItem(null)
   }
 
   if (loadingMeta) return <LoadingScreen />
@@ -160,70 +229,65 @@ export function ReportsPage() {
         <h1 className="text-2xl font-bold">Relatórios Analíticos</h1>
       </div>
 
-      <div className="grid grid-cols-1 gap-6 lg:grid-cols-2">
-        {/* Available Fields */}
-        <div className="space-y-4">
+      <div className="grid grid-cols-12 gap-4">
+        {/* Available Fields - Left Sidebar */}
+        <div className="col-span-3 space-y-4">
           <div className="rounded-lg bg-white p-4 shadow">
-            <h2 className="mb-4 text-lg font-semibold">Medidas Disponíveis</h2>
-            <div className="space-y-2">
-              {measures.map((measure) => (
-                <div
-                  key={measure.name}
-                  draggable
-                  onDragStart={(e) =>
-                    handleDragStart(e, "measure", measure.name)
-                  }
-                  className="cursor-move rounded bg-blue-50 px-3 py-2 text-sm hover:bg-blue-100">
-                  {measure.title}
-                </div>
-              ))}
+            <h2 className="mb-3 text-sm font-semibold text-gray-700">Campos Disponíveis</h2>
+            
+            <div className="mb-4">
+              <h3 className="mb-2 text-xs font-medium text-gray-600">Dimensões</h3>
+              <div className="space-y-1">
+                {dimensions.map((dimension) => (
+                  <div
+                    key={dimension.name}
+                    draggable
+                    onDragStart={(e) => handleDragStart(e, "dimension", dimension.name)}
+                    className="cursor-move rounded bg-gray-50 px-2 py-1.5 text-xs hover:bg-gray-100">
+                    📊 {dimension.title}
+                  </div>
+                ))}
+              </div>
             </div>
-          </div>
 
-          <div className="rounded-lg bg-white p-4 shadow">
-            <h2 className="mb-4 text-lg font-semibold">
-              Dimensões Disponíveis
-            </h2>
-            <div className="space-y-2">
-              {dimensions.map((dimension) => (
-                <div
-                  key={dimension.name}
-                  draggable
-                  onDragStart={(e) =>
-                    handleDragStart(e, "dimension", dimension.name)
-                  }
-                  className="cursor-move rounded bg-green-50 px-3 py-2 text-sm hover:bg-green-100">
-                  {dimension.title}
-                </div>
-              ))}
+            <div>
+              <h3 className="mb-2 text-xs font-medium text-gray-600">Medidas</h3>
+              <div className="space-y-1">
+                {measures.map((measure) => (
+                  <div
+                    key={measure.name}
+                    draggable
+                    onDragStart={(e) => handleDragStart(e, "measure", measure.name)}
+                    className="cursor-move rounded bg-gray-50 px-2 py-1.5 text-xs hover:bg-gray-100">
+                    Σ {measure.title}
+                  </div>
+                ))}
+              </div>
             </div>
           </div>
         </div>
 
-        {/* Drop Zones */}
-        <div className="space-y-4">
+        {/* Pivot Table Builder - Right Side */}
+        <div className="col-span-9 space-y-4">
+          {/* Filters */}
           <div
             onDragOver={handleDragOver}
-            onDrop={handleDropMeasures}
-            className="min-h-[200px] rounded-lg border-2 border-dashed border-blue-300 bg-blue-50 p-4">
-            <h2 className="mb-4 text-lg font-semibold text-blue-700">
-              Medidas Selecionadas
-            </h2>
-            <div className="space-y-2">
-              {selectedMeasures.length === 0 && (
-                <p className="text-sm text-gray-500">Arraste medidas aqui</p>
+            onDrop={handleDropFilters}
+            className="min-h-[60px] rounded-lg border-2 border-dashed border-gray-300 bg-gray-50 p-3">
+            <h3 className="mb-2 text-xs font-semibold text-gray-600">🔍 FILTROS</h3>
+            <div className="flex flex-wrap gap-2">
+              {filters.length === 0 && (
+                <p className="text-xs text-gray-400">Arraste dimensões aqui para filtrar</p>
               )}
-              {selectedMeasures.map((name) => {
-                const measure = measures.find((m) => m.name === name)
+              {filters.map((filter, idx) => {
+                const dim = dimensions.find((d) => d.name === filter.dimension)
                 return (
-                  <div
-                    key={name}
-                    className="flex items-center justify-between rounded bg-blue-100 px-3 py-2 text-sm">
-                    <span>{measure?.title}</span>
+                  <div key={idx} className="flex items-center gap-2 rounded bg-white px-2 py-1 text-xs shadow-sm">
+                    <span>{dim?.title}</span>
                     <button
-                      onClick={() => removeMeasure(name)}
+                      onClick={() => setFilters(filters.filter((_, i) => i !== idx))}
                       className="text-red-600 hover:text-red-800">
-                      <X size={16} />
+                      <X size={12} />
                     </button>
                   </div>
                 )
@@ -231,32 +295,84 @@ export function ReportsPage() {
             </div>
           </div>
 
-          <div
-            onDragOver={handleDragOver}
-            onDrop={handleDropDimensions}
-            className="min-h-[200px] rounded-lg border-2 border-dashed border-green-300 bg-green-50 p-4">
-            <h2 className="mb-4 text-lg font-semibold text-green-700">
-              Dimensões Selecionadas
-            </h2>
-            <div className="space-y-2">
-              {selectedDimensions.length === 0 && (
-                <p className="text-sm text-gray-500">Arraste dimensões aqui</p>
-              )}
-              {selectedDimensions.map((name) => {
-                const dimension = dimensions.find((d) => d.name === name)
-                return (
-                  <div
-                    key={name}
-                    className="flex items-center justify-between rounded bg-green-100 px-3 py-2 text-sm">
-                    <span>{dimension?.title}</span>
-                    <button
-                      onClick={() => removeDimension(name)}
-                      className="text-red-600 hover:text-red-800">
-                      <X size={16} />
-                    </button>
-                  </div>
-                )
-              })}
+          {/* Pivot Layout */}
+          <div className="grid grid-cols-2 gap-4">
+            {/* Columns */}
+            <div
+              onDragOver={handleDragOver}
+              onDrop={handleDropColumns}
+              className="col-span-2 min-h-[60px] rounded-lg border-2 border-dashed border-purple-300 bg-purple-50 p-3">
+              <h3 className="mb-2 text-xs font-semibold text-purple-700">📋 COLUNAS</h3>
+              <div className="flex flex-wrap gap-2">
+                {columnDimensions.length === 0 && (
+                  <p className="text-xs text-gray-400">Arraste dimensões aqui</p>
+                )}
+                {columnDimensions.map((name) => {
+                  const dim = dimensions.find((d) => d.name === name)
+                  return (
+                    <div key={name} className="flex items-center gap-2 rounded bg-purple-100 px-2 py-1 text-xs">
+                      <span>{dim?.title}</span>
+                      <button
+                        onClick={() => setColumnDimensions(columnDimensions.filter((d) => d !== name))}
+                        className="text-red-600 hover:text-red-800">
+                        <X size={12} />
+                      </button>
+                    </div>
+                  )
+                })}
+              </div>
+            </div>
+
+            {/* Rows */}
+            <div
+              onDragOver={handleDragOver}
+              onDrop={handleDropRows}
+              className="min-h-[120px] rounded-lg border-2 border-dashed border-blue-300 bg-blue-50 p-3">
+              <h3 className="mb-2 text-xs font-semibold text-blue-700">📊 LINHAS</h3>
+              <div className="space-y-1">
+                {rowDimensions.length === 0 && (
+                  <p className="text-xs text-gray-400">Arraste dimensões aqui</p>
+                )}
+                {rowDimensions.map((name) => {
+                  const dim = dimensions.find((d) => d.name === name)
+                  return (
+                    <div key={name} className="flex items-center justify-between rounded bg-blue-100 px-2 py-1 text-xs">
+                      <span>{dim?.title}</span>
+                      <button
+                        onClick={() => setRowDimensions(rowDimensions.filter((d) => d !== name))}
+                        className="text-red-600 hover:text-red-800">
+                        <X size={12} />
+                      </button>
+                    </div>
+                  )
+                })}
+              </div>
+            </div>
+
+            {/* Values */}
+            <div
+              onDragOver={handleDragOver}
+              onDrop={handleDropValues}
+              className="min-h-[120px] rounded-lg border-2 border-dashed border-green-300 bg-green-50 p-3">
+              <h3 className="mb-2 text-xs font-semibold text-green-700">Σ VALORES</h3>
+              <div className="space-y-1">
+                {valueMeasures.length === 0 && (
+                  <p className="text-xs text-gray-400">Arraste medidas aqui</p>
+                )}
+                {valueMeasures.map((name) => {
+                  const measure = measures.find((m) => m.name === name)
+                  return (
+                    <div key={name} className="flex items-center justify-between rounded bg-green-100 px-2 py-1 text-xs">
+                      <span>{measure?.title}</span>
+                      <button
+                        onClick={() => setValueMeasures(valueMeasures.filter((m) => m !== name))}
+                        className="text-red-600 hover:text-red-800">
+                        <X size={12} />
+                      </button>
+                    </div>
+                  )
+                })}
+              </div>
             </div>
           </div>
         </div>
@@ -282,13 +398,28 @@ export function ReportsPage() {
           <table className="min-w-full divide-y divide-gray-200">
             <thead className="bg-gray-50">
               <tr>
-                {Object.keys(pivotData[0]).map((key) => (
-                  <th
-                    key={key}
-                    className="px-6 py-3 text-left text-xs font-medium uppercase tracking-wider text-gray-500">
-                    {key.split(".").pop()?.replace("Proposta Analítica ", "")}
-                  </th>
-                ))}
+                {Object.keys(pivotData[0]).map((key) => {
+                  // If key contains underscore, it's a pivoted column (colValue_measure)
+                  if (key.includes('_')) {
+                    const parts = key.split('_')
+                    const colValue = parts.slice(0, -1).join('_') // Everything before last underscore
+                    return (
+                      <th
+                        key={key}
+                        className="px-6 py-3 text-left text-xs font-medium uppercase tracking-wider text-gray-500">
+                        {colValue}
+                      </th>
+                    )
+                  }
+                  // Otherwise it's a row dimension
+                  return (
+                    <th
+                      key={key}
+                      className="px-6 py-3 text-left text-xs font-medium uppercase tracking-wider text-gray-500">
+                      {key.split(".").pop()?.replace("Proposta Analítica ", "")}
+                    </th>
+                  )
+                })}
               </tr>
             </thead>
             <tbody className="divide-y divide-gray-200 bg-white">
