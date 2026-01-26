@@ -1,6 +1,7 @@
 "use client"
 
 import { Button } from "@/core/components/Button"
+import { ExportTableToPDFButton } from "@/core/components/ExportPDFButton"
 import { LoadingScreen } from "@/core/components/LoadingScreen"
 import cubeApi from "@/lib/cubejs"
 import { FileXls, X } from "@phosphor-icons/react"
@@ -48,9 +49,12 @@ export function ReportsPage() {
     try {
       const result = await cubeApi.load({
         dimensions: [dimensionName],
-        limit: 1000
+        limit: 1000,
       })
-      return result.tablePivot().map((row: any) => row[dimensionName]).filter(Boolean)
+      return result
+        .tablePivot()
+        .map((row: any) => row[dimensionName])
+        .filter(Boolean)
     } catch {
       return []
     }
@@ -117,31 +121,51 @@ export function ReportsPage() {
         }
         return f.values.length > 0
       })
-      
+
       if (validFilters.length > 0) {
         query.filters = validFilters.flatMap((f) => {
           const dim = dimensions.find((d) => d.name === f.dimension)
           if (dim?.type === "time") {
-            const isInicioVigencia = f.dimension.toLowerCase().includes('inicio')
-            const isFimVigencia = f.dimension.toLowerCase().includes('fim')
-            
+            const isInicioVigencia = f.dimension
+              .toLowerCase()
+              .includes("inicio")
+            const isFimVigencia = f.dimension.toLowerCase().includes("fim")
+
             if (isInicioVigencia && f.dateFrom) {
-              return [{ member: f.dimension, operator: "gte", values: [f.dateFrom] }]
+              return [
+                { member: f.dimension, operator: "gte", values: [f.dateFrom] },
+              ]
             }
             if (isFimVigencia && f.dateUntil) {
-              return [{ member: f.dimension, operator: "lte", values: [f.dateUntil] }]
+              return [
+                { member: f.dimension, operator: "lte", values: [f.dateUntil] },
+              ]
             }
-            
+
             const dateFilters = []
             if (f.dateFrom) {
-              dateFilters.push({ member: f.dimension, operator: "gte", values: [f.dateFrom] })
+              dateFilters.push({
+                member: f.dimension,
+                operator: "gte",
+                values: [f.dateFrom],
+              })
             }
             if (f.dateUntil) {
-              dateFilters.push({ member: f.dimension, operator: "lte", values: [f.dateUntil] })
+              dateFilters.push({
+                member: f.dimension,
+                operator: "lte",
+                values: [f.dateUntil],
+              })
             }
             return dateFilters
           }
-          return [{ member: f.dimension, operator: f.operator as any, values: f.values }]
+          return [
+            {
+              member: f.dimension,
+              operator: f.operator as any,
+              values: f.values,
+            },
+          ]
         })
       }
 
@@ -156,7 +180,12 @@ export function ReportsPage() {
 
       // If we have both row and column dimensions, create a proper pivot
       if (rowDimensions.length > 0 && columnDimensions.length > 0) {
-        const pivoted = createPivotTable(rawData, rowDimensions, columnDimensions, valueMeasures)
+        const pivoted = createPivotTable(
+          rawData,
+          rowDimensions,
+          columnDimensions,
+          valueMeasures
+        )
         setPivotData(pivoted)
       } else {
         setPivotData(rawData)
@@ -177,18 +206,18 @@ export function ReportsPage() {
     if (data.length === 0) return []
 
     // Get unique column values
-    const colValues = Array.from(new Set(
-      data.map((row) => cols.map((c) => row[c]).join('|'))
-    ))
+    const colValues = Array.from(
+      new Set(data.map((row) => cols.map((c) => row[c]).join("|")))
+    )
 
     // Group by row dimensions
     const grouped = new Map<string, any>()
     data.forEach((row) => {
-      const rowKey = rows.map((r) => row[r]).join('|')
+      const rowKey = rows.map((r) => row[r]).join("|")
       if (!grouped.has(rowKey)) {
         grouped.set(rowKey, {})
       }
-      const colKey = cols.map((c) => row[c]).join('|')
+      const colKey = cols.map((c) => row[c]).join("|")
       values.forEach((val) => {
         grouped.get(rowKey)![`${colKey}_${val}`] = row[val] || 0
       })
@@ -197,19 +226,20 @@ export function ReportsPage() {
     // Create rows: one row per measure per row dimension combination
     const result: any[] = []
     grouped.forEach((colData, rowKey) => {
-      const rowValues = rowKey.split('|')
-      
+      const rowValues = rowKey.split("|")
+
       values.forEach((measure) => {
         const newRow: any = {}
         rows.forEach((r, idx) => {
           newRow[r] = rowValues[idx]
         })
-        newRow['_measure'] = measures.find(m => m.name === measure)?.title || measure
-        
+        newRow["_measure"] =
+          measures.find((m) => m.name === measure)?.title || measure
+
         colValues.forEach((colKey) => {
           newRow[colKey] = colData[`${colKey}_${measure}`] || 0
         })
-        
+
         result.push(newRow)
       })
     })
@@ -253,7 +283,10 @@ export function ReportsPage() {
 
   const handleDropRows = (e: React.DragEvent) => {
     e.preventDefault()
-    if (draggedItem?.type === "dimension" && !rowDimensions.includes(draggedItem.name)) {
+    if (
+      draggedItem?.type === "dimension" &&
+      !rowDimensions.includes(draggedItem.name)
+    ) {
       setRowDimensions([...rowDimensions, draggedItem.name])
     }
     setDraggedItem(null)
@@ -261,7 +294,10 @@ export function ReportsPage() {
 
   const handleDropColumns = (e: React.DragEvent) => {
     e.preventDefault()
-    if (draggedItem?.type === "dimension" && !columnDimensions.includes(draggedItem.name)) {
+    if (
+      draggedItem?.type === "dimension" &&
+      !columnDimensions.includes(draggedItem.name)
+    ) {
       setColumnDimensions([...columnDimensions, draggedItem.name])
     }
     setDraggedItem(null)
@@ -269,7 +305,10 @@ export function ReportsPage() {
 
   const handleDropValues = (e: React.DragEvent) => {
     e.preventDefault()
-    if (draggedItem?.type === "measure" && !valueMeasures.includes(draggedItem.name)) {
+    if (
+      draggedItem?.type === "measure" &&
+      !valueMeasures.includes(draggedItem.name)
+    ) {
       setValueMeasures([...valueMeasures, draggedItem.name])
     }
     setDraggedItem(null)
@@ -278,16 +317,22 @@ export function ReportsPage() {
   const handleDropFilters = async (e: React.DragEvent) => {
     e.preventDefault()
     if (draggedItem?.type === "dimension") {
-      const existingFilter = filters.find((f) => f.dimension === draggedItem.name)
+      const existingFilter = filters.find(
+        (f) => f.dimension === draggedItem.name
+      )
       if (!existingFilter) {
         const dim = dimensions.find((d) => d.name === draggedItem.name)
-        const newFilter: Filter = { dimension: draggedItem.name, operator: "equals", values: [] }
-        
+        const newFilter: Filter = {
+          dimension: draggedItem.name,
+          operator: "equals",
+          values: [],
+        }
+
         if (dim?.type === "string") {
           const options = await fetchDimensionValues(draggedItem.name)
           newFilter.options = options
         }
-        
+
         setFilters([...filters, newFilter])
       }
     }
@@ -306,14 +351,16 @@ export function ReportsPage() {
         {/* Available Fields - Left Sidebar */}
         <div className="col-span-3 space-y-4">
           <div className="rounded-lg bg-white p-4 shadow">
-            <h2 className="mb-3 text-sm font-semibold text-gray-700">Campos Disponíveis</h2>
-            
+            <h2 className="mb-3 text-sm font-semibold text-gray-700">
+              Campos Disponíveis
+            </h2>
+
             <div className="mb-4">
-              <h3 
+              <h3
                 className="mb-2 flex cursor-pointer items-center justify-between text-xs font-medium text-gray-600 hover:text-gray-800"
                 onClick={() => setDimensionsCollapsed(!dimensionsCollapsed)}>
                 <span>Dimensões</span>
-                <span>{dimensionsCollapsed ? '▶' : '▼'}</span>
+                <span>{dimensionsCollapsed ? "▶" : "▼"}</span>
               </h3>
               {!dimensionsCollapsed && (
                 <div className="grid grid-cols-2 gap-1">
@@ -321,7 +368,9 @@ export function ReportsPage() {
                     <div
                       key={dimension.name}
                       draggable
-                      onDragStart={(e) => handleDragStart(e, "dimension", dimension.name)}
+                      onDragStart={(e) =>
+                        handleDragStart(e, "dimension", dimension.name)
+                      }
                       className="cursor-move rounded bg-gray-50 px-2 py-1.5 text-xs hover:bg-gray-100">
                       📊 {dimension.title}
                     </div>
@@ -331,11 +380,11 @@ export function ReportsPage() {
             </div>
 
             <div>
-              <h3 
+              <h3
                 className="mb-2 flex cursor-pointer items-center justify-between text-xs font-medium text-gray-600 hover:text-gray-800"
                 onClick={() => setMeasuresCollapsed(!measuresCollapsed)}>
                 <span>Medidas</span>
-                <span>{measuresCollapsed ? '▶' : '▼'}</span>
+                <span>{measuresCollapsed ? "▶" : "▼"}</span>
               </h3>
               {!measuresCollapsed && (
                 <div className="space-y-1">
@@ -343,7 +392,9 @@ export function ReportsPage() {
                     <div
                       key={measure.name}
                       draggable
-                      onDragStart={(e) => handleDragStart(e, "measure", measure.name)}
+                      onDragStart={(e) =>
+                        handleDragStart(e, "measure", measure.name)
+                      }
                       className="cursor-move rounded bg-gray-50 px-2 py-1.5 text-xs hover:bg-gray-100">
                       Σ {measure.title}
                     </div>
@@ -361,36 +412,45 @@ export function ReportsPage() {
             onDragOver={handleDragOver}
             onDrop={handleDropFilters}
             className="min-h-[60px] rounded-lg border-2 border-dashed border-gray-300 bg-gray-50 p-3">
-            <h3 className="mb-2 text-xs font-semibold text-gray-600">🔍 FILTROS</h3>
+            <h3 className="mb-2 text-xs font-semibold text-gray-600">
+              🔍 FILTROS
+            </h3>
             <div className="space-y-2">
               {filters.length === 0 && (
-                <p className="text-xs text-gray-400">Arraste dimensões aqui para filtrar</p>
+                <p className="text-xs text-gray-400">
+                  Arraste dimensões aqui para filtrar
+                </p>
               )}
               {filters.map((filter, idx) => {
                 const dim = dimensions.find((d) => d.name === filter.dimension)
                 const isDate = dim?.type === "time"
                 const hasOptions = filter.options && filter.options.length > 0
-                
+
                 return (
-                  <div key={idx} className="flex items-center gap-2 rounded bg-white p-2 shadow-sm">
+                  <div
+                    key={idx}
+                    className="flex items-center gap-2 rounded bg-white p-2 shadow-sm">
                     <span className="text-xs font-medium">{dim?.title}:</span>
-                    
-                    {hasOptions ? (
+
+                    {hasOptions ?
                       <select
                         className="flex-1 rounded border border-gray-300 px-2 py-1 text-xs"
                         value={filter.values[0] || ""}
                         onChange={(e) => {
                           const newFilters = [...filters]
-                          newFilters[idx].values = e.target.value ? [e.target.value] : []
+                          newFilters[idx].values =
+                            e.target.value ? [e.target.value] : []
                           setFilters(newFilters)
                         }}>
                         <option value="">Selecione...</option>
                         {filter.options.map((opt) => (
-                          <option key={opt} value={opt}>{opt}</option>
+                          <option key={opt} value={opt}>
+                            {opt}
+                          </option>
                         ))}
                       </select>
-                    ) : isDate ? (
-                      filter.dimension.toLowerCase().includes('inicio') ? (
+                    : isDate ?
+                      filter.dimension.toLowerCase().includes("inicio") ?
                         <input
                           type="date"
                           className="flex-1 rounded border border-gray-300 px-2 py-1 text-xs"
@@ -401,7 +461,7 @@ export function ReportsPage() {
                             setFilters(newFilters)
                           }}
                         />
-                      ) : filter.dimension.toLowerCase().includes('fim') ? (
+                      : filter.dimension.toLowerCase().includes("fim") ?
                         <input
                           type="date"
                           className="flex-1 rounded border border-gray-300 px-2 py-1 text-xs"
@@ -412,8 +472,7 @@ export function ReportsPage() {
                             setFilters(newFilters)
                           }}
                         />
-                      ) : (
-                        <div className="flex flex-1 gap-2">
+                      : <div className="flex flex-1 gap-2">
                           <input
                             type="date"
                             placeholder="De"
@@ -437,23 +496,25 @@ export function ReportsPage() {
                             }}
                           />
                         </div>
-                      )
-                    ) : (
-                      <input
+
+                    : <input
                         type="text"
                         placeholder="Digite o valor"
                         className="flex-1 rounded border border-gray-300 px-2 py-1 text-xs"
                         value={filter.values[0] || ""}
                         onChange={(e) => {
                           const newFilters = [...filters]
-                          newFilters[idx].values = e.target.value ? [e.target.value] : []
+                          newFilters[idx].values =
+                            e.target.value ? [e.target.value] : []
                           setFilters(newFilters)
                         }}
                       />
-                    )}
-                    
+                    }
+
                     <button
-                      onClick={() => setFilters(filters.filter((_, i) => i !== idx))}
+                      onClick={() =>
+                        setFilters(filters.filter((_, i) => i !== idx))
+                      }
                       className="text-red-600 hover:text-red-800">
                       <X size={14} />
                     </button>
@@ -470,18 +531,28 @@ export function ReportsPage() {
               onDragOver={handleDragOver}
               onDrop={handleDropColumns}
               className="col-span-2 min-h-[60px] rounded-lg border-2 border-dashed border-purple-300 bg-purple-50 p-3">
-              <h3 className="mb-2 text-xs font-semibold text-purple-700">📋 COLUNAS</h3>
+              <h3 className="mb-2 text-xs font-semibold text-purple-700">
+                📋 COLUNAS
+              </h3>
               <div className="flex flex-wrap gap-2">
                 {columnDimensions.length === 0 && (
-                  <p className="text-xs text-gray-400">Arraste dimensões aqui</p>
+                  <p className="text-xs text-gray-400">
+                    Arraste dimensões aqui
+                  </p>
                 )}
                 {columnDimensions.map((name) => {
                   const dim = dimensions.find((d) => d.name === name)
                   return (
-                    <div key={name} className="flex items-center gap-2 rounded bg-purple-100 px-2 py-1 text-xs">
+                    <div
+                      key={name}
+                      className="flex items-center gap-2 rounded bg-purple-100 px-2 py-1 text-xs">
                       <span>{dim?.title}</span>
                       <button
-                        onClick={() => setColumnDimensions(columnDimensions.filter((d) => d !== name))}
+                        onClick={() =>
+                          setColumnDimensions(
+                            columnDimensions.filter((d) => d !== name)
+                          )
+                        }
                         className="text-red-600 hover:text-red-800">
                         <X size={12} />
                       </button>
@@ -496,18 +567,28 @@ export function ReportsPage() {
               onDragOver={handleDragOver}
               onDrop={handleDropRows}
               className="min-h-[120px] rounded-lg border-2 border-dashed border-blue-300 bg-blue-50 p-3">
-              <h3 className="mb-2 text-xs font-semibold text-blue-700">📊 LINHAS</h3>
+              <h3 className="mb-2 text-xs font-semibold text-blue-700">
+                📊 LINHAS
+              </h3>
               <div className="space-y-1">
                 {rowDimensions.length === 0 && (
-                  <p className="text-xs text-gray-400">Arraste dimensões aqui</p>
+                  <p className="text-xs text-gray-400">
+                    Arraste dimensões aqui
+                  </p>
                 )}
                 {rowDimensions.map((name) => {
                   const dim = dimensions.find((d) => d.name === name)
                   return (
-                    <div key={name} className="flex items-center justify-between rounded bg-blue-100 px-2 py-1 text-xs">
+                    <div
+                      key={name}
+                      className="flex items-center justify-between rounded bg-blue-100 px-2 py-1 text-xs">
                       <span>{dim?.title}</span>
                       <button
-                        onClick={() => setRowDimensions(rowDimensions.filter((d) => d !== name))}
+                        onClick={() =>
+                          setRowDimensions(
+                            rowDimensions.filter((d) => d !== name)
+                          )
+                        }
                         className="text-red-600 hover:text-red-800">
                         <X size={12} />
                       </button>
@@ -522,7 +603,9 @@ export function ReportsPage() {
               onDragOver={handleDragOver}
               onDrop={handleDropValues}
               className="min-h-[120px] rounded-lg border-2 border-dashed border-green-300 bg-green-50 p-3">
-              <h3 className="mb-2 text-xs font-semibold text-green-700">Σ VALORES</h3>
+              <h3 className="mb-2 text-xs font-semibold text-green-700">
+                Σ VALORES
+              </h3>
               <div className="space-y-1">
                 {valueMeasures.length === 0 && (
                   <p className="text-xs text-gray-400">Arraste medidas aqui</p>
@@ -530,10 +613,16 @@ export function ReportsPage() {
                 {valueMeasures.map((name) => {
                   const measure = measures.find((m) => m.name === name)
                   return (
-                    <div key={name} className="flex items-center justify-between rounded bg-green-100 px-2 py-1 text-xs">
+                    <div
+                      key={name}
+                      className="flex items-center justify-between rounded bg-green-100 px-2 py-1 text-xs">
                       <span>{measure?.title}</span>
                       <button
-                        onClick={() => setValueMeasures(valueMeasures.filter((m) => m !== name))}
+                        onClick={() =>
+                          setValueMeasures(
+                            valueMeasures.filter((m) => m !== name)
+                          )
+                        }
                         className="text-red-600 hover:text-red-800">
                         <X size={12} />
                       </button>
@@ -550,13 +639,22 @@ export function ReportsPage() {
               {loading ? "Carregando..." : "Executar Consulta"}
             </Button>
             {pivotData.length > 0 && (
-              <Button
-                variant="secondary"
-                onClick={handleExport}
-                className="flex items-center gap-2">
-                <FileXls size={20} />
-                Exportar CSV
-              </Button>
+              <div className="flex gap-4">
+                <Button
+                  variant="secondary"
+                  onClick={handleExport}
+                  className="flex items-center gap-2">
+                  <FileXls size={20} />
+                  Exportar CSV
+                </Button>
+                <ExportTableToPDFButton
+                  filename={`relatorios.${new Date().toLocaleDateString("pt-BR").replace(/\//g, "-")}`}
+                  options={{ orientation: "portrait" }}
+                  title="Relatórios"
+                  className="bg-red-500">
+                  Exportar PDF
+                </ExportTableToPDFButton>
+              </div>
             )}
           </div>
         </div>
@@ -564,11 +662,11 @@ export function ReportsPage() {
 
       {pivotData.length > 0 && (
         <div className="overflow-auto rounded-lg bg-white shadow">
-          <table className="min-w-full divide-y divide-gray-200">
+          <table className="min-w-full divide-y divide-gray-200" id="table">
             <thead className="bg-gray-50">
               <tr>
                 {Object.keys(pivotData[0]).map((key) => {
-                  if (key === '_measure') {
+                  if (key === "_measure") {
                     return (
                       <th
                         key={key}
@@ -577,7 +675,12 @@ export function ReportsPage() {
                       </th>
                     )
                   }
-                  const cleanKey = key.split(".").pop()?.replace("Proposta Analítica ", "").replace("Propostas Analítica ", "") || key
+                  const cleanKey =
+                    key
+                      .split(".")
+                      .pop()
+                      ?.replace("Proposta Analítica ", "")
+                      .replace("Propostas Analítica ", "") || key
                   return (
                     <th
                       key={key}
@@ -592,13 +695,17 @@ export function ReportsPage() {
               {pivotData.map((row, idx) => (
                 <tr key={idx}>
                   {Object.values(row).map((value: any, cellIdx) => {
-                    const numValue = typeof value === "string" ? parseFloat(value) : value
+                    const numValue =
+                      typeof value === "string" ? parseFloat(value) : value
                     return (
                       <td
                         key={cellIdx}
                         className="whitespace-nowrap px-6 py-4 text-sm text-gray-900">
                         {typeof numValue === "number" && !isNaN(numValue) ?
-                          numValue.toLocaleString("pt-BR", { minimumFractionDigits: 2, maximumFractionDigits: 2 })
+                          numValue.toLocaleString("pt-BR", {
+                            minimumFractionDigits: 2,
+                            maximumFractionDigits: 2,
+                          })
                         : value || "-"}
                       </td>
                     )
