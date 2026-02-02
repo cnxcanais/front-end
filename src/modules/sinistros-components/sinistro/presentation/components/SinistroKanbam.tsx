@@ -8,7 +8,7 @@ import { LoadingScreen } from "@/core/components/LoadingScreen"
 import { getCookie } from "@/lib/cookies"
 import { useCorretoraQuery } from "@/modules/corretoras-components/corretora/infra/hooks/use-corretora-query"
 import { usePropostaQuery } from "@/modules/propostas-components/propostas/infra/hooks/use-proposta-query"
-import { useSeguradoQuery } from "@/modules/segurados-components/segurado/infra/hooks/use-segurado-query"
+import { useSeguradoraQuery } from "@/modules/seguradoras-components/seguradora/infra/hooks/use-seguradora-query"
 import { useUsuarioQuery } from "@/modules/usuarios-components/usuario/infra/hooks/use-usuario-query"
 import { DragDropContext, Draggable, Droppable } from "@hello-pangea/dnd"
 import { useMemo, useState } from "react"
@@ -157,7 +157,7 @@ export function SinistroKanbam() {
     standardFilters
   )
   const { data: seguradoraData, isLoading: isSeguradoraLoading } =
-    useSeguradoQuery(1, -1, standardFilters)
+    useSeguradoraQuery(1, -1, standardFilters)
   const { data: corretoraData, isLoading: isCorretoraLoading } =
     useCorretoraQuery(1, -1)
   const {
@@ -173,7 +173,7 @@ export function SinistroKanbam() {
   const filterFields: FilterField[] = useMemo(
     () => [
       {
-        name: "numeroApolice",
+        name: "apoliceId",
         label: "Número de Apolice",
         type: "select",
         options:
@@ -184,7 +184,7 @@ export function SinistroKanbam() {
         placeholder: "Buscar por número de apolice",
       },
       {
-        name: "apoliceId",
+        name: "numeroSinistro",
         label: "Número de Sinistro",
         type: "select",
         options:
@@ -200,7 +200,7 @@ export function SinistroKanbam() {
         type: "select",
         options:
           seguradoraData?.data.map((seg) => ({
-            label: seg.nomeRazaoSocial,
+            label: seg.razaoSocial,
             value: seg.id,
           })) || [],
         placeholder: "Buscar por número de apolice",

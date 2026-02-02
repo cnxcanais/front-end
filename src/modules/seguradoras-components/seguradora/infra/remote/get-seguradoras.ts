@@ -6,12 +6,8 @@ export async function getSeguradoras(
   limit = 10,
   filters?: Record<string, string>
 ) {
-  try {
-    const { data } = await bffApi.get<Seguradora.GetResponse>(`/seguradoras`, {
-      params: { page, limit, ...filters },
-    })
-    return data
-  } catch (error) {
-    console.info(error)
-  }
+  const { data } = await bffApi.get<Seguradora.GetResponse>(`/seguradoras`, {
+    params: { page, limit, ...filters },
+  })
+  return data
 }
