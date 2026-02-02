@@ -3,6 +3,8 @@
 import { Button } from "@/core/components/Button"
 import { Modal } from "@/core/components/Modals/Modal"
 import { getSinistroHistorico } from "@/modules/sinistros-components/sinistro/infra/remote"
+import jsPDF from "jspdf"
+import autoTable from "jspdf-autotable"
 import { useEffect, useState } from "react"
 import { toast } from "sonner"
 
@@ -98,6 +100,75 @@ export function SinistroHistoryModal({
     return String(value)
   }
 
+  const exportToPDF = () => {
+    const doc = new jsPDF()
+    
+    const img = new Image()
+    img.src = '/images/cnx-logo.png'
+    img.onload = () => {
+      doc.addImage(img, 'PNG', 14, 10, 40, 15)
+      
+      doc.setFontSize(16)
+      doc.text(`Histórico - ${sinistroNumero}`, 14, 35)
+      
+      let yPosition = 45
+      
+      historico.forEach((item, index) => {
+        if (yPosition > 270) {
+          doc.addPage()
+          doc.addImage(img, 'PNG', 14, 10, 40, 15)
+          yPosition = 35
+        }
+        
+        // Add background color
+        doc.setFillColor(index % 2 === 0 ? 239 : 249, index % 2 === 0 ? 246 : 250, index % 2 === 0 ? 255 : 251)
+        const boxHeight = 30 + (item.observacao ? 10 : 0) + (item.dadosAlterados ? Object.keys(item.dadosAlterados).length * 5 : 0)
+        doc.rect(10, yPosition - 5, 190, boxHeight, 'F')
+        
+        doc.setFontSize(12)
+        doc.setFont(undefined, "bold")
+        doc.text(getEventLabel(item.tipoEvento), 14, yPosition)
+        
+        doc.setFontSize(9)
+        doc.setFont(undefined, "normal")
+        doc.text(`${formatDateTime(item.createdAt)} • ${item.usuarioNome}`, 14, yPosition + 5)
+        
+        yPosition += 10
+        
+        if (item.statusAnterior && item.statusNovo) {
+          const statusAnteriorFormatted = formatFieldValue(item.statusAnterior)
+          const statusNovoFormatted = formatFieldValue(item.statusNovo)
+          doc.text(`${statusAnteriorFormatted} -> ${statusNovoFormatted}`, 14, yPosition)
+          yPosition += 5
+        }
+        
+        if (item.observacao) {
+          const lines = doc.splitTextToSize(item.observacao, 180)
+          doc.text(lines, 14, yPosition)
+          yPosition += lines.length * 5
+        }
+        
+        if (item.dadosAlterados) {
+          yPosition += 2
+          Object.entries(item.dadosAlterados).forEach(([key, value]) => {
+            const text = `${formatFieldName(key)}: ${formatFieldValue(value)}`
+            doc.text(text, 14, yPosition)
+            yPosition += 5
+          })
+        }
+        
+        yPosition += 10
+      })
+      
+      doc.save(`historico-${sinistroNumero}.pdf`)
+      toast.success("PDF exportado com sucesso")
+    }
+    
+    img.onerror = () => {
+      toast.error("Erro ao carregar logo")
+    }
+  }
+
   return (
     <Modal
       title={`Histórico - ${sinistroNumero}`}
@@ -168,7 +239,10 @@ export function SinistroHistoryModal({
           </div>
         )}
 
-        <div className="flex justify-end pt-4">
+        <div className="flex justify-end gap-2 pt-4">
+          <Button variant="secondary" onClick={exportToPDF} disabled={loading || historico.length === 0}>
+            Exportar PDF
+          </Button>
           <Button variant="tertiary" onClick={onClose}>
             Fechar
           </Button>
