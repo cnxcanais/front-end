@@ -106,6 +106,11 @@ const ALLOWED_TRANSITIONS: Record<string, string[]> = {
 }
 
 export function SinistroKanbam() {
+  const { data: usuarios } = useUsuarioQuery()
+  const corretoraId = getCookie("corretoraId")
+  const userId = getCookie("userId")
+  const user = usuarios?.data.find((u) => u.props?.id === userId)
+  const isAdmin = user?.props?.perfilId === process.env.NEXT_PUBLIC_ADM_ID
   const baseState = {
     open: false,
     sinistroId: "",
@@ -145,25 +150,21 @@ export function SinistroKanbam() {
     },
   })
   const [filters, setFilters] = useState<Record<string, string>>({})
+  const standardFilters = isAdmin ? {} : { corretoraId: corretoraId || "" }
   const { data: propostaData, isLoading: isPropostaLoading } = usePropostaQuery(
     1,
     -1,
-    {}
+    standardFilters
   )
   const { data: seguradoraData, isLoading: isSeguradoraLoading } =
-    useSeguradoQuery(1, -1, {})
+    useSeguradoQuery(1, -1, standardFilters)
   const { data: corretoraData, isLoading: isCorretoraLoading } =
-    useCorretoraQuery(1, -1, {})
+    useCorretoraQuery(1, -1)
   const {
     data: sinistrosData,
     refetch,
     isLoading,
-  } = useSinistroQuery(1, -1, filters)
-  const { data: usuarios } = useUsuarioQuery()
-  const corretoraId = getCookie("corretoraId")
-  const userId = getCookie("userId")
-  const user = usuarios?.data.find((u) => u.props?.id === userId)
-  const isAdmin = user?.props?.perfilId === process.env.NEXT_PUBLIC_ADM_ID
+  } = useSinistroQuery(1, -1, { ...filters, ...standardFilters })
 
   const handleFilter = (newFilters: Record<string, string>) => {
     setFilters(newFilters)
@@ -209,10 +210,17 @@ export function SinistroKanbam() {
         label: "Corretora",
         type: "select",
         options:
-          corretoraData?.data.map((seg) => ({
-            label: seg.razaoSocial,
-            value: seg.id,
-          })) || [],
+          isAdmin ?
+            corretoraData?.data.map((seg) => ({
+              label: seg.razaoSocial,
+              value: seg.id,
+            })) || []
+          : corretoraData?.data
+              .filter((c) => c.id === corretoraId)
+              .map((seg) => ({
+                label: seg.razaoSocial,
+                value: seg.id,
+              })) || [],
         placeholder: "Buscar por número de apolice",
       },
       {
@@ -436,7 +444,13 @@ export function SinistroKanbam() {
       .catch(() => toast.error("Erro ao retornar sinistro"))
   }
 
-  if (isLoading) return <LoadingScreen />
+  if (
+    isLoading ||
+    isCorretoraLoading ||
+    isSeguradoraLoading ||
+    isPropostaLoading
+  )
+    return <LoadingScreen />
 
   return (
     <div>
