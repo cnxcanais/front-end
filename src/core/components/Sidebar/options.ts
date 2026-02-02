@@ -58,7 +58,7 @@ const sidebar_options_not_admin: SidebarOptionProps[] = [
 export const sidebar_options: SidebarOptionProps[] = [
   {
     name: "Meu Usuário",
-    href: "",
+    href: "/meu-usuario",
     Icon: User,
     group: "Gerenciamento",
   },
