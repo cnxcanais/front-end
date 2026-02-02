@@ -6,6 +6,7 @@ import {
   FileText,
   Graph,
   IdentificationBadge,
+  LockKey,
   Package,
   ProjectorScreenChart,
   Suitcase,
@@ -61,6 +62,12 @@ export const sidebar_options: SidebarOptionProps[] = [
     href: "/meu-usuario",
     Icon: User,
     group: "Gerenciamento",
+  },
+  {
+    name: "Cofre de Senhas",
+    href: "/cofre",
+    Icon: LockKey,
+    group: "Cadastros",
   },
   {
     name: "Seguradoras",
