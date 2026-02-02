@@ -80,6 +80,24 @@ export function SinistroHistoryModal({
     }
   }
 
+  const formatFieldName = (key: string) => {
+    const fieldNames: Record<string, string> = {
+      statusNovo: "Status Novo",
+      statusAnterior: "Status Anterior",
+    }
+    return fieldNames[key] || key.replace(/([A-Z])/g, " $1").replace(/^./, (str) => str.toUpperCase())
+  }
+
+  const formatFieldValue = (value: any) => {
+    if (typeof value === "string") {
+      return value
+        .split("_")
+        .map((word) => word.charAt(0).toUpperCase() + word.slice(1))
+        .join(" ")
+    }
+    return String(value)
+  }
+
   return (
     <Modal
       title={`Histórico - ${sinistroNumero}`}
@@ -134,9 +152,14 @@ export function SinistroHistoryModal({
                       <summary className="cursor-pointer text-xs text-gray-500 hover:text-gray-700">
                         Ver dados alterados
                       </summary>
-                      <pre className="mt-2 overflow-auto rounded bg-gray-100 p-2 text-xs">
-                        {JSON.stringify(item.dadosAlterados, null, 2)}
-                      </pre>
+                      <div className="mt-2 space-y-1 rounded bg-gray-100 p-3 text-sm">
+                        {Object.entries(item.dadosAlterados).map(([key, value]) => (
+                          <div key={key}>
+                            <span className="font-medium text-gray-700">{formatFieldName(key)}:</span>{" "}
+                            <span className="text-gray-900">{formatFieldValue(value)}</span>
+                          </div>
+                        ))}
+                      </div>
                     </details>
                   )}
                 </div>
