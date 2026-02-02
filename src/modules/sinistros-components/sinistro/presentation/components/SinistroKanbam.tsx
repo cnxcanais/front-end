@@ -3,8 +3,12 @@
 import { SinistroStatusEnum } from "@/@types/enums/sinistroEnum"
 import { Sinistro } from "@/@types/sinistro"
 import { Button } from "@/core/components/Button"
+import { FilterField, FilterForm } from "@/core/components/FilterForm"
 import { LoadingScreen } from "@/core/components/LoadingScreen"
 import { getCookie } from "@/lib/cookies"
+import { useCorretoraQuery } from "@/modules/corretoras-components/corretora/infra/hooks/use-corretora-query"
+import { usePropostaQuery } from "@/modules/propostas-components/propostas/infra/hooks/use-proposta-query"
+import { useSeguradoQuery } from "@/modules/segurados-components/segurado/infra/hooks/use-segurado-query"
 import { useUsuarioQuery } from "@/modules/usuarios-components/usuario/infra/hooks/use-usuario-query"
 import { DragDropContext, Draggable, Droppable } from "@hello-pangea/dnd"
 import { useMemo, useState } from "react"
@@ -140,12 +144,90 @@ export function SinistroKanbam() {
       newStatus: SinistroStatusEnum.NOVO_SINISTRO as SinistroStatusEnum,
     },
   })
-  const { data: sinistrosData, refetch, isLoading } = useSinistroQuery(1, -1)
+  const [filters, setFilters] = useState<Record<string, string>>({})
+  const { data: propostaData, isLoading: isPropostaLoading } = usePropostaQuery(
+    1,
+    -1,
+    {}
+  )
+  const { data: seguradoraData, isLoading: isSeguradoraLoading } =
+    useSeguradoQuery(1, -1, {})
+  const { data: corretoraData, isLoading: isCorretoraLoading } =
+    useCorretoraQuery(1, -1, {})
+  const {
+    data: sinistrosData,
+    refetch,
+    isLoading,
+  } = useSinistroQuery(1, -1, filters)
   const { data: usuarios } = useUsuarioQuery()
   const corretoraId = getCookie("corretoraId")
   const userId = getCookie("userId")
   const user = usuarios?.data.find((u) => u.props?.id === userId)
   const isAdmin = user?.props?.perfilId === process.env.NEXT_PUBLIC_ADM_ID
+
+  const handleFilter = (newFilters: Record<string, string>) => {
+    setFilters(newFilters)
+  }
+
+  const filterFields: FilterField[] = useMemo(
+    () => [
+      {
+        name: "numeroApolice",
+        label: "Número de Apolice",
+        type: "select",
+        options:
+          propostaData?.data.map((proposta) => ({
+            label: proposta.numeroApolice,
+            value: proposta.id,
+          })) || [],
+        placeholder: "Buscar por número de apolice",
+      },
+      {
+        name: "apoliceId",
+        label: "Número de Sinistro",
+        type: "select",
+        options:
+          sinistrosData?.items.map((sinistro) => ({
+            label: sinistro.numeroSinistro,
+            value: sinistro.numeroSinistro,
+          })) || [],
+        placeholder: "Buscar por número de apolice",
+      },
+      {
+        name: "seguradoraId",
+        label: "Seguradora",
+        type: "select",
+        options:
+          seguradoraData?.data.map((seg) => ({
+            label: seg.nomeRazaoSocial,
+            value: seg.id,
+          })) || [],
+        placeholder: "Buscar por número de apolice",
+      },
+      {
+        name: "corretoraId",
+        label: "Corretora",
+        type: "select",
+        options:
+          corretoraData?.data.map((seg) => ({
+            label: seg.razaoSocial,
+            value: seg.id,
+          })) || [],
+        placeholder: "Buscar por número de apolice",
+      },
+      {
+        name: "dataInicio",
+        label: "Vigência Inicial (De)",
+        type: "date",
+      },
+      {
+        name: "dataFim",
+        label: "Vigência Inicial (Até)",
+        type: "date",
+      },
+    ],
+    [corretoraData, propostaData, sinistrosData, seguradoraData]
+  )
 
   const sinistrosByStatus = useMemo(() => {
     const grouped: Record<string, Sinistro.Type[]> = {
@@ -358,7 +440,14 @@ export function SinistroKanbam() {
 
   return (
     <div>
-      <div className="mb-4">
+      <FilterForm
+        onFilter={handleFilter}
+        fields={filterFields}
+        defaultOpen={true}
+        title="Filtros"
+        appliedFilters={filters}
+      />
+      <div className="mb-4 flex gap-4">
         <Button
           onClick={() =>
             setModalState({ ...modalState, sinistro: { open: true } })
