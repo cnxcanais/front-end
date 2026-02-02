@@ -25,6 +25,12 @@ type SidebarOptionProps = {
 
 const sidebar_options_not_admin: SidebarOptionProps[] = [
   {
+    name: "Meu Usuário",
+    href: "/meu-usuario",
+    Icon: User,
+    group: "Gerenciamento",
+  },
+  {
     name: "Dashboard",
     href: "/dashboard",
     Icon: ProjectorScreenChart,
