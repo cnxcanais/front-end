@@ -83,7 +83,7 @@ export function CofrePage() {
           setModalState({
             ...modalState,
             otp: { open: false, action: "", credentialId: "" },
-            viewPassword: { open: true, password: data.senha },
+            viewPassword: { open: true, password: data.credential.senha },
           })
         },
       }
@@ -106,7 +106,7 @@ export function CofrePage() {
       { credentialId: modalState.otp.credentialId, otpCode },
       {
         onSuccess: (data) => {
-          navigator.clipboard.writeText(data.senha)
+          navigator.clipboard.writeText(data.credential.senha)
           toast.success("Senha copiada para a área de transferência")
           setModalState({
             ...modalState,
@@ -325,7 +325,7 @@ export function CofrePage() {
       />
 
       {modalState.viewPassword.open && (
-        <div className="bg-black fixed inset-0 z-50 flex items-center justify-center bg-opacity-50">
+        <div className="bg-black/50 flex items-center justify-center">
           <div className="w-full max-w-md rounded-lg bg-white p-6">
             <h3 className="mb-4 text-lg font-semibold">Senha</h3>
             <div className="mb-4 rounded bg-gray-100 p-3 font-mono text-sm">
