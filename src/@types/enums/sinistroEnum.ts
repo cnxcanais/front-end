@@ -6,4 +6,5 @@ export enum SinistroStatusEnum {
   REPROVADO = "reprovado",
   PAGAMENTO = "pagamento",
   ENCERRADO = "encerrado",
+  HISTORICO = "historico"
 }

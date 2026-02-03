@@ -3,6 +3,7 @@ import {
   BuildingOffice,
   Buildings,
   Car,
+  ClockCounterClockwise,
   FileText,
   Graph,
   IdentificationBadge,
@@ -133,6 +134,12 @@ export const sidebar_options: SidebarOptionProps[] = [
     name: "Sinistros",
     href: "/sinistros",
     Icon: Car,
+    group: "Operações",
+  },
+  {
+    name: "Histórico de Sinistros",
+    href: "/sinistros-historico",
+    Icon: ClockCounterClockwise,
     group: "Operações",
   },
   {
