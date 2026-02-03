@@ -5,6 +5,11 @@ import { Sinistro } from "@/@types/sinistro"
 import { Button } from "@/core/components/Button"
 import { Modal } from "@/core/components/Modals/Modal"
 import { ModalFilesTrigger } from "@/core/components/Modals/ModalFiles/ModalFilesTrigger"
+import { formatDocumentNumber } from "@/core/utils/formatDocumentNumber"
+import { formatPhoneNumber } from "@/core/utils/formatPhoneNumber"
+import { useCorretoraByIdQuery } from "@/modules/corretoras-components/edit-corretora/infra/hooks/use-corretora-by-id-query"
+import { useProdutorByIdQuery } from "@/modules/produtores-components/edit-produtor/infra/hooks/use-produtor-by-id-query"
+import { useSeguradoraByIdQuery } from "@/modules/seguradoras-components/edit-seguradora/infra/hooks/use-seguradora-by-id-query"
 
 type Props = {
   open: boolean
@@ -19,6 +24,16 @@ export function SinistroDetailsModal({
   sinistro,
   isAdmin,
 }: Props) {
+  const { data: corretora } = useCorretoraByIdQuery(
+    sinistro?.apolice?.corretoraId || ""
+  )
+  const { data: produtor } = useProdutorByIdQuery(
+    sinistro?.apolice?.produtorId || ""
+  )
+  const { data: seguradora } = useSeguradoraByIdQuery(
+    sinistro?.apolice?.seguradoraId || ""
+  )
+
   if (!sinistro) return null
 
   const formatCurrency = (value: number | null) => {
@@ -137,6 +152,128 @@ export function SinistroDetailsModal({
                 {formatCurrency(sinistro.apolice.premioTotal)}
               </p>
             </div>
+          </div>
+        </div>
+
+        <div className="rounded-lg bg-green-50 p-4">
+          <h3 className="mb-3 font-semibold text-gray-700">
+            Informações do Produtor
+          </h3>
+          <div className="grid grid-cols-2 gap-3 text-sm">
+            <div>
+              <span className="font-medium text-gray-600">Nome:</span>
+              <p className="text-gray-900">{produtor?.nome || "N/A"}</p>
+            </div>
+            <div>
+              <span className="font-medium text-gray-600">Email:</span>
+              <p className="text-gray-900">{produtor?.email || "N/A"}</p>
+            </div>
+            <div>
+              <span className="font-medium text-gray-600">
+                Telefone Celular:
+              </span>
+              <p className="text-gray-900">
+                {produtor?.telefoneCelular || "N/A"}
+              </p>
+            </div>
+            <div>
+              <span className="font-medium text-gray-600">CPF/CNPJ:</span>
+              <p className="text-gray-900">{produtor?.cnpjCpf || "N/A"}</p>
+            </div>
+          </div>
+        </div>
+
+        <div className="rounded-lg bg-purple-50 p-4">
+          <h3 className="mb-3 font-semibold text-gray-700">
+            Informações da Seguradora
+          </h3>
+          <div className="grid grid-cols-2 gap-3 text-sm">
+            <div>
+              <span className="font-medium text-gray-600">Razão Social:</span>
+              <p className="text-gray-900">
+                {seguradora?.razaoSocial || "N/A"}
+              </p>
+            </div>
+            <div>
+              <span className="font-medium text-gray-600">CNPJ:</span>
+              <p className="text-gray-900">
+                {formatDocumentNumber(seguradora?.cnpj) || "N/A"}
+              </p>
+            </div>
+            <div>
+              <span className="font-medium text-gray-600">Email:</span>
+              <p className="text-gray-900">{seguradora?.email || "N/A"}</p>
+            </div>
+            <div>
+              <span className="font-medium text-gray-600">Telefones:</span>
+              <p className="text-gray-900">
+                {"Principal: " +
+                  (formatPhoneNumber(seguradora?.telefone) || "N/A") +
+                  " | Secundário: " +
+                  (formatPhoneNumber(seguradora?.telefoneSecundario) || "N/A") +
+                  " | Assistencia 24h: " +
+                  (formatPhoneNumber(seguradora?.telefoneAssistencia24h) ||
+                    "N/A")}
+              </p>
+            </div>
+            <div>
+              <span className="font-medium text-gray-600">Contatos:</span>
+              <p className="text-gray-900">
+                {"Diretor: " + seguradora?.diretor ||
+                  "N/A" + "ou " + "Gerente: " + seguradora.gerente}
+              </p>
+            </div>
+
+            {seguradora?.endereco && (
+              <div className="col-span-2">
+                <span className="font-medium text-gray-600">Endereço:</span>
+                <p className="text-gray-900">
+                  {seguradora.endereco}, {seguradora.numero} -{" "}
+                  {seguradora.bairro}, {seguradora.cidade}/{seguradora.uf} -
+                  CEP: {seguradora.cep}
+                </p>
+              </div>
+            )}
+          </div>
+        </div>
+
+        <div className="rounded-lg bg-orange-50 p-4">
+          <h3 className="mb-3 font-semibold text-gray-700">
+            Informações da Corretora
+          </h3>
+          <div className="grid grid-cols-2 gap-3 text-sm">
+            <div>
+              <span className="font-medium text-gray-600">Razão Social:</span>
+              <p className="text-gray-900">{corretora?.razaoSocial || "N/A"}</p>
+            </div>
+            <div>
+              <span className="font-medium text-gray-600">CNPJ:</span>
+              <p className="text-gray-900">
+                {corretora?.cnpjCpfFormatado || "N/A"}
+              </p>
+            </div>
+            <div>
+              <span className="font-medium text-gray-600">Email:</span>
+              <p className="text-gray-900">{corretora?.email || "N/A"}</p>
+            </div>
+            <div>
+              <span className="font-medium text-gray-600">Telefones:</span>
+              <p className="text-gray-900">
+                {"Principal: " +
+                  (formatPhoneNumber(corretora?.telefone) || "N/A") +
+                  " | Secundário: " +
+                  (formatPhoneNumber(corretora?.telefoneSecundario) || "N/A")}
+              </p>
+            </div>
+            {corretora?.endereco && (
+              <div className="col-span-2">
+                <span className="font-medium text-gray-600">Endereço:</span>
+                <p className="text-gray-900">
+                  {corretora.endereco}, {corretora.numero} - {corretora.bairro},{" "}
+                  {corretora.cidade}/{corretora.uf} - CEP: {corretora.cep}
+                </p>
+              </div>
+            )}
           </div>
         </div>
 
