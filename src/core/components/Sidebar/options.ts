@@ -74,7 +74,7 @@ export const sidebar_options: SidebarOptionProps[] = [
     name: "Cofre de Senhas",
     href: "/cofre",
     Icon: LockKey,
-    group: "Cadastros",
+    group: "Gerenciamento",
   },
   {
     name: "Seguradoras",

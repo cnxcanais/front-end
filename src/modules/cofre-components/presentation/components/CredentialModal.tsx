@@ -3,7 +3,7 @@
 import { Button } from "@/core/components/Button"
 import * as Input from "@/core/components/Input"
 import { Modal } from "@/core/components/Modals/Modal"
-import { useState } from "react"
+import { useEffect, useState } from "react"
 
 type Props = {
   open: boolean
@@ -21,16 +21,32 @@ export function CredentialModal({
   isLoading,
 }: Props) {
   const [formData, setFormData] = useState({
-    nome: initialData?.nome || "",
-    usuario: initialData?.usuario || "",
-    senha: initialData?.senha || "",
-    host: initialData?.host || "",
-    observacoes: initialData?.observacoes || "",
+    nome: "",
+    usuario: "",
+    senha: "",
+    host: "",
+    observacoes: "",
   })
+
+  useEffect(() => {
+    if (initialData) {
+      setFormData({
+        nome: initialData.nome || "",
+        usuario: initialData.usuario || "",
+        senha: "",
+        host: initialData.host || "",
+        observacoes: initialData.observacoes || "",
+      })
+    } else {
+      setFormData({ nome: "", usuario: "", senha: "", host: "", observacoes: "" })
+    }
+  }, [initialData, open])
 
   const handleSave = () => {
     onSave(formData)
-    setFormData({ nome: "", usuario: "", senha: "", host: "", observacoes: "" })
+    if (!initialData) {
+      setFormData({ nome: "", usuario: "", senha: "", host: "", observacoes: "" })
+    }
   }
 
   return (
@@ -106,7 +122,7 @@ export function CredentialModal({
             disabled={
               !formData.nome ||
               !formData.usuario ||
-              !formData.senha ||
+              (!initialData && !formData.senha) ||
               isLoading
             }>
             Salvar

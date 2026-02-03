@@ -122,19 +122,26 @@ export function CofrePage() {
       onSuccess: () => {
         setModalState({
           ...modalState,
-          credential: { open: true, data: credential },
           otp: { open: true, action: "edit", credentialId: credential.id },
+          credential: { open: false, data: credential },
         })
       },
     })
   }
 
   const handleVerifyEditOTP = (otpCode: string) => {
-    const data = modalState.credential.data
+    setModalState({
+      ...modalState,
+      otp: { open: false, action: "", credentialId: modalState.otp.credentialId },
+      credential: { open: true, data: modalState.credential.data },
+    })
+  }
+
+  const handleSaveEdit = (formData: any) => {
     updateMutation.mutate(
       {
         credentialId: modalState.otp.credentialId,
-        data: { otpCode, ...data },
+        data: formData,
       },
       {
         onSuccess: () => {
@@ -296,16 +303,16 @@ export function CofrePage() {
       </div>
 
       <CredentialModal
-        open={modalState.credential.open && !modalState.otp.open}
+        open={modalState.credential.open}
         onClose={() =>
           setModalState({
             ...modalState,
             credential: { open: false, data: null },
           })
         }
-        onSave={handleCreateCredential}
+        onSave={modalState.credential.data ? handleSaveEdit : handleCreateCredential}
         initialData={modalState.credential.data}
-        isLoading={createMutation.isPending}
+        isLoading={createMutation.isPending || updateMutation.isPending}
       />
 
       <OTPModal
