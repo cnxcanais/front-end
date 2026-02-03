@@ -192,7 +192,7 @@ export function SinistroKanbam() {
             label: sinistro.numeroSinistro,
             value: sinistro.numeroSinistro,
           })) || [],
-        placeholder: "Buscar por número de apolice",
+        placeholder: "Buscar por número de sinistro",
       },
       {
         name: "seguradoraId",
@@ -203,7 +203,7 @@ export function SinistroKanbam() {
             label: seg.razaoSocial,
             value: seg.id,
           })) || [],
-        placeholder: "Buscar por número de apolice",
+        placeholder: "Buscar por seguradora",
       },
       {
         name: "corretoraId",
@@ -221,7 +221,7 @@ export function SinistroKanbam() {
                 label: seg.razaoSocial,
                 value: seg.id,
               })) || [],
-        placeholder: "Buscar por número de apolice",
+        placeholder: "Buscar por corretora",
       },
       {
         name: "dataInicio",
