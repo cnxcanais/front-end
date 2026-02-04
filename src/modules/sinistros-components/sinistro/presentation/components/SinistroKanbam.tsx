@@ -256,7 +256,7 @@ export function SinistroKanbam() {
         ) || []
 
     filteredSinistros?.forEach((sinistro) => {
-      grouped[sinistro.status].push(sinistro)
+      grouped[sinistro.status]?.push(sinistro)
     })
 
     return grouped
