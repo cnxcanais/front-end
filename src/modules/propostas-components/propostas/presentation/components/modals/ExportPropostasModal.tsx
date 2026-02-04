@@ -50,11 +50,11 @@ export function ExportPropostasModal({
         setExportFilters({ ...exportFilters, produtoId: "" })
       }
     }
-  }, [exportFilters.ramoId])
+  }, [exportFilters.ramoId, exportFilters, filteredProdutosOptions])
 
   const handleExport = () => {
     const cleanFilters = Object.fromEntries(
-      Object.entries(exportFilters).filter(([_, v]) => v !== "")
+      Object.entries(exportFilters).filter(([, v]) => v !== "")
     )
     onExport(cleanFilters)
     setExportFilters({})

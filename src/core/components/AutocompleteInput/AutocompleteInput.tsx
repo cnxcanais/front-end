@@ -88,7 +88,9 @@ export const AutocompleteInput = forwardRef<
 
       if (hiddenInputRef.current && onChange) {
         hiddenInputRef.current.value = option.value
-        const event = new Event("change", { bubbles: true }) as any
+        const event = new Event("change", {
+          bubbles: true,
+        }) as unknown as ChangeEvent<HTMLInputElement>
         Object.defineProperty(event, "target", {
           value: hiddenInputRef.current,
           enumerable: true,
@@ -110,7 +112,9 @@ export const AutocompleteInput = forwardRef<
               setIsOpen(true)
               if (e.target.value === "" && hiddenInputRef.current && onChange) {
                 hiddenInputRef.current.value = ""
-                const event = new Event("change", { bubbles: true }) as any
+                const event = new Event("change", {
+                  bubbles: true,
+                }) as unknown as ChangeEvent<HTMLInputElement>
                 Object.defineProperty(event, "target", {
                   value: hiddenInputRef.current,
                   enumerable: true,

@@ -1,6 +1,7 @@
 "use client"
 
 import { EntityType } from "@/@types/enums/entityType"
+import Image from "next/image"
 
 import { Button } from "@/core/components/Button"
 import { ExportTableToPDFButton } from "@/core/components/ExportPDFButton"
@@ -107,7 +108,7 @@ export function PropostasTable() {
   const [open, setOpen] = useState(false)
   const [id, setId] = useState("")
   const [filteredResults, setFilteredResults] = useState([])
-  const [dashboardFilter, setDashboardFilter] = useState<any[] | null>(null)
+  const [dashboardFilter, setDashboardFilter] = useState([])
   const [produtosOptions, setProdutosOptions] = useState([])
   const [expandedIds, setExpandedIds] = useState<string[]>([])
   const [expandedParcelasIds, setExpandedParcelasIds] = useState<string[]>([])
@@ -185,12 +186,15 @@ export function PropostasTable() {
     }))
   }, [ramos])
 
-  const propostas = data?.data || []
-  const allPropostas = allData?.data || []
-  const totalPages =
-    dashboardFilter ?
-      Math.ceil(filteredResults.length / limit)
-    : data?.meta?.totalPages || 1
+  const propostas = useMemo(() => data?.data || [], [data?.data])
+  const allPropostas = useMemo(() => allData?.data || [], [allData?.data])
+  const totalPages = useMemo(
+    () =>
+      dashboardFilter ?
+        Math.ceil(filteredResults.length / limit)
+      : data?.meta?.totalPages || 1,
+    [dashboardFilter, filteredResults.length, limit, data?.meta?.totalPages]
+  )
 
   const getSeguradoName = (id: string) =>
     segurados?.data?.find((s) => s.id === id)?.nomeRazaoSocial || ""
@@ -251,6 +255,7 @@ export function PropostasTable() {
       refetch()
       setOpenEmitirApoliceModal(false)
     } catch (error) {
+      console.error(error)
       toast.error("Erro ao emitir apólice")
     }
   }
@@ -297,6 +302,7 @@ export function PropostasTable() {
       toast.success("Apólice marcada como não renovada!")
       refetch()
     } catch (error) {
+      console.error(error)
       toast.error("Erro ao marcar apólice como não renovada")
     } finally {
       setOpenNaoRenovarModal(false)
@@ -313,6 +319,7 @@ export function PropostasTable() {
       refetch()
       setOpenCancelarApoliceModal(false)
     } catch (error) {
+      console.error(error)
       toast.error("Erro ao cancelar apólice")
     }
   }
@@ -452,7 +459,7 @@ export function PropostasTable() {
     {
       header: "Ramo",
       accessor: "ramoId",
-      render: (value: string, row: any) => (
+      render: (value: string, row: Proposta) => (
         <div>
           <div className="text-green-100">{getRamoName(value)}</div>
           <div className="text-sm text-gray-600">
@@ -472,7 +479,7 @@ export function PropostasTable() {
     {
       header: "Status",
       accessor: "situacao",
-      render: (value: string, row: any) => {
+      render: (value: string, row: Proposta) => {
         const endDate = new Date(row.fimVigencia)
         const today = new Date()
         today.setHours(0, 0, 0, 0)
@@ -527,11 +534,14 @@ export function PropostasTable() {
       render: (value: string) => (
         <div className="flex items-center gap-2">
           {getSeguradoraLogo(value) ?
-            <img
-              src={getSeguradoraLogo(value)}
-              alt="Logo"
-              className="h-8 w-8 object-contain"
-            />
+            <div className="relative h-8 w-8">
+              <Image
+                src={getSeguradoraLogo(value)}
+                alt="Logo"
+                fill
+                className="object-contain"
+              />
+            </div>
           : <div className="h-8 w-8" />}
           <span className="text-green-100">{getSeguradoraName(value)}</span>
         </div>
@@ -540,7 +550,7 @@ export function PropostasTable() {
     {
       header: "Parcelas",
       accessor: "id",
-      render: (value: string, row: any) => (
+      render: (value: string, row: Proposta) => (
         <span
           onClick={() => {
             console.log(
@@ -642,6 +652,7 @@ export function PropostasTable() {
                       setCadeiaData(data)
                       setShowCadeiaModal(true)
                     } catch (error) {
+                      console.error(error)
                       toast.error("Erro ao buscar cadeia")
                     }
                   }}
@@ -888,13 +899,7 @@ export function PropostasTable() {
         type: "date",
       },
     ],
-    [
-      corretorasOptions,
-      produtoresOptions,
-      seguradoresOptions,
-      ramosOptions,
-      produtosOptions,
-    ]
+    [produtoresOptions, seguradoresOptions, ramosOptions, produtosOptions]
   )
 
   const adminAdvancedSearchFields: FilterField[] = useMemo(
@@ -908,13 +913,7 @@ export function PropostasTable() {
         options: [{ label: "Todos", value: "" }, ...corretorasOptions],
       },
     ],
-    [
-      corretorasOptions,
-      produtoresOptions,
-      seguradoresOptions,
-      ramosOptions,
-      produtosOptions,
-    ]
+    [baseAdvancedSearchFields, corretorasOptions]
   )
 
   const filterSections = useMemo(
@@ -930,7 +929,12 @@ export function PropostasTable() {
         defaultOpen: false,
       },
     ],
-    [quickSearchFields, adminAdvancedSearchFields, baseAdvancedSearchFields]
+    [
+      quickSearchFields,
+      adminAdvancedSearchFields,
+      baseAdvancedSearchFields,
+      isAdmin,
+    ]
   )
 
   const handleFilter = (newFilters: Record<string, string>) => {
@@ -1163,7 +1167,7 @@ export function PropostasTable() {
             columns={columns}
             data={filteredResults}
             expandedRowIds={[...expandedIds, ...expandedParcelasIds]}
-            expandedRowContent={(row: any) => {
+            expandedRowContent={(row: Proposta) => {
               const isParcelasExpanded = expandedParcelasIds.includes(row.id)
               const isSeguradoExpanded = expandedIds.includes(row.id)
 
@@ -1301,7 +1305,7 @@ export function PropostasTable() {
                         <h4 className="font-semibold">Parcelas</h4>
                         {row.tipoDocumento !== "Proposta" &&
                           row.parcelas.some(
-                            (p: any) =>
+                            (p: Parcela) =>
                               p.situacao === "Pendente" ||
                               p.situacao === "Em Atraso"
                           ) && (
@@ -1315,6 +1319,7 @@ export function PropostasTable() {
                                   )
                                   refetch()
                                 } catch (error) {
+                                  console.error(error)
                                   toast.error(
                                     "Erro ao marcar parcelas como pagas"
                                   )

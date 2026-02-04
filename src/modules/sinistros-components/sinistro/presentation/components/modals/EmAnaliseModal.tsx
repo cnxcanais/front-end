@@ -80,7 +80,7 @@ export function EmAnaliseModal({
 
     try {
       // Update status with observacao if provided
-      const payload: any = {
+      const payload: Record<string, unknown> = {
         statusNovo: SinistroStatusEnum.EM_ANALISE,
         andamento: formData.andamento,
       }
@@ -107,7 +107,8 @@ export function EmAnaliseModal({
       toast.success("Status atualizado com sucesso!")
       onConfirm()
       handleClose()
-    } catch (error) {
+    } catch (err: unknown) {
+      const error = err as { response?: { data?: { message?: string } } }
       toast.error("Erro ao atualizar status: " + error?.response?.data?.message)
     }
   }

@@ -93,7 +93,8 @@ export function AprovadoModal({
       onConfirm()
       handleClose()
       return
-    } catch (error: any) {
+    } catch (err: unknown) {
+      const error = err as { response?: { data?: { message?: string } } }
       toast.error("Erro ao atualizar status: " + error?.response?.data?.message)
       return
     }

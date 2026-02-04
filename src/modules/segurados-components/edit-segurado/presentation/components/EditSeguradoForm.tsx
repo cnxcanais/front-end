@@ -48,7 +48,6 @@ export function EditSeguradoForm({
   readOnly = false,
 }: EditSeguradoFormProps) {
   const { push } = useRouter()
-  const [isCepSearched, setIsCepSearched] = useState(false)
   const [showMapModal, setShowMapModal] = useState(false)
 
   const { data: seguradoData, isLoading } = useSeguradoByIdQuery(id)
@@ -105,7 +104,7 @@ export function EditSeguradoForm({
     },
   })
 
-  const tipoPessoaWatch = useWatch({ control, name: "tipoPessoa" as any }) as
+  const tipoPessoaWatch = useWatch({ control, name: "tipoPessoa" }) as
     | string
     | undefined
   const tipoPessoa = tipoPessoaWatch ?? seguradoData?.tipoPessoa
@@ -177,7 +176,6 @@ export function EditSeguradoForm({
         canalVendas: seguradoData.canalVendas,
         observacoes: seguradoData.observacoes,
       })
-      setIsCepSearched(true)
     }
   }, [seguradoData, produtoresData, reset])
 
@@ -193,8 +191,9 @@ export function EditSeguradoForm({
 
   console.log(errors)
 
-  const fullAddress = seguradoData
-    ? `${seguradoData.logradouro}, ${seguradoData.numero} - ${seguradoData.bairro}, ${seguradoData.cidade} - ${seguradoData.uf}, ${seguradoData.cep}`
+  const fullAddress =
+    seguradoData ?
+      `${seguradoData.logradouro}, ${seguradoData.numero} - ${seguradoData.bairro}, ${seguradoData.cidade} - ${seguradoData.uf}, ${seguradoData.cep}`
     : ""
 
   if (isLoading) return <LoadingScreen />

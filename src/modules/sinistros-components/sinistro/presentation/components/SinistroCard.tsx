@@ -52,7 +52,7 @@ export function SinistroCard({ sinistro, onDelete, isAdmin }: Props) {
         await deleteSinistro(sinistro.id)
         toast.success("Sinistro excluído com sucesso!")
         onDelete()
-      } catch (error) {
+      } catch {
         toast.error("Erro ao excluir sinistro")
       }
     }

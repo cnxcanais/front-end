@@ -7,6 +7,7 @@ import * as Input from "@/core/components/Input"
 import { SelectInput } from "@/core/components/SelectInput"
 import { Plus } from "@phosphor-icons/react"
 import { useState } from "react"
+import { FieldErrors, UseFormRegister, UseFormSetValue } from "react-hook-form"
 import { PropostaFormSchema } from "../../validation/schema"
 import { CreateCorretoraModal } from "../modals/CreateCorretoraModal"
 import { CreateProdutoModal } from "../modals/CreateProdutoModal"
@@ -16,10 +17,10 @@ import { CreateSeguradoModal } from "../modals/CreateSeguradoModal"
 import { CreateSeguradoraModal } from "../modals/CreateSeguradoraModal"
 
 interface PropostaTabProps {
-  register: any
-  errors: any
+  register: UseFormRegister<PropostaFormSchema>
+  errors: FieldErrors<PropostaFormSchema>
   formData: PropostaFormSchema
-  setValue: any
+  setValue: UseFormSetValue<PropostaFormSchema>
   segurados: Segurado.GetResponse
   seguradoras: Seguradora.GetResponse
   produtores: Produtor.GetResponse
@@ -28,7 +29,7 @@ interface PropostaTabProps {
     text: string
     value: string
   }[]
-  ramos: any
+  ramos: Ramo.GetResponse
   isEndosso?: boolean
   isRenovacao?: boolean
   readOnly?: boolean

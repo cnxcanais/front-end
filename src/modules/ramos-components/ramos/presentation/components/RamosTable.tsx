@@ -12,7 +12,7 @@ import { useRamoQuery } from "@/modules/ramos-components/ramos/infra/hooks/use-r
 import { removeRamo } from "@/modules/ramos-components/ramos/infra/remote"
 import { FileXls, Pencil, Trash } from "@phosphor-icons/react"
 import { useRouter } from "next/navigation"
-import { useEffect, useState } from "react"
+import { useEffect, useMemo, useState } from "react"
 import { toast } from "sonner"
 
 export function RamosTable() {
@@ -24,9 +24,9 @@ export function RamosTable() {
 
   const [open, setOpen] = useState(false)
   const [id, setId] = useState("")
-  const [filteredResults, setFilteredResults] = useState([])
+  const [filteredResults, setFilteredResults] = useState<unknown[]>([])
 
-  const ramos = data?.data || []
+  const ramos = useMemo(() => data?.data || [], [data])
   const totalPages = data?.meta?.totalPages || 1
 
   const handleEdit = (id: string) => {

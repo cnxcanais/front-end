@@ -103,7 +103,7 @@ export function CreateSinistroModal({
       text: `${proposta.numeroProposta} - ${proposta.seguradoNome}`,
       value: proposta.id,
     }))
-  }, [propostas])
+  }, [propostas, isAdmin, corretoraId])
 
   const onSubmit = async (data: CreateSinistroSchema) => {
     try {

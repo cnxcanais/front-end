@@ -29,7 +29,7 @@ api.interceptors.response.use(
       removeCookie("token")
       removeCookie("userId")
       removeCookie("corretoraId")
-      window.location.href = "/auth/login"
+      window.location.href = "/"
     }
     return Promise.reject(error)
   }
@@ -63,7 +63,7 @@ bffApi.interceptors.response.use(
       removeCookie("token")
       removeCookie("userId")
       removeCookie("corretoraId")
-      window.location.href = "/auth/login"
+      window.location.href = "/"
     }
     return Promise.reject(error)
   }

@@ -1,8 +1,10 @@
 import * as Input from "@/core/components/Input"
+import { FieldErrors, UseFormRegister } from "react-hook-form"
+import { PropostaFormSchema } from "../../validation/schema"
 
 interface VeiculoTabProps {
-  register: any
-  errors: any
+  register: UseFormRegister<PropostaFormSchema>
+  errors: FieldErrors<PropostaFormSchema>
   readOnly?: boolean
 }
 

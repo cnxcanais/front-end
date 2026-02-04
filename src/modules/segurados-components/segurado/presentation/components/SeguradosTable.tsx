@@ -67,7 +67,7 @@ export function SeguradosTable() {
     }))
   }, [corretoras, isLoadingCorretoras])
 
-  const segurados = data?.data || []
+  const segurados = useMemo(() => data?.data || [], [data])
   const allSegurados = allData?.data || []
   const totalPages =
     dashboardFilter ?
@@ -102,7 +102,7 @@ export function SeguradosTable() {
       toast.success("Segurado removido com sucesso!")
       refetch()
     } catch (error) {
-      const err: any = error
+      const err = error
       const message =
         err?.response?.data?.message ||
         err?.message ||
@@ -316,7 +316,8 @@ export function SeguradosTable() {
     setPage(1)
   }
 
-  if (isLoading) return <LoadingScreen />
+  if (isLoading || isLoadingProdutores || isLoadingCorretoras)
+    return <LoadingScreen />
 
   return (
     <>

@@ -59,7 +59,8 @@ export function UsuariosTable() {
       await removeUsuario(id)
       toast.success("Usuário removido com sucesso!")
       refetch()
-    } catch (error) {
+    } catch (err: unknown) {
+      const error = err as { response?: { data?: { message?: string } } }
       const message =
         error?.response?.data?.message || "Erro ao remover usuário"
       toast.error(message)
@@ -78,7 +79,7 @@ export function UsuariosTable() {
         toast.success("Usuário desbloqueado com sucesso!")
       }
       refetch()
-    } catch (error) {
+    } catch {
       toast.error(
         `Erro ao ${userStatus === "ATIVO" ? "bloquear" : "desbloquear"} usuário`
       )
@@ -121,7 +122,7 @@ export function UsuariosTable() {
     {
       header: "Ações",
       accessor: "id",
-      render: (value: string, row: any) => (
+      render: (value: string, row: { status: string }) => (
         <div className="flex space-x-4">
           <Pencil
             className="cursor-pointer hover:text-blue-500"

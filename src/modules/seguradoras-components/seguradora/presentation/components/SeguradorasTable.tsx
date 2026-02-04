@@ -1,6 +1,7 @@
 "use client"
 
 import { EntityType } from "@/@types/enums/entityType"
+import NextImage from "next/image"
 
 import { Button } from "@/core/components/Button"
 import { ExportTableToPDFButton } from "@/core/components/ExportPDFButton"
@@ -51,7 +52,7 @@ export function SeguradorasTable() {
 
   useEffect(() => {
     refetch()
-  }, [])
+  }, [refetch])
 
   const brStates = [
     "AC",
@@ -120,7 +121,9 @@ export function SeguradorasTable() {
       accessor: "logoUrl",
       render: (value: string) =>
         value ?
-          <img src={value} alt="Logo" className="h-8 w-8 object-contain" />
+          <div className="relative h-8 w-8">
+            <NextImage src={value} alt="Logo" fill className="object-contain" />
+          </div>
         : <span className="text-gray-400">-</span>,
     },
     { header: "Nome Fantasia", accessor: "fantasia" },

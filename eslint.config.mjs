@@ -8,10 +8,10 @@ const eslintConfig = [
     extends: ["next/core-web-vitals", "next/typescript"],
     rules: {
       "@typescript-eslint/no-namespace": "off",
-      "@typescript-eslint/no-explicit-any": "off",
-      "@typescript-eslint/no-unused-vars": "off",
-      "@typescript-eslint/no-require-imports": "off",
-      "react-hooks/exhaustive-deps": "off",
+      "@typescript-eslint/no-explicit-any": "error",
+      "@typescript-eslint/no-unused-vars": "error",
+      "@typescript-eslint/no-require-imports": "error",
+      "react-hooks/exhaustive-deps": "warn",
     },
   }),
 ]

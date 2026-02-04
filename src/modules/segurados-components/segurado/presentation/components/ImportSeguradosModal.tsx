@@ -32,6 +32,7 @@ export function ImportSeguradosModal({
       onSuccess()
       onClose()
     } catch (error) {
+      console.log(error)
       toast.error("Erro ao importar segurados")
     }
   }

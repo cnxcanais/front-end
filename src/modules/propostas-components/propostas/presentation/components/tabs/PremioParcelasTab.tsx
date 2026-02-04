@@ -128,7 +128,7 @@ export function PremioParcelasTab({
       {formData.parcelas?.length > 0 && (
         <div className="mt-4">
           <h4 className="mb-2 font-semibold">Parcelas</h4>
-          {formData.parcelas.map((parcela: any, index: number) => (
+          {formData.parcelas.map((parcela, index: number) => (
             <div key={index} className="mb-2 rounded border p-2">
               <div className="grid grid-cols-[80px_1fr_100px_1fr_1fr] gap-2">
                 <div>

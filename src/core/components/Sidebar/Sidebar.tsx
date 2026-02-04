@@ -32,7 +32,6 @@ export function Sidebar() {
     removeCookie("accountId")
     removeCookie("userId")
     removeCookie("token")
-    removeCookie("path_permissions")
 
     push("/")
   }

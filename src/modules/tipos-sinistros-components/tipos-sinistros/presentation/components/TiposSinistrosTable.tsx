@@ -10,7 +10,7 @@ import { Table } from "@/core/components/Table"
 import { exportNoPagination } from "@/core/utils/exportToExcel/exportNoPagination"
 import { FileXls, Pencil, Trash } from "@phosphor-icons/react"
 import { useRouter } from "next/navigation"
-import { useEffect, useState } from "react"
+import { useEffect, useMemo, useState } from "react"
 import { toast } from "sonner"
 import { useTipoSinistroQuery } from "../../infra/hooks/use-tipo-sinistro-query"
 import { removeTipoSinistro } from "../../infra/remote"
@@ -28,9 +28,9 @@ export function TiposSinistrosTable() {
 
   const [open, setOpen] = useState(false)
   const [id, setId] = useState("")
-  const [filteredResults, setFilteredResults] = useState([])
+  const [filteredResults, setFilteredResults] = useState<unknown[]>([])
 
-  const tiposSinistros = data?.data || []
+  const tiposSinistros = useMemo(() => data?.data || [], [data])
   const totalPages = data?.meta?.totalPages || 1
 
   const handleEdit = (id: string) => {

@@ -3,17 +3,17 @@ import {
   comissaoSobreOptions,
   formaComissaoOptions,
 } from "@/modules/propostas-components/types/enums"
+import { FieldErrors, UseFormSetValue } from "react-hook-form"
+import { PropostaFormSchema } from "../../validation/schema"
 
 interface ComissaoTabProps {
-  register: any
-  errors: any
-  formData: any
-  setValue: any
+  errors: FieldErrors<PropostaFormSchema>
+  formData: PropostaFormSchema
+  setValue: UseFormSetValue<PropostaFormSchema>
   readOnly?: boolean
 }
 
 export function ComissaoTab({
-  register,
   errors,
   formData,
   setValue,
@@ -26,7 +26,9 @@ export function ComissaoTab({
           label="Comissão Sobre *"
           field_name="comissaoSobre"
           value={formData.comissaoSobre}
-          onChange={(e) => setValue("comissaoSobre", e.target.value as any)}
+          onChange={(e) =>
+            setValue("comissaoSobre", e.target.value as "Premio Liquido")
+          }
           options={comissaoSobreOptions}
           required
           disabled={readOnly}
@@ -42,7 +44,12 @@ export function ComissaoTab({
           label="Forma de Comissão *"
           field_name="formaComissao"
           value={formData.formaComissao}
-          onChange={(e) => setValue("formaComissao", e.target.value as any)}
+          onChange={(e) =>
+            setValue(
+              "formaComissao",
+              e.target.value as "Na Parcela" | "Antecipado"
+            )
+          }
           options={formaComissaoOptions}
           required
           disabled={readOnly}

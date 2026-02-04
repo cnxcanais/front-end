@@ -35,7 +35,7 @@ export function ReportsPage() {
   const [columnDimensions, setColumnDimensions] = useState<string[]>([])
   const [valueMeasures, setValueMeasures] = useState<string[]>([])
   const [filters, setFilters] = useState<Filter[]>([])
-  const [pivotData, setPivotData] = useState<any[]>([])
+  const [pivotData, setPivotData] = useState<Record<string, unknown>[]>([])
   const [loading, setLoading] = useState(false)
   const [loadingMeta, setLoadingMeta] = useState(true)
   const [dimensionsCollapsed, setDimensionsCollapsed] = useState(false)
@@ -53,8 +53,8 @@ export function ReportsPage() {
       })
       return result
         .tablePivot()
-        .map((row: any) => row[dimensionName])
-        .filter(Boolean)
+        .map((row: Record<string, unknown>) => row[dimensionName])
+        .filter(Boolean) as string[]
     } catch {
       return []
     }
@@ -68,12 +68,12 @@ export function ReportsPage() {
     try {
       const meta = await cubeApi.meta()
       const cube = meta.cubes.find(
-        (c: any) => c.name === "VwPropostasAnalitica"
+        (c: { name: string }) => c.name === "VwPropostasAnalitica"
       )
 
       if (cube) {
         setMeasures(
-          cube.measures.map((m: any) => ({
+          cube.measures.map((m: { name: string; title?: string }) => ({
             name: m.name,
             title: (m.title || m.name)
               .replace("Propostas Analítica ", "")
@@ -83,8 +83,8 @@ export function ReportsPage() {
 
         setDimensions(
           cube.dimensions
-            .filter((d: any) => d.public !== false)
-            .map((d: any) => ({
+            .filter((d: { public?: boolean }) => d.public !== false)
+            .map((d: { name: string; title?: string; type: string }) => ({
               name: d.name,
               title: (d.title || d.name)
                 .replace("Propostas Analítica ", "")
@@ -93,7 +93,7 @@ export function ReportsPage() {
             }))
         )
       }
-    } catch (error) {
+    } catch {
       toast.error("Erro ao carregar metadados")
     } finally {
       setLoadingMeta(false)
@@ -109,7 +109,7 @@ export function ReportsPage() {
     setLoading(true)
     try {
       const allDimensions = [...rowDimensions, ...columnDimensions]
-      const query: any = {
+      const query: Record<string, unknown> = {
         measures: valueMeasures,
         dimensions: allDimensions,
       }
@@ -162,7 +162,7 @@ export function ReportsPage() {
           return [
             {
               member: f.dimension,
-              operator: f.operator as any,
+              operator: f.operator,
               values: f.values,
             },
           ]
@@ -190,7 +190,7 @@ export function ReportsPage() {
       } else {
         setPivotData(rawData)
       }
-    } catch (error) {
+    } catch {
       toast.error("Erro ao executar consulta")
     } finally {
       setLoading(false)
@@ -198,7 +198,7 @@ export function ReportsPage() {
   }
 
   const createPivotTable = (
-    data: any[],
+    data: Record<string, unknown>[],
     rows: string[],
     cols: string[],
     values: string[]
@@ -211,7 +211,7 @@ export function ReportsPage() {
     )
 
     // Group by row dimensions
-    const grouped = new Map<string, any>()
+    const grouped = new Map<string, Record<string, unknown>>()
     data.forEach((row) => {
       const rowKey = rows.map((r) => row[r]).join("|")
       if (!grouped.has(rowKey)) {
@@ -224,12 +224,12 @@ export function ReportsPage() {
     })
 
     // Create rows: one row per measure per row dimension combination
-    const result: any[] = []
+    const result: Record<string, unknown>[] = []
     grouped.forEach((colData, rowKey) => {
       const rowValues = rowKey.split("|")
 
       values.forEach((measure) => {
-        const newRow: any = {}
+        const newRow: Record<string, unknown> = {}
         rows.forEach((r, idx) => {
           newRow[r] = rowValues[idx]
         })
@@ -694,7 +694,7 @@ export function ReportsPage() {
             <tbody className="divide-y divide-gray-200 bg-white">
               {pivotData.map((row, idx) => (
                 <tr key={idx}>
-                  {Object.values(row).map((value: any, cellIdx) => {
+                  {Object.values(row).map((value, cellIdx) => {
                     const numValue =
                       typeof value === "string" ? parseFloat(value) : value
                     return (
@@ -706,7 +706,7 @@ export function ReportsPage() {
                             minimumFractionDigits: 2,
                             maximumFractionDigits: 2,
                           })
-                        : value || "-"}
+                        : (value as React.ReactNode) || "-"}
                       </td>
                     )
                   })}

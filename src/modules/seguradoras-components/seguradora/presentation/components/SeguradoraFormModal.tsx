@@ -15,7 +15,7 @@ import { createSeguradoraFormSchema } from "@/modules/seguradoras-components/cre
 import { editSeguradora } from "@/modules/seguradoras-components/edit-seguradora/infra/remote"
 import { zodResolver } from "@hookform/resolvers/zod"
 import { MagnifyingGlass } from "@phosphor-icons/react"
-import { useEffect, useMemo, useState } from "react"
+import { useEffect, useMemo } from "react"
 import { useForm } from "react-hook-form"
 import { toast } from "sonner"
 
@@ -32,7 +32,7 @@ export function SeguradoraFormModal({
   onSuccess,
   seguradora,
 }: SeguradoraFormModalProps) {
-  const [isCepSearched, setIsCepSearched] = useState(!!seguradora)
+  // const [isCepSearched, setIsCepSearched] = useState(!!seguradora)
   const isEditMode = !!seguradora
 
   const { data: gruposEconomicos } = useGrupoEconomicoQuery(1, 100)
@@ -87,7 +87,9 @@ export function SeguradoraFormModal({
     }
   }, [seguradora, reset])
 
-  async function onSubmit(data: any) {
+  async function onSubmit(
+    data: Seguradora.CreateRequest & Seguradora.UpdateRequest
+  ) {
     try {
       if (isEditMode) {
         await editSeguradora({ ...data, id: seguradora.id })
@@ -98,7 +100,7 @@ export function SeguradoraFormModal({
       }
       onSuccess()
       onClose()
-    } catch (error) {
+    } catch {
       toast.error(`Erro ao ${isEditMode ? "atualizar" : "criar"} seguradora`)
     }
   }
@@ -199,7 +201,7 @@ export function SeguradoraFormModal({
                 onBlur={(e) => {
                   const cleanedCep = e.target.value.replace(/\D/g, "")
                   fetchCep(cleanedCep, setValue)
-                  setIsCepSearched(true)
+                  // setIsCepSearched(true)
                 }}
               />
             </Input.Root>

@@ -1,12 +1,18 @@
 import { Proposta } from "@/@types/proposta"
 import * as Input from "@/core/components/Input"
 import dynamic from "next/dynamic"
-import { Controller } from "react-hook-form"
+import {
+  Control,
+  Controller,
+  FieldErrors,
+  UseFormRegister,
+} from "react-hook-form"
+import { PropostaFormSchema } from "../../validation/schema"
 
 interface ApoliceEndossoTabProps {
-  register: any
-  errors: any
-  control: any
+  register: UseFormRegister<PropostaFormSchema>
+  errors: FieldErrors<PropostaFormSchema>
+  control: Control<PropostaFormSchema>
   proposta: Proposta
   readOnly?: boolean
   isEndosso: boolean

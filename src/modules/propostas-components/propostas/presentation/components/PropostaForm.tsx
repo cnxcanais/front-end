@@ -11,7 +11,7 @@ import { useSeguradoQuery } from "@/modules/segurados-components/segurado/infra/
 import { zodResolver } from "@hookform/resolvers/zod"
 import { useRouter, useSearchParams } from "next/navigation"
 import { useEffect, useMemo, useState } from "react"
-import { useForm } from "react-hook-form"
+import { FieldPath, useForm } from "react-hook-form"
 import { toast } from "sonner"
 import { Proposta } from "../../../../../@types/proposta"
 import { usePropostaByIdQuery } from "../../infra/hooks/use-proposta-by-id-query"
@@ -68,8 +68,7 @@ export function PropostaForm({
         fimVigencia: searchParams.get("fimVigencia") || "",
       }
     : null
-  const { data: propostaToDuplicate, refetch: duplicateRefetch } =
-    usePropostaByIdQuery(duplicateFromId)
+  const { data: propostaToDuplicate } = usePropostaByIdQuery(duplicateFromId)
 
   const [activeTab, setActiveTab] = useState(0)
   const [showParcelasModal, setShowParcelasModal] = useState(false)
@@ -121,7 +120,7 @@ export function PropostaForm({
       dataEmissao: sourceData?.dataEmissao || "",
       numeroApolice: sourceData?.numeroApolice || "",
       motivoNaoRenovacao: sourceData?.motivoNaoRenovacao || "",
-      comissaoSobre: (sourceData?.comissaoSobre as any) || "Premio Liquido",
+      comissaoSobre: sourceData?.comissaoSobre || "Premio Liquido",
       formaComissao: sourceData?.formaComissao || "Na Parcela",
       valorComissao: sourceData?.valorComissao || 0,
       premioLiquido: sourceData?.premioLiquido || undefined,
@@ -141,8 +140,8 @@ export function PropostaForm({
           produtorId: r.produtorId,
           percentualRepasse: Number(r.percentualRepasse),
           valorRepasse: Number(r.valorRepasse),
-          repasseSobre: r.repasseSobre as any,
-          formaRepasse: r.formaRepasse as any,
+          repasseSobre: r.repasseSobre,
+          formaRepasse: r.formaRepasse,
         })) || [],
     },
   })
@@ -232,7 +231,7 @@ export function PropostaForm({
           : propostaToDuplicate.numeroApolice,
 
         motivoNaoRenovacao: propostaToDuplicate.motivoNaoRenovacao,
-        comissaoSobre: propostaToDuplicate.comissaoSobre as any,
+        comissaoSobre: propostaToDuplicate.comissaoSobre,
         formaComissao: propostaToDuplicate.formaComissao,
         valorComissao: propostaToDuplicate.valorComissao,
         premioLiquido: isEndosso ? null : propostaToDuplicate.premioLiquido,
@@ -254,8 +253,8 @@ export function PropostaForm({
           propostaToDuplicate.repasses?.map((r) => ({
             produtorId: r.produtorId,
             percentualRepasse: Number(r.percentualRepasse),
-            repasseSobre: r.repasseSobre as any,
-            formaRepasse: r.formaRepasse as any,
+            repasseSobre: r.repasseSobre,
+            formaRepasse: r.formaRepasse,
           })) || [],
       })
     }
@@ -364,7 +363,7 @@ export function PropostaForm({
   }
 
   const handleNextTab = async () => {
-    let fieldsToValidate: any[] = []
+    let fieldsToValidate: FieldPath<PropostaFormSchema>[] = []
 
     switch (activeTab) {
       case 0:
@@ -404,7 +403,7 @@ export function PropostaForm({
           }
           if (formData.parcelas.length > 0) {
             const hasEmptyDates = formData.parcelas.some(
-              (p: any) => !p.dataVencimento || !p.previsaoPagamento
+              (p) => !p.dataVencimento || !p.previsaoPagamento
             )
             if (hasEmptyDates) {
               toast.error(
@@ -417,7 +416,7 @@ export function PropostaForm({
               (formData.valoresAdicionais || 0) +
               (formData.iof || 0)
             const totalParcelas = formData.parcelas.reduce(
-              (acc: number, p: any) => acc + (p.valor || 0),
+              (acc: number, p) => acc + (p.valor || 0),
               0
             )
             if (Math.abs(premioTotal - totalParcelas) >= 0.01) {
@@ -436,7 +435,7 @@ export function PropostaForm({
           }
           if (formData.parcelas.length > 0) {
             const hasEmptyDates = formData.parcelas.some(
-              (p: any) => !p.dataVencimento || !p.previsaoPagamento
+              (p) => !p.dataVencimento || !p.previsaoPagamento
             )
             if (hasEmptyDates) {
               toast.error(
@@ -449,7 +448,7 @@ export function PropostaForm({
               (formData.valoresAdicionais || 0) +
               (formData.iof || 0)
             const totalParcelas = formData.parcelas.reduce(
-              (acc: number, p: any) => acc + (p.valor || 0),
+              (acc: number, p) => acc + (p.valor || 0),
               0
             )
             if (Math.abs(premioTotal - totalParcelas) >= 0.01) {
@@ -466,7 +465,7 @@ export function PropostaForm({
           fieldsToValidate = ["comissaoSobre", "formaComissao", "valorComissao"]
         } else {
           if (formData.repasses.length > 0) {
-            const hasInvalidRepasse = formData.repasses.some((r: any) => {
+            const hasInvalidRepasse = formData.repasses.some((r) => {
               return (
                 !r.produtorId ||
                 r.percentualRepasse === undefined ||
@@ -487,7 +486,7 @@ export function PropostaForm({
         if (isAutomovelRamo) {
           if (formData.repasses.length > 0) {
             const hasInvalidRepasse = formData.repasses.some(
-              (r: any) =>
+              (r) =>
                 !r.produtorId ||
                 r.percentualRepasse === undefined ||
                 r.percentualRepasse === null ||
@@ -509,7 +508,7 @@ export function PropostaForm({
         break
     }
 
-    const isValid = await trigger(fieldsToValidate as any)
+    const isValid = await trigger(fieldsToValidate)
     if (isValid) {
       setActiveTab((prev) => Math.min(prev + 1, tabs.length - 1))
     } else {
@@ -555,6 +554,7 @@ export function PropostaForm({
       }
 
       if (isEdit && proposta?.id) {
+        // eslint-disable-next-line
         const { numeroProposta, ...updatePayload } = payload
         await updateProposta(proposta.id, updatePayload)
         refetchProposta?.()
@@ -564,7 +564,8 @@ export function PropostaForm({
         toast.success("Proposta criada com sucesso!")
       }
       push("/propostas")
-    } catch (error: any) {
+    } catch (error) {
+      console.log(error)
       toast.error(error?.response?.data?.message || "Erro ao salvar proposta")
     }
   }
@@ -696,7 +697,6 @@ export function PropostaForm({
         {((activeTab === 4 && !isAutomovelRamo) ||
           (activeTab === 5 && isAutomovelRamo)) && (
           <ComissaoTab
-            register={register}
             errors={errors}
             formData={formData}
             setValue={setValue}

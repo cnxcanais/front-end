@@ -4,7 +4,7 @@ export namespace Files {
     originalName: string
     url: string
     mimeType: string
-    sizeBytes: any
+    sizeBytes: number
     createdAt: string
   }
 

@@ -12,7 +12,8 @@ import { normalizeDecimals } from "@/core/utils/normalizeDecimals"
 import { useGrupoEconomicoQuery } from "@/modules/grupos-economicos-components/grupos-economicos/infra/hooks/use-grupo-economico-query"
 import { uploadLogoSeguradora } from "@/modules/seguradoras-components/seguradora/infra/remote/upload-logo-seguradora"
 import { zodResolver } from "@hookform/resolvers/zod"
-import { Image, MagnifyingGlass, X } from "@phosphor-icons/react"
+import { Image as ImageIcon, MagnifyingGlass, X } from "@phosphor-icons/react"
+import NextImage from "next/image"
 import { useRouter } from "next/navigation"
 import { useMemo, useRef, useState } from "react"
 import { useForm } from "react-hook-form"
@@ -79,7 +80,7 @@ export function CreateSeguradoraForm({
     }
   }
 
-  async function onSubmit(data: any) {
+  async function onSubmit(data: CreateSeguradoraSchema) {
     if (logoFile && logoFile.size > 500 * 1024) {
       toast.error("O logo deve ter no máximo 500KB")
       return
@@ -116,12 +117,13 @@ export function CreateSeguradoraForm({
             <div className="relative">
               <label className="flex h-32 w-32 cursor-pointer items-center justify-center rounded border-2 border-dashed border-gray-300 bg-white hover:border-blue-500">
                 {logoPreview ?
-                  <img
+                  <NextImage
                     src={logoPreview}
                     alt="Logo preview"
-                    className="h-full w-full object-contain"
+                    fill
+                    className="object-contain"
                   />
-                : <Image size={48} className="text-gray-400" />}
+                : <ImageIcon size={48} className="text-gray-400" />}
                 <input
                   ref={fileInputRef}
                   type="file"

@@ -1,5 +1,6 @@
 import { Corretora } from "@/@types/corretora"
 import { Produtor } from "@/@types/produtor"
+import { Ramo } from "@/@types/ramo"
 import { Segurado } from "@/@types/segurado"
 import { Seguradora } from "@/@types/seguradora"
 import { Button } from "@/core/components/Button"
@@ -13,24 +14,30 @@ import {
 import dynamic from "next/dynamic"
 import { PropostaFormSchema } from "../../validation/schema"
 
-import { Controller } from "react-hook-form"
+import {
+  Control,
+  Controller,
+  FieldErrors,
+  UseFormRegister,
+  UseFormSetValue,
+} from "react-hook-form"
 
 import "react-quill-new/dist/quill.snow.css"
 
 const ReactQuill = dynamic(() => import("react-quill-new"), { ssr: false })
 
 interface RevisaoTabProps {
-  register: any
-  errors: any
+  register: UseFormRegister<PropostaFormSchema>
+  errors: FieldErrors<PropostaFormSchema>
   formData: PropostaFormSchema
-  setValue: any
+  setValue: UseFormSetValue<PropostaFormSchema>
   segurados: Segurado.GetResponse
   seguradoras: Seguradora.GetResponse
   produtores: Produtor.GetResponse
   corretoras: Corretora.GetResponse
-  ramos: any
-  control: any
-  produtosOptions: any
+  ramos: Ramo.GetResponse
+  control: Control<PropostaFormSchema>
+  produtosOptions: { text: string; value: string }[]
   isAutomovelRamo: boolean
   readOnly?: boolean
 }
@@ -55,7 +62,7 @@ export function RevisaoTab({
     (formData.valoresAdicionais || 0) +
     (formData.iof || 0)
   const totalParcelas = formData?.parcelas?.reduce(
-    (acc: number, p: any) => acc + (p.valor || 0),
+    (acc: number, p) => acc + (p.valor || 0),
     0
   )
   const hasMismatch = Math.abs(premioTotal - totalParcelas) >= 0.01
@@ -88,7 +95,7 @@ export function RevisaoTab({
               value={formData.seguradoId}
               onChange={(e) => setValue("seguradoId", e.target.value)}
               options={
-                segurados?.data?.map((s: any) => ({
+                segurados?.data?.map((s) => ({
                   text: s.nomeRazaoSocial,
                   value: s.id,
                 })) || []
@@ -108,7 +115,7 @@ export function RevisaoTab({
               value={formData.seguradoraId}
               onChange={(e) => setValue("seguradoraId", e.target.value)}
               options={
-                seguradoras?.data?.map((s: any) => ({
+                seguradoras?.data?.map((s) => ({
                   text: s.razaoSocial,
                   value: s.id,
                 })) || []
@@ -130,14 +137,14 @@ export function RevisaoTab({
                 const produtorId = e.target.value
                 setValue("produtorId", produtorId)
                 const corretoraId = produtores?.data?.find(
-                  (p: any) => p.id === produtorId
+                  (p) => p.id === produtorId
                 )?.corretoraId
                 if (corretoraId) setValue("corretoraId", corretoraId)
               }}
               options={
                 produtores?.data
                   ?.filter((p) => p.corretoraId === formData.corretoraId)
-                  ?.map((p: any) => ({
+                  ?.map((p) => ({
                     text: p.nome,
                     value: p.id,
                   })) || []
@@ -158,7 +165,7 @@ export function RevisaoTab({
               value={formData.corretoraId}
               onChange={(e) => setValue("corretoraId", e.target.value)}
               options={
-                corretoras?.data?.map((c: any) => ({
+                corretoras?.data?.map((c) => ({
                   text: c.razaoSocial,
                   value: c.id,
                 })) || []
@@ -177,7 +184,7 @@ export function RevisaoTab({
               value={formData.ramoId}
               onChange={(e) => setValue("ramoId", e.target.value)}
               options={
-                ramos?.data?.map((r: any) => ({
+                ramos?.data?.map((r) => ({
                   text: r.descricao,
                   value: r.id,
                 })) || []
@@ -232,7 +239,16 @@ export function RevisaoTab({
               label="Tipo de Documento *"
               field_name="tipoDocumento"
               value={formData.tipoDocumento}
-              onChange={(e) => setValue("tipoDocumento", e.target.value as any)}
+              onChange={(e) =>
+                setValue(
+                  "tipoDocumento",
+                  e.target.value as
+                    | "Proposta"
+                    | "Apólice"
+                    | "Renovação"
+                    | "Endosso"
+                )
+              }
               options={[
                 { text: "Proposta", value: "Proposta" },
                 { text: "Apólice", value: "Apólice" },
@@ -252,7 +268,12 @@ export function RevisaoTab({
               label="Origem *"
               field_name="origem"
               value={formData.origem}
-              onChange={(e) => setValue("origem", e.target.value as any)}
+              onChange={(e) =>
+                setValue(
+                  "origem",
+                  e.target.value as "Manual" | "Importação" | "Integração"
+                )
+              }
               options={[
                 { text: "Manual", value: "Manual" },
                 { text: "Importação", value: "Importação" },
@@ -391,7 +412,12 @@ export function RevisaoTab({
               label="Comissão Sobre *"
               field_name="comissaoSobre"
               value={formData.comissaoSobre}
-              onChange={(e) => setValue("comissaoSobre", e.target.value as any)}
+              onChange={(e) =>
+                setValue(
+                  "comissaoSobre",
+                  e.target.value as "Premio Liquido" | "Premio Bruto"
+                )
+              }
               options={comissaoSobreOptions}
               disabled={readOnly}
             />
@@ -401,7 +427,12 @@ export function RevisaoTab({
               label="Forma de Comissão *"
               field_name="formaComissao"
               value={formData.formaComissao}
-              onChange={(e) => setValue("formaComissao", e.target.value as any)}
+              onChange={(e) =>
+                setValue(
+                  "formaComissao",
+                  e.target.value as "Na Parcela" | "Antecipado"
+                )
+              }
               options={formaComissaoOptions}
               disabled={readOnly}
             />
@@ -492,7 +523,7 @@ export function RevisaoTab({
         {formData.repasses.length === 0 ?
           <p className="text-gray-500">Nenhum repasse cadastrado</p>
         : <div className="space-y-4">
-            {formData.repasses.map((repasse: any, index: number) => (
+            {formData.repasses.map((repasse, index: number) => (
               <div key={index} className="rounded border bg-white p-4">
                 <div className="mb-2 flex items-center justify-between">
                   <h5 className="font-medium">Repasse {index + 1}</h5>
@@ -501,7 +532,7 @@ export function RevisaoTab({
                       type="button"
                       onClick={() => {
                         const newRepasses = formData.repasses.filter(
-                          (_: any, i: number) => i !== index
+                          (_, i: number) => i !== index
                         )
                         setValue("repasses", newRepasses)
                       }}
@@ -522,7 +553,7 @@ export function RevisaoTab({
                         setValue("repasses", newRepasses)
                       }}
                       options={
-                        produtores?.data?.map((p: any) => ({
+                        produtores?.data?.map((p) => ({
                           text: p.nome,
                           value: p.id,
                         })) || []
@@ -537,12 +568,9 @@ export function RevisaoTab({
                         <Input.Root className="mt-2">
                           <Input.Control
                             type="number"
-                            {...register(
-                              `repasses.${index}.valorRepasse` as any,
-                              {
-                                valueAsNumber: true,
-                              }
-                            )}
+                            {...register(`repasses.${index}.valorRepasse`, {
+                              valueAsNumber: true,
+                            })}
                             disabled={readOnly}
                           />
                         </Input.Root>
@@ -560,7 +588,7 @@ export function RevisaoTab({
                           <Input.Control
                             type="number"
                             {...register(
-                              `repasses.${index}.percentualRepasse` as any,
+                              `repasses.${index}.percentualRepasse`,
                               {
                                 valueAsNumber: true,
                               }
@@ -584,7 +612,10 @@ export function RevisaoTab({
                       value={repasse.repasseSobre}
                       onChange={(e) => {
                         const newRepasses = [...formData.repasses]
-                        newRepasses[index].repasseSobre = e.target.value as any
+                        newRepasses[index].repasseSobre = e.target.value as
+                          | "Premio Liquido"
+                          | "Comissão da Corretora"
+                          | "Valor Fixo"
                         setValue("repasses", newRepasses)
                       }}
                       options={[
@@ -605,7 +636,8 @@ export function RevisaoTab({
                       value={repasse.formaRepasse}
                       onChange={(e) => {
                         const newRepasses = [...formData.repasses]
-                        newRepasses[index].formaRepasse = e.target.value as any
+                        newRepasses[index].formaRepasse = e.target
+                          .value as "No recebimento"
                         setValue("repasses", newRepasses)
                       }}
                       options={formaRepasseOptions}

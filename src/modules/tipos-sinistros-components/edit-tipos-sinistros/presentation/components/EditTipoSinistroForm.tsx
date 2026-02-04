@@ -3,7 +3,6 @@
 import { Button } from "@/core/components/Button"
 import * as Input from "@/core/components/Input"
 import { LoadingScreen } from "@/core/components/LoadingScreen"
-import { useRamoQuery } from "@/modules/ramos-components/ramos/infra/hooks/use-ramo-query"
 import { zodResolver } from "@hookform/resolvers/zod"
 import { useQueryClient } from "@tanstack/react-query"
 import { useRouter } from "next/navigation"
@@ -19,8 +18,7 @@ import {
 export function EditTipoSinistroForm({ id }: { id: string }) {
   const { push } = useRouter()
   const { data: tipoSinistro, isLoading } = useTipoSinistroByIdQuery(id)
-  const { data: ramosData } = useRamoQuery(1, -1)
-  const ramos = ramosData?.data || []
+
   const queryClient = useQueryClient()
 
   const {

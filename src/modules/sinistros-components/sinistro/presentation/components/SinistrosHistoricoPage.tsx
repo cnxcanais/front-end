@@ -125,7 +125,11 @@ export function SinistrosHistoricoPage() {
     { header: "Seguradora", accessor: "apolice", accessor2: "seguradoraNome" },
     { header: "Data Ocorrido", accessor: "dataHoraOcorrido" },
     { header: "Status", accessor: "status" },
-    { header: "Ações", accessor: "actions", render: (value: any) => value },
+    {
+      header: "Ações",
+      accessor: "actions",
+      render: (value: React.ReactNode) => value,
+    },
   ]
 
   const formatDate = (date: string) => {
@@ -161,25 +165,25 @@ export function SinistrosHistoricoPage() {
 
       <div className="space-y-4">
         <Table columns={columns} data={rows} />
-        
+
         {sinistrosData && sinistrosData.total > 10 && (
           <div className="flex items-center justify-between">
             <div className="text-sm text-gray-700">
-              Mostrando {(page - 1) * 10 + 1} a {Math.min(page * 10, sinistrosData.total)} de {sinistrosData.total} resultados
+              Mostrando {(page - 1) * 10 + 1} a{" "}
+              {Math.min(page * 10, sinistrosData.total)} de{" "}
+              {sinistrosData.total} resultados
             </div>
             <div className="flex gap-2">
               <Button
                 variant="tertiary"
                 onClick={() => setPage(page - 1)}
-                disabled={page === 1}
-              >
+                disabled={page === 1}>
                 Anterior
               </Button>
               <Button
                 variant="tertiary"
                 onClick={() => setPage(page + 1)}
-                disabled={page * 10 >= sinistrosData.total}
-              >
+                disabled={page * 10 >= sinistrosData.total}>
                 Próximo
               </Button>
             </div>

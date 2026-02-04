@@ -10,7 +10,12 @@ import { useCorretoraQuery } from "@/modules/corretoras-components/corretora/inf
 import { usePropostaQuery } from "@/modules/propostas-components/propostas/infra/hooks/use-proposta-query"
 import { useSeguradoraQuery } from "@/modules/seguradoras-components/seguradora/infra/hooks/use-seguradora-query"
 import { useUsuarioQuery } from "@/modules/usuarios-components/usuario/infra/hooks/use-usuario-query"
-import { DragDropContext, Draggable, Droppable } from "@hello-pangea/dnd"
+import {
+  DragDropContext,
+  Draggable,
+  DropResult,
+  Droppable,
+} from "@hello-pangea/dnd"
 import { useMemo, useState } from "react"
 import { toast } from "sonner"
 import { useSinistroQuery } from "../../infra/hooks/use-sinistro-query"
@@ -234,7 +239,14 @@ export function SinistroKanbam() {
         type: "date",
       },
     ],
-    [corretoraData, propostaData, sinistrosData, seguradoraData]
+    [
+      corretoraData,
+      propostaData,
+      sinistrosData,
+      seguradoraData,
+      isAdmin,
+      corretoraId,
+    ]
   )
 
   const sinistrosByStatus = useMemo(() => {
@@ -260,9 +272,9 @@ export function SinistroKanbam() {
     })
 
     return grouped
-  }, [sinistrosData])
+  }, [sinistrosData, isAdmin, corretoraId])
 
-  const onDragEnd = (result: any) => {
+  const onDragEnd = (result: DropResult) => {
     if (!isAdmin) {
       toast.error("Apenas administradores podem mover cards")
       return

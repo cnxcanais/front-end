@@ -4,7 +4,7 @@ import { Button } from "@/core/components/Button"
 import { Modal } from "@/core/components/Modals/Modal"
 import { getSinistroHistorico } from "@/modules/sinistros-components/sinistro/infra/remote"
 import jsPDF from "jspdf"
-import autoTable from "jspdf-autotable"
+// import autoTable from "jspdf-autotable"
 import { useEffect, useState } from "react"
 import { toast } from "sonner"
 
@@ -13,7 +13,7 @@ type HistoricoItem = {
   tipoEvento: string
   statusAnterior: string | null
   statusNovo: string | null
-  dadosAlterados: any
+  dadosAlterados: Record<string, unknown>
   observacao: string
   usuarioId: string
   usuarioNome: string
@@ -87,10 +87,13 @@ export function SinistroHistoryModal({
       statusNovo: "Status Novo",
       statusAnterior: "Status Anterior",
     }
-    return fieldNames[key] || key.replace(/([A-Z])/g, " $1").replace(/^./, (str) => str.toUpperCase())
+    return (
+      fieldNames[key] ||
+      key.replace(/([A-Z])/g, " $1").replace(/^./, (str) => str.toUpperCase())
+    )
   }
 
-  const formatFieldValue = (value: any) => {
+  const formatFieldValue = (value: unknown) => {
     if (typeof value === "string") {
       return value
         .split("_")
@@ -102,52 +105,69 @@ export function SinistroHistoryModal({
 
   const exportToPDF = () => {
     const doc = new jsPDF()
-    
+
     const img = new Image()
-    img.src = '/images/cnx-logo.png'
+    img.src = "/images/cnx-logo.png"
     img.onload = () => {
-      doc.addImage(img, 'PNG', 14, 10, 40, 15)
-      
+      doc.addImage(img, "PNG", 14, 10, 40, 15)
+
       doc.setFontSize(16)
       doc.text(`Histórico - ${sinistroNumero}`, 14, 35)
-      
+
       let yPosition = 45
-      
+
       historico.forEach((item, index) => {
         if (yPosition > 270) {
           doc.addPage()
-          doc.addImage(img, 'PNG', 14, 10, 40, 15)
+          doc.addImage(img, "PNG", 14, 10, 40, 15)
           yPosition = 35
         }
-        
+
         // Add background color
-        doc.setFillColor(index % 2 === 0 ? 239 : 249, index % 2 === 0 ? 246 : 250, index % 2 === 0 ? 255 : 251)
-        const boxHeight = 30 + (item.observacao ? 10 : 0) + (item.dadosAlterados ? Object.keys(item.dadosAlterados).length * 5 : 0)
-        doc.rect(10, yPosition - 5, 190, boxHeight, 'F')
-        
+        doc.setFillColor(
+          index % 2 === 0 ? 239 : 249,
+          index % 2 === 0 ? 246 : 250,
+          index % 2 === 0 ? 255 : 251
+        )
+        const boxHeight =
+          30 +
+          (item.observacao ? 10 : 0) +
+          (item.dadosAlterados ?
+            Object.keys(item.dadosAlterados).length * 5
+          : 0)
+        doc.rect(10, yPosition - 5, 190, boxHeight, "F")
+
         doc.setFontSize(12)
         doc.setFont(undefined, "bold")
         doc.text(getEventLabel(item.tipoEvento), 14, yPosition)
-        
+
         doc.setFontSize(9)
         doc.setFont(undefined, "normal")
-        doc.text(`${formatDateTime(item.createdAt)} • ${item.usuarioNome}`, 14, yPosition + 5)
-        
+        doc.text(
+          `${formatDateTime(item.createdAt)} • ${item.usuarioNome}`,
+          14,
+          yPosition + 5
+        )
+
         yPosition += 10
-        
+
         if (item.statusAnterior && item.statusNovo) {
           const statusAnteriorFormatted = formatFieldValue(item.statusAnterior)
           const statusNovoFormatted = formatFieldValue(item.statusNovo)
-          doc.text(`${statusAnteriorFormatted} -> ${statusNovoFormatted}`, 14, yPosition)
+          doc.text(
+            `${statusAnteriorFormatted} -> ${statusNovoFormatted}`,
+            14,
+            yPosition
+          )
           yPosition += 5
         }
-        
+
         if (item.observacao) {
           const lines = doc.splitTextToSize(item.observacao, 180)
           doc.text(lines, 14, yPosition)
           yPosition += lines.length * 5
         }
-        
+
         if (item.dadosAlterados) {
           yPosition += 2
           Object.entries(item.dadosAlterados).forEach(([key, value]) => {
@@ -156,14 +176,14 @@ export function SinistroHistoryModal({
             yPosition += 5
           })
         }
-        
+
         yPosition += 10
       })
-      
+
       doc.save(`historico-${sinistroNumero}.pdf`)
       toast.success("PDF exportado com sucesso")
     }
-    
+
     img.onerror = () => {
       toast.error("Erro ao carregar logo")
     }
@@ -176,16 +196,15 @@ export function SinistroHistoryModal({
       onClose={onClose}
       size="large">
       <div className="space-y-4">
-        {loading ? (
+        {loading ?
           <div className="py-8 text-center text-gray-500">Carregando...</div>
-        ) : historico.length === 0 ? (
+        : historico.length === 0 ?
           <div className="py-8 text-center text-gray-500">
             Nenhum histórico encontrado
           </div>
-        ) : (
-          <div className="relative space-y-4">
+        : <div className="relative space-y-4">
             <div className="absolute left-6 top-0 h-full w-0.5 bg-gray-200" />
-            {historico.map((item, index) => (
+            {historico.map((item) => (
               <div key={item.id} className="relative flex gap-4">
                 <div className="relative z-10 flex h-12 w-12 flex-shrink-0 items-center justify-center rounded-full bg-white text-2xl shadow-sm ring-2 ring-gray-200">
                   {getEventIcon(item.tipoEvento)}
@@ -224,12 +243,18 @@ export function SinistroHistoryModal({
                         Ver dados alterados
                       </summary>
                       <div className="mt-2 space-y-1 rounded bg-gray-100 p-3 text-sm">
-                        {Object.entries(item.dadosAlterados).map(([key, value]) => (
-                          <div key={key}>
-                            <span className="font-medium text-gray-700">{formatFieldName(key)}:</span>{" "}
-                            <span className="text-gray-900">{formatFieldValue(value)}</span>
-                          </div>
-                        ))}
+                        {Object.entries(item.dadosAlterados).map(
+                          ([key, value]) => (
+                            <div key={key}>
+                              <span className="font-medium text-gray-700">
+                                {formatFieldName(key)}:
+                              </span>{" "}
+                              <span className="text-gray-900">
+                                {formatFieldValue(value)}
+                              </span>
+                            </div>
+                          )
+                        )}
                       </div>
                     </details>
                   )}
@@ -237,10 +262,13 @@ export function SinistroHistoryModal({
               </div>
             ))}
           </div>
-        )}
+        }
 
         <div className="flex justify-end gap-2 pt-4">
-          <Button variant="secondary" onClick={exportToPDF} disabled={loading || historico.length === 0}>
+          <Button
+            variant="secondary"
+            onClick={exportToPDF}
+            disabled={loading || historico.length === 0}>
             Exportar PDF
           </Button>
           <Button variant="tertiary" onClick={onClose}>

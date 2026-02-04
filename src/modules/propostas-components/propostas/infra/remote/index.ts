@@ -25,7 +25,7 @@ export async function getPropostas(
       }
     )
     return response.data
-  } catch (error: any) {
+  } catch (error) {
     toast.error(
       "Erro ao buscar propostas: " + error?.response?.data?.message ||
         "Erro ao buscar propostas"
@@ -38,7 +38,7 @@ export async function getProposta(id: string) {
   try {
     const response = await bffApi.get<Proposta>(`/propostas-apolices/${id}`)
     return response.data
-  } catch (error: any) {
+  } catch (error) {
     toast.error(
       "Erro ao buscar proposta: " + error?.response?.data?.message ||
         "Erro ao buscar proposta"
@@ -53,7 +53,7 @@ export async function getUltimoEndosso(id: string) {
       `/propostas-apolices/${id}/ultimo-endosso`
     )
     return response.data
-  } catch (error: any) {
+  } catch (error) {
     toast.error(
       "Erro ao buscar proposta: " + error?.response?.data?.message ||
         "Erro ao buscar proposta"
@@ -66,7 +66,7 @@ export async function createProposta(data: PropostaFormSchema) {
   try {
     const response = await bffApi.post<Proposta>("/propostas-apolices", data)
     return response.data
-  } catch (error: any) {
+  } catch (error) {
     toast.error(
       "Erro ao criar proposta: " + error?.response?.data?.message ||
         "Erro ao criar proposta"
@@ -82,7 +82,7 @@ export async function updateProposta(id: string, data: PropostaFormSchema) {
       data
     )
     return response.data
-  } catch (error: any) {
+  } catch (error) {
     toast.error(
       "Erro ao atualizar proposta: " + error?.response?.data?.message ||
         "Erro ao atualizar proposta"
@@ -95,7 +95,7 @@ export async function removeProposta(id: string) {
   try {
     const response = await bffApi.delete(`/propostas-apolices/${id}`)
     return response.data
-  } catch (error: any) {
+  } catch (error) {
     toast.error(
       "Erro ao deletar proposta: " + error?.response?.data?.message ||
         "Erro ao remover proposta"
@@ -149,7 +149,7 @@ export async function exportPropostas(filters?: Record<string, string>) {
       responseType: "blob",
     })
     return response.data
-  } catch (error: any) {
+  } catch (error) {
     toast.error(
       "Erro ao exportar propostas: " + error?.response?.data?.message ||
         "Erro ao exportar propostas"
@@ -169,7 +169,7 @@ export async function importPropostas(file: File) {
       },
     })
     return response.data
-  } catch (error: any) {
+  } catch (error) {
     toast.error(
       "Erro ao importar propostas: " + error?.response?.data?.message ||
         "Erro ao importar propostas"
@@ -184,7 +184,7 @@ export async function getPropostaChain(id: string) {
       `/propostas-apolices/ultimo-endosso-por-numero?numeroApolice=${id}`
     )
     return response.data
-  } catch (error: any) {
+  } catch (error) {
     toast.error(
       "Erro ao buscar proposta: " + error?.response?.data?.message ||
         "Erro ao buscar proposta"
@@ -198,7 +198,7 @@ export async function setParcelaToPaid(id: string) {
     const response = await bffApi.patch(`/parcelas/${id}/marcar-como-paga`)
     toast.success("Parcela atualizada com sucesso!")
     return response.data
-  } catch (error: any) {
+  } catch (error) {
     toast.error(
       "Erro ao atualizar parcela: " + error?.response?.data?.message ||
         "Erro ao atualizar parcela"
@@ -214,7 +214,7 @@ export async function editPrevisaoPagamento(id: string, date: string) {
     })
     toast.success("Parcela atualizada com sucesso!")
     return response.data
-  } catch (error: any) {
+  } catch (error) {
     toast.error(
       "Erro ao atualizar parcela: " + error?.response?.data?.message ||
         "Erro ao atualizar parcela"
@@ -229,7 +229,7 @@ export async function setAllParcelasToPaid(propostaId: string) {
       `/propostas-apolices/${propostaId}/parcelas/marcar-vencidas-como-pagas`
     )
     return response.data
-  } catch (error: any) {
+  } catch (error) {
     toast.error(
       "Erro ao atualizar parcelas: " + error?.response?.data?.message ||
         "Erro ao atualizar parcelas"
@@ -245,7 +245,7 @@ export async function exportParcelas(filters?: Record<string, string>) {
       responseType: "blob",
     })
     return response.data
-  } catch (error: any) {
+  } catch (error) {
     toast.error(
       "Erro ao exportar parcelas: " + error?.response?.data?.message ||
         "Erro ao exportar parcelas"
@@ -269,7 +269,7 @@ export async function importParcelas(file: File) {
       }
     )
     return response.data
-  } catch (error: any) {
+  } catch (error) {
     toast.error(
       "Erro ao importar parcelas: " + error?.response?.data?.message ||
         "Erro ao importar parcelas"
@@ -286,7 +286,7 @@ export async function calcularComissaoApolice(propostaId: string) {
     queryClient.invalidateQueries({ queryKey: ["propostas"] })
     toast.success("Cálculo de comissão realizado com sucesso!")
     return response.data
-  } catch (error: any) {
+  } catch (error) {
     toast.error(
       "Erro ao atualizar parcelas: " + error?.response?.data?.message ||
         "Erro ao atualizar parcelas"

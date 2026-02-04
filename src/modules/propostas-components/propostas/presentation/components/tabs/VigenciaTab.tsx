@@ -1,8 +1,10 @@
 import * as Input from "@/core/components/Input"
+import { FieldErrors, UseFormRegister } from "react-hook-form"
+import { PropostaFormSchema } from "../../validation/schema"
 
 interface VigenciaTabProps {
-  register: any
-  errors: any
+  register: UseFormRegister<PropostaFormSchema>
+  errors: FieldErrors<PropostaFormSchema>
   readOnly?: boolean
 }
 
@@ -12,7 +14,11 @@ export function VigenciaTab({ register, errors, readOnly }: VigenciaTabProps) {
       <div>
         <label>Início da Vigência *</label>
         <Input.Root className="mt-2">
-          <Input.Control type="date" {...register("inicioVigencia")} disabled={readOnly} />
+          <Input.Control
+            type="date"
+            {...register("inicioVigencia")}
+            disabled={readOnly}
+          />
         </Input.Root>
         {errors.inicioVigencia && (
           <span className="text-xs text-red-500">
@@ -23,7 +29,11 @@ export function VigenciaTab({ register, errors, readOnly }: VigenciaTabProps) {
       <div>
         <label>Fim da Vigência *</label>
         <Input.Root className="mt-2">
-          <Input.Control type="date" {...register("fimVigencia")} disabled={readOnly} />
+          <Input.Control
+            type="date"
+            {...register("fimVigencia")}
+            disabled={readOnly}
+          />
         </Input.Root>
         {errors.fimVigencia && (
           <span className="text-xs text-red-500">
