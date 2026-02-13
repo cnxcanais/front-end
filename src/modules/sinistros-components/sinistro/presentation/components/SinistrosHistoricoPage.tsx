@@ -12,8 +12,9 @@ import { usePropostaQuery } from "@/modules/propostas-components/propostas/infra
 import { useSeguradoQuery } from "@/modules/segurados-components/segurado/infra/hooks/use-segurado-query"
 import { useSinistroQuery } from "@/modules/sinistros-components/sinistro/infra/hooks/use-sinistro-query"
 import { SinistroDetailsModal } from "@/modules/sinistros-components/sinistro/presentation/components/modals/SinistroDetailsModal"
+import { SinistroHistoryModal } from "@/modules/sinistros-components/sinistro/presentation/components/modals/SinistroHistoryModal"
 import { useUsuarioQuery } from "@/modules/usuarios-components/usuario/infra/hooks/use-usuario-query"
-import { Eye } from "@phosphor-icons/react"
+import { ClockCounterClockwise, Eye } from "@phosphor-icons/react"
 import { useMemo, useState } from "react"
 
 export function SinistrosHistoricoPage() {
@@ -29,6 +30,9 @@ export function SinistrosHistoricoPage() {
   const [page, setPage] = useState(1)
   const [selectedSinistro, setSelectedSinistro] =
     useState<Sinistro.Type | null>(null)
+  const [showHistoryModal, setShowHistoryModal] = useState(false)
+  const [selectedSinistroForHistory, setSelectedSinistroForHistory] =
+    useState<{ id: string; numero: string } | null>(null)
 
   const standardFilters = isAdmin ? {} : { corretoraId: corretoraId || "" }
   const { data: propostaData } = usePropostaQuery(1, -1, standardFilters)
@@ -141,13 +145,28 @@ export function SinistrosHistoricoPage() {
       ...sinistro,
       dataHoraOcorrido: formatDate(sinistro.dataHoraOcorrido),
       actions: (
-        <Button
-          variant="tertiary"
-          onClick={() => setSelectedSinistro(sinistro)}
-          className="flex items-center gap-2">
-          <Eye size={16} />
-          Ver Detalhes
-        </Button>
+        <div className="flex gap-2">
+          <Button
+            variant="tertiary"
+            onClick={() => setSelectedSinistro(sinistro)}
+            className="flex items-center gap-2">
+            <Eye size={16} />
+            Ver Detalhes
+          </Button>
+          <Button
+            variant="tertiary"
+            onClick={() => {
+              setSelectedSinistroForHistory({
+                id: sinistro.id,
+                numero: sinistro.numeroSinistro,
+              })
+              setShowHistoryModal(true)
+            }}
+            className="flex items-center gap-2">
+            <ClockCounterClockwise size={16} />
+            Histórico
+          </Button>
+        </div>
       ),
     })) || []
 
@@ -196,6 +215,16 @@ export function SinistrosHistoricoPage() {
         onClose={() => setSelectedSinistro(null)}
         sinistro={selectedSinistro}
         isAdmin={isAdmin || false}
+      />
+
+      <SinistroHistoryModal
+        open={showHistoryModal}
+        onClose={() => {
+          setShowHistoryModal(false)
+          setSelectedSinistroForHistory(null)
+        }}
+        sinistroId={selectedSinistroForHistory?.id || ""}
+        sinistroNumero={selectedSinistroForHistory?.numero || ""}
       />
     </div>
   )
