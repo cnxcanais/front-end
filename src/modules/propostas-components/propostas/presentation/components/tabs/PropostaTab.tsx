@@ -5,6 +5,7 @@ import { Segurado } from "@/@types/segurado"
 import { Seguradora } from "@/@types/seguradora"
 import * as Input from "@/core/components/Input"
 import { SelectInput } from "@/core/components/SelectInput"
+import { RamosResponse } from "@/modules/ramos-components/ramos/infra/remote"
 import { Plus } from "@phosphor-icons/react"
 import { useState } from "react"
 import { FieldErrors, UseFormRegister, UseFormSetValue } from "react-hook-form"
@@ -29,7 +30,7 @@ interface PropostaTabProps {
     text: string
     value: string
   }[]
-  ramos: Ramo.GetResponse
+  ramos: RamosResponse
   isEndosso?: boolean
   isRenovacao?: boolean
   readOnly?: boolean
@@ -331,7 +332,12 @@ export function PropostaTab({
           label="Tipo de Documento *"
           field_name="tipoDocumento"
           value={formData.tipoDocumento}
-          onChange={(e) => setValue("tipoDocumento", e.target.value)}
+          onChange={(e) =>
+            setValue(
+              "tipoDocumento",
+              e.target.value as "Proposta" | "Apólice" | "Renovação" | "Endosso"
+            )
+          }
           options={[
             { text: "Proposta", value: "Proposta" },
             { text: "Apólice", value: "Apólice" },
@@ -352,7 +358,12 @@ export function PropostaTab({
           label="Origem *"
           field_name="origem"
           value={formData.origem}
-          onChange={(e) => setValue("origem", e.target.value)}
+          onChange={(e) =>
+            setValue(
+              "origem",
+              e.target.value as "Manual" | "Importação" | "Integração"
+            )
+          }
           options={[
             { text: "Manual", value: "Manual" },
             { text: "Importação", value: "Importação" },

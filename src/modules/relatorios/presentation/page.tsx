@@ -73,12 +73,14 @@ export function ReportsPage() {
 
       if (cube) {
         setMeasures(
-          cube.measures.map((m: { name: string; title?: string }) => ({
-            name: m.name,
-            title: (m.title || m.name)
-              .replace("Propostas Analítica ", "")
-              .replace("Proposta Analítica ", ""),
-          }))
+          cube.measures
+            .map((m: { name: string; title?: string }) => ({
+              name: m.name,
+              title: (m.title || m.name)
+                .replace("Propostas Analítica ", "")
+                .replace("Proposta Analítica ", ""),
+            }))
+            .sort((a, b) => a.title.localeCompare(b.title))
         )
 
         setDimensions(
@@ -91,6 +93,7 @@ export function ReportsPage() {
                 .replace("Proposta Analítica ", ""),
               type: d.type,
             }))
+            .sort((a, b) => a.title.localeCompare(b.title))
         )
       }
     } catch {

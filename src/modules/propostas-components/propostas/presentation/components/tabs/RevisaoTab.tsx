@@ -1,6 +1,5 @@
 import { Corretora } from "@/@types/corretora"
 import { Produtor } from "@/@types/produtor"
-import { Ramo } from "@/@types/ramo"
 import { Segurado } from "@/@types/segurado"
 import { Seguradora } from "@/@types/seguradora"
 import { Button } from "@/core/components/Button"
@@ -11,6 +10,7 @@ import {
   formaComissaoOptions,
   formaRepasseOptions,
 } from "@/modules/propostas-components/types/enums"
+import { RamosResponse } from "@/modules/ramos-components/ramos/infra/remote"
 import dynamic from "next/dynamic"
 import { PropostaFormSchema } from "../../validation/schema"
 
@@ -35,7 +35,7 @@ interface RevisaoTabProps {
   seguradoras: Seguradora.GetResponse
   produtores: Produtor.GetResponse
   corretoras: Corretora.GetResponse
-  ramos: Ramo.GetResponse
+  ramos: RamosResponse
   control: Control<PropostaFormSchema>
   produtosOptions: { text: string; value: string }[]
   isAutomovelRamo: boolean
@@ -413,10 +413,7 @@ export function RevisaoTab({
               field_name="comissaoSobre"
               value={formData.comissaoSobre}
               onChange={(e) =>
-                setValue(
-                  "comissaoSobre",
-                  e.target.value as "Premio Liquido" | "Premio Bruto"
-                )
+                setValue("comissaoSobre", e.target.value as "Premio Liquido")
               }
               options={comissaoSobreOptions}
               disabled={readOnly}

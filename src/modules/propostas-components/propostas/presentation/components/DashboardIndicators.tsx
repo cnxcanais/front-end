@@ -68,25 +68,12 @@ export function DashboardIndicators({
 
   const isAdmin = getCookie("perfilId") === process.env.NEXT_PUBLIC_ADM_ID
   const corretoraId = getCookie("corretoraId")
-  const ativasParams =
-    isAdmin ?
-      { situacao: "Ativo", tipoDocumento: "Proposta" }
-    : { situacao: "Ativo", tipoDocumento: "Proposta", corretoraId }
 
   const allPropostaParams = isAdmin ? {} : { corretoraId }
-
-  const apolicesAtivasParams =
-    isAdmin ?
-      { situacao: "Ativo", tipoDocumento: "Apólice" }
-    : { situacao: "Ativo", tipoDocumento: "Apólice", corretoraId }
 
   const allPropostas = usePropostaQuery(1, -1, allPropostaParams)
 
   const dataToUse = filteredData || allPropostas?.data?.data || []
-
-  const propostasAtivas = usePropostaQuery(1, -1, ativasParams)
-
-  const apolicesAtivas = usePropostaQuery(1, -1, apolicesAtivasParams)
 
   const propostasVigentes =
     dataToUse?.filter((p) => {
