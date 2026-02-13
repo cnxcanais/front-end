@@ -160,6 +160,12 @@ export const sidebar_options: SidebarOptionProps[] = [
     Icon: Graph,
     group: "Relatórios",
   },
+  {
+    name: "Sinistros",
+    href: "/relatorios-sinistros",
+    Icon: Car,
+    group: "Relatórios",
+  },
 ]
 
 type SidebarGroups = {
