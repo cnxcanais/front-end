@@ -56,8 +56,14 @@ const sidebar_options_not_admin: SidebarOptionProps[] = [
     group: "Gerenciamento",
   },
   {
-    name: "Relatórios",
+    name: "Relatórios Apólices",
     href: "/relatorios",
+    Icon: Graph,
+    group: "Gerenciamento",
+  },
+  {
+    name: "Relatórios Sinistros",
+    href: "/relatorios-sinistros",
     Icon: Graph,
     group: "Gerenciamento",
   },

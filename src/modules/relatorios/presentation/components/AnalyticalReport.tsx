@@ -3,7 +3,9 @@
 import { Button } from "@/core/components/Button"
 import { ExportTableToPDFButton } from "@/core/components/ExportPDFButton"
 import { LoadingScreen } from "@/core/components/LoadingScreen"
+import { getCookie } from "@/lib/cookies"
 import cubeApi from "@/lib/cubejs"
+import { useUsuarioQuery } from "@/modules/usuarios-components/usuario/infra/hooks/use-usuario-query"
 import { FileXls, X } from "@phosphor-icons/react"
 import { useEffect, useState } from "react"
 import { toast } from "sonner"
@@ -34,6 +36,12 @@ interface AnalyticalReportProps {
 }
 
 export function AnalyticalReport({ cubeName, title }: AnalyticalReportProps) {
+  const { data: usuarios } = useUsuarioQuery()
+  const corretoraId = getCookie("corretoraId")
+  const userId = getCookie("userId")
+  const user = usuarios?.data.find((u) => u.props?.id === userId)
+  const isAdmin = user?.props?.perfilId === process.env.NEXT_PUBLIC_ADM_ID
+
   const [measures, setMeasures] = useState<Measure[]>([])
   const [dimensions, setDimensions] = useState<Dimension[]>([])
   const [rowDimensions, setRowDimensions] = useState<string[]>([])
@@ -131,6 +139,16 @@ export function AnalyticalReport({ cubeName, title }: AnalyticalReportProps) {
         }
         return f.values.length > 0
       })
+
+      // Add corretoraId filter for non-admin users
+      if (!isAdmin && corretoraId) {
+        const corretoraFilter = {
+          dimension: `${cubeName}.corretoraId`,
+          operator: "equals",
+          values: [corretoraId],
+        }
+        validFilters.push(corretoraFilter)
+      }
 
       if (validFilters.length > 0) {
         query.filters = validFilters.flatMap((f) => {
