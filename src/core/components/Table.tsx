@@ -50,8 +50,16 @@ export function Table<T>({
     if (!enableSorting || !sortConfig) return data
 
     return [...data].sort((a, b) => {
-      const aValue = a[sortConfig.key]
-      const bValue = b[sortConfig.key]
+      let aValue = a[sortConfig.key]
+      let bValue = b[sortConfig.key]
+
+      // Convert to numbers if both values are numeric
+      const aNum = Number(aValue)
+      const bNum = Number(bValue)
+      if (!isNaN(aNum) && !isNaN(bNum)) {
+        aValue = aNum
+        bValue = bNum
+      }
 
       if (aValue === bValue) return 0
 
