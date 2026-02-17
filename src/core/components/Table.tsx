@@ -99,9 +99,9 @@ export function Table<T>({
                     const rowId = (row as any).id || (row as any)._id
                     const rows = [
                       <tr key={`row-${rowIndex}-${rowId}`}>
-                        {columns.map((column) => (
+                        {columns.map((column, colIndex) => (
                           <td
-                            key={column.header}
+                            key={`${column.accessor}-${colIndex}`}
                             className="no-scrollbar max-w-96 overflow-x-auto whitespace-nowrap px-3 py-4 text-sm text-gray-500">
                             {column.render ?
                               column.render(

@@ -10,7 +10,10 @@ import { useCorretoraByIdQuery } from "@/modules/corretoras-components/edit-corr
 import { usePropostaByIdQuery } from "@/modules/propostas-components/propostas/infra/hooks/use-proposta-by-id-query"
 import { useSeguradoraByIdQuery } from "@/modules/seguradoras-components/edit-seguradora/infra/hooks/use-seguradora-by-id-query"
 import { useSeguradoByIdQuery } from "@/modules/segurados-components/segurado/infra/hooks/use-segurado-by-id-query"
+import { FilePdf } from "@phosphor-icons/react"
+import jsPDF from "jspdf"
 import { useMemo } from "react"
+import { toast } from "sonner"
 
 type Props = {
   open: boolean
@@ -46,6 +49,96 @@ export function ComissaoDetailsModal({ open, onClose, comissao }: Props) {
 
   const formatDateTime = (date: string) => {
     return new Date(date).toLocaleString("pt-BR")
+  }
+
+  const formatDate = (date: string | null) => {
+    if (!date) return "N/A"
+    return new Date(date).toLocaleDateString("pt-BR")
+  }
+
+  const exportToPDF = () => {
+    if (!comissao) return
+
+    const doc = new jsPDF()
+    const img = new Image()
+    img.src = "/images/cnx-logo.png"
+
+    img.onload = () => {
+      doc.addImage(img, "PNG", 14, 10, 40, 15)
+      doc.setFontSize(16)
+      doc.text(`Detalhes da Comissão - ${comissao.numeroApolice}`, 14, 35)
+
+      let y = 45
+
+      const addSection = (title: string, data: [string, string][]) => {
+        if (y > 250) {
+          doc.addPage()
+          doc.addImage(img, "PNG", 14, 10, 40, 15)
+          y = 35
+        }
+        doc.setFontSize(12)
+        doc.setFont(undefined, "bold")
+        doc.text(title, 14, y)
+        y += 7
+        doc.setFontSize(10)
+        doc.setFont(undefined, "normal")
+        data.forEach(([label, value]) => {
+          if (y > 280) {
+            doc.addPage()
+            doc.addImage(img, "PNG", 14, 10, 40, 15)
+            y = 35
+          }
+          doc.text(`${label}: ${value}`, 14, y)
+          y += 5
+        })
+        y += 5
+      }
+
+      addSection("Informações da Comissão", [
+        ["Apólice", comissao.numeroApolice],
+        ["Parcela", comissao.numeroParcela.toString()],
+        ["Vencimento", formatDate(comissao.dataVencimento)],
+        ["Prêmio Líquido", formatCurrency(comissao.premioLiquido)],
+        ["Comissão Total", formatCurrency(comissao.comissaoTotal)],
+        ["Valor Pago", formatCurrency(comissao.valorPago)],
+        ["Valor Pendente", formatCurrency(comissao.valorPendente)],
+        ["Situação", comissao.situacao],
+        ["Dias Atraso", comissao.diasAtraso.toString()],
+        ["Data Pagamento", formatDate(comissao.dataPagamento)],
+      ])
+
+      if (segurado) {
+        addSection("Informações do Segurado", [
+          ["Nome", segurado.nomeRazaoSocial || "N/A"],
+          ["CPF/CNPJ", formatDocumentNumber(segurado.cnpjCpf) || "N/A"],
+          ["Email", segurado.email || "N/A"],
+          ["Telefone", formatPhoneNumber(segurado.telefone) || "N/A"],
+        ])
+      }
+
+      if (seguradora) {
+        addSection("Informações da Seguradora", [
+          ["Razão Social", seguradora.razaoSocial || "N/A"],
+          ["CNPJ", formatDocumentNumber(seguradora.cnpj) || "N/A"],
+          ["Email", seguradora.email || "N/A"],
+        ])
+      }
+
+      if (corretora) {
+        addSection("Informações da Corretora", [
+          ["Razão Social", corretora.razaoSocial || "N/A"],
+          ["CNPJ", corretora.cnpjCpfFormatado || "N/A"],
+          ["Email", corretora.email || "N/A"],
+        ])
+      }
+
+      doc.save(`comissao-${comissao.numeroApolice}.pdf`)
+      toast.success("PDF exportado com sucesso")
+    }
+
+    img.onerror = () => {
+      toast.error("Erro ao carregar logo")
+    }
   }
 
   return (
@@ -251,7 +344,14 @@ export function ComissaoDetailsModal({ open, onClose, comissao }: Props) {
           </div>
         </div>
 
-        <div className="flex justify-end">
+        <div className="flex justify-end gap-2">
+          <Button
+            variant="secondary"
+            onClick={exportToPDF}
+            className="flex items-center gap-2">
+            <FilePdf size={16} />
+            Exportar PDF
+          </Button>
           <Button variant="tertiary" onClick={onClose}>
             Fechar
           </Button>
