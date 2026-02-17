@@ -1,11 +1,17 @@
-import { ReactNode } from "react"
+import { ReactNode, useMemo, useState } from "react"
 
 interface Column {
-  header: string
+  header: string | ReactNode
   accessor: string
   accessor2?: string
+  sortable?: boolean
   render?: (value: any, row: any) => ReactNode
 }
+
+type SortConfig = {
+  key: string
+  direction: "asc" | "desc"
+} | null
 
 export function Table<T>({
   id = "table",
@@ -15,6 +21,7 @@ export function Table<T>({
   ref,
   expandedRowIds,
   expandedRowContent,
+  enableSorting = false,
 }: {
   id?: string
   columns: Column[]
@@ -23,7 +30,35 @@ export function Table<T>({
   ref?: React.Ref<HTMLTableElement>
   expandedRowIds?: string[]
   expandedRowContent?: (row: T) => ReactNode
+  enableSorting?: boolean
 }) {
+  const [sortConfig, setSortConfig] = useState<SortConfig>(null)
+
+  const handleSort = (key: string) => {
+    setSortConfig((current) => {
+      if (!current || current.key !== key) {
+        return { key, direction: "asc" }
+      }
+      if (current.direction === "asc") {
+        return { key, direction: "desc" }
+      }
+      return null
+    })
+  }
+
+  const sortedData = useMemo(() => {
+    if (!enableSorting || !sortConfig) return data
+
+    return [...data].sort((a, b) => {
+      const aValue = a[sortConfig.key]
+      const bValue = b[sortConfig.key]
+
+      if (aValue === bValue) return 0
+
+      const comparison = aValue < bValue ? -1 : 1
+      return sortConfig.direction === "asc" ? comparison : -comparison
+    })
+  }, [data, sortConfig, enableSorting])
   return (
     <div className="">
       <div className="my-8 flow-root">
@@ -36,18 +71,31 @@ export function Table<T>({
                 ref={ref}>
                 <thead className="bg-gray-50">
                   <tr>
-                    {columns.map((column, columnIndex) => (
-                      <th
-                        key={columnIndex}
-                        scope="col"
-                        className="px-3 py-3.5 text-left text-sm font-semibold text-gray-900">
-                        {column.header}
-                      </th>
-                    ))}
+                    {columns.map((column, columnIndex) => {
+                      const isSortable = enableSorting && column.sortable !== false
+                      const isCurrentSort = sortConfig?.key === column.accessor
+                      
+                      return (
+                        <th
+                          key={columnIndex}
+                          scope="col"
+                          className={`px-3 py-3.5 text-left text-sm font-semibold text-gray-900 ${
+                            isSortable ? "cursor-pointer select-none hover:text-blue-600" : ""
+                          }`}
+                          onClick={() => isSortable && handleSort(column.accessor)}>
+                          {typeof column.header === "string" ? column.header : column.header}
+                          {isSortable && isCurrentSort && (
+                            <span className="ml-1">
+                              {sortConfig.direction === "asc" ? "↑" : "↓"}
+                            </span>
+                          )}
+                        </th>
+                      )
+                    })}
                   </tr>
                 </thead>
                 <tbody className="divide-y divide-gray-200 bg-white">
-                  {data.flatMap((row, rowIndex) => {
+                  {sortedData.flatMap((row, rowIndex) => {
                     const rowId = (row as any).id || (row as any)._id
                     const rows = [
                       <tr key={`row-${rowIndex}-${rowId}`}>

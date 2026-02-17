@@ -2,8 +2,10 @@
 
 import { Comissao } from "@/@types/comissao"
 import { Button } from "@/core/components/Button"
+import { ExportTableToPDFButton } from "@/core/components/ExportPDFButton"
 import { FilterField, FilterForm } from "@/core/components/FilterForm"
 import { LoadingScreen } from "@/core/components/LoadingScreen"
+import { Pagination } from "@/core/components/Pagination"
 import { Table } from "@/core/components/Table"
 import { getCookie } from "@/lib/cookies"
 import { useCorretoraQuery } from "@/modules/corretoras-components/corretora/infra/hooks/use-corretora-query"
@@ -15,6 +17,7 @@ import {
   ArrowCounterClockwise,
   Calculator,
   Eye,
+  FileXls,
   Wallet,
 } from "@phosphor-icons/react"
 import { useMemo, useState } from "react"
@@ -27,13 +30,13 @@ import { PagarComissaoModal } from "./modals/PagarComissaoModal"
 export function ComissoesPage() {
   const [filters, setFilters] = useState<Record<string, string>>({})
   const [page, setPage] = useState(1)
+  const [limit, setLimit] = useState(10)
   const [selectedComissao, setSelectedComissao] =
     useState<Comissao.Type | null>(null)
   const [showPagarModal, setShowPagarModal] = useState(false)
   const [showDetailsModal, setShowDetailsModal] = useState(false)
   const [showEstornoModal, setShowEstornoModal] = useState(false)
   const [showReverterModal, setShowReverterModal] = useState(false)
-  const [selectedIds, setSelectedIds] = useState<string[]>([])
 
   const isAdmin = getCookie("perfilId") === process.env.NEXT_PUBLIC_ADM_ID
   const corretoraId = getCookie("corretoraId")
@@ -44,7 +47,7 @@ export function ComissoesPage() {
     data: comissoesData,
     isLoading,
     refetch,
-  } = useComissaoQuery(page, 10, {
+  } = useComissaoQuery(page, limit, {
     ...filters,
     ...standardFilters,
   })
@@ -135,23 +138,56 @@ export function ComissoesPage() {
   )
 
   const columns = [
+    { header: "Segurado", accessor: "seguradoNome", sortable: true },
+    { header: "Apólice", accessor: "numeroApolice", sortable: true },
+    { header: "Parcela", accessor: "numeroParcela", sortable: true },
+    { header: "Vencimento", accessor: "dataVencimento", sortable: true },
     {
-      header: "",
-      accessor: "checkbox",
-      render: (value: React.ReactNode) => value,
+      header: "Comissão",
+      accessor: "comissaoTotal",
+      sortable: true,
+      render: (value: string, row: any) => (
+        <span className={row.comissaoTotalOriginal < 0 ? "text-red-600 font-semibold" : ""}>
+          {value}
+        </span>
+      ),
     },
-    { header: "Segurado", accessor: "seguradoNome" },
-    { header: "Apólice", accessor: "numeroApolice" },
-    { header: "Parcela", accessor: "numeroParcela" },
-    { header: "Vencimento", accessor: "dataVencimento" },
-    { header: "Comissão", accessor: "comissaoTotal" },
-    { header: "Pago", accessor: "valorPago" },
-    { header: "Pendente", accessor: "valorPendente" },
-    { header: "Situação", accessor: "situacao" },
-    { header: "Atraso", accessor: "diasAtraso" },
+    { header: "Pago", accessor: "valorPago", sortable: true },
+    { header: "Pendente", accessor: "valorPendente", sortable: true },
+    { header: "Situação", accessor: "situacao", sortable: true },
+    {
+      header: "Atraso",
+      accessor: "diasAtraso",
+      sortable: true,
+      render: (value: string, row: any) => {
+        const dias = row.diasAtrasoOriginal
+        let color = "#9ca3af" // cinza
+        if (dias > 90) color = "#ef4444" // vermelho
+        else if (dias > 30) color = "#f97316" // laranja
+        else if (dias > 15) color = "#eab308" // amarelo
+
+        return (
+          <div className="flex items-center gap-2">
+            <div
+              className="rounded-full"
+              style={{
+                backgroundColor: color,
+                width: "12px",
+                height: "12px",
+                minWidth: "12px",
+                minHeight: "12px",
+                flexShrink: 0,
+              }}
+            />
+            <span>{value}</span>
+          </div>
+        )
+      },
+    },
     {
       header: "Ações",
       accessor: "actions",
+      sortable: false,
       render: (value: React.ReactNode) => value,
     },
   ]
@@ -167,26 +203,61 @@ export function ComissoesPage() {
     return new Date(date).toLocaleDateString("pt-BR")
   }
 
+  const generateCSV = () => {
+    const headers = [
+      "Segurado",
+      "Apólice",
+      "Parcela",
+      "Vencimento",
+      "Comissão",
+      "Pago",
+      "Pendente",
+      "Situação",
+      "Atraso",
+    ]
+    const csvRows = [
+      headers.join(","),
+      ...(comissoesData?.items.map((c) =>
+        [
+          c.seguradoNome,
+          c.numeroApolice,
+          c.numeroParcela,
+          formatDate(c.dataVencimento),
+          c.comissaoTotal,
+          c.valorPago,
+          c.valorPendente,
+          c.situacao,
+          c.diasAtraso > 0 ? `+${c.diasAtraso}` : "0",
+        ].join(",")
+      ) || []),
+    ]
+    return csvRows.join("\n")
+  }
+
+  const downloadCSV = (csv: string, filename: string) => {
+    const blob = new Blob([csv], { type: "text/csv;charset=utf-8;" })
+    const url = window.URL.createObjectURL(blob)
+    const link = document.createElement("a")
+    link.href = url
+    link.setAttribute(
+      "download",
+      `${filename}-${new Date().toLocaleDateString("pt-BR").replace(/\//g, "-")}.csv`
+    )
+    document.body.appendChild(link)
+    link.click()
+    link.remove()
+    window.URL.revokeObjectURL(url)
+  }
+
   const rows =
     comissoesData?.items.map((comissao) => ({
       ...comissao,
-      checkbox: (
-        <input
-          type="checkbox"
-          checked={selectedIds.includes(comissao.id)}
-          onChange={(e) => {
-            if (e.target.checked) {
-              setSelectedIds([...selectedIds, comissao.id])
-            } else {
-              setSelectedIds(selectedIds.filter((id) => id !== comissao.id))
-            }
-          }}
-        />
-      ),
       dataVencimento: formatDate(comissao.dataVencimento),
+      comissaoTotalOriginal: comissao.comissaoTotal,
       comissaoTotal: formatCurrency(comissao.comissaoTotal),
       valorPago: formatCurrency(comissao.valorPago),
       valorPendente: formatCurrency(comissao.valorPendente),
+      diasAtrasoOriginal: comissao.diasAtraso,
       diasAtraso: comissao.diasAtraso > 0 ? `+${comissao.diasAtraso}` : "0",
       actions: (
         <div className="flex gap-2">
@@ -260,57 +331,40 @@ export function ComissoesPage() {
         appliedFilters={filters}
       />
 
-      <div className="flex justify-between">
-        <div className="text-sm text-gray-600">
-          {selectedIds.length > 0 && `${selectedIds.length} selecionado(s)`}
-        </div>
+      <div className="flex items-center gap-2">
+        <Button
+          className="flex items-center gap-1"
+          variant="secondary"
+          onClick={() => {
+            const csv = generateCSV()
+            downloadCSV(csv, "comissoes")
+          }}>
+          <FileXls size={22} />
+          Exportar Excel
+        </Button>
+
+        <ExportTableToPDFButton
+          filename={`comissoes.${new Date().toLocaleDateString("pt-BR").replace(/\//g, "-")}`}
+          options={{ orientation: "landscape" }}
+          title="Controle de Comissões"
+          className="bg-red-500">
+          Exportar PDF
+        </ExportTableToPDFButton>
       </div>
 
       <div className="space-y-4">
-        <div className="flex items-center justify-between">
-          <div className="flex items-center gap-2">
-            <input
-              type="checkbox"
-              onChange={(e) => {
-                if (e.target.checked) {
-                  setSelectedIds(comissoesData?.items.map((c) => c.id) || [])
-                } else {
-                  setSelectedIds([])
-                }
-              }}
-              checked={
-                selectedIds.length > 0 &&
-                selectedIds.length === comissoesData?.items.length
-              }
-            />
-            <span className="text-sm text-gray-600">Selecionar todos</span>
-          </div>
-        </div>
-        <Table columns={columns} data={rows} />
+        <Table columns={columns} data={rows} enableSorting={true} />
 
-        {comissoesData && comissoesData.total > 10 && (
-          <div className="flex items-center justify-between">
-            <div className="text-sm text-gray-700">
-              Mostrando {(page - 1) * 10 + 1} a{" "}
-              {Math.min(page * 10, comissoesData.total)} de{" "}
-              {comissoesData.total} resultados
-            </div>
-            <div className="flex gap-2">
-              <Button
-                variant="tertiary"
-                onClick={() => setPage(page - 1)}
-                disabled={page === 1}>
-                Anterior
-              </Button>
-              <Button
-                variant="tertiary"
-                onClick={() => setPage(page + 1)}
-                disabled={page * 10 >= comissoesData.total}>
-                Próximo
-              </Button>
-            </div>
-          </div>
-        )}
+        <Pagination
+          page={page}
+          totalPages={comissoesData?.totalPages || 1}
+          limit={limit}
+          onPageChange={setPage}
+          onLimitChange={(newLimit) => {
+            setLimit(newLimit)
+            setPage(1)
+          }}
+        />
       </div>
 
       <PagarComissaoModal
