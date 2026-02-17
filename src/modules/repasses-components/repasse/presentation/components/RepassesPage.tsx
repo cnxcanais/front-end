@@ -10,13 +10,14 @@ import { useCorretoraQuery } from "@/modules/corretoras-components/corretora/inf
 import { useProdutorQuery } from "@/modules/produtores-components/produtor/infra/hooks/use-produtor-query"
 import { usePropostaQuery } from "@/modules/propostas-components/propostas/infra/hooks/use-proposta-query"
 import { useSeguradoraQuery } from "@/modules/seguradoras-components/seguradora/infra/hooks/use-seguradora-query"
-import { CurrencyDollar, Eye, Wallet } from "@phosphor-icons/react"
+import { ArrowCounterClockwise, CurrencyDollar, Eye, Wallet } from "@phosphor-icons/react"
 import { useMemo, useState } from "react"
 import { toast } from "sonner"
 import { useRepasseQuery } from "../../infra/hooks/use-repasse-query"
 import { baixarRepasseLote, getIndicadores } from "../../infra/remote"
 import { BaixaRepasseModal } from "./modals/BaixaRepasseModal"
 import { RepasseDetailsModal } from "./modals/RepasseDetailsModal"
+import { EstornoRepasseModal } from "@/modules/estornos-components/estorno/presentation/components/modals/EstornoRepasseModal"
 
 export function RepassesPage() {
   const [filters, setFilters] = useState<Record<string, string>>({})
@@ -26,6 +27,7 @@ export function RepassesPage() {
   )
   const [showBaixaModal, setShowBaixaModal] = useState(false)
   const [showDetailsModal, setShowDetailsModal] = useState(false)
+  const [showEstornoModal, setShowEstornoModal] = useState(false)
   const [selectedIds, setSelectedIds] = useState<string[]>([])
   const [indicadores, setIndicadores] = useState<Repasse.Indicadores | null>(
     null
@@ -232,6 +234,18 @@ export function RepassesPage() {
                 Baixar
               </Button>
             )}
+          {repasse.valorPago > 0 && repasse.situacao !== "ESTORNADO" && (
+            <Button
+              variant="tertiary"
+              onClick={() => {
+                setSelectedRepasse(repasse)
+                setShowEstornoModal(true)
+              }}
+              className="flex items-center gap-2">
+              <ArrowCounterClockwise size={16} />
+              Estornar
+            </Button>
+          )}
           <Button
             variant="tertiary"
             onClick={() => {
@@ -401,6 +415,18 @@ export function RepassesPage() {
         }}
         repasse={selectedRepasse}
       />
+
+      {selectedRepasse && (
+        <EstornoRepasseModal
+          open={showEstornoModal}
+          onClose={() => {
+            setShowEstornoModal(false)
+            setSelectedRepasse(null)
+          }}
+          repasse={selectedRepasse}
+          onSuccess={() => refetch()}
+        />
+      )}
     </div>
   )
 }

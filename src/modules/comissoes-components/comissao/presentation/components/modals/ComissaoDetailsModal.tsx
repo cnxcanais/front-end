@@ -3,9 +3,6 @@
 import { Comissao } from "@/@types/comissao"
 import { Button } from "@/core/components/Button"
 import { Modal } from "@/core/components/Modals/Modal"
-import { getComissaoHistorico } from "@/modules/comissoes-components/comissao/infra/remote"
-import { useEffect, useState } from "react"
-import { toast } from "sonner"
 
 type Props = {
   open: boolean
@@ -14,25 +11,6 @@ type Props = {
 }
 
 export function ComissaoDetailsModal({ open, onClose, comissao }: Props) {
-  const [historico, setHistorico] = useState<Comissao.HistoricoItem[]>([])
-  const [loading, setLoading] = useState(false)
-
-  useEffect(() => {
-    if (open && comissao) {
-      setLoading(true)
-      getComissaoHistorico(comissao.id)
-        .then((response) => {
-          setHistorico(response.data || [])
-        })
-        .catch(() => {
-          toast.error("Erro ao carregar histórico")
-        })
-        .finally(() => {
-          setLoading(false)
-        })
-    }
-  }, [open, comissao])
-
   if (!comissao) return null
 
   const formatCurrency = (value: number) => {
@@ -40,10 +18,6 @@ export function ComissaoDetailsModal({ open, onClose, comissao }: Props) {
       style: "currency",
       currency: "BRL",
     })
-  }
-
-  const formatDate = (date: string) => {
-    return new Date(date).toLocaleDateString("pt-BR")
   }
 
   const formatDateTime = (date: string) => {
@@ -77,7 +51,7 @@ export function ComissaoDetailsModal({ open, onClose, comissao }: Props) {
             <div>
               <span className="font-medium text-gray-600">Vencimento:</span>
               <p className="text-gray-900">
-                {formatDate(comissao.dataVencimento)}
+                {comissao.dataVencimento ? formatDateTime(comissao.dataVencimento).split(' ')[0] : '-'}
               </p>
             </div>
             <div>
@@ -120,68 +94,17 @@ export function ComissaoDetailsModal({ open, onClose, comissao }: Props) {
               <span className="font-medium text-gray-600">Seguradora:</span>
               <p className="text-gray-900">{comissao.seguradoraNome}</p>
             </div>
+            <div>
+              <span className="font-medium text-gray-600">Data Pagamento:</span>
+              <p className="text-gray-900">
+                {comissao.dataPagamento ? formatDateTime(comissao.dataPagamento).split(' ')[0] : '-'}
+              </p>
+            </div>
+            <div>
+              <span className="font-medium text-gray-600">Criado em:</span>
+              <p className="text-gray-900">{formatDateTime(comissao.createdAt)}</p>
+            </div>
           </div>
-        </div>
-
-        <div className="rounded-lg bg-blue-50 p-4">
-          <h3 className="mb-3 font-semibold text-gray-700">
-            Histórico Financeiro
-          </h3>
-          {loading && (
-            <div className="py-4 text-center text-gray-500">Carregando...</div>
-          )}
-          {!loading && historico.length === 0 && (
-            <div className="py-4 text-center text-gray-500">
-              Nenhum histórico encontrado
-            </div>
-          )}
-          {!loading && historico.length > 0 && (
-            <div className="space-y-3">
-              {historico.map((item) => (
-                <div
-                  key={item.id}
-                  className="rounded border border-gray-200 bg-white p-3">
-                  <div className="mb-2 flex items-start justify-between">
-                    <div>
-                      <h4 className="font-semibold text-gray-900">
-                        {item.tipo}
-                      </h4>
-                      <p className="text-xs text-gray-500">
-                        {formatDateTime(item.createdAt)} • {item.usuarioNome}
-                      </p>
-                    </div>
-                    <span className="rounded bg-blue-100 px-2 py-1 text-xs font-medium text-blue-700">
-                      {item.situacaoNova}
-                    </span>
-                  </div>
-                  <div className="grid grid-cols-2 gap-2 text-sm">
-                    <div>
-                      <span className="font-medium">Valor:</span>{" "}
-                      {formatCurrency(item.valorPago)}
-                    </div>
-                    <div>
-                      <span className="font-medium">Data Pagamento:</span>{" "}
-                      {formatDate(item.dataPagamento)}
-                    </div>
-                    <div>
-                      <span className="font-medium">Método:</span> {item.metodo}
-                    </div>
-                    {item.situacaoAnterior && (
-                      <div>
-                        <span className="font-medium">Situação Anterior:</span>{" "}
-                        {item.situacaoAnterior}
-                      </div>
-                    )}
-                  </div>
-                  {item.observacao && (
-                    <p className="mt-2 text-sm text-gray-700">
-                      {item.observacao}
-                    </p>
-                  )}
-                </div>
-              ))}
-            </div>
-          )}
         </div>
 
         <div className="flex justify-end">
