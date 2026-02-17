@@ -8,6 +8,7 @@ import { Table } from "@/core/components/Table"
 import { getCookie } from "@/lib/cookies"
 import { useCorretoraQuery } from "@/modules/corretoras-components/corretora/infra/hooks/use-corretora-query"
 import { EstornoComissaoModal } from "@/modules/estornos-components/estorno/presentation/components/modals/EstornoComissaoModal"
+import { ReverterEstornoComissaoModal } from "@/modules/estornos-components/estorno/presentation/components/modals/ReverterEstornoComissaoModal"
 import { usePropostaQuery } from "@/modules/propostas-components/propostas/infra/hooks/use-proposta-query"
 import { useSeguradoraQuery } from "@/modules/seguradoras-components/seguradora/infra/hooks/use-seguradora-query"
 import {
@@ -31,6 +32,7 @@ export function ComissoesPage() {
   const [showPagarModal, setShowPagarModal] = useState(false)
   const [showDetailsModal, setShowDetailsModal] = useState(false)
   const [showEstornoModal, setShowEstornoModal] = useState(false)
+  const [showReverterModal, setShowReverterModal] = useState(false)
   const [selectedIds, setSelectedIds] = useState<string[]>([])
 
   const isAdmin = getCookie("perfilId") === process.env.NEXT_PUBLIC_ADM_ID
@@ -200,7 +202,7 @@ export function ComissoesPage() {
               Pagar
             </Button>
           )}
-          {comissao.valorPago > 0 && (
+          {comissao.valorPago > 0 && !comissao.comissaoEstornadaId && (
             <Button
               variant="tertiary"
               onClick={() => {
@@ -210,6 +212,18 @@ export function ComissoesPage() {
               className="flex items-center gap-2">
               <ArrowCounterClockwise size={16} />
               Estornar
+            </Button>
+          )}
+          {comissao.comissaoEstornadaId && !comissao.isEstornoRevertido && (
+            <Button
+              variant="tertiary"
+              onClick={() => {
+                setSelectedComissao(comissao)
+                setShowReverterModal(true)
+              }}
+              className="flex items-center gap-2">
+              <ArrowCounterClockwise size={16} />
+              Reverter
             </Button>
           )}
           <Button
@@ -323,6 +337,18 @@ export function ComissoesPage() {
           open={showEstornoModal}
           onClose={() => {
             setShowEstornoModal(false)
+            setSelectedComissao(null)
+          }}
+          comissao={selectedComissao}
+          onSuccess={() => refetch()}
+        />
+      )}
+
+      {selectedComissao && (
+        <ReverterEstornoComissaoModal
+          open={showReverterModal}
+          onClose={() => {
+            setShowReverterModal(false)
             setSelectedComissao(null)
           }}
           comissao={selectedComissao}

@@ -1,6 +1,5 @@
 import { Icon } from "@phosphor-icons/react"
 import {
-  ArrowCounterClockwise,
   BuildingOffice,
   Buildings,
   Car,
@@ -177,12 +176,6 @@ export const sidebar_options: SidebarOptionProps[] = [
   {
     name: "Comissões",
     href: "/comissoes",
-    Icon: CurrencyDollar,
-    group: "Financeiro",
-  },
-  {
-    name: "Repasses",
-    href: "/repasses",
     Icon: CurrencyDollar,
     group: "Financeiro",
   },
