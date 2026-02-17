@@ -7,7 +7,7 @@ import { getCookie } from "@/lib/cookies"
 import cubeApi from "@/lib/cubejs"
 import { useUsuarioQuery } from "@/modules/usuarios-components/usuario/infra/hooks/use-usuario-query"
 import { FileXls, X } from "@phosphor-icons/react"
-import { useEffect, useState } from "react"
+import { useEffect, useMemo, useState } from "react"
 import { toast } from "sonner"
 
 type Measure = {
@@ -56,6 +56,10 @@ export function AnalyticalReport({ cubeName, title }: AnalyticalReportProps) {
   const [draggedItem, setDraggedItem] = useState<{
     type: "measure" | "dimension"
     name: string
+  } | null>(null)
+  const [sortConfig, setSortConfig] = useState<{
+    key: string
+    direction: "asc" | "desc"
   } | null>(null)
 
   const fetchDimensionValues = async (dimensionName: string) => {
@@ -217,6 +221,7 @@ export function AnalyticalReport({ cubeName, title }: AnalyticalReportProps) {
       } else {
         setPivotData(rawData)
       }
+      setSortConfig(null)
     } catch {
       toast.error("Erro ao executar consulta")
     } finally {
@@ -270,6 +275,43 @@ export function AnalyticalReport({ cubeName, title }: AnalyticalReportProps) {
 
     return result
   }
+
+  const handleSort = (key: string) => {
+    let direction: "asc" | "desc" = "asc"
+    if (sortConfig?.key === key && sortConfig.direction === "asc") {
+      direction = "desc"
+    }
+    setSortConfig({ key, direction })
+  }
+
+  const sortedData = useMemo(() => {
+    if (!sortConfig) return pivotData
+
+    return [...pivotData].sort((a, b) => {
+      const aVal = a[sortConfig.key]
+      const bVal = b[sortConfig.key]
+
+      if (aVal === bVal) return 0
+
+      const aNum = typeof aVal === "string" ? parseFloat(aVal) : aVal
+      const bNum = typeof bVal === "string" ? parseFloat(bVal) : bVal
+
+      if (
+        typeof aNum === "number" &&
+        typeof bNum === "number" &&
+        !isNaN(aNum) &&
+        !isNaN(bNum)
+      ) {
+        return sortConfig.direction === "asc" ? aNum - bNum : bNum - aNum
+      }
+
+      const aStr = String(aVal || "")
+      const bStr = String(bVal || "")
+      return sortConfig.direction === "asc" ?
+          aStr.localeCompare(bStr)
+        : bStr.localeCompare(aStr)
+    })
+  }, [pivotData, sortConfig])
 
   const handleExport = () => {
     if (pivotData.length === 0) {
@@ -686,8 +728,16 @@ export function AnalyticalReport({ cubeName, title }: AnalyticalReportProps) {
                     return (
                       <th
                         key={key}
-                        className="px-6 py-3 text-left text-xs font-medium uppercase tracking-wider text-gray-500">
-                        Medida
+                        onClick={() => handleSort(key)}
+                        className="cursor-pointer px-6 py-3 text-left text-xs font-medium uppercase tracking-wider text-gray-500 hover:bg-gray-100">
+                        <div className="flex items-center gap-1">
+                          Medida
+                          {sortConfig?.key === key && (
+                            <span>
+                              {sortConfig.direction === "asc" ? "↑" : "↓"}
+                            </span>
+                          )}
+                        </div>
                       </th>
                     )
                   }
@@ -702,15 +752,23 @@ export function AnalyticalReport({ cubeName, title }: AnalyticalReportProps) {
                   return (
                     <th
                       key={key}
-                      className="px-6 py-3 text-left text-xs font-medium uppercase tracking-wider text-gray-500">
-                      {cleanKey}
+                      onClick={() => handleSort(key)}
+                      className="cursor-pointer px-6 py-3 text-left text-xs font-medium uppercase tracking-wider text-gray-500 hover:bg-gray-100">
+                      <div className="flex items-center gap-1">
+                        {cleanKey}
+                        {sortConfig?.key === key && (
+                          <span>
+                            {sortConfig.direction === "asc" ? "↑" : "↓"}
+                          </span>
+                        )}
+                      </div>
                     </th>
                   )
                 })}
               </tr>
             </thead>
             <tbody className="divide-y divide-gray-200 bg-white">
-              {pivotData.map((row, idx) => (
+              {sortedData.map((row, idx) => (
                 <tr key={idx}>
                   {Object.values(row).map((value, cellIdx) => {
                     const numValue =
