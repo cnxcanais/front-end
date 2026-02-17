@@ -4,6 +4,7 @@ import {
   Buildings,
   Car,
   ClockCounterClockwise,
+  CurrencyDollar,
   FileText,
   Graph,
   IdentificationBadge,
@@ -171,6 +172,18 @@ export const sidebar_options: SidebarOptionProps[] = [
     href: "/relatorios-sinistros",
     Icon: Car,
     group: "Relatórios",
+  },
+  {
+    name: "Comissões",
+    href: "/comissoes",
+    Icon: CurrencyDollar,
+    group: "Financeiro",
+  },
+  {
+    name: "Repasses",
+    href: "/repasses",
+    Icon: CurrencyDollar,
+    group: "Financeiro",
   },
 ]
 
