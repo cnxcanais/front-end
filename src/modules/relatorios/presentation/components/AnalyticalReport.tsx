@@ -7,7 +7,7 @@ import { getCookie } from "@/lib/cookies"
 import cubeApi from "@/lib/cubejs"
 import { useUsuarioQuery } from "@/modules/usuarios-components/usuario/infra/hooks/use-usuario-query"
 import { FileXls, X } from "@phosphor-icons/react"
-import { useEffect, useMemo, useState } from "react"
+import { useEffect, useMemo, useState, useCallback } from "react"
 import { toast } from "sonner"
 
 type Measure = {
@@ -64,10 +64,23 @@ export function AnalyticalReport({ cubeName, title }: AnalyticalReportProps) {
 
   const fetchDimensionValues = async (dimensionName: string) => {
     try {
-      const result = await cubeApi.load({
+      const query: Record<string, unknown> = {
         dimensions: [dimensionName],
         limit: 1000,
-      })
+      }
+
+      // Add corretoraId filter for non-admin users
+      if (!isAdmin && corretoraId) {
+        query.filters = [
+          {
+            member: `${cubeName}.corretoraId`,
+            operator: "equals",
+            values: [corretoraId],
+          },
+        ]
+      }
+
+      const result = await cubeApi.load(query)
       return result
         .tablePivot()
         .map((row: Record<string, unknown>) => row[dimensionName])
@@ -77,11 +90,7 @@ export function AnalyticalReport({ cubeName, title }: AnalyticalReportProps) {
     }
   }
 
-  useEffect(() => {
-    loadMetadata()
-  }, [cubeName])
-
-  const loadMetadata = async () => {
+  const loadMetadata = useCallback(async () => {
     try {
       const meta = await cubeApi.meta()
       const cube = meta.cubes.find((c: { name: string }) => c.name === cubeName)
@@ -120,7 +129,11 @@ export function AnalyticalReport({ cubeName, title }: AnalyticalReportProps) {
     } finally {
       setLoadingMeta(false)
     }
-  }
+  }, [cubeName])
+
+  useEffect(() => {
+    loadMetadata()
+  }, [loadMetadata])
 
   const handleRunQuery = async () => {
     if (valueMeasures.length === 0) {
@@ -414,7 +427,7 @@ export function AnalyticalReport({ cubeName, title }: AnalyticalReportProps) {
       </div>
 
       <div className="grid grid-cols-12 gap-4">
-        <div className="col-span-3 space-y-4">
+        <div className="col-span-5 space-y-4">
           <div className="rounded-lg bg-white p-4 shadow">
             <h2 className="mb-3 text-sm font-semibold text-gray-700">
               Campos Disponíveis
@@ -428,7 +441,7 @@ export function AnalyticalReport({ cubeName, title }: AnalyticalReportProps) {
                 <span>{dimensionsCollapsed ? "▶" : "▼"}</span>
               </h3>
               {!dimensionsCollapsed && (
-                <div className="grid grid-cols-2 gap-1">
+                <div className="grid grid-cols-3 gap-1">
                   {dimensions.map((dimension) => (
                     <div
                       key={dimension.name}
@@ -452,7 +465,7 @@ export function AnalyticalReport({ cubeName, title }: AnalyticalReportProps) {
                 <span>{measuresCollapsed ? "▶" : "▼"}</span>
               </h3>
               {!measuresCollapsed && (
-                <div className="space-y-1">
+                <div className="grid grid-cols-2 gap-1">
                   {measures.map((measure) => (
                     <div
                       key={measure.name}
@@ -470,7 +483,7 @@ export function AnalyticalReport({ cubeName, title }: AnalyticalReportProps) {
           </div>
         </div>
 
-        <div className="col-span-9 space-y-4">
+        <div className="col-span-7 space-y-4">
           <div
             onDragOver={handleDragOver}
             onDrop={handleDropFilters}
@@ -495,24 +508,7 @@ export function AnalyticalReport({ cubeName, title }: AnalyticalReportProps) {
                     className="flex items-center gap-2 rounded bg-white p-2 shadow-sm">
                     <span className="text-xs font-medium">{dim?.title}:</span>
 
-                    {hasOptions ?
-                      <select
-                        className="flex-1 rounded border border-gray-300 px-2 py-1 text-xs"
-                        value={filter.values[0] || ""}
-                        onChange={(e) => {
-                          const newFilters = [...filters]
-                          newFilters[idx].values =
-                            e.target.value ? [e.target.value] : []
-                          setFilters(newFilters)
-                        }}>
-                        <option value="">Selecione...</option>
-                        {filter.options.map((opt) => (
-                          <option key={opt} value={opt}>
-                            {opt}
-                          </option>
-                        ))}
-                      </select>
-                    : isDate ?
+                    {isDate ?
                       filter.dimension.toLowerCase().includes("inicio") ?
                         <input
                           type="date"
@@ -559,7 +555,25 @@ export function AnalyticalReport({ cubeName, title }: AnalyticalReportProps) {
                             }}
                           />
                         </div>
-
+                    : filter.options ?
+                      <select
+                        className="flex-1 rounded border border-gray-300 px-2 py-1 text-xs"
+                        value={filter.values[0] || ""}
+                        onChange={(e) => {
+                          const newFilters = [...filters]
+                          newFilters[idx].values =
+                            e.target.value ? [e.target.value] : []
+                          setFilters(newFilters)
+                        }}>
+                        <option value="">
+                          {hasOptions ? "Selecione..." : "Nenhuma opção disponível"}
+                        </option>
+                        {filter.options.map((opt) => (
+                          <option key={opt} value={opt}>
+                            {opt}
+                          </option>
+                        ))}
+                      </select>
                     : <input
                         type="text"
                         placeholder="Digite o valor"

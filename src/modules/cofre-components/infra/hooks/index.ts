@@ -57,8 +57,8 @@ export function useRequestEditOTPMutation() {
 export function useUpdateCredentialMutation() {
   const queryClient = useQueryClient()
   return useMutation({
-    mutationFn: ({ credentialId, data }: { credentialId: string; data: any }) =>
-      remote.updateCredential(credentialId, data),
+    mutationFn: ({ credentialId, data, otpCode }: { credentialId: string; data: any; otpCode: string }) =>
+      remote.updateCredential(credentialId, { ...data, otpCode }),
     onSuccess: () => {
       toast.success("Credencial atualizada com sucesso")
       queryClient.invalidateQueries({ queryKey: ["credentials"] })

@@ -179,6 +179,12 @@ export const sidebar_options: SidebarOptionProps[] = [
     Icon: CurrencyDollar,
     group: "Financeiro",
   },
+  {
+    name: "Repasses",
+    href: "/repasses",
+    Icon: CurrencyDollar,
+    group: "Financeiro",
+  },
 ]
 
 type SidebarGroups = {

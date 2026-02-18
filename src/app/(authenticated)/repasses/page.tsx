@@ -1,4 +1,4 @@
-import { RepassesPage } from "@/modules/repasses-components/repasse/presentation/components/RepassesPage"
+import { RepassesPage } from "@/modules/repasses-components/presentation/RepassesPage"
 
 export default function Page() {
   return <RepassesPage />

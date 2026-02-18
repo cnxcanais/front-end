@@ -5,33 +5,37 @@ export namespace Repasse {
 
   export type Type = {
     id: string
+    propostaApoliceId: string
+    parcelaId: string
     comissaoId: string
     produtorId: string
-    produtorNome: string
-    apoliceId: string
-    numeroApolice: string
-    parcelaId: string
-    numeroParcela: string
-    comissaoRecebida: number
-    baseCalculo: TipoBase
-    percentual: number | null
-    valorFixo: number | null
-    valorTotal: number
-    valorPago: number
-    valorPendente: number
-    situacao: Situacao
-    diasAtraso: number
+    valorBaseRepasse: number
+    valorRepasse: number
+    percentualAplicado: number
+    repasseSobre: string
     nivelCadeia: number
-    corretoraId: string
-    corretoraNome: string
-    seguradoraId: string
-    seguradoraNome: string
+    produtorIdIndicacao: string | null
+    valorIntegral: number
+    saldoAnterior: number | null
+    isCalculoParcial: boolean
+    isCalculoFinal: boolean
+    isEditadoManualmente: boolean
+    isLastroZero: boolean
+    situacao: string
+    dataPagamento: string | null
+    dataCancelamento: string | null
+    repasseEstornadoId: string | null
+    isEstornoRevertido: boolean
+    createdBy: string
     createdAt: string
-    updatedAt: string
+    updatedBy: string | null
+    updatedAt: string | null
+    deletedBy: string | null
+    deletedAt: string | null
   }
 
   export type GetResponse = {
-    items: Type[]
+    data: Type[]
     total: number
     page: number
     limit: number

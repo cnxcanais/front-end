@@ -25,7 +25,7 @@ export function CofrePage() {
   const [searchTerm, setSearchTerm] = useState("")
   const [modalState, setModalState] = useState({
     credential: { open: false, data: null as any },
-    otp: { open: false, action: "", credentialId: "" },
+    otp: { open: false, action: "", credentialId: "", otpCode: "" },
     viewPassword: { open: false, password: "" },
   })
 
@@ -69,7 +69,7 @@ export function CofrePage() {
       onSuccess: () => {
         setModalState({
           ...modalState,
-          otp: { open: true, action: "view", credentialId },
+          otp: { open: true, action: "view", credentialId, otpCode: "" },
         })
       },
     })
@@ -82,7 +82,7 @@ export function CofrePage() {
         onSuccess: (data) => {
           setModalState({
             ...modalState,
-            otp: { open: false, action: "", credentialId: "" },
+            otp: { open: false, action: "", credentialId: "", otpCode: "" },
             viewPassword: { open: true, password: data.credential.senha },
           })
         },
@@ -95,7 +95,7 @@ export function CofrePage() {
       onSuccess: () => {
         setModalState({
           ...modalState,
-          otp: { open: true, action: "copy", credentialId },
+          otp: { open: true, action: "copy", credentialId, otpCode: "" },
         })
       },
     })
@@ -110,7 +110,7 @@ export function CofrePage() {
           toast.success("Senha copiada para a área de transferência")
           setModalState({
             ...modalState,
-            otp: { open: false, action: "", credentialId: "" },
+            otp: { open: false, action: "", credentialId: "", otpCode: "" },
           })
         },
       }
@@ -122,7 +122,7 @@ export function CofrePage() {
       onSuccess: () => {
         setModalState({
           ...modalState,
-          otp: { open: true, action: "edit", credentialId: credential.id },
+          otp: { open: true, action: "edit", credentialId: credential.id, otpCode: "" },
           credential: { open: false, data: credential },
         })
       },
@@ -132,7 +132,7 @@ export function CofrePage() {
   const handleVerifyEditOTP = (otpCode: string) => {
     setModalState({
       ...modalState,
-      otp: { open: false, action: "", credentialId: modalState.otp.credentialId },
+      otp: { open: false, action: "", credentialId: modalState.otp.credentialId, otpCode },
       credential: { open: true, data: modalState.credential.data },
     })
   }
@@ -142,13 +142,14 @@ export function CofrePage() {
       {
         credentialId: modalState.otp.credentialId,
         data: formData,
+        otpCode: modalState.otp.otpCode,
       },
       {
         onSuccess: () => {
           setModalState({
             ...modalState,
             credential: { open: false, data: null },
-            otp: { open: false, action: "", credentialId: "" },
+            otp: { open: false, action: "", credentialId: "", otpCode: "" },
           })
           refetch()
         },
@@ -161,7 +162,7 @@ export function CofrePage() {
       onSuccess: () => {
         setModalState({
           ...modalState,
-          otp: { open: true, action: "delete", credentialId },
+          otp: { open: true, action: "delete", credentialId, otpCode: "" },
         })
       },
     })
@@ -174,7 +175,7 @@ export function CofrePage() {
         onSuccess: () => {
           setModalState({
             ...modalState,
-            otp: { open: false, action: "", credentialId: "" },
+            otp: { open: false, action: "", credentialId: "", otpCode: "" },
           })
           refetch()
         },
@@ -320,7 +321,7 @@ export function CofrePage() {
         onClose={() =>
           setModalState({
             ...modalState,
-            otp: { open: false, action: "", credentialId: "" },
+            otp: { open: false, action: "", credentialId: "", otpCode: "" },
           })
         }
         onConfirm={handleOTPConfirm}

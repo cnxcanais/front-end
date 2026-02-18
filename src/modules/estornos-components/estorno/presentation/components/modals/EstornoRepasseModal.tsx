@@ -36,8 +36,8 @@ export function EstornoRepasseModal({
       return
     }
 
-    if (valor > repasse.valorPago) {
-      toast.error("Valor não pode ser maior que o valor pago")
+    if (valor > repasse.valorRepasse) {
+      toast.error("Valor não pode ser maior que o valor do repasse")
       return
     }
 
@@ -93,29 +93,29 @@ export function EstornoRepasseModal({
       size="medium">
       <div className="space-y-4">
         <div className="rounded-lg bg-gray-50 p-4">
-          <h4 className="mb-2 font-semibold text-gray-700">
-            Dados do Repasse
-          </h4>
+          <h4 className="mb-2 font-semibold text-gray-700">Dados do Repasse</h4>
           <div className="grid grid-cols-2 gap-2 text-sm">
             <div>
-              <span className="font-medium">Produtor:</span> {repasse.produtorNome}
+              <span className="font-medium">Produtor:</span>{" "}
+              {repasse.produtorId}
             </div>
             <div>
-              <span className="font-medium">Apólice:</span> {repasse.numeroApolice}
+              <span className="font-medium">Apólice:</span>{" "}
+              {repasse.propostaApoliceId}
             </div>
             <div>
-              <span className="font-medium">Parcela:</span> {repasse.numeroParcela}
+              <span className="font-medium">Parcela:</span> {repasse.parcelaId}
             </div>
             <div>
-              <span className="font-medium">Valor Pago:</span>{" "}
-              {formatCurrency(repasse.valorPago)}
+              <span className="font-medium">Valor Repasse:</span>{" "}
+              {formatCurrency(repasse.valorRepasse)}
             </div>
           </div>
         </div>
 
         <div>
           <label className="mb-2 block text-sm font-medium">
-            Valor do Estorno (Máx: {formatCurrency(repasse.valorPago)}) *
+            Valor do Estorno (Máx: {formatCurrency(repasse.valorRepasse)}) *
           </label>
           <Input.Root>
             <Input.Control
@@ -143,13 +143,13 @@ export function EstornoRepasseModal({
         </div>
 
         <div className="rounded-lg border border-red-300 bg-red-50 p-3">
-          <p className="text-sm font-semibold text-red-900">
-            ⚠️ Atenção:
-          </p>
+          <p className="text-sm font-semibold text-red-900">⚠️ Atenção:</p>
           <ul className="mt-2 list-inside list-disc space-y-1 text-sm text-red-800">
             <li>Esta operação é irreversível</li>
             <li>MASTER pode estornar qualquer repasse</li>
-            <li>Admin de corretora pode estornar apenas repasses da sua corretora</li>
+            <li>
+              Admin de corretora pode estornar apenas repasses da sua corretora
+            </li>
             <li>Todos os registros devem pertencer à mesma apólice</li>
           </ul>
         </div>
