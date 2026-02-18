@@ -68,6 +68,18 @@ const sidebar_options_not_admin: SidebarOptionProps[] = [
     Icon: Graph,
     group: "Gerenciamento",
   },
+  {
+    name: "Comissões",
+    href: "/comissoes",
+    Icon: CurrencyDollar,
+    group: "Gerenciamento",
+  },
+  {
+    name: "Repasses",
+    href: "/repasses",
+    Icon: CurrencyDollar,
+    group: "Gerenciamento",
+  },
 ]
 
 export const sidebar_options: SidebarOptionProps[] = [
