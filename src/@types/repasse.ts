@@ -1,7 +1,17 @@
+import { Parcela } from "./proposta"
+
 export namespace Repasse {
-  export type Situacao = "PENDENTE" | "PARCIAL" | "PAGO" | "CANCELADO" | "ESTORNADO"
+  export type Situacao =
+    | "PENDENTE"
+    | "PARCIAL"
+    | "PAGO"
+    | "CANCELADO"
+    | "ESTORNADO"
   export type Metodo = "Manual" | "Lote" | "Importado"
-  export type TipoBase = "Premio Liquido" | "Comissão da Corretora" | "Valor Fixo"
+  export type TipoBase =
+    | "Premio Liquido"
+    | "Comissão da Corretora"
+    | "Valor Fixo"
 
   export type Type = {
     id: string
@@ -32,6 +42,44 @@ export namespace Repasse {
     updatedAt: string | null
     deletedBy: string | null
     deletedAt: string | null
+    parcela: Omit<
+      Parcela,
+      | "deletedAt"
+      | "createdBy"
+      | "updatedBy"
+      | "deletedBy"
+      | "valorComissao"
+      | "valorBaseComissao"
+    >
+    produtor: {
+      id: string
+      nome: string
+      cnpjCpf: string
+      pessoa: string
+      situacao: string
+    }
+    propostaApolice: {
+      id: string
+      numeroProposta: string
+      numeroApolice: string
+      tipoDocumento: string
+      situacao: string
+      inicioVigencia: string
+      fimVigencia: string
+      premioLiquido: string
+      premioTotal: string
+    }
+    comissao: {
+      id: string
+      propostaApoliceId: string
+      parcelaId: string
+      valorBaseComissao: string
+      valorComissao: string
+      situacao: string
+      dataPagamento: string
+      isRepasseCalculado: boolean
+      createdAt: string
+    }
   }
 
   export type GetResponse = {

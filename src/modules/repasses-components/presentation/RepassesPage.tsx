@@ -76,6 +76,7 @@ export function RepassesPage() {
         name: "seguradoraId",
         label: "Seguradora",
         type: "select",
+        placeholder: "Selecione uma seguradora",
         options:
           seguradoras?.data.map((s) => ({
             label: s.razaoSocial,
@@ -86,6 +87,7 @@ export function RepassesPage() {
         name: "corretoraId",
         label: "Corretora",
         type: "select",
+        placeholder: "Selecione uma corretora",
         options:
           isAdmin ?
             corretoras?.data.map((c) => ({
@@ -98,6 +100,7 @@ export function RepassesPage() {
         name: "produtorId",
         label: "Produtor",
         type: "select",
+        placeholder: "Selecione um produtor",
         options:
           produtores?.data.map((p) => ({ label: p.nome, value: p.id })) || [],
       },
@@ -105,6 +108,7 @@ export function RepassesPage() {
         name: "propostaApoliceId",
         label: "Apólice",
         type: "select",
+        placeholder: "Selecione uma apólice",
         options:
           propostas?.data.map((p) => ({
             label: p.numeroApolice,
@@ -115,6 +119,7 @@ export function RepassesPage() {
         name: "situacaoRepasse",
         label: "Situação",
         type: "select",
+        placeholder: "Selecione uma situação",
         options: [
           { label: "Pendente", value: "Pendente" },
           { label: "Simulado", value: "Simulado" },
@@ -249,13 +254,59 @@ export function RepassesPage() {
       Cancelado: "bg-gray-100 text-gray-800",
       ESTORNADO: "bg-red-100 text-red-800",
       Estornado: "bg-red-100 text-red-800",
+      REVERTIDO: "bg-red-100 text-red-400",
+      Revertido: "bg-red-100 text-red-400",
+    }
+    return colors[situacao] || "bg-gray-100 text-gray-800"
+  }
+
+  const getSituacaoParcelaColor = (situacao: string) => {
+    const colors: Record<string, string> = {
+      Cancelada: "bg-gray-100 text-gray-800",
+      Pendente: "bg-blue-100 text-blue-800",
+      "Em Atraso": "bg-red-100 text-red-800",
+      Paga: "bg-green-100 text-green-800",
     }
     return colors[situacao] || "bg-gray-100 text-gray-800"
   }
 
   const columns = [
+    {
+      header: "Corretora",
+      accessor: "corretora",
+      render: (v: string, row: Repasse.Type) => (
+        <span>{row.propostaApolice.tipoDocumento}</span>
+      ),
+    },
+    {
+      header: "Seguradora",
+      accessor: "seguradora",
+      render: (v: string, row: Repasse.Type) => (
+        <span>{row.propostaApolice.tipoDocumento}</span>
+      ),
+    },
+    {
+      header: "Apólice",
+      accessor: "numeroApolice",
+      render: (v: string, row: Repasse.Type) => (
+        <span>{row.propostaApolice.numeroApolice}</span>
+      ),
+    },
+    {
+      header: "Segurado",
+      accessor: "segurado",
+      render: (v: string, row: Repasse.Type) => (
+        <span>{row.propostaApolice.tipoDocumento}</span>
+      ),
+    },
     { header: "Produtor", accessor: "produtorNome" },
-    { header: "Apólice", accessor: "numeroApolice" },
+    {
+      header: "Parcela",
+      accessor: "parcela",
+      render: (v: string, row: Repasse.Type) => (
+        <span>{row.parcela?.numeroParcela || "-"}</span>
+      ),
+    },
     {
       header: "Base",
       accessor: "valorBaseRepasse",
@@ -264,7 +315,7 @@ export function RepassesPage() {
     {
       header: "Tipo",
       accessor: "repasseSobre",
-      render: (v: string, row: any) => (
+      render: (v: string, row: Repasse.Type) => (
         <div className="text-xs">
           <div>{v}</div>
           <div className="text-gray-500">{row.percentualAplicado}%</div>
@@ -283,18 +334,40 @@ export function RepassesPage() {
     {
       header: "Situação",
       accessor: "situacao",
-      render: (v: string) => (
-        <span
-          className={`rounded-full px-2 py-1 text-xs font-medium ${getSituacaoColor(v)}`}>
-          {v}
-        </span>
-      ),
+      render: (v: string, row: Repasse.Type) => {
+        let adjustedValue = v
+        if (row.repasseEstornadoId && !row.isEstornoRevertido) {
+          adjustedValue = "Estornado"
+        } else if (row.repasseEstornadoId && row.isEstornoRevertido) {
+          adjustedValue = "Revertido"
+        }
+        return (
+          <span
+            className={`rounded-full px-2 py-1 text-xs font-medium ${getSituacaoColor(adjustedValue)}`}>
+            {adjustedValue}
+          </span>
+        )
+      },
+    },
+    {
+      header: "Situação da Parcela",
+      accessor: "parcela",
+      render: (v: any, row: Repasse.Type) => {
+        const situacao = row.parcela?.situacao || "-"
+        if (situacao === "-") return situacao
+        return (
+          <span
+            className={`rounded-full px-2 py-1 text-xs font-medium ${getSituacaoParcelaColor(situacao)}`}>
+            {situacao}
+          </span>
+        )
+      },
     },
     { header: "Nível", accessor: "nivelCadeia" },
     {
       header: "Ações",
       accessor: "actions",
-      render: (_: any, row: any) => (
+      render: (_: any, row: Repasse.Type) => (
         <div className="flex gap-1">
           {(row.situacao === "Provisionado" || row.situacao === "Pendente") && (
             <button
