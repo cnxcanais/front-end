@@ -426,8 +426,8 @@ export function RepassesPage() {
     })
 
     // Separate parent repasses and estornos
-    const parentRepasses = mappedRows.filter((r) => r.valorRepasse >= 0)
-    const estornos = mappedRows.filter((r) => r.valorRepasse < 0)
+    const parentRepasses = mappedRows.filter((r) => !r.repasseEstornadoId)
+    const estornos = mappedRows.filter((r) => r.repasseEstornadoId)
 
     // Sort parent repasses
     const sortedParents = [...parentRepasses].sort((a, b) => {
