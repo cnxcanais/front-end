@@ -78,6 +78,7 @@ export function ComissoesPage() {
         name: "situacaoComissao",
         label: "Situação",
         type: "select",
+        placeholder: "Selecione a situação",
         options: [
           { label: "Simulada", value: "Simulada" },
           { label: "Provisionada", value: "Provisionada" },
@@ -90,6 +91,7 @@ export function ComissoesPage() {
         name: "corretoraId",
         label: "Corretora",
         type: "select",
+        placeholder: "Selecione a corretora",
         options:
           isAdmin ?
             corretoraData?.data.map((c) => ({
@@ -107,6 +109,7 @@ export function ComissoesPage() {
         name: "seguradoraId",
         label: "Seguradora",
         type: "select",
+        placeholder: "Selecione a seguradora",
         options:
           seguradoraData?.data.map((s) => ({
             label: s.razaoSocial,
@@ -117,6 +120,7 @@ export function ComissoesPage() {
         name: "propostaApoliceId",
         label: "Apólice",
         type: "select",
+        placeholder: "Selecione a apólice",
         options:
           propostaData?.data.map((p) => ({
             label: p.numeroApolice,
@@ -138,45 +142,71 @@ export function ComissoesPage() {
   )
 
   const columns = [
+    {
+      header: "Corretora",
+      accessor: "corretoraNome",
+      sortable: true,
+      render: (v: string, row: any) => (
+        <span className={(row as any).isNested ? "pl-8" : ""}>
+          {(row as any).isNested && "↳ "}
+          {row.corretoraNome}
+        </span>
+      ),
+    },
+    { header: "Seguradora", accessor: "seguradoraNome", sortable: true },
     { header: "Segurado", accessor: "seguradoNome", sortable: true },
     { header: "Apólice", accessor: "numeroApolice", sortable: true },
     { header: "Parcela", accessor: "numeroParcela", sortable: true },
     { header: "Vencimento", accessor: "dataVencimento", sortable: true },
-    { header: "Comissão", accessor: "comissaoTotal", sortable: true, render: (value: string, row: any) => (
-        <span className={row.comissaoTotalOriginal < 0 ? "text-red-600 font-semibold" : ""}>
+    {
+      header: "Comissão",
+      accessor: "comissaoTotal",
+      sortable: true,
+      render: (value: string, row: any) => (
+        <span
+          className={row.valorComissao < 0 ? "font-semibold text-red-600" : ""}>
           {value}
         </span>
       ),
     },
     { header: "Pago", accessor: "valorPago", sortable: true },
     { header: "Pendente", accessor: "valorPendente", sortable: true },
-    { 
-      header: "Situação", 
-      accessor: "situacao", 
+    {
+      header: "Situação",
+      accessor: "situacao",
       sortable: true,
-      render: (value: string) => {
+      render: (value: string, row: any) => {
+        let adjustedValue = value
+        if (row.comissaoEstornadaId && !row.isEstornoRevertido) {
+          adjustedValue = "Estornado"
+        } else if (row.comissaoEstornadaId && row.isEstornoRevertido) {
+          adjustedValue = "Revertido"
+        }
         const getSituacaoStyle = (situacao: string) => {
           switch (situacao) {
-            case "Simulada":
-              return "bg-purple-100 text-purple-800 border-purple-300"
-            case "Provisionada":
-              return "bg-blue-100 text-blue-800 border-blue-300"
             case "Pendente":
               return "bg-yellow-100 text-yellow-800 border-yellow-300"
-            case "Paga":
+            case "Pago":
               return "bg-green-100 text-green-800 border-green-300"
-            case "Cancelada":
+            case "Parcial":
+              return "bg-blue-100 text-blue-800 border-blue-300"
+            case "Cancelado":
+              return "bg-gray-100 text-gray-800 border-gray-300"
+            case "Estornado":
               return "bg-red-100 text-red-800 border-red-300"
+            case "Revertido":
+              return "bg-red-100 text-red-400 border-red-300"
             default:
               return "bg-gray-100 text-gray-800 border-gray-300"
           }
         }
         return (
-          <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium border ${getSituacaoStyle(value)}`}>
-            {value}
+          <span
+            className={`inline-flex items-center rounded-full border px-2.5 py-0.5 text-xs font-medium ${getSituacaoStyle(adjustedValue)}`}>
+            {adjustedValue}
           </span>
         )
-      }
+      },
     },
     {
       header: "Atraso",
@@ -185,8 +215,10 @@ export function ComissoesPage() {
       render: (value: string, row: any) => {
         const dias = row.diasAtrasoOriginal
         let color = "#9ca3af" // cinza
-        if (dias > 90) color = "#ef4444" // vermelho
-        else if (dias > 30) color = "#f97316" // laranja
+        if (dias > 90)
+          color = "#ef4444" // vermelho
+        else if (dias > 30)
+          color = "#f97316" // laranja
         else if (dias > 15) color = "#eab308" // amarelo
 
         return (
@@ -272,8 +304,56 @@ export function ComissoesPage() {
     window.URL.revokeObjectURL(url)
   }
 
-  const rows =
-    comissoesData?.items.map((comissao) => ({
+  const rows = useMemo(() => {
+    if (!comissoesData?.items) return []
+
+    // Separate parent comissoes and estornos
+    const parentComissoes = comissoesData.items.filter(
+      (c) => !c.comissaoEstornadaId
+    )
+    const estornos = comissoesData.items.filter((c) => c.comissaoEstornadaId)
+
+    // Sort parent comissoes
+    const sortedParents = [...parentComissoes].sort((a, b) => {
+      const corretoraA = a.corretoraNome || ""
+      const corretoraB = b.corretoraNome || ""
+      if (corretoraA !== corretoraB) return corretoraA.localeCompare(corretoraB)
+
+      const seguradoraA = a.seguradoraNome || ""
+      const seguradoraB = b.seguradoraNome || ""
+      if (seguradoraA !== seguradoraB)
+        return seguradoraA.localeCompare(seguradoraB)
+
+      const seguradoA = a.seguradoNome || ""
+      const seguradoB = b.seguradoNome || ""
+      if (seguradoA !== seguradoB) return seguradoA.localeCompare(seguradoB)
+
+      const apoliceA = a.numeroApolice || ""
+      const apoliceB = b.numeroApolice || ""
+      if (apoliceA !== apoliceB) return apoliceA.localeCompare(apoliceB)
+
+      const parcelaA = Number(a.numeroParcela) || 0
+      const parcelaB = Number(b.numeroParcela) || 0
+      return parcelaA - parcelaB
+    })
+
+    // Nest estornos under their parent comissoes
+    const result: any[] = []
+    sortedParents.forEach((parent) => {
+      result.push(parent)
+      const relatedEstornos = [...estornos]
+        .filter((e) => e.comissaoEstornadaId === parent.id)
+        .sort((a, b) => {
+          const parcelaA = Number(a.numeroParcela) || 0
+          const parcelaB = Number(b.numeroParcela) || 0
+          return parcelaA - parcelaB
+        })
+      relatedEstornos.forEach((estorno) => {
+        result.push({ ...estorno, isNested: true })
+      })
+    })
+
+    return result.map((comissao) => ({
       ...comissao,
       dataVencimento: formatDate(comissao.dataVencimento),
       comissaoTotalOriginal: comissao.comissaoTotal,
@@ -332,7 +412,8 @@ export function ComissoesPage() {
           </Button>
         </div>
       ),
-    })) || []
+    }))
+  }, [comissoesData])
 
   if (isLoading) return <LoadingScreen />
 
