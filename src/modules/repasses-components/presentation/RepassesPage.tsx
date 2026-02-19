@@ -5,6 +5,7 @@ import { Button } from "@/core/components/Button"
 import { ExportTableToPDFButton } from "@/core/components/ExportPDFButton"
 import { FilterField, FilterForm } from "@/core/components/FilterForm"
 import { LoadingScreen } from "@/core/components/LoadingScreen"
+import { Pagination } from "@/core/components/Pagination"
 import { Table } from "@/core/components/Table"
 import { getCookie } from "@/lib/cookies"
 import { useCorretoraQuery } from "@/modules/corretoras-components/corretora/infra/hooks/use-corretora-query"
@@ -41,6 +42,7 @@ export function RepassesPage() {
 
   const [filters, setFilters] = useState<Record<string, string>>({})
   const [page, setPage] = useState(1)
+  const [limit, setLimit] = useState(10)
   const [baixaRepasse, setBaixaRepasse] = useState<Repasse.Type | null>(null)
   const [estornoRepasse, setEstornoRepasse] = useState<Repasse.Type | null>(
     null
@@ -55,7 +57,7 @@ export function RepassesPage() {
   const { data: corretoras } = useCorretoraQuery(1, -1, {})
   const { data: produtores } = useProdutorQuery(1, -1, standardFilters)
   const { data: propostas } = usePropostaQuery(1, -1, standardFilters)
-  const { data: repassesData, isLoading } = useRepassesQuery(page, 10, {
+  const { data: repassesData, isLoading } = useRepassesQuery(page, limit, {
     ...filters,
     ...standardFilters,
   })
@@ -274,15 +276,18 @@ export function RepassesPage() {
     {
       header: "Corretora",
       accessor: "corretora",
-      render: (v: string, row: Repasse.Type) => (
-        <span>{row.propostaApolice.tipoDocumento}</span>
+      render: (v: string, row: any) => (
+        <span className={(row as any).isNested ? "pl-8" : ""}>
+          {(row as any).isNested && "↳ "}
+          {row.propostaApolice.corretoraNome}
+        </span>
       ),
     },
     {
       header: "Seguradora",
       accessor: "seguradora",
       render: (v: string, row: Repasse.Type) => (
-        <span>{row.propostaApolice.tipoDocumento}</span>
+        <span>{row.propostaApolice.seguradoraNome}</span>
       ),
     },
     {
@@ -296,7 +301,7 @@ export function RepassesPage() {
       header: "Segurado",
       accessor: "segurado",
       render: (v: string, row: Repasse.Type) => (
-        <span>{row.propostaApolice.tipoDocumento}</span>
+        <span>{row.propostaApolice.seguradoNome}</span>
       ),
     },
     { header: "Produtor", accessor: "produtorNome" },
@@ -408,7 +413,7 @@ export function RepassesPage() {
 
   const rows = useMemo(() => {
     if (!repassesData?.data) return []
-    return repassesData.data.map((repasse: any) => {
+    const mappedRows = repassesData.data.map((repasse: Repasse.Type) => {
       const produtor = produtores?.data.find((p) => p.id === repasse.produtorId)
       const proposta = propostas?.data.find(
         (p) => p.id === repasse.propostaApoliceId
@@ -419,6 +424,56 @@ export function RepassesPage() {
         numeroApolice: proposta?.numeroApolice || "-",
       }
     })
+
+    // Separate parent repasses and estornos
+    const parentRepasses = mappedRows.filter((r) => r.valorRepasse >= 0)
+    const estornos = mappedRows.filter((r) => r.valorRepasse < 0)
+
+    // Sort parent repasses
+    const sortedParents = [...parentRepasses].sort((a, b) => {
+      const corretoraA = a.propostaApolice?.corretoraNome || ""
+      const corretoraB = b.propostaApolice?.corretoraNome || ""
+      if (corretoraA !== corretoraB) return corretoraA.localeCompare(corretoraB)
+
+      const seguradoraA = a.propostaApolice?.seguradoraNome || ""
+      const seguradoraB = b.propostaApolice?.seguradoraNome || ""
+      if (seguradoraA !== seguradoraB)
+        return seguradoraA.localeCompare(seguradoraB)
+
+      const apoliceA = a.propostaApolice?.numeroApolice || ""
+      const apoliceB = b.propostaApolice?.numeroApolice || ""
+      if (apoliceA !== apoliceB) return apoliceA.localeCompare(apoliceB)
+
+      const seguradoA = a.propostaApolice?.seguradoNome || ""
+      const seguradoB = b.propostaApolice?.seguradoNome || ""
+      if (seguradoA !== seguradoB) return seguradoA.localeCompare(seguradoB)
+
+      const produtorA = a.produtorNome || ""
+      const produtorB = b.produtorNome || ""
+      if (produtorA !== produtorB) return produtorA.localeCompare(produtorB)
+
+      const parcelaA = a.parcela?.numeroParcela || 0
+      const parcelaB = b.parcela?.numeroParcela || 0
+      return parcelaA - parcelaB
+    })
+
+    // Nest estornos under their parent repasses
+    const result: any = []
+    sortedParents.forEach((parent) => {
+      result.push(parent)
+      const relatedEstornos = [...estornos]
+        .filter((e) => e.repasseEstornadoId === parent.id)
+        .sort((a, b) => {
+          const parcelaA = a.parcela?.numeroParcela || 0
+          const parcelaB = b.parcela?.numeroParcela || 0
+          return parcelaA - parcelaB
+        })
+      relatedEstornos.forEach((estorno) => {
+        result.push({ ...estorno, isNested: true })
+      })
+    })
+
+    return result
   }, [repassesData, produtores, propostas])
 
   if (isLoading) return <LoadingScreen />
@@ -461,29 +516,16 @@ export function RepassesPage() {
       <div className="space-y-4">
         <Table columns={columns} data={rows} />
 
-        {repassesData && repassesData.total > 10 && (
-          <div className="flex items-center justify-between">
-            <div className="text-sm text-gray-700">
-              Mostrando {(page - 1) * 10 + 1} a{" "}
-              {Math.min(page * 10, repassesData.total)} de {repassesData.total}{" "}
-              resultados
-            </div>
-            <div className="flex gap-2">
-              <Button
-                variant="tertiary"
-                onClick={() => setPage(page - 1)}
-                disabled={page === 1}>
-                Anterior
-              </Button>
-              <Button
-                variant="tertiary"
-                onClick={() => setPage(page + 1)}
-                disabled={page * 10 >= repassesData.total}>
-                Próximo
-              </Button>
-            </div>
-          </div>
-        )}
+        <Pagination
+          page={page}
+          totalPages={repassesData?.totalPages || 1}
+          limit={limit}
+          onPageChange={setPage}
+          onLimitChange={(newLimit) => {
+            setLimit(newLimit)
+            setPage(1)
+          }}
+        />
       </div>
 
       {baixaRepasse && (

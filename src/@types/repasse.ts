@@ -68,6 +68,9 @@ export namespace Repasse {
       fimVigencia: string
       premioLiquido: string
       premioTotal: string
+      corretoraNome: string
+      seguradoraNome: string
+      seguradoNome: string
     }
     comissao: {
       id: string
