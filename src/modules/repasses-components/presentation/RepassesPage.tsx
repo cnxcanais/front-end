@@ -96,7 +96,12 @@ export function RepassesPage() {
               label: c.razaoSocial,
               value: c.id,
             })) || []
-          : [],
+          : corretoras?.data
+              .filter((c) => c.id === corretoraId)
+              .map((c) => ({
+                label: c.razaoSocial,
+                value: c.id,
+              })) || [],
       },
       {
         name: "produtorId",

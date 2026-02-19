@@ -65,7 +65,7 @@ export function ComissoesPage() {
       await calcularComissoes({})
       toast.success("Comissões calculadas com sucesso")
       refetch()
-    } catch (error: any) {
+    } catch (error) {
       toast.error(
         error?.response?.data?.message || "Erro ao calcular comissões"
       )
@@ -364,7 +364,7 @@ export function ComissoesPage() {
       diasAtraso: comissao.diasAtraso > 0 ? `+${comissao.diasAtraso}` : "0",
       actions: (
         <div className="flex gap-2">
-          {comissao.situacao === "Pendente" && (
+          {comissao.situacao === "Pendente" && isAdmin && (
             <Button
               variant="tertiary"
               onClick={() => {
@@ -376,30 +376,34 @@ export function ComissoesPage() {
               Pagar
             </Button>
           )}
-          {comissao.valorPago > 0 && !comissao.comissaoEstornadaId && (
-            <Button
-              variant="tertiary"
-              onClick={() => {
-                setSelectedComissao(comissao)
-                setShowEstornoModal(true)
-              }}
-              className="flex items-center gap-2">
-              <ArrowCounterClockwise size={16} />
-              Estornar
-            </Button>
-          )}
-          {comissao.comissaoEstornadaId && !comissao.isEstornoRevertido && (
-            <Button
-              variant="tertiary"
-              onClick={() => {
-                setSelectedComissao(comissao)
-                setShowReverterModal(true)
-              }}
-              className="flex items-center gap-2">
-              <ArrowCounterClockwise size={16} />
-              Reverter
-            </Button>
-          )}
+          {comissao.valorPago > 0 &&
+            !comissao.comissaoEstornadaId &&
+            isAdmin && (
+              <Button
+                variant="tertiary"
+                onClick={() => {
+                  setSelectedComissao(comissao)
+                  setShowEstornoModal(true)
+                }}
+                className="flex items-center gap-2">
+                <ArrowCounterClockwise size={16} />
+                Estornar
+              </Button>
+            )}
+          {comissao.comissaoEstornadaId &&
+            !comissao.isEstornoRevertido &&
+            isAdmin && (
+              <Button
+                variant="tertiary"
+                onClick={() => {
+                  setSelectedComissao(comissao)
+                  setShowReverterModal(true)
+                }}
+                className="flex items-center gap-2">
+                <ArrowCounterClockwise size={16} />
+                Reverter
+              </Button>
+            )}
           <Button
             variant="tertiary"
             onClick={() => {
@@ -413,7 +417,7 @@ export function ComissoesPage() {
         </div>
       ),
     }))
-  }, [comissoesData])
+  }, [comissoesData, isAdmin])
 
   if (isLoading) return <LoadingScreen />
 
