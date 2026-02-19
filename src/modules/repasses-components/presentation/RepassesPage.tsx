@@ -156,7 +156,7 @@ export function RepassesPage() {
         type: "date",
       },
     ],
-    [seguradoras, corretoras, produtores, propostas, isAdmin]
+    [seguradoras, corretoras, produtores, propostas, isAdmin, corretoraId]
   )
 
   const formatCurrency = (value: number) => {
@@ -379,15 +379,16 @@ export function RepassesPage() {
       accessor: "actions",
       render: (_: any, row: Repasse.Type) => (
         <div className="flex gap-1">
-          {(row.situacao === "Provisionado" || row.situacao === "Pendente") && (
-            <button
-              onClick={() => setEditarRepasse(row)}
-              className="rounded p-1 text-blue-600 hover:bg-blue-50"
-              title="Editar valor">
-              <Pencil size={16} />
-            </button>
-          )}
-          {row.situacao === "Pendente" && (
+          {(row.situacao === "Provisionado" || row.situacao === "Pendente") &&
+            isAdmin && (
+              <button
+                onClick={() => setEditarRepasse(row)}
+                className="rounded p-1 text-blue-600 hover:bg-blue-50"
+                title="Editar valor">
+                <Pencil size={16} />
+              </button>
+            )}
+          {row.situacao === "Pendente" && isAdmin && (
             <button
               onClick={() => setBaixaRepasse(row)}
               className="rounded p-1 text-green-600 hover:bg-green-50"
@@ -395,7 +396,7 @@ export function RepassesPage() {
               <CurrencyDollar size={16} />
             </button>
           )}
-          {row.situacao === "Pago" && !row.repasseEstornadoId && (
+          {row.situacao === "Pago" && !row.repasseEstornadoId && isAdmin && (
             <button
               onClick={() => setEstornoRepasse(row)}
               className="rounded p-1 text-red-600 hover:bg-red-50"
@@ -403,7 +404,7 @@ export function RepassesPage() {
               <ArrowsClockwise size={16} />
             </button>
           )}
-          {row.repasseEstornadoId && !row.isEstornoRevertido && (
+          {row.repasseEstornadoId && !row.isEstornoRevertido && isAdmin && (
             <button
               onClick={() => setReverterEstorno(row)}
               className="rounded p-1 text-orange-600 hover:bg-orange-50"
