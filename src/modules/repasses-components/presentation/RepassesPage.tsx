@@ -55,7 +55,7 @@ export function RepassesPage() {
 
   const standardFilters = isAdmin ? {} : { corretoraId: corretoraId || "" }
   const { data: seguradoras } = useSeguradoraQuery(1, -1, standardFilters)
-  const { data: corretoras } = useCorretoraQuery(1, -1, standardFilters)
+  const { data: corretoras } = useCorretoraQuery(1, -1, {})
   const { data: produtores } = useProdutorQuery(1, -1, standardFilters)
   const { data: propostas } = usePropostaQuery(1, -1, standardFilters)
   const { data: repassesData, isLoading } = useRepassesQuery(page, limit, {
@@ -147,7 +147,7 @@ export function RepassesPage() {
         name: "situacaoRepasse",
         label: "Situação",
         type: "select",
-        placeholder: "Selecione uma situação",
+        placeholder: "Selecione uma situação de repasse",
         options: [
           { label: "Pendente", value: "Pendente" },
           { label: "Simulado", value: "Simulado" },
@@ -158,7 +158,7 @@ export function RepassesPage() {
       },
       {
         name: "situacaoParcela",
-        label: "Situação da Parcela",
+        label: "Situação da Parcela de parcela",
         type: "select",
         placeholder: "Selecione uma situação",
         options: [
@@ -172,7 +172,7 @@ export function RepassesPage() {
         name: "situacaoApolice",
         label: "Situação da Apólice",
         type: "select",
-        placeholder: "Selecione a situação",
+        placeholder: "Selecione a situação de apólice",
         options: [
           { label: "Ativo", value: "Ativo" },
           { label: "Inativo", value: "Inativo" },
