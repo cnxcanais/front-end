@@ -399,57 +399,53 @@ export function ComissoesPage() {
       diasAtrasoOriginal: comissao.diasAtraso,
       diasAtraso: comissao.diasAtraso > 0 ? `+${comissao.diasAtraso}` : "0",
       actions: (
-        <div className="flex gap-2">
+        <div className="flex gap-1">
           {comissao.situacao === "Pendente" && isAdmin && (
-            <Button
-              variant="tertiary"
+            <button
               onClick={() => {
                 setSelectedComissao(comissao)
                 setShowPagarModal(true)
               }}
-              className="flex items-center gap-2">
+              className="rounded p-1 text-green-600 hover:bg-green-50"
+              title="Pagar">
               <Wallet size={16} />
-              Pagar
-            </Button>
+            </button>
           )}
           {comissao.valorPago > 0 &&
             !comissao.comissaoEstornadaId &&
             isAdmin && (
-              <Button
-                variant="tertiary"
+              <button
                 onClick={() => {
                   setSelectedComissao(comissao)
                   setShowEstornoModal(true)
                 }}
-                className="flex items-center gap-2">
+                className="rounded p-1 text-red-600 hover:bg-red-50"
+                title="Estornar">
                 <ArrowCounterClockwise size={16} />
-                Estornar
-              </Button>
+              </button>
             )}
           {comissao.comissaoEstornadaId &&
             !comissao.isEstornoRevertido &&
             isAdmin && (
-              <Button
-                variant="tertiary"
+              <button
                 onClick={() => {
                   setSelectedComissao(comissao)
                   setShowReverterModal(true)
                 }}
-                className="flex items-center gap-2">
+                className="rounded p-1 text-orange-600 hover:bg-orange-50"
+                title="Reverter">
                 <ArrowCounterClockwise size={16} />
-                Reverter
-              </Button>
+              </button>
             )}
-          <Button
-            variant="tertiary"
+          <button
             onClick={() => {
               setSelectedComissao(comissao)
               setShowDetailsModal(true)
             }}
-            className="flex items-center gap-2">
+            className="rounded p-1 text-blue-600 hover:bg-blue-50"
+            title="Detalhe">
             <Eye size={16} />
-            Detalhe
-          </Button>
+          </button>
         </div>
       ),
     }))

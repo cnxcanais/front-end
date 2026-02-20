@@ -8,6 +8,7 @@ import { LoadingScreen } from "@/core/components/LoadingScreen"
 import { Pagination } from "@/core/components/Pagination"
 import { Table } from "@/core/components/Table"
 import { getCookie } from "@/lib/cookies"
+import { useComissaoQuery } from "@/modules/comissoes-components/comissao/infra/hooks/use-comissao-query"
 import { useCorretoraQuery } from "@/modules/corretoras-components/corretora/infra/hooks/use-corretora-query"
 import { useProdutorQuery } from "@/modules/produtores-components/produtor/infra/hooks/use-produtor-query"
 import { usePropostaQuery } from "@/modules/propostas-components/propostas/infra/hooks/use-proposta-query"
@@ -53,14 +54,15 @@ export function RepassesPage() {
   )
 
   const standardFilters = isAdmin ? {} : { corretoraId: corretoraId || "" }
-  const { data: seguradoras } = useSeguradoraQuery(1, -1, {})
-  const { data: corretoras } = useCorretoraQuery(1, -1, {})
+  const { data: seguradoras } = useSeguradoraQuery(1, -1, standardFilters)
+  const { data: corretoras } = useCorretoraQuery(1, -1, standardFilters)
   const { data: produtores } = useProdutorQuery(1, -1, standardFilters)
   const { data: propostas } = usePropostaQuery(1, -1, standardFilters)
   const { data: repassesData, isLoading } = useRepassesQuery(page, limit, {
     ...filters,
     ...standardFilters,
   })
+  const { data: comissoes } = useComissaoQuery(1, -1, standardFilters)
 
   const markPagoMutation = useMarkRepasseAsPagoMutation()
   const estornarMutation = useEstornarRepasseMutation()
@@ -123,6 +125,25 @@ export function RepassesPage() {
           })) || [],
       },
       {
+        name: "comissaoId",
+        label: "Comissão",
+        type: "select",
+        placeholder: "Selecione uma comissão",
+        options:
+          comissoes?.items.map((c) => ({
+            label:
+              c.numeroApolice +
+              " - Parcela " +
+              c.numeroParcela +
+              " - Valor " +
+              c.valorComissao.toLocaleString("pt-BR", {
+                style: "currency",
+                currency: "BRL",
+              }),
+            value: c.id,
+          })) || [],
+      },
+      {
         name: "situacaoRepasse",
         label: "Situação",
         type: "select",
@@ -145,6 +166,52 @@ export function RepassesPage() {
           { label: "Em Atraso", value: "Em Atraso" },
           { label: "Paga", value: "Paga" },
           { label: "Cancelada", value: "Cancelada" },
+        ],
+      },
+      {
+        name: "situacaoApolice",
+        label: "Situação da Apólice",
+        type: "select",
+        placeholder: "Selecione a situação",
+        options: [
+          { label: "Ativo", value: "Ativo" },
+          { label: "Inativo", value: "Inativo" },
+          { label: "Recusada", value: "Recusada" },
+          { label: "Renovada", value: "Renovada" },
+          { label: "Não Renovada", value: "Não Renovada" },
+          { label: "Cancelada", value: "Cancelada" },
+        ],
+      },
+      {
+        name: "situacaoParcela",
+        label: "Situação da Parcela",
+        type: "select",
+        placeholder: "Selecione a situação",
+        options: [
+          { label: "Pendente", value: "Pendente" },
+          { label: "Em Atraso", value: "Em Atraso" },
+          { label: "Paga", value: "Paga" },
+          { label: "Cancelada", value: "Cancelada" },
+        ],
+      },
+      {
+        name: "apenasEstornos",
+        label: "Apenas Estornos",
+        type: "select",
+        placeholder: "Selecione",
+        options: [
+          { label: "Sim", value: "true" },
+          { label: "Não", value: "false" },
+        ],
+      },
+      {
+        name: "isLastroZero",
+        label: "Apenas Lastro Zero",
+        type: "select",
+        placeholder: "Selecione",
+        options: [
+          { label: "Sim", value: "true" },
+          { label: "Não", value: "false" },
         ],
       },
       {
