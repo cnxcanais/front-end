@@ -136,6 +136,18 @@ export function RepassesPage() {
         ],
       },
       {
+        name: "situacaoParcela",
+        label: "Situação da Parcela",
+        type: "select",
+        placeholder: "Selecione uma situação",
+        options: [
+          { label: "Pendente", value: "Pendente" },
+          { label: "Em Atraso", value: "Em Atraso" },
+          { label: "Paga", value: "Paga" },
+          { label: "Cancelada", value: "Cancelada" },
+        ],
+      },
+      {
         name: "dataEmissaoInicio",
         label: "Data Emissão (De)",
         type: "date",
@@ -428,15 +440,12 @@ export function RepassesPage() {
         ...repasse,
         produtorNome: produtor?.nome || "-",
         numeroApolice: proposta?.numeroApolice || "-",
+        isNested: !!repasse.repasseEstornadoId,
       }
     })
 
-    // Separate parent repasses and estornos
-    const parentRepasses = mappedRows.filter((r) => !r.repasseEstornadoId)
-    const estornos = mappedRows.filter((r) => r.repasseEstornadoId)
-
-    // Sort parent repasses
-    const sortedParents = [...parentRepasses].sort((a, b) => {
+    // Sort all rows together
+    return [...mappedRows].sort((a, b) => {
       const corretoraA = a.propostaApolice?.corretoraNome || ""
       const corretoraB = b.propostaApolice?.corretoraNome || ""
       if (corretoraA !== corretoraB) return corretoraA.localeCompare(corretoraB)
@@ -460,26 +469,14 @@ export function RepassesPage() {
 
       const parcelaA = a.parcela?.numeroParcela || 0
       const parcelaB = b.parcela?.numeroParcela || 0
-      return parcelaA - parcelaB
-    })
+      if (parcelaA !== parcelaB) return parcelaA - parcelaB
 
-    // Nest estornos under their parent repasses
-    const result: any = []
-    sortedParents.forEach((parent) => {
-      result.push(parent)
-      const relatedEstornos = [...estornos]
-        .filter((e) => e.repasseEstornadoId === parent.id)
-        .sort((a, b) => {
-          const parcelaA = a.parcela?.numeroParcela || 0
-          const parcelaB = b.parcela?.numeroParcela || 0
-          return parcelaA - parcelaB
-        })
-      relatedEstornos.forEach((estorno) => {
-        result.push({ ...estorno, isNested: true })
-      })
-    })
+      // Sort parent before estornos
+      if (!a.repasseEstornadoId && b.repasseEstornadoId) return -1
+      if (a.repasseEstornadoId && !b.repasseEstornadoId) return 1
 
-    return result
+      return 0
+    })
   }, [repassesData, produtores, propostas])
 
   if (isLoading) return <LoadingScreen />
