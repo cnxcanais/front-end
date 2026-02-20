@@ -182,18 +182,7 @@ export function RepassesPage() {
           { label: "Cancelada", value: "Cancelada" },
         ],
       },
-      {
-        name: "situacaoParcela",
-        label: "Situação da Parcela",
-        type: "select",
-        placeholder: "Selecione a situação",
-        options: [
-          { label: "Pendente", value: "Pendente" },
-          { label: "Em Atraso", value: "Em Atraso" },
-          { label: "Paga", value: "Paga" },
-          { label: "Cancelada", value: "Cancelada" },
-        ],
-      },
+
       {
         name: "apenasEstornos",
         label: "Apenas Estornos",
