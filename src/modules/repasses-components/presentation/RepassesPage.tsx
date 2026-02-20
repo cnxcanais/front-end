@@ -40,6 +40,7 @@ export function RepassesPage() {
   const userId = getCookie("userId")
   const user = usuarios?.data.find((u) => u.props?.id === userId)
   const isAdmin = user?.props?.perfilId === process.env.NEXT_PUBLIC_ADM_ID
+  const isMaster = getCookie("isMaster") === "true"
 
   const [filters, setFilters] = useState<Record<string, string>>({})
   const [page, setPage] = useState(1)
@@ -224,7 +225,15 @@ export function RepassesPage() {
         type: "date",
       },
     ],
-    [seguradoras, corretoras, produtores, propostas, isAdmin, corretoraId]
+    [
+      seguradoras,
+      corretoras,
+      produtores,
+      propostas,
+      isAdmin,
+      corretoraId,
+      comissoes?.items,
+    ]
   )
 
   const formatCurrency = (value: number) => {
@@ -449,7 +458,7 @@ export function RepassesPage() {
       render: (_: any, row: Repasse.Type) => (
         <div className="flex gap-1">
           {(row.situacao === "Provisionado" || row.situacao === "Pendente") &&
-            isAdmin && (
+            (isAdmin || isMaster) && (
               <button
                 onClick={() => setEditarRepasse(row)}
                 className="rounded p-1 text-blue-600 hover:bg-blue-50"
@@ -457,7 +466,7 @@ export function RepassesPage() {
                 <Pencil size={16} />
               </button>
             )}
-          {row.situacao === "Pendente" && isAdmin && (
+          {row.situacao === "Pendente" && (isAdmin || isMaster) && (
             <button
               onClick={() => setBaixaRepasse(row)}
               className="rounded p-1 text-green-600 hover:bg-green-50"
@@ -465,22 +474,26 @@ export function RepassesPage() {
               <CurrencyDollar size={16} />
             </button>
           )}
-          {row.situacao === "Pago" && !row.repasseEstornadoId && isAdmin && (
-            <button
-              onClick={() => setEstornoRepasse(row)}
-              className="rounded p-1 text-red-600 hover:bg-red-50"
-              title="Estornar">
-              <ArrowsClockwise size={16} />
-            </button>
-          )}
-          {row.repasseEstornadoId && !row.isEstornoRevertido && isAdmin && (
-            <button
-              onClick={() => setReverterEstorno(row)}
-              className="rounded p-1 text-orange-600 hover:bg-orange-50"
-              title="Reverter estorno">
-              <ArrowUUpLeft size={16} />
-            </button>
-          )}
+          {row.situacao === "Pago" &&
+            !row.repasseEstornadoId &&
+            (isAdmin || isMaster) && (
+              <button
+                onClick={() => setEstornoRepasse(row)}
+                className="rounded p-1 text-red-600 hover:bg-red-50"
+                title="Estornar">
+                <ArrowsClockwise size={16} />
+              </button>
+            )}
+          {row.repasseEstornadoId &&
+            !row.isEstornoRevertido &&
+            (isAdmin || isMaster) && (
+              <button
+                onClick={() => setReverterEstorno(row)}
+                className="rounded p-1 text-orange-600 hover:bg-orange-50"
+                title="Reverter estorno">
+                <ArrowUUpLeft size={16} />
+              </button>
+            )}
         </div>
       ),
     },
