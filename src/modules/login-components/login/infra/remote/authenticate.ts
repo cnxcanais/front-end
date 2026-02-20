@@ -11,10 +11,13 @@ export async function authenticate(formData: LoginSchema) {
       senha: formData.password,
     })
 
+    console.log("Login successful:", data)
+
     setCookie("userId", data.usuario.id)
     setCookie("token", data.accessToken)
     setCookie("perfilId", data.usuario.perfil.id)
     setCookie("corretoraId", data.usuario.corretora?.id || "admin")
+    setCookie("isMaster", data.usuario.isMaster ? "true" : "false")
   } catch (error) {
     if (error instanceof AxiosError) throw error.response.data.message
     throw error

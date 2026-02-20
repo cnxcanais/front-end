@@ -349,7 +349,7 @@ export function RepassesPage() {
     {
       header: "Corretora",
       accessor: "corretora",
-      render: (v: string, row: any) => (
+      render: (v: string, row: Repasse.Type) => (
         <span className={(row as any).isNested ? "pl-8" : ""}>
           {(row as any).isNested && "↳ "}
           {row.propostaApolice.corretoraNome}
@@ -364,19 +364,20 @@ export function RepassesPage() {
       ),
     },
     {
-      header: "Apólice",
-      accessor: "numeroApolice",
-      render: (v: string, row: Repasse.Type) => (
-        <span>{row.propostaApolice.numeroApolice}</span>
-      ),
-    },
-    {
       header: "Segurado",
       accessor: "segurado",
       render: (v: string, row: Repasse.Type) => (
         <span>{row.propostaApolice.seguradoNome}</span>
       ),
     },
+    {
+      header: "Apólice",
+      accessor: "numeroApolice",
+      render: (v: string, row: Repasse.Type) => (
+        <span>{row.propostaApolice.numeroApolice}</span>
+      ),
+    },
+
     { header: "Produtor", accessor: "produtorNome" },
     {
       header: "Parcela",
@@ -511,13 +512,13 @@ export function RepassesPage() {
       if (seguradoraA !== seguradoraB)
         return seguradoraA.localeCompare(seguradoraB)
 
-      const apoliceA = a.propostaApolice?.numeroApolice || ""
-      const apoliceB = b.propostaApolice?.numeroApolice || ""
-      if (apoliceA !== apoliceB) return apoliceA.localeCompare(apoliceB)
-
       const seguradoA = a.propostaApolice?.seguradoNome || ""
       const seguradoB = b.propostaApolice?.seguradoNome || ""
       if (seguradoA !== seguradoB) return seguradoA.localeCompare(seguradoB)
+
+      const apoliceA = a.propostaApolice?.numeroApolice || ""
+      const apoliceB = b.propostaApolice?.numeroApolice || ""
+      if (apoliceA !== apoliceB) return apoliceA.localeCompare(apoliceB)
 
       const produtorA = a.produtorNome || ""
       const produtorB = b.produtorNome || ""

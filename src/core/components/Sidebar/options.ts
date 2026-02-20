@@ -18,6 +18,10 @@ import {
   Warning,
 } from "@phosphor-icons/react/dist/ssr"
 
+import { getCookie } from "@/lib/cookies"
+
+const isMaster = getCookie("isMaster") === "true"
+
 type SidebarOptionProps = {
   name: string
   href: string
@@ -79,6 +83,51 @@ const sidebar_options_not_admin: SidebarOptionProps[] = [
     href: "/repasses",
     Icon: CurrencyDollar,
     group: "Financeiro",
+  },
+  {
+    name: "Histórico de Sinistros",
+    href: "/sinistros-historico",
+    Icon: ClockCounterClockwise,
+    group: "Relatórios",
+  },
+]
+
+const sidebar_options_not_admin_not_master: SidebarOptionProps[] = [
+  {
+    name: "Meu Usuário",
+    href: "/meu-usuario",
+    Icon: User,
+    group: "Gerenciamento",
+  },
+  {
+    name: "Dashboard",
+    href: "/dashboard",
+    Icon: ProjectorScreenChart,
+    group: "Gerenciamento",
+  },
+  {
+    name: "Segurados",
+    href: "/segurados",
+    Icon: IdentificationBadge,
+    group: "Cadastros",
+  },
+  {
+    name: "Propostas",
+    href: "/propostas",
+    Icon: FileText,
+    group: "Cadastros",
+  },
+  {
+    name: "Sinistros",
+    href: "/sinistros",
+    Icon: Car,
+    group: "Cadastros",
+  },
+  {
+    name: "Relatórios Sinistros",
+    href: "/relatorios-sinistros",
+    Icon: Graph,
+    group: "Relatórios",
   },
   {
     name: "Histórico de Sinistros",
@@ -209,8 +258,17 @@ type SidebarGroups = {
   [key: string]: SidebarOptionProps[]
 }
 
-export function getSidebarGroupedByGroups(isAdmin: boolean) {
-  const options = isAdmin ? sidebar_options : sidebar_options_not_admin
+export function getSidebarGroupedByGroups(isAdmin: boolean, isMaster: boolean) {
+  let options: SidebarOptionProps[]
+
+  if (isAdmin) {
+    options = sidebar_options
+  } else if (isMaster) {
+    options = sidebar_options_not_admin
+  } else {
+    options = sidebar_options_not_admin_not_master
+  }
+
   return options.reduce<SidebarGroups>((groups, option) => {
     const group = option.group
     if (!groups[group]) {
