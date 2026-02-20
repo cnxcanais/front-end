@@ -88,6 +88,42 @@ export function ComissoesPage() {
         ],
       },
       {
+        name: "situacaoApolice",
+        label: "Situação da Apólice",
+        type: "select",
+        placeholder: "Selecione a situação",
+        options: [
+          { label: "Ativo", value: "Ativo" },
+          { label: "Inativo", value: "Inativo" },
+          { label: "Recusada", value: "Recusada" },
+          { label: "Renovada", value: "Renovada" },
+          { label: "Não Renovada", value: "Não Renovada" },
+          { label: "Cancelada", value: "Cancelada" },
+        ],
+      },
+      {
+        name: "situacaoParcela",
+        label: "Situação da Parcela",
+        type: "select",
+        placeholder: "Selecione a situação",
+        options: [
+          { label: "Pendente", value: "Pendente" },
+          { label: "Em Atraso", value: "Em Atraso" },
+          { label: "Paga", value: "Paga" },
+          { label: "Cancelada", value: "Cancelada" },
+        ],
+      },
+      {
+        name: "apenasEstornos",
+        label: "Apenas Estornos",
+        type: "select",
+        placeholder: "Selecione",
+        options: [
+          { label: "Sim", value: "true" },
+          { label: "Não", value: "false" },
+        ],
+      },
+      {
         name: "corretoraId",
         label: "Corretora",
         type: "select",
