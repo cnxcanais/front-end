@@ -126,6 +126,13 @@ export function EstornoRepasseModal({
               placeholder="0.00"
             />
           </Input.Root>
+          <div className="h-[10px]">
+            {Number(valorEstorno) > Number(repasse.valorRepasse) && (
+              <p className="mb-2 text-sm text-red-600">
+                *Valor não pode ser maior que o valor do repasse
+              </p>
+            )}
+          </div>
         </div>
 
         <div>
@@ -171,7 +178,11 @@ export function EstornoRepasseModal({
           </Button>
           <Button
             onClick={handleSubmit}
-            disabled={!confirmado || estornoMutation.isPending}>
+            disabled={
+              !confirmado ||
+              estornoMutation.isPending ||
+              Number(valorEstorno) > Number(repasse.valorRepasse)
+            }>
             {estornoMutation.isPending ? "Processando..." : "Executar Estorno"}
           </Button>
         </div>
