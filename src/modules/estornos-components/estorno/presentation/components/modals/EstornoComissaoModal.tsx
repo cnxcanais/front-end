@@ -9,10 +9,10 @@ import { toast } from "sonner"
 import { useEstornoComissaoMutation } from "../../../infra/hooks/use-estorno-query"
 
 type Props = {
-  open: boolean
-  onClose: () => void
-  comissao: Comissao.Type | null
-  onSuccess: () => void
+  readonly open: boolean
+  readonly onClose: () => void
+  readonly comissao: Comissao.Type | null
+  readonly onSuccess: () => void
 }
 
 export function EstornoComissaoModal({
@@ -20,7 +20,7 @@ export function EstornoComissaoModal({
   onClose,
   comissao,
   onSuccess,
-}: Props) {
+}: Readonly<Props>) {
   const [valorEstorno, setValorEstorno] = useState("")
   const [motivo, setMotivo] = useState("")
   const [confirmado, setConfirmado] = useState(false)
@@ -98,10 +98,12 @@ export function EstornoComissaoModal({
           </h4>
           <div className="grid grid-cols-2 gap-2 text-sm">
             <div>
-              <span className="font-medium">Apólice:</span> {comissao.numeroApolice}
+              <span className="font-medium">Apólice:</span>{" "}
+              {comissao.numeroApolice}
             </div>
             <div>
-              <span className="font-medium">Parcela:</span> {comissao.numeroParcela}
+              <span className="font-medium">Parcela:</span>{" "}
+              {comissao.numeroParcela}
             </div>
             <div>
               <span className="font-medium">Valor Pago:</span>{" "}
@@ -123,10 +125,19 @@ export function EstornoComissaoModal({
               placeholder="0.00"
             />
           </Input.Root>
+          <div className="h-[10px]">
+            {Number(valorEstorno) > Number(comissao.valorPago) && (
+              <p className="mb-2 text-sm text-red-600">
+                *Valor não pode ser maior que o valor pago
+              </p>
+            )}
+          </div>
         </div>
 
         <div>
-          <label className="mb-2 block text-sm font-medium">
+          <label
+            htmlFor="motivo-estorno"
+            className="mb-2 block text-sm font-medium">
             Motivo do Estorno (mínimo 10 caracteres) *
           </label>
           <textarea
@@ -135,14 +146,13 @@ export function EstornoComissaoModal({
             value={motivo}
             onChange={(e) => setMotivo(e.target.value)}
             placeholder="Descreva o motivo do estorno..."
+            id="motivo-estorno"
             required
           />
         </div>
 
         <div className="rounded-lg border border-red-300 bg-red-50 p-3">
-          <p className="text-sm font-semibold text-red-900">
-            ⚠️ Atenção:
-          </p>
+          <p className="text-sm font-semibold text-red-900">⚠️ Atenção:</p>
           <ul className="mt-2 list-inside list-disc space-y-1 text-sm text-red-800">
             <li>Esta operação é irreversível</li>
             <li>Apenas usuários MASTER podem executar estornos</li>
@@ -167,7 +177,11 @@ export function EstornoComissaoModal({
           </Button>
           <Button
             onClick={handleSubmit}
-            disabled={!confirmado || estornoMutation.isPending}>
+            disabled={
+              !confirmado ||
+              estornoMutation.isPending ||
+              Number(valorEstorno) > Number(comissao.valorPago)
+            }>
             {estornoMutation.isPending ? "Processando..." : "Executar Estorno"}
           </Button>
         </div>
