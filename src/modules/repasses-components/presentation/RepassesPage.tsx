@@ -328,17 +328,11 @@ export function RepassesPage() {
 
   const getSituacaoColor = (situacao: string) => {
     const colors: Record<string, string> = {
-      PENDENTE: "bg-yellow-100 text-yellow-800",
       Pendente: "bg-yellow-100 text-yellow-800",
       Provisionado: "bg-blue-100 text-blue-800",
-      PARCIAL: "bg-blue-100 text-blue-800",
-      PAGO: "bg-green-100 text-green-800",
       Pago: "bg-green-100 text-green-800",
-      CANCELADO: "bg-gray-100 text-gray-800",
       Cancelado: "bg-gray-100 text-gray-800",
-      ESTORNADO: "bg-red-100 text-red-800",
       Estornado: "bg-red-100 text-red-800",
-      REVERTIDO: "bg-red-100 text-red-400",
       Revertido: "bg-red-100 text-red-400",
     }
     return colors[situacao] || "bg-gray-100 text-gray-800"
@@ -350,6 +344,17 @@ export function RepassesPage() {
       Pendente: "bg-blue-100 text-blue-800",
       "Em Atraso": "bg-red-100 text-red-800",
       Paga: "bg-green-100 text-green-800",
+    }
+    return colors[situacao] || "bg-gray-100 text-gray-800"
+  }
+
+  const getSituacaoComissaoColor = (situacao: string) => {
+    const colors: Record<string, string> = {
+      Cancelada: "bg-gray-100 text-gray-800",
+      Pendente: "bg-yellow-100 text-yellow-800",
+      Simulada: "bg-blue-100 text-red-800",
+      Paga: "bg-green-100 text-green-800",
+      Provisionada: "bg-blue-100 text-blue-800",
     }
     return colors[situacao] || "bg-gray-100 text-gray-800"
   }
@@ -438,7 +443,7 @@ export function RepassesPage() {
       },
     },
     {
-      header: "Situação da Parcela",
+      header: "Situação Parcela",
       accessor: "parcela",
       render: (v: any, row: Repasse.Type) => {
         const situacao = row.parcela?.situacao || "-"
@@ -446,6 +451,20 @@ export function RepassesPage() {
         return (
           <span
             className={`rounded-full px-2 py-1 text-xs font-medium ${getSituacaoParcelaColor(situacao)}`}>
+            {situacao}
+          </span>
+        )
+      },
+    },
+    {
+      header: "Situação Comissão",
+      accessor: "parcela",
+      render: (v: any, row: Repasse.Type) => {
+        const situacao = row.comissao?.situacao || "-"
+        if (situacao === "-") return situacao
+        return (
+          <span
+            className={`rounded-full px-2 py-1 text-xs font-medium ${getSituacaoComissaoColor(situacao)}`}>
             {situacao}
           </span>
         )
