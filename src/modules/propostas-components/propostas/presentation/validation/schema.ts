@@ -27,12 +27,11 @@ const repasseSchema = z.object({
     .number({
       invalid_type_error: "Percentual de repasse deve ser um número válido",
     })
-    .min(0, "Percentual deve ser maior ou igual a 0")
-    .max(100, "Percentual deve ser menor ou igual a 100")
+    .min(0, "Percentual de repasse deve ser maior ou igual a 0")
     .nullable(),
   valorRepasse: z
     .number({
-      invalid_type_error: "Percentual de repasse deve ser um número válido",
+      invalid_type_error: "Valor de repasse deve ser um número válido",
     })
     .min(0, "Valor deve ser maior ou igual a 0")
     .nullable()
