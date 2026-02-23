@@ -21,7 +21,8 @@ export function Sidebar() {
   const sidebarGroupedByGroups = useMemo(() => {
     const isAdmin = getCookie("perfilId") === process.env.NEXT_PUBLIC_ADM_ID
     const isMaster = getCookie("isMaster") === "true"
-    return getSidebarGroupedByGroups(isAdmin, isMaster)
+    const isProdutor = getCookie("isProdutor") === "true"
+    return getSidebarGroupedByGroups(isAdmin, isMaster, isProdutor)
   }, [])
 
   const toggleSidebar = () => {

@@ -11,6 +11,7 @@ import { formatCep } from "@/core/utils/format-cep"
 import { formatDocumentNumber } from "@/core/utils/formatDocumentNumber"
 import { formatPhoneNumber } from "@/core/utils/formatPhoneNumber"
 import { normalizeDecimals } from "@/core/utils/normalizeDecimals"
+import { useContaContabilQuery } from "@/modules/contas-contabeis-components/contas-contabeis/infra/hooks/use-conta-contabil-query"
 import { useCorretoraQuery } from "@/modules/corretoras-components/corretora/infra/hooks/use-corretora-query"
 import { useBancosQuery } from "@/modules/produtores-components/produtor/infra/hooks/use-banco-query"
 import { useProdutorQuery } from "@/modules/produtores-components/produtor/infra/hooks/use-produtor-query"
@@ -51,7 +52,7 @@ export function CreateProdutorForm({
     if (!bancosData) return []
 
     return bancosData
-      .sort((a, b) => a.name.localeCompare(b.name))
+      .toSorted((a, b) => a.name.localeCompare(b.name))
       .map((banco) => ({
         text: `${banco.name} - ${banco.code}`,
         value: banco.code,
@@ -68,8 +69,6 @@ export function CreateProdutorForm({
     resolver: zodResolver(createProdutorFormSchema),
   })
 
-  console.log(errors)
-
   const { data: corretorasData } = useCorretoraQuery()
 
   const repasseSobre = watch("repasseSobre")
@@ -77,12 +76,29 @@ export function CreateProdutorForm({
   const corretoraId = watch("corretoraId")
 
   const { data: produtores } = useProdutorQuery(1, -1, { corretoraId })
+  const contabilPayload = corretoraId ? { corretoraId } : {}
+  const { data: contasContabeis } = useContaContabilQuery(
+    1,
+    100,
+    contabilPayload
+  )
+
+  const contasContabeisOptions = useMemo(() => {
+    if (!contasContabeis) return []
+
+    return contasContabeis.data
+      .toSorted((a, b) => a.descricao.localeCompare(b.descricao))
+      .map((conta) => ({
+        text: `${conta.codigo} - ${conta.descricao}`,
+        value: conta.id,
+      }))
+  }, [contasContabeis])
 
   const produtoresOptions = useMemo(() => {
     if (!produtores) return []
 
     return produtores.data
-      .sort((a, b) => a.nome.localeCompare(b.nome))
+      .toSorted((a, b) => a.nome.localeCompare(b.nome))
       .map((produtor) => ({
         text: produtor.nome,
         value: produtor.id,
@@ -97,7 +113,7 @@ export function CreateProdutorForm({
     if (!corretorasData?.data) return []
 
     return corretorasData.data
-      .sort((a, b) => a.razaoSocial.localeCompare(b.razaoSocial))
+      .toSorted((a, b) => a.razaoSocial.localeCompare(b.razaoSocial))
       .map((corretora) => ({
         text: corretora.razaoSocial,
         value: corretora.id,
@@ -499,13 +515,15 @@ export function CreateProdutorForm({
         <h3 className="text-lg font-semibold">Repasse</h3>
         <div className="flex gap-4">
           <div className="flex flex-1 flex-col gap-2">
-            <label>Conta Contábil *</label>
-            <Input.Root variant="primary">
-              <Input.Control {...register("contaContabil")} type="text" />
-            </Input.Root>
-            {errors.contaContabil && (
+            <SelectInput
+              options={contasContabeisOptions}
+              label="Conta Contábil *"
+              field_name="contaContabilId"
+              {...register("contaContabilId")}
+            />
+            {errors.contaContabilId && (
               <span className="text-xs text-red-500">
-                {errors.contaContabil.message}
+                {errors.contaContabilId.message}
               </span>
             )}
           </div>
@@ -601,7 +619,7 @@ export function CreateProdutorForm({
               )}
             </div>
           : <div className="flex flex-col gap-2">
-              <label>Percentual Repasse (%)</label>
+              <label>Percentual Repasse (%)*</label>
               <Input.Root variant="primary">
                 <Input.Control
                   {...register("percentualRepasse")}
@@ -673,7 +691,7 @@ export function CreateProdutorForm({
 
           {repasseSobreIndicacao === "VALOR_FIXO" ?
             <div className="flex flex-col gap-2">
-              <label>Valor Fixo R$</label>
+              <label>Valor Fixo R$*</label>
               <Input.Root variant="primary">
                 <Input.Control
                   {...register("valorRepasseIndicacao")}

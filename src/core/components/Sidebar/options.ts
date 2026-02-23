@@ -2,6 +2,7 @@ import { Icon } from "@phosphor-icons/react"
 import {
   BuildingOffice,
   Buildings,
+  Calculator,
   Car,
   ClockCounterClockwise,
   CurrencyDollar,
@@ -17,10 +18,6 @@ import {
   UsersFour,
   Warning,
 } from "@phosphor-icons/react/dist/ssr"
-
-import { getCookie } from "@/lib/cookies"
-
-const isMaster = getCookie("isMaster") === "true"
 
 type SidebarOptionProps = {
   name: string
@@ -77,6 +74,63 @@ const sidebar_options_not_admin: SidebarOptionProps[] = [
     href: "/comissoes",
     Icon: CurrencyDollar,
     group: "Financeiro",
+  },
+  {
+    name: "Repasses",
+    href: "/repasses",
+    Icon: CurrencyDollar,
+    group: "Financeiro",
+  },
+  {
+    name: "Histórico de Sinistros",
+    href: "/sinistros-historico",
+    Icon: ClockCounterClockwise,
+    group: "Relatórios",
+  },
+]
+
+const sidebar_options_produtor: SidebarOptionProps[] = [
+  {
+    name: "Meu Usuário",
+    href: "/meu-usuario",
+    Icon: User,
+    group: "Gerenciamento",
+  },
+  {
+    name: "Dashboard",
+    href: "/dashboard",
+    Icon: ProjectorScreenChart,
+    group: "Gerenciamento",
+  },
+  {
+    name: "Segurados",
+    href: "/segurados",
+    Icon: IdentificationBadge,
+    group: "Cadastros",
+  },
+  {
+    name: "Propostas",
+    href: "/propostas",
+    Icon: FileText,
+    group: "Cadastros",
+  },
+  {
+    name: "Sinistros",
+    href: "/sinistros",
+    Icon: Car,
+    group: "Cadastros",
+  },
+  {
+    name: "Relatórios Apólices",
+    href: "/relatorios",
+    Icon: Graph,
+    group: "Relatórios",
+  },
+  {
+    name: "Relatórios Sinistros",
+    href: "/relatorios-sinistros",
+    Icon: Graph,
+    group: "Relatórios",
   },
   {
     name: "Repasses",
@@ -199,6 +253,12 @@ export const sidebar_options: SidebarOptionProps[] = [
     group: "Cadastros",
   },
   {
+    name: "Contas Contábeis",
+    href: "/contas-contabeis",
+    Icon: Calculator,
+    group: "Cadastros",
+  },
+  {
     name: "Propostas",
     href: "/propostas",
     Icon: FileText,
@@ -258,13 +318,19 @@ type SidebarGroups = {
   [key: string]: SidebarOptionProps[]
 }
 
-export function getSidebarGroupedByGroups(isAdmin: boolean, isMaster: boolean) {
+export function getSidebarGroupedByGroups(
+  isAdmin: boolean,
+  isMaster: boolean,
+  isProdutor: boolean
+) {
   let options: SidebarOptionProps[]
 
   if (isAdmin) {
     options = sidebar_options
   } else if (isMaster) {
     options = sidebar_options_not_admin
+  } else if (isProdutor) {
+    options = sidebar_options_produtor
   } else {
     options = sidebar_options_not_admin_not_master
   }

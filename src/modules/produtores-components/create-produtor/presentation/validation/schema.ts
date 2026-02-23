@@ -36,7 +36,7 @@ export const createProdutorFormSchema = z
       .max(255, { message: "Campo deve ter no máximo 255 caracteres" })
       .optional(),
     telefoneComercial: z.string().optional(),
-    contaContabil: z
+    contaContabilId: z
       .string()
       .nonempty({ message: "Obrigatório" })
       .max(50, { message: "Campo deve ter no máximo 50 caracteres" }),
@@ -120,38 +120,23 @@ export const createProdutorFormSchema = z
       .optional(),
     percentualImposto: z
       .string()
-      .transform((val) => val.replace(",", "."))
-      .pipe(
-        z.coerce
-          .number()
-          .min(0)
-          .max(100, { message: "Campo deve ter no máximo 100 caracteres" })
-          .optional()
-      ),
+      .optional()
+      .transform((val) => (val ? val.replace(",", ".") : undefined))
+      .pipe(z.coerce.number().min(0).max(100).optional()),
     percentualRepasse: z
       .string()
-      .transform((val) => val.replace(",", "."))
-      .pipe(
-        z.coerce
-          .number()
-          .min(0)
-          .max(100, { message: "Campo deve ter no máximo 100 caracteres" })
-          .optional()
-      ),
+      .optional()
+      .transform((val) => (val ? val.replace(",", ".") : undefined))
+      .pipe(z.coerce.number().min(0).max(100).optional()),
     percentualRepasseIndicacao: z
       .string()
-      .transform((val) => val.replace(",", "."))
-      .pipe(
-        z.coerce
-          .number()
-          .min(0)
-          .max(100, { message: "Campo deve ter no máximo 100 caracteres" })
-          .optional()
-      ),
+      .optional()
+      .transform((val) => (val ? val.replace(",", ".") : undefined))
+      .pipe(z.coerce.number().min(0).max(100).optional()),
     valorRepasse: z
       .string()
       .optional()
-      .transform((val) => val.replace(",", "."))
+      .transform((val) => (val ? val.replace(",", ".") : undefined))
       .pipe(z.coerce.number().min(0).optional()),
     valorRepasseIndicacao: z
       .string()
@@ -286,6 +271,24 @@ export const createProdutorFormSchema = z
     {
       message: "Preencha todos os dados do produtor indicado",
       path: ["produtorIndicadorId"],
+    }
+  )
+  .refine(
+    (data) => {
+      return data.valorRepasse || data.percentualRepasse
+    },
+    {
+      message: "Valor deve ser informado",
+      path: ["valorRepasse"],
+    }
+  )
+  .refine(
+    (data) => {
+      return data.valorRepasse || data.percentualRepasse
+    },
+    {
+      message: "Percentual deve ser informado",
+      path: ["percentualRepasse"],
     }
   )
 
