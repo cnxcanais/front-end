@@ -23,19 +23,32 @@ const parcelaSchema = z.object({
 
 const repasseSchema = z.object({
   produtorId: z.string().min(1, "Produtor é obrigatório"),
-  percentualRepasse: z
-    .number({
-      invalid_type_error: "Percentual de repasse deve ser um número válido",
-    })
-    .min(0, "Percentual de repasse deve ser maior ou igual a 0")
-    .nullable(),
-  valorRepasse: z
-    .number({
-      invalid_type_error: "Valor de repasse deve ser um número válido",
-    })
-    .min(0, "Valor deve ser maior ou igual a 0")
-    .nullable()
-    .optional(),
+  percentualRepasse: z.preprocess(
+    (val) =>
+      (
+        val === "" ||
+        val === null ||
+        (typeof val === "number" && Number.isNaN(val))
+      ) ?
+        null
+      : val,
+    z
+      .number()
+      .min(0, "Percentual de repasse deve ser maior ou igual a 0")
+      .nullable()
+      .optional()
+  ),
+  valorRepasse: z.preprocess(
+    (val) =>
+      (
+        val === "" ||
+        val === null ||
+        (typeof val === "number" && Number.isNaN(val))
+      ) ?
+        null
+      : val,
+    z.number().min(0, "Valor deve ser maior ou igual a 0").nullable().optional()
+  ),
   repasseSobre: z.enum(
     ["Premio Liquido", "Comissão da Corretora", "Valor Fixo"],
     {

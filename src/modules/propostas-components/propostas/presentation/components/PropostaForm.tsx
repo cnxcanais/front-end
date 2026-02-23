@@ -50,24 +50,33 @@ export function PropostaForm({
   const duplicateFromId = searchParams.get("duplicateFrom")
   const isEndosso = searchParams.get("endosso") === "true"
   const isRenovacao = searchParams.get("renovacao") === "true"
-  const endossoData =
-    isEndosso ?
-      {
-        dataEmissao: searchParams.get("dataEmissao") || "",
-        numeroEndosso: searchParams.get("numeroEndosso") || "",
-        inicioVigencia: searchParams.get("inicioVigencia") || "",
-        fimVigencia: searchParams.get("fimVigencia") || "",
-      }
-    : null
-  const renovacaoData =
-    isRenovacao ?
-      {
-        dataEmissao: searchParams.get("dataEmissao") || "",
-        numeroApolice: searchParams.get("numeroApolice") || "",
-        inicioVigencia: searchParams.get("inicioVigencia") || "",
-        fimVigencia: searchParams.get("fimVigencia") || "",
-      }
-    : null
+
+  const endossoData = useMemo(
+    () =>
+      isEndosso ?
+        {
+          dataEmissao: searchParams.get("dataEmissao") || "",
+          numeroEndosso: searchParams.get("numeroEndosso") || "",
+          inicioVigencia: searchParams.get("inicioVigencia") || "",
+          fimVigencia: searchParams.get("fimVigencia") || "",
+        }
+      : null,
+    [isEndosso, searchParams]
+  )
+
+  const renovacaoData = useMemo(
+    () =>
+      isRenovacao ?
+        {
+          dataEmissao: searchParams.get("dataEmissao") || "",
+          numeroApolice: searchParams.get("numeroApolice") || "",
+          inicioVigencia: searchParams.get("inicioVigencia") || "",
+          fimVigencia: searchParams.get("fimVigencia") || "",
+        }
+      : null,
+    [isRenovacao, searchParams]
+  )
+
   const { data: propostaToDuplicate } = usePropostaByIdQuery(duplicateFromId)
 
   const [activeTab, setActiveTab] = useState(0)
@@ -128,20 +137,20 @@ export function PropostaForm({
       iof: sourceData?.iof || undefined,
       parcelas:
         sourceData?.parcelas?.map((p) => ({
-          numeroParcela: p.numeroParcela,
-          dataVencimento: p.dataVencimento,
-          valor: Number(p.valor),
-          percentualComissao: Number(p.percentualComissao),
-          previsaoPagamento: p.previsaoPagamento,
-          situacao: p.situacao,
+          numeroParcela: p.numeroParcela || undefined,
+          dataVencimento: p.dataVencimento || undefined,
+          valor: Number(p.valor) || undefined,
+          percentualComissao: Number(p.percentualComissao) || undefined,
+          previsaoPagamento: p.previsaoPagamento || undefined,
+          situacao: p.situacao || undefined,
         })) || [],
       repasses:
         sourceData?.repasses?.map((r) => ({
-          produtorId: r.produtorId,
-          percentualRepasse: Number(r.percentualRepasse),
-          valorRepasse: Number(r.valorRepasse),
-          repasseSobre: r.repasseSobre,
-          formaRepasse: r.formaRepasse,
+          produtorId: r.produtorId || "",
+          percentualRepasse: Number(r.percentualRepasse) || undefined,
+          valorRepasse: Number(r.valorRepasse) || undefined,
+          repasseSobre: r.repasseSobre || undefined,
+          formaRepasse: r.formaRepasse || undefined,
         })) || [],
     },
   })
@@ -258,7 +267,14 @@ export function PropostaForm({
           })) || [],
       })
     }
-  }, [propostaToDuplicate])
+  }, [
+    propostaToDuplicate,
+    endossoData,
+    renovacaoData,
+    reset,
+    isEndosso,
+    isRenovacao,
+  ])
 
   const handleGenerateParcelas = () => {
     const numParcelas = Number(numParcelasInput)
@@ -466,12 +482,16 @@ export function PropostaForm({
         } else {
           if (formData.repasses.length > 0) {
             const hasInvalidRepasse = formData.repasses.some((r) => {
+              const hasValorRepasse =
+                r.valorRepasse !== null && r.valorRepasse !== undefined
+              const hasPercentualRepasse =
+                r.percentualRepasse !== null &&
+                r.percentualRepasse !== undefined
               return (
                 !r.produtorId ||
-                r.percentualRepasse === undefined ||
-                r.percentualRepasse === null ||
                 !r.repasseSobre ||
-                !r.formaRepasse
+                !r.formaRepasse ||
+                (!hasValorRepasse && !hasPercentualRepasse)
               )
             })
             if (hasInvalidRepasse) {
@@ -485,14 +505,19 @@ export function PropostaForm({
       case 6:
         if (isAutomovelRamo) {
           if (formData.repasses.length > 0) {
-            const hasInvalidRepasse = formData.repasses.some(
-              (r) =>
+            const hasInvalidRepasse = formData.repasses.some((r) => {
+              const hasValorRepasse =
+                r.valorRepasse !== null && r.valorRepasse !== undefined
+              const hasPercentualRepasse =
+                r.percentualRepasse !== null &&
+                r.percentualRepasse !== undefined
+              return (
                 !r.produtorId ||
-                r.percentualRepasse === undefined ||
-                r.percentualRepasse === null ||
                 !r.repasseSobre ||
-                !r.formaRepasse
-            )
+                !r.formaRepasse ||
+                (!hasValorRepasse && !hasPercentualRepasse)
+              )
+            })
             if (hasInvalidRepasse) {
               toast.error("Preencha todos os campos obrigatórios dos repasses")
               return

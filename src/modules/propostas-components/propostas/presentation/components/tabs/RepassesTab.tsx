@@ -93,42 +93,40 @@ export function RepassesTab({
                 )}
               </div>
               {formData.repasses[index].repasseSobre === "Valor Fixo" ?
-                <>
-                  <div>
-                    <label>Valor Repasse R$ *</label>
-                    <Input.Root className="mt-2">
-                      <Input.Control
-                        type="number"
-                        {...register(`repasses.${index}.valorRepasse`)}
-                        disabled={readOnly}
-                      />
-                    </Input.Root>
-                    {errors.repasses?.[index]?.valorRepasse && (
-                      <span className="text-xs text-red-500">
-                        {errors.repasses[index].valorRepasse.message}
-                      </span>
-                    )}
-                  </div>
-                </>
-              : <>
-                  <div>
-                    <label>% Repasse *</label>
-                    <Input.Root className="mt-2">
-                      <Input.Control
-                        type="number"
-                        {...register(`repasses.${index}.percentualRepasse`, {
-                          valueAsNumber: true,
-                        })}
-                        disabled={readOnly}
-                      />
-                    </Input.Root>
-                    {errors.repasses?.[index]?.percentualRepasse && (
-                      <span className="text-xs text-red-500">
-                        {errors.repasses[index].percentualRepasse.message}
-                      </span>
-                    )}
-                  </div>
-                </>
+                <div>
+                  <label>Valor Repasse R$ *</label>
+                  <Input.Root className="mt-2">
+                    <Input.Control
+                      type="number"
+                      {...register(`repasses.${index}.valorRepasse`, {
+                        valueAsNumber: true,
+                      })}
+                      disabled={readOnly}
+                    />
+                  </Input.Root>
+                  {errors.repasses?.[index]?.valorRepasse && (
+                    <span className="text-xs text-red-500">
+                      {errors.repasses[index].valorRepasse.message}
+                    </span>
+                  )}
+                </div>
+              : <div>
+                  <label>% Repasse *</label>
+                  <Input.Root className="mt-2">
+                    <Input.Control
+                      type="number"
+                      {...register(`repasses.${index}.percentualRepasse`, {
+                        valueAsNumber: true,
+                      })}
+                      disabled={readOnly}
+                    />
+                  </Input.Root>
+                  {errors.repasses?.[index]?.percentualRepasse && (
+                    <span className="text-xs text-red-500">
+                      {errors.repasses[index].percentualRepasse.message}
+                    </span>
+                  )}
+                </div>
               }
 
               <div>
