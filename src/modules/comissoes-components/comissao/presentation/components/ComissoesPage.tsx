@@ -198,7 +198,7 @@ export function ComissoesPage() {
       header: "Comissão",
       accessor: "comissaoTotal",
       sortable: true,
-      render: (value: string, row: any) => (
+      render: (value: string, row: Comissao.Type) => (
         <span
           className={row.valorComissao < 0 ? "font-semibold text-red-600" : ""}>
           {value}
@@ -240,6 +240,34 @@ export function ComissoesPage() {
           <span
             className={`inline-flex items-center rounded-full border px-2.5 py-0.5 text-xs font-medium ${getSituacaoStyle(adjustedValue)}`}>
             {adjustedValue}
+          </span>
+        )
+      },
+    },
+    {
+      header: "Situação Parcela",
+      accessor: "situacaoParcela",
+      sortable: true,
+      render: (value: string, row: Comissao.Type) => {
+        const situacaoParcela = row?.parcela?.situacao
+        const getSituacaoStyle = (situacao: string) => {
+          switch (situacao) {
+            case "Pendente":
+              return "bg-blue-100 text-blue-800 border-blue-300"
+            case "Paga":
+              return "bg-green-100 text-green-800 border-green-300"
+            case "Cancelada":
+              return "bg-gray-100 text-gray-800 border-gray-300"
+            case "Em Atraso":
+              return "bg-red-100 text-red-800 border-red-300"
+            default:
+              return "bg-gray-100 text-gray-800 border-gray-300"
+          }
+        }
+        return (
+          <span
+            className={`inline-flex items-center rounded-full border px-2.5 py-0.5 text-xs font-medium ${getSituacaoStyle(situacaoParcela)}`}>
+            {situacaoParcela}
           </span>
         )
       },

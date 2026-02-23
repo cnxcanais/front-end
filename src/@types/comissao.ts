@@ -1,5 +1,10 @@
 export namespace Comissao {
-  export type Situacao = "Simulada" | "Provisionada" | "Pendente" | "Paga" | "Cancelada"
+  export type Situacao =
+    | "Simulada"
+    | "Provisionada"
+    | "Pendente"
+    | "Paga"
+    | "Cancelada"
 
   // Backend API response
   export type ApiType = {
@@ -20,6 +25,29 @@ export namespace Comissao {
     updatedAt: string | null
     deletedBy: string | null
     deletedAt: string | null
+    parcela: {
+      id: string
+      propostaApoliceId: string
+      numeroParcela: number
+      dataVencimento: string
+      valor: string
+      percentualComissao: string
+      previsaoPagamento: string
+      situacao: string
+      createdAt: string
+      updatedAt: string
+    }
+    propostaApolice: {
+      id: string
+      numeroProposta: string
+      numeroApolice: string
+      tipoDocumento: string
+      situacao: string
+      inicioVigencia: string
+      fimVigencia: string
+      premioLiquido: string
+      premioTotal: string
+    }
   }
 
   // Frontend enriched type
