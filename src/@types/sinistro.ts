@@ -29,8 +29,10 @@ export namespace Sinistro {
     tipoSinistro?: {
       descricao: string
     }
-    responsavelUsuario?: {
+    responsavel?: {
       nome: string
+      id: string
+      email: string
     }
   }
 

@@ -192,7 +192,7 @@ export function SinistroCard({ sinistro, onDelete, isAdmin }: Props) {
             </div>
             <div>
               <span className="font-semibold">Responsável:</span>{" "}
-              {sinistro.responsavelUsuario?.nome || "-"}
+              {sinistro.responsavel?.nome || "-"}
             </div>
           </div>
         )}
