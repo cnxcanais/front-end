@@ -12,6 +12,7 @@ import {
   LockKey,
   Package,
   ProjectorScreenChart,
+  Receipt,
   Suitcase,
   Tag,
   User,
@@ -310,6 +311,12 @@ export const sidebar_options: SidebarOptionProps[] = [
     name: "Repasses",
     href: "/repasses",
     Icon: CurrencyDollar,
+    group: "Financeiro",
+  },
+  {
+    name: "Cálculos Conta Contábil",
+    href: "/calculos-conta-contabil",
+    Icon: Receipt,
     group: "Financeiro",
   },
 ]
