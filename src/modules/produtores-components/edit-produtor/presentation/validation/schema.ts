@@ -19,7 +19,7 @@ export const editProdutorFormSchema = z
       .max(255, { message: "Campo deve ter no máximo 255 caracteres" })
       .optional(),
     telefoneComercial: z.string().optional(),
-    contaContabil: z
+    contaContabilId: z
       .string()
       .nonempty({ message: "Obrigatório" })
       .max(50, { message: "Campo deve ter no máximo 50 caracteres" }),

@@ -11,6 +11,7 @@ import { formatCep } from "@/core/utils/format-cep"
 import { formatDocumentNumber } from "@/core/utils/formatDocumentNumber"
 import { formatPhoneNumber } from "@/core/utils/formatPhoneNumber"
 import { normalizeDecimals } from "@/core/utils/normalizeDecimals"
+import { getCookie } from "@/lib/cookies"
 import { useContaContabilQuery } from "@/modules/contas-contabeis-components/contas-contabeis/infra/hooks/use-conta-contabil-query"
 import { useCorretoraQuery } from "@/modules/corretoras-components/corretora/infra/hooks/use-corretora-query"
 import { useBancosQuery } from "@/modules/produtores-components/produtor/infra/hooks/use-banco-query"
@@ -76,7 +77,8 @@ export function CreateProdutorForm({
   const corretoraId = watch("corretoraId")
 
   const { data: produtores } = useProdutorQuery(1, -1, { corretoraId })
-  const contabilPayload = corretoraId ? { corretoraId } : {}
+  const isAdmin = getCookie("perfilId") === process.env.NEXT_PUBLIC_ADM_ID
+  const contabilPayload = isAdmin ? {} : { corretoraId }
   const { data: contasContabeis } = useContaContabilQuery(
     1,
     100,

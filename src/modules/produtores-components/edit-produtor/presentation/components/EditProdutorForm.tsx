@@ -12,6 +12,8 @@ import { fetchCep } from "@/core/utils/findCep"
 import { formatCep } from "@/core/utils/format-cep"
 import { formatPhoneNumber } from "@/core/utils/formatPhoneNumber"
 import { normalizeDecimals } from "@/core/utils/normalizeDecimals"
+import { getCookie } from "@/lib/cookies"
+import { useContaContabilQuery } from "@/modules/contas-contabeis-components/contas-contabeis/infra/hooks/use-conta-contabil-query"
 import { useCorretoraByIdQuery } from "@/modules/corretoras-components/edit-corretora/infra/hooks/use-corretora-by-id-query"
 import { useProdutorByIdQuery } from "@/modules/produtores-components/edit-produtor/infra/hooks/use-produtor-by-id-query"
 import { editProdutor } from "@/modules/produtores-components/edit-produtor/infra/remote"
@@ -47,7 +49,7 @@ export function EditProdutorForm({ id }: { id: string }) {
     if (!bancosData) return []
 
     return bancosData
-      .sort((a, b) => a.name.localeCompare(b.name))
+      .toSorted((a, b) => a.name.localeCompare(b.name))
       .map((banco) => ({
         text: `${banco.name} - ${banco.code}`,
         value: banco.name,
@@ -72,7 +74,7 @@ export function EditProdutorForm({ id }: { id: string }) {
       situacao: produtor?.situacao || "ATIVO",
       homePage: produtor?.homePage || "",
       telefoneComercial: produtor?.telefoneComercial || "",
-      contaContabil: produtor?.contaContabil || "",
+      contaContabilId: produtor?.contaContabilId || "",
       repasseSobre: produtor?.repasseSobre || "",
       excluirRepasse: produtor?.excluirRepasse || false,
       telefoneFixo: produtor?.telefoneFixo || "",
@@ -107,19 +109,35 @@ export function EditProdutorForm({ id }: { id: string }) {
     },
   })
 
-  console.log(errors)
-
   const repasseSobre = watch("repasseSobre")
   const repasseSobreIndicacao = watch("repasseSobreIndicacao")
   const corretoraId = produtor?.corretoraId
 
   const { data: produtores } = useProdutorQuery(1, -1, { corretoraId })
+  const isAdmin = getCookie("perfilId") === process.env.NEXT_PUBLIC_ADM_ID
+  const contabilPayload = isAdmin ? {} : { corretoraId }
+  const { data: contasContabeis } = useContaContabilQuery(
+    1,
+    100,
+    contabilPayload
+  )
+
+  const contasContabeisOptions = useMemo(() => {
+    if (!contasContabeis) return []
+
+    return contasContabeis.data
+      .toSorted((a, b) => a.descricao.localeCompare(b.descricao))
+      .map((conta) => ({
+        text: `${conta.codigo} - ${conta.descricao}`,
+        value: conta.id,
+      }))
+  }, [contasContabeis])
 
   const produtoresOptions = useMemo(() => {
     if (!produtores) return []
 
     return produtores.data
-      .sort((a, b) => a.nome.localeCompare(b.nome))
+      .toSorted((a, b) => a.nome.localeCompare(b.nome))
       .map((produtor) => ({
         text: produtor.nome,
         value: produtor.id,
@@ -523,13 +541,15 @@ export function EditProdutorForm({ id }: { id: string }) {
         <h3 className="text-lg font-semibold">Repasse</h3>
         <div className="flex gap-4">
           <div className="flex flex-1 flex-col gap-2">
-            <label>Conta Contábil *</label>
-            <Input.Root variant="primary">
-              <Input.Control {...register("contaContabil")} type="text" />
-            </Input.Root>
-            {errors.contaContabil && (
+            <SelectInput
+              options={contasContabeisOptions}
+              label="Conta Contábil *"
+              field_name="contaContabilId"
+              {...register("contaContabilId")}
+            />
+            {errors.contaContabilId && (
               <span className="text-xs text-red-500">
-                {errors.contaContabil.message}
+                {errors.contaContabilId.message}
               </span>
             )}
           </div>

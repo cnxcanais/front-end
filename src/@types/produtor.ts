@@ -7,7 +7,7 @@ export namespace Produtor {
     cnpjCpf: string
     homePage: string
     telefoneComercial: string
-    contaContabil: string
+    contaContabilId: string
     repasseSobre: string
     excluirRepasse: boolean
     corretoraId: string
