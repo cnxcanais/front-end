@@ -7,7 +7,7 @@ import { getCookie } from "@/lib/cookies"
 import cubeApi from "@/lib/cubejs"
 import { useUsuarioQuery } from "@/modules/usuarios-components/usuario/infra/hooks/use-usuario-query"
 import { FileXls, X } from "@phosphor-icons/react"
-import { useEffect, useMemo, useState, useCallback } from "react"
+import { useCallback, useEffect, useMemo, useState } from "react"
 import { toast } from "sonner"
 
 type Measure = {
@@ -35,10 +35,14 @@ interface AnalyticalReportProps {
   title: string
 }
 
-export function AnalyticalReport({ cubeName, title }: AnalyticalReportProps) {
+export function AnalyticalReport({
+  cubeName,
+  title,
+}: Readonly<AnalyticalReportProps>) {
   const { data: usuarios } = useUsuarioQuery()
   const corretoraId = getCookie("corretoraId")
   const userId = getCookie("userId")
+  const produtorId = getCookie("produtorId")
   const user = usuarios?.data.find((u) => u.props?.id === userId)
   const isAdmin = user?.props?.perfilId === process.env.NEXT_PUBLIC_ADM_ID
 
@@ -69,15 +73,28 @@ export function AnalyticalReport({ cubeName, title }: AnalyticalReportProps) {
         limit: 1000,
       }
 
+      const queryFilters = []
+
       // Add corretoraId filter for non-admin users
       if (!isAdmin && corretoraId) {
-        query.filters = [
-          {
-            member: `${cubeName}.corretoraId`,
-            operator: "equals",
-            values: [corretoraId],
-          },
-        ]
+        queryFilters.push({
+          member: `${cubeName}.corretoraId`,
+          operator: "equals",
+          values: [corretoraId],
+        })
+      }
+
+      // Add produtorId filter if present
+      if (produtorId && produtorId !== "" && produtorId !== "null") {
+        queryFilters.push({
+          member: `${cubeName}.produtorId`,
+          operator: "equals",
+          values: [produtorId],
+        })
+      }
+
+      if (queryFilters.length > 0) {
+        query.filters = queryFilters
       }
 
       const result = await cubeApi.load(query)
@@ -98,6 +115,13 @@ export function AnalyticalReport({ cubeName, title }: AnalyticalReportProps) {
       if (cube) {
         setMeasures(
           cube.measures
+            .filter((m: { title?: string }) => {
+              if (produtorId && produtorId !== "" && produtorId !== "null") {
+                const title = m.title || ""
+                return !title.includes("Comissão")
+              }
+              return true
+            })
             .map((m: { name: string; title?: string }) => ({
               name: m.name,
               title: (m.title || m.name)
@@ -112,6 +136,13 @@ export function AnalyticalReport({ cubeName, title }: AnalyticalReportProps) {
         setDimensions(
           cube.dimensions
             .filter((d: { public?: boolean }) => d.public !== false)
+            .filter((d: { title?: string }) => {
+              if (produtorId && produtorId !== "" && produtorId !== "null") {
+                const title = d.title || ""
+                return !title.includes("Comissão")
+              }
+              return true
+            })
             .map((d: { name: string; title?: string; type: string }) => ({
               name: d.name,
               title: (d.title || d.name)
@@ -159,12 +190,20 @@ export function AnalyticalReport({ cubeName, title }: AnalyticalReportProps) {
 
       // Add corretoraId filter for non-admin users
       if (!isAdmin && corretoraId) {
-        const corretoraFilter = {
+        validFilters.push({
           dimension: `${cubeName}.corretoraId`,
           operator: "equals",
           values: [corretoraId],
-        }
-        validFilters.push(corretoraFilter)
+        })
+      }
+
+      // Add produtorId filter if present
+      if (produtorId && produtorId !== "" && produtorId !== "null") {
+        validFilters.push({
+          dimension: `${cubeName}.produtorId`,
+          operator: "equals",
+          values: [produtorId],
+        })
       }
 
       if (validFilters.length > 0) {
@@ -555,6 +594,7 @@ export function AnalyticalReport({ cubeName, title }: AnalyticalReportProps) {
                             }}
                           />
                         </div>
+
                     : filter.options ?
                       <select
                         className="flex-1 rounded border border-gray-300 px-2 py-1 text-xs"
@@ -566,7 +606,9 @@ export function AnalyticalReport({ cubeName, title }: AnalyticalReportProps) {
                           setFilters(newFilters)
                         }}>
                         <option value="">
-                          {hasOptions ? "Selecione..." : "Nenhuma opção disponível"}
+                          {hasOptions ?
+                            "Selecione..."
+                          : "Nenhuma opção disponível"}
                         </option>
                         {filter.options.map((opt) => (
                           <option key={opt} value={opt}>

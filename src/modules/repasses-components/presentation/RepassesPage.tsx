@@ -41,6 +41,7 @@ export function RepassesPage() {
   const user = usuarios?.data.find((u) => u.props?.id === userId)
   const isAdmin = user?.props?.perfilId === process.env.NEXT_PUBLIC_ADM_ID
   const isMaster = getCookie("isMaster") === "true"
+  const produtorId = getCookie("produtorId")
 
   const [filters, setFilters] = useState<Record<string, string>>({})
   const [page, setPage] = useState(1)
@@ -54,7 +55,12 @@ export function RepassesPage() {
     null
   )
 
-  const standardFilters = isAdmin ? {} : { corretoraId: corretoraId || "" }
+  const standardFilters = useMemo(() => {
+    if (isAdmin) return {}
+    if (produtorId) return { produtorId, corretoraId }
+    return { corretoraId: corretoraId || "" }
+  }, [corretoraId, produtorId, isAdmin])
+
   const { data: seguradoras } = useSeguradoraQuery(1, -1, standardFilters)
   const { data: corretoras } = useCorretoraQuery(1, -1, {})
   const { data: produtores } = useProdutorQuery(1, -1, standardFilters)

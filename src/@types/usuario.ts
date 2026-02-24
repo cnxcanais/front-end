@@ -53,6 +53,10 @@ export namespace Usuario {
         id: string
         razaoSocial: string
       }
+      produtor?: {
+        id: string
+        nome: string
+      }
       isMaster: boolean
     }
   }

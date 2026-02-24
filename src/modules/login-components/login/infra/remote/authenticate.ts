@@ -18,6 +18,7 @@ export async function authenticate(formData: LoginSchema) {
     setCookie("perfilId", data.usuario.perfil.id)
     setCookie("corretoraId", data.usuario.corretora?.id || "admin")
     setCookie("isMaster", data.usuario.isMaster ? "true" : "false")
+    setCookie("produtorId", data.usuario.produtor?.id || "")
   } catch (error) {
     if (error instanceof AxiosError) throw error.response.data.message
     throw error
