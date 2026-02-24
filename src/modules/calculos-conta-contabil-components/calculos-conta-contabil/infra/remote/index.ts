@@ -1,5 +1,5 @@
 import { bffApi } from "@/lib/axios"
-import { CalculoContaContabil } from "../../types"
+import { CalculoContaContabil } from "@/modules/calculos-conta-contabil-components/types"
 
 export async function getCalculosContaContabil(
   filters: CalculoContaContabil.Filters
