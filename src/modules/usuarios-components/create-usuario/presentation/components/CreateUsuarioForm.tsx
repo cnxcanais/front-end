@@ -67,8 +67,9 @@ export function CreateUsuarioForm() {
       await createUsuario(data)
       toast.success("Usuário criado com sucesso!")
       setTimeout(() => push("/usuarios"), 2000)
-    } catch (error) {
-      toast.error("Erro ao criar usuário: " + error)
+    } catch (error: any) {
+      const message = error?.response?.data?.message || "Erro ao criar usuário"
+      toast.error(message)
     }
   }
 

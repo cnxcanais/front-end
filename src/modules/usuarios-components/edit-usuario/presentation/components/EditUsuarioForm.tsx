@@ -7,6 +7,7 @@ import { LoadingScreen } from "@/core/components/LoadingScreen"
 import { SelectInput } from "@/core/components/SelectInput"
 import { useCorretoraQuery } from "@/modules/corretoras-components/corretora/infra/hooks/use-corretora-query"
 import { usePerfilQuery } from "@/modules/perfis-components/perfis/infra/hooks/use-perfil-query"
+import { useProdutorQuery } from "@/modules/produtores-components/produtor/infra/hooks/use-produtor-query"
 import { zodResolver } from "@hookform/resolvers/zod"
 import { useRouter } from "next/navigation"
 import { useMemo } from "react"
@@ -41,6 +42,7 @@ export function EditUsuarioForm({ id }: { id: string }) {
   const {
     register,
     handleSubmit,
+    watch,
     formState: { isSubmitting, errors },
   } = useForm<EditUsuarioSchema>({
     resolver: zodResolver(editUsuarioFormSchema),
@@ -48,8 +50,23 @@ export function EditUsuarioForm({ id }: { id: string }) {
       nome: usuario?.nome || "",
       perfilId: usuario?.perfilId || "",
       corretoraId: usuario?.corretoraId || "",
+      produtorId: usuario?.produtorId || "",
     },
   })
+
+  const corretoraId = watch("corretoraId")
+
+  const { data: produtores } = useProdutorQuery(1, -1, {
+    corretoraId: corretoraId || "",
+  })
+
+  const produtoresOptions = useMemo(() => {
+    if (!produtores?.data) return []
+    return produtores.data.map((p) => ({
+      text: p.nome,
+      value: p.id,
+    }))
+  }, [produtores])
 
   async function onSubmit(data: Usuario.UpdateRequest) {
     try {
@@ -115,6 +132,20 @@ export function EditUsuarioForm({ id }: { id: string }) {
             {errors.corretoraId && (
               <span className="text-xs text-red-500">
                 {errors.corretoraId.message}
+              </span>
+            )}
+          </div>
+
+          <div className="flex flex-1 flex-col gap-2">
+            <SelectInput
+              options={produtoresOptions}
+              label="Produtor"
+              field_name="produtorId"
+              {...register("produtorId")}
+            />
+            {errors.produtorId && (
+              <span className="text-xs text-red-500">
+                {errors.produtorId.message}
               </span>
             )}
           </div>
