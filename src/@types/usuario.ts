@@ -6,6 +6,7 @@ export namespace Usuario {
     senhaHash: string
     status: string
     corretoraId: string | null
+    produtorId: string | null
     perfilId: string
     isMaster: boolean
     tokenAtivacao: string | null
@@ -66,6 +67,7 @@ export namespace Usuario {
     email: string
     perfilId: string
     corretoraId?: string | null
+    produtorId?: string | null
     isMaster: boolean
   }
 
