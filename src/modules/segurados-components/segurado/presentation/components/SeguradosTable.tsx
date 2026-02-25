@@ -11,6 +11,7 @@ import { Modal } from "@/core/components/Modals/Modal"
 import { ModalFilesTrigger } from "@/core/components/Modals/ModalFiles/ModalFilesTrigger"
 import { Pagination } from "@/core/components/Pagination"
 import { Table } from "@/core/components/Table"
+import { useBaseFilter } from "@/core/hooks/useBaseFilter"
 import { formatStaticDocument } from "@/core/utils/formatDocumentNumber"
 import { getCookie } from "@/lib/cookies"
 import { useCorretoraQuery } from "@/modules/corretoras-components/corretora/infra/hooks/use-corretora-query"
@@ -32,12 +33,9 @@ export function SeguradosTable() {
   const [page, setPage] = useState(1)
   const [limit, setLimit] = useState(10)
   const isAdmin = getCookie("perfilId") === process.env.NEXT_PUBLIC_ADM_ID
-  const corretoraId = getCookie("corretoraId")
-  const baseFilter = isAdmin ? {} : { corretoraId }
+  const baseFilter = useBaseFilter()
 
-  const [filters, setFilters] = useState<Record<string, string>>({
-    ...baseFilter,
-  })
+  const [filters, setFilters] = useState<Record<string, string>>(baseFilter)
   const hasUrlIds = searchParams.get("ids")
   const { data, isLoading, refetch } = useSeguradoQuery(
     page,
@@ -234,38 +232,71 @@ export function SeguradosTable() {
       ),
     },
   ]
-  const corretoraFilters: FilterField[] = [
-    {
-      name: "nomeRazaoSocial",
-      label: "Nome/Razão Social",
-      placeholder: "Buscar por Nome",
-    },
-    {
-      name: "cnpjCpf",
-      label: "CPF/CNPJ",
-      placeholder: "Buscar por CPF ou CNPJ",
-    },
-    {
-      name: "tipoPessoa",
-      label: "Tipo Pessoa",
-      placeholder: "Buscar por Tipo de Pessoa",
-      type: "select" as const,
-      options: [
-        { label: "Pessoa Física", value: "FISICA" },
-        { label: "Pessoa Jurídica", value: "JURIDICA" },
-      ],
-    },
-    {
-      name: "status",
-      label: "Status",
-      placeholder: "Buscar por Status",
-      type: "select" as const,
-      options: [
-        { label: "Ativo", value: "ATIVO" },
-        { label: "Inativo", value: "INATIVO" },
-      ],
-    },
-  ]
+  const produtoresOptions = useMemo(() => {
+    if (isLoadingProdutores || !produtores) return []
+    return produtores.data.map((produtor) => ({
+      label: produtor.nome,
+      value: produtor.id,
+    }))
+  }, [produtores, isLoadingProdutores])
+
+  const corretoraFilters: FilterField[] = useMemo(() => {
+    const produtorId = baseFilter.produtorId
+    const corretoraId = baseFilter.corretoraId
+    
+    return [
+      ...(corretoraId && !isAdmin ? [
+        {
+          name: "corretoraId",
+          label: "Corretora",
+          placeholder: "Buscar por Corretora",
+          type: "select" as const,
+          options: corretorasOptions,
+          disabled: true,
+        },
+      ] : []),
+      ...(produtorId && !isAdmin ? [
+        {
+          name: "produtorId",
+          label: "Produtor",
+          placeholder: "Buscar por Produtor",
+          type: "select" as const,
+          options: produtoresOptions,
+          disabled: true,
+        },
+      ] : []),
+      {
+        name: "nomeRazaoSocial",
+        label: "Nome/Razão Social",
+        placeholder: "Buscar por Nome",
+      },
+      {
+        name: "cnpjCpf",
+        label: "CPF/CNPJ",
+        placeholder: "Buscar por CPF ou CNPJ",
+      },
+      {
+        name: "tipoPessoa",
+        label: "Tipo Pessoa",
+        placeholder: "Buscar por Tipo de Pessoa",
+        type: "select" as const,
+        options: [
+          { label: "Pessoa Física", value: "FISICA" },
+          { label: "Pessoa Jurídica", value: "JURIDICA" },
+        ],
+      },
+      {
+        name: "status",
+        label: "Status",
+        placeholder: "Buscar por Status",
+        type: "select" as const,
+        options: [
+          { label: "Ativo", value: "ATIVO" },
+          { label: "Inativo", value: "INATIVO" },
+        ],
+      },
+    ]
+  }, [baseFilter, corretorasOptions, produtoresOptions, isAdmin])
 
   const adminFilters: FilterField[] = [
     ...corretoraFilters,

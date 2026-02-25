@@ -7,6 +7,7 @@ import { FilterField, FilterForm } from "@/core/components/FilterForm"
 import { LoadingScreen } from "@/core/components/LoadingScreen"
 import { Pagination } from "@/core/components/Pagination"
 import { Table } from "@/core/components/Table"
+import { useBaseFilter } from "@/core/hooks/useBaseFilter"
 import { getCookie } from "@/lib/cookies"
 import { useComissaoQuery } from "@/modules/comissoes-components/comissao/infra/hooks/use-comissao-query"
 import { useCorretoraQuery } from "@/modules/corretoras-components/corretora/infra/hooks/use-corretora-query"
@@ -41,7 +42,6 @@ export function RepassesPage() {
   const user = usuarios?.data.find((u) => u.props?.id === userId)
   const isAdmin = user?.props?.perfilId === process.env.NEXT_PUBLIC_ADM_ID
   const isMaster = getCookie("isMaster") === "true"
-  const produtorId = getCookie("produtorId")
 
   const [filters, setFilters] = useState<Record<string, string>>({})
   const [page, setPage] = useState(1)
@@ -55,21 +55,17 @@ export function RepassesPage() {
     null
   )
 
-  const standardFilters = useMemo(() => {
-    if (isAdmin) return {}
-    if (produtorId) return { produtorId, corretoraId }
-    return { corretoraId: corretoraId || "" }
-  }, [corretoraId, produtorId, isAdmin])
-
-  const { data: seguradoras } = useSeguradoraQuery(1, -1, standardFilters)
+  const standardFilters = useBaseFilter()
+  const { produtorId, ...rest } = standardFilters
+  const { data: seguradoras } = useSeguradoraQuery(1, -1, {})
   const { data: corretoras } = useCorretoraQuery(1, -1, {})
-  const { data: produtores } = useProdutorQuery(1, -1, standardFilters)
+  const { data: produtores } = useProdutorQuery(1, -1, rest)
   const { data: propostas } = usePropostaQuery(1, -1, standardFilters)
   const { data: repassesData, isLoading } = useRepassesQuery(page, limit, {
     ...filters,
     ...standardFilters,
   })
-  const { data: comissoes } = useComissaoQuery(1, -1, standardFilters)
+  const { data: comissoes } = useComissaoQuery(1, -1, rest)
 
   const markPagoMutation = useMarkRepasseAsPagoMutation()
   const estornarMutation = useEstornarRepasseMutation()
@@ -119,6 +115,7 @@ export function RepassesPage() {
         placeholder: "Selecione um produtor",
         options:
           produtores?.data.map((p) => ({ label: p.nome, value: p.id })) || [],
+        disabled: !!produtorId,
       },
       {
         name: "propostaApoliceId",

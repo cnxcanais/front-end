@@ -1,5 +1,6 @@
 import { Segurado } from "@/@types/segurado"
 import { bffApi } from "@/lib/axios"
+import { toast } from "sonner"
 
 export async function getSegurados(
   page = 1,
@@ -13,5 +14,6 @@ export async function getSegurados(
     return data
   } catch (error) {
     console.info(error)
+    toast.error("Erro ao carregar segurados: " + error?.response?.data?.message)
   }
 }

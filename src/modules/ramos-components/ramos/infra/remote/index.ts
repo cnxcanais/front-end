@@ -26,10 +26,17 @@ export async function getRamos(
   limit = 10,
   filters?: Record<string, string>
 ) {
-  const response = await bffApi.get<RamosResponse>("/ramos", {
-    params: { page, limit, ...filters },
-  })
-  return response.data
+  try {
+    const response = await bffApi.get<RamosResponse>("/ramos", {
+      params: { page, limit, ...filters },
+    })
+    return response.data
+  } catch (error) {
+    console.error(
+      "Erro ao buscar ramos:",
+      error?.response?.data?.message || error.message
+    )
+  }
 }
 
 export async function removeRamo(id: string) {

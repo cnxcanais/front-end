@@ -8,8 +8,10 @@ import { getCookie } from "@/lib/cookies"
 import { CalculoContaContabil } from "@/modules/calculos-conta-contabil-components/types"
 import { useContaContabilQuery } from "@/modules/contas-contabeis-components/contas-contabeis/infra/hooks/use-conta-contabil-query"
 import { useCorretoraQuery } from "@/modules/corretoras-components/corretora/infra/hooks/use-corretora-query"
+import { toast } from "sonner"
 import { useMemo, useState } from "react"
 import { useCalculosContaContabilQuery } from "../../infra/hooks/use-calculos-conta-contabil-query"
+import { CalcularModal } from "./CalcularModal"
 
 export function CalculosContaContabilTable() {
   const corretoraId = getCookie("corretoraId")
@@ -27,9 +29,11 @@ export function CalculosContaContabilTable() {
   const [situacao, setSituacao] = useState<"PAGO" | "PROVISIONADO" | "">("")
   const [submittedFilters, setSubmittedFilters] =
     useState<CalculoContaContabil.Filters | null>(null)
+  const [showCalcularModal, setShowCalcularModal] = useState(false)
 
   const { data: corretoras } = useCorretoraQuery(1, -1)
   const { data: contasContabeis } = useContaContabilQuery(1, 10)
+  const isAdmin = getCookie("perfilId") === process.env.NEXT_PUBLIC_ADM_ID
 
   const filters: CalculoContaContabil.Filters = {
     ano,
@@ -138,12 +142,25 @@ export function CalculosContaContabilTable() {
             />
           </div>
         </div>
-        <div className="mt-4">
+        <div className="mt-4 flex gap-2">
           <Button onClick={handleSubmit} disabled={isLoading}>
             {isLoading ? "Carregando..." : "Buscar"}
           </Button>
+          {isAdmin && (
+            <Button onClick={() => setShowCalcularModal(true)} variant="secondary">
+              Calcular
+            </Button>
+          )}
         </div>
       </div>
+
+      <CalcularModal
+        open={showCalcularModal}
+        onClose={() => setShowCalcularModal(false)}
+        ano={ano}
+        mes={mes}
+        onSuccess={handleSubmit}
+      />
 
       {data?.contasContabeis.map((conta) => (
         <div

@@ -6,6 +6,7 @@ import { AutocompleteInput } from "@/core/components/AutocompleteInput"
 import { Button } from "@/core/components/Button"
 import * as Input from "@/core/components/Input"
 import { Modal } from "@/core/components/Modals/Modal"
+import { useBaseFilter } from "@/core/hooks/useBaseFilter"
 import { getCookie } from "@/lib/cookies"
 import { queryClient } from "@/lib/react-query"
 import { usePropostaQuery } from "@/modules/propostas-components/propostas/infra/hooks/use-proposta-query"
@@ -44,9 +45,12 @@ export function CreateSinistroModal({
     resolver: zodResolver(createSinistroSchema),
   })
 
+  const baseFilters = useBaseFilter()
+
   const { data: tiposSinistros } = useTipoSinistroQuery(1, -1)
   const { data: propostas } = usePropostaQuery(1, -1, {
     situacao: "Ativo",
+    ...baseFilters,
   })
 
   const [selectedProposta, setSelectedProposta] = useState<Proposta>()
@@ -100,7 +104,7 @@ export function CreateSinistroModal({
           (p) => p.corretoraId === corretoraId && p.tipoDocumento !== "Proposta"
         )
     return filteredPropostas.map((proposta) => ({
-      text: `${proposta.numeroProposta} - ${proposta.seguradoNome}`,
+      text: `${proposta.numeroApolice} - ${proposta.seguradoNome}`,
       value: proposta.id,
     }))
   }, [propostas, isAdmin, corretoraId])

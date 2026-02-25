@@ -10,6 +10,7 @@ import { Table } from "@/core/components/Table"
 import { exportNoPagination } from "@/core/utils/exportToExcel/exportNoPagination"
 import { useCorretoraQuery } from "@/modules/corretoras-components/corretora/infra/hooks/use-corretora-query"
 import { usePerfilQuery } from "@/modules/perfis-components/perfis/infra/hooks/use-perfil-query"
+import { useProdutorQuery } from "@/modules/produtores-components/produtor/infra/hooks/use-produtor-query"
 import { FileXls, LockKey, Pencil, Trash } from "@phosphor-icons/react"
 import { useRouter } from "next/navigation"
 import { useMemo, useState } from "react"
@@ -24,6 +25,11 @@ export function UsuariosTable() {
   const { data, isLoading, refetch } = useUsuarioQuery(page, limit, filters)
   const { data: corretoras } = useCorretoraQuery(1, -1)
   const { data: perfis } = usePerfilQuery()
+  const { data: produtores } = useProdutorQuery(
+    1,
+    -1,
+    filters.corretoraId ? { corretoraId: filters.corretoraId } : undefined
+  )
   const { push } = useRouter()
 
   const [open, setOpen] = useState(false)
@@ -49,6 +55,14 @@ export function UsuariosTable() {
       value: p.id,
     }))
   }, [perfis])
+
+  const produtoresOptions = useMemo(() => {
+    if (!produtores?.data) return []
+    return produtores?.data.map((p) => ({
+      label: p.nome,
+      value: p.id,
+    }))
+  }, [produtores])
 
   const handleEdit = (id: string) => {
     push(`/usuarios/edit/${id}`)
@@ -180,6 +194,13 @@ export function UsuariosTable() {
       label: "Perfil",
       type: "select",
       options: perfisOptions,
+      placeholder: "Selecione",
+    },
+    {
+      name: "produtorId",
+      label: "Produtor",
+      type: "select",
+      options: produtoresOptions,
       placeholder: "Selecione",
     },
   ]

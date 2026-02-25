@@ -10,3 +10,8 @@ export async function getCalculosContaContabil(
   )
   return response.data
 }
+
+export async function calcularContaContabil(ano: number, mes: number) {
+  const response = await bffApi.post("/calculos-conta-contabil", { ano, mes })
+  return response.data
+}

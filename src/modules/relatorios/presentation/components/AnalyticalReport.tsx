@@ -118,7 +118,7 @@ export function AnalyticalReport({
             .filter((m: { title?: string }) => {
               if (produtorId && produtorId !== "" && produtorId !== "null") {
                 const title = m.title || ""
-                return !title.includes("Comissão")
+                return !title.toLowerCase().includes("comiss")
               }
               return true
             })
@@ -139,7 +139,7 @@ export function AnalyticalReport({
             .filter((d: { title?: string }) => {
               if (produtorId && produtorId !== "" && produtorId !== "null") {
                 const title = d.title || ""
-                return !title.includes("Comissão")
+                return !title.toLowerCase().includes("comiss")
               }
               return true
             })

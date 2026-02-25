@@ -5,6 +5,7 @@ import { Sinistro } from "@/@types/sinistro"
 import { Button } from "@/core/components/Button"
 import { FilterField, FilterForm } from "@/core/components/FilterForm"
 import { LoadingScreen } from "@/core/components/LoadingScreen"
+import { useBaseFilter } from "@/core/hooks/useBaseFilter"
 import { getCookie } from "@/lib/cookies"
 import { useCorretoraQuery } from "@/modules/corretoras-components/corretora/infra/hooks/use-corretora-query"
 import { usePropostaQuery } from "@/modules/propostas-components/propostas/infra/hooks/use-proposta-query"
@@ -155,14 +156,15 @@ export function SinistroKanbam() {
     },
   })
   const [filters, setFilters] = useState<Record<string, string>>({})
-  const standardFilters = isAdmin ? {} : { corretoraId: corretoraId || "" }
+
+  const standardFilters = useBaseFilter()
   const { data: propostaData, isLoading: isPropostaLoading } = usePropostaQuery(
     1,
     -1,
     standardFilters
   )
   const { data: seguradoraData, isLoading: isSeguradoraLoading } =
-    useSeguradoraQuery(1, -1, standardFilters)
+    useSeguradoraQuery(1, -1)
   const { data: corretoraData, isLoading: isCorretoraLoading } =
     useCorretoraQuery(1, -1)
   const {

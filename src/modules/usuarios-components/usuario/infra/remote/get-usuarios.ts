@@ -12,8 +12,15 @@ export async function getUsuarios(
     ...filters,
   })
 
-  const response = await bffApi.get<Usuario.GetResponse>(
-    `/usuarios?${params.toString()}`
-  )
-  return response.data
+  try {
+    const response = await bffApi.get<Usuario.GetResponse>(
+      `/usuarios?${params.toString()}`
+    )
+    return response.data
+  } catch (error) {
+    console.error(
+      "Erro ao buscar usuários:",
+      error?.response?.data?.message || error.message
+    )
+  }
 }

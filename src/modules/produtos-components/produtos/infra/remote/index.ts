@@ -7,10 +7,17 @@ export async function getProdutos(
   limit = 10,
   filters?: Record<string, string>
 ) {
-  const response = await bffApi.get<ProdutosResponse>("/produtos", {
-    params: { page, limit, ...filters },
-  })
-  return response.data
+  try {
+    const response = await bffApi.get<ProdutosResponse>("/produtos", {
+      params: { page, limit, ...filters },
+    })
+    return response.data
+  } catch (error) {
+    console.error(
+      "Erro ao buscar produtos:",
+      error?.response?.data?.message || error.message
+    )
+  }
 }
 
 export async function removeProduto(id: string) {

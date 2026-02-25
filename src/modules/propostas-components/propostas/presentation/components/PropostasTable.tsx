@@ -11,7 +11,7 @@ import { Modal } from "@/core/components/Modals/Modal"
 import { ModalFilesTrigger } from "@/core/components/Modals/ModalFiles/ModalFilesTrigger"
 import { Pagination } from "@/core/components/Pagination"
 import { Table } from "@/core/components/Table"
-import { getCookie } from "@/lib/cookies"
+import { useBaseFilter } from "@/core/hooks/useBaseFilter"
 import { useCorretoraQuery } from "@/modules/corretoras-components/corretora/infra/hooks/use-corretora-query"
 import { useProdutorQuery } from "@/modules/produtores-components/produtor/infra/hooks/use-produtor-query"
 import { useProdutoQuery } from "@/modules/produtos-components/produtos/infra/hooks/use-produto-query"
@@ -73,6 +73,7 @@ import { MotivoNaoRenovacaoModal } from "./modals/MotivoNaoRenovacao"
 import { RenovarApoliceModal } from "./modals/RenovarApoliceModal"
 
 import { Parcela, Proposta, UltimoEndossoResponse } from "@/@types/proposta"
+import { getCookie } from "@/lib/cookies"
 import { getPropostaChain } from "../../infra/remote"
 import { CadeiaPropostaModal } from "./modals/CadeiaPropostaModal"
 import { PrevisaoPagamentoModal } from "./modals/PrevisaoPagamentoModal"
@@ -89,12 +90,8 @@ export function PropostasTable() {
   const searchParams = useSearchParams()
   const [page, setPage] = useState(1)
   const [limit, setLimit] = useState(10)
-  const isAdmin = getCookie("perfilId") === process.env.NEXT_PUBLIC_ADM_ID
-  const corretoraId = getCookie("corretoraId")
-  const baseFilter = isAdmin ? {} : { corretoraId }
-  const [filters, setFilters] = useState<Record<string, string>>({
-    ...baseFilter,
-  })
+  const baseFilter = useBaseFilter()
+  const [filters, setFilters] = useState<Record<string, string>>(baseFilter)
   const hasUrlIds = searchParams.get("ids")
   const { data, isLoading, refetch } = usePropostaQuery(
     page,
@@ -104,7 +101,9 @@ export function PropostasTable() {
   const { data: allData } = usePropostaQuery(1, -1, filters)
   const [ramoId, setRamoId] = useState("")
   const { push } = useRouter()
-
+  const isAdmin = getCookie("perfilId") === process.env.NEXT_PUBLIC_ADM_ID
+  const corretoraId = getCookie("corretoraId")
+  const produtorId = getCookie("produtorId")
   const [open, setOpen] = useState(false)
   const [id, setId] = useState("")
   const [filteredResults, setFilteredResults] = useState([])
@@ -808,13 +807,38 @@ export function PropostasTable() {
 
   const baseAdvancedSearchFields: FilterField[] = useMemo(
     () => [
-      {
-        name: "produtorId",
-        label: "Produtor",
-        placeholder: "Buscar por produtor",
-        type: "select" as const,
-        options: [{ label: "Todos", value: "" }, ...produtoresOptions],
-      },
+      ...(!isAdmin && corretoraId ?
+        [
+          {
+            name: "corretoraId",
+            label: "Corretora",
+            placeholder: "Buscar por corretora",
+            type: "select" as const,
+            options: [{ label: "Todos", value: "" }, ...corretorasOptions],
+            disabled: true,
+          },
+        ]
+      : []),
+      ...(!isAdmin && produtorId ?
+        [
+          {
+            name: "produtorId",
+            label: "Produtor",
+            placeholder: "Buscar por produtor",
+            type: "select" as const,
+            options: [{ label: "Todos", value: "" }, ...produtoresOptions],
+            disabled: true,
+          },
+        ]
+      : [
+          {
+            name: "produtorId",
+            label: "Produtor",
+            placeholder: "Buscar por produtor",
+            type: "select" as const,
+            options: [{ label: "Todos", value: "" }, ...produtoresOptions],
+          },
+        ]),
       {
         name: "seguradoraId",
         label: "Seguradora",
@@ -899,7 +923,16 @@ export function PropostasTable() {
         type: "date",
       },
     ],
-    [produtoresOptions, seguradoresOptions, ramosOptions, produtosOptions]
+    [
+      produtoresOptions,
+      seguradoresOptions,
+      ramosOptions,
+      produtosOptions,
+      corretorasOptions,
+      isAdmin,
+      corretoraId,
+      produtorId,
+    ]
   )
 
   const adminAdvancedSearchFields: FilterField[] = useMemo(

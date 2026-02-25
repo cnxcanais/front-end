@@ -6,6 +6,7 @@ import { Button } from "@/core/components/Button"
 import { FilterField, FilterForm } from "@/core/components/FilterForm"
 import { LoadingScreen } from "@/core/components/LoadingScreen"
 import { Table } from "@/core/components/Table"
+import { useBaseFilter } from "@/core/hooks/useBaseFilter"
 import { getCookie } from "@/lib/cookies"
 import { useCorretoraQuery } from "@/modules/corretoras-components/corretora/infra/hooks/use-corretora-query"
 import { usePropostaQuery } from "@/modules/propostas-components/propostas/infra/hooks/use-proposta-query"
@@ -31,10 +32,12 @@ export function SinistrosHistoricoPage() {
   const [selectedSinistro, setSelectedSinistro] =
     useState<Sinistro.Type | null>(null)
   const [showHistoryModal, setShowHistoryModal] = useState(false)
-  const [selectedSinistroForHistory, setSelectedSinistroForHistory] =
-    useState<{ id: string; numero: string } | null>(null)
+  const [selectedSinistroForHistory, setSelectedSinistroForHistory] = useState<{
+    id: string
+    numero: string
+  } | null>(null)
 
-  const standardFilters = isAdmin ? {} : { corretoraId: corretoraId || "" }
+  const standardFilters = useBaseFilter()
   const { data: propostaData } = usePropostaQuery(1, -1, standardFilters)
   const { data: seguradoraData } = useSeguradoQuery(1, -1, standardFilters)
   const { data: corretoraData } = useCorretoraQuery(1, -1)

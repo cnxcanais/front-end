@@ -26,10 +26,20 @@ export async function getTiposSinistros(
   limit = 10,
   filters?: Record<string, string>
 ) {
-  const response = await bffApi.get<TiposSinistrosResponse>("/tipos-sinistros", {
-    params: { page, limit, ...filters },
-  })
-  return response.data
+  try {
+    const response = await bffApi.get<TiposSinistrosResponse>(
+      "/tipos-sinistros",
+      {
+        params: { page, limit, ...filters },
+      }
+    )
+    return response.data
+  } catch (error) {
+    console.error(
+      "Erro ao buscar tipos de sinistros:",
+      error?.response?.data?.message || error.message
+    )
+  }
 }
 
 export async function removeTipoSinistro(id: string) {
