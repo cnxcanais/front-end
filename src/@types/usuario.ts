@@ -8,6 +8,9 @@ export namespace Usuario {
     corretoraId: string | null
     produtorId: string | null
     perfilId: string
+    perfilNome: string
+    produtorNome: string
+    corretoraNome: string
     isMaster: boolean
     tokenAtivacao: string | null
     tokenAtivacaoExpira: string | null

@@ -10,7 +10,7 @@ import { usePerfilQuery } from "@/modules/perfis-components/perfis/infra/hooks/u
 import { useProdutorQuery } from "@/modules/produtores-components/produtor/infra/hooks/use-produtor-query"
 import { zodResolver } from "@hookform/resolvers/zod"
 import { useRouter } from "next/navigation"
-import { useMemo } from "react"
+import { useEffect, useMemo } from "react"
 import { useForm } from "react-hook-form"
 import { toast } from "sonner"
 import { useUsuarioByIdQuery } from "../../infra/hooks/use-usuario-by-id-query"
@@ -20,8 +20,9 @@ import { EditUsuarioSchema, editUsuarioFormSchema } from "../validation/schema"
 export function EditUsuarioForm({ id }: { id: string }) {
   const { push } = useRouter()
   const { data: usuario, isLoading } = useUsuarioByIdQuery(id)
-  const { data: corretoras } = useCorretoraQuery(1, 100)
-  const { data: perfis } = usePerfilQuery()
+  const { data: corretoras, isLoading: isLoadingCorretoras } =
+    useCorretoraQuery(1, 100)
+  const { data: perfis, isLoading: isLoadingPerfis } = usePerfilQuery()
 
   const corretorasOptions = useMemo(() => {
     if (!corretoras?.data) return []
@@ -43,22 +44,38 @@ export function EditUsuarioForm({ id }: { id: string }) {
     register,
     handleSubmit,
     watch,
+    reset,
     formState: { isSubmitting, errors },
   } = useForm<EditUsuarioSchema>({
     resolver: zodResolver(editUsuarioFormSchema),
-    values: {
-      nome: usuario?.nome || "",
-      perfilId: usuario?.perfilId || "",
-      corretoraId: usuario?.corretoraId || "",
-      produtorId: usuario?.produtorId || "",
+    defaultValues: {
+      nome: "",
+      perfilId: "",
+      corretoraId: "",
+      produtorId: "",
     },
   })
 
   const corretoraId = watch("corretoraId")
 
-  const { data: produtores } = useProdutorQuery(1, -1, {
-    corretoraId: corretoraId || "",
-  })
+  const { data: produtores, isLoading: isLoadingProdutores } = useProdutorQuery(
+    1,
+    -1,
+    {
+      corretoraId: corretoraId || usuario?.corretoraId || "",
+    }
+  )
+
+  useEffect(() => {
+    if (usuario && corretoras && perfis && !isLoadingProdutores) {
+      reset({
+        nome: usuario.nome || "",
+        perfilId: usuario.perfilId || "",
+        corretoraId: usuario.corretoraId || "",
+        produtorId: usuario.produtorId || "",
+      })
+    }
+  }, [usuario, corretoras, perfis, isLoadingProdutores, reset])
 
   const produtoresOptions = useMemo(() => {
     if (!produtores?.data) return []
@@ -78,7 +95,14 @@ export function EditUsuarioForm({ id }: { id: string }) {
     }
   }
 
-  if (!usuario || isLoading) return <LoadingScreen />
+  if (
+    !usuario ||
+    isLoading ||
+    isLoadingCorretoras ||
+    isLoadingPerfis ||
+    isLoadingProdutores
+  )
+    return <LoadingScreen />
 
   return (
     <form

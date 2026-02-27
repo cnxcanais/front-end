@@ -243,28 +243,32 @@ export function SeguradosTable() {
   const corretoraFilters: FilterField[] = useMemo(() => {
     const produtorId = baseFilter.produtorId
     const corretoraId = baseFilter.corretoraId
-    
+
     return [
-      ...(corretoraId && !isAdmin ? [
-        {
-          name: "corretoraId",
-          label: "Corretora",
-          placeholder: "Buscar por Corretora",
-          type: "select" as const,
-          options: corretorasOptions,
-          disabled: true,
-        },
-      ] : []),
-      ...(produtorId && !isAdmin ? [
-        {
-          name: "produtorId",
-          label: "Produtor",
-          placeholder: "Buscar por Produtor",
-          type: "select" as const,
-          options: produtoresOptions,
-          disabled: true,
-        },
-      ] : []),
+      ...(corretoraId && !isAdmin ?
+        [
+          {
+            name: "corretoraId",
+            label: "Corretora",
+            placeholder: "Buscar por Corretora",
+            type: "select" as const,
+            options: corretorasOptions,
+            disabled: true,
+          },
+        ]
+      : []),
+      ...(produtorId && !isAdmin ?
+        [
+          {
+            name: "produtorId",
+            label: "Produtor",
+            placeholder: "Buscar por Produtor",
+            type: "select" as const,
+            options: produtoresOptions,
+            disabled: true,
+          },
+        ]
+      : []),
       {
         name: "nomeRazaoSocial",
         label: "Nome/Razão Social",
@@ -294,6 +298,14 @@ export function SeguradosTable() {
           { label: "Ativo", value: "ATIVO" },
           { label: "Inativo", value: "INATIVO" },
         ],
+      },
+      {
+        name: "produtorId",
+        label: "Produtor",
+        placeholder: "Buscar por Produtor",
+        type: "select" as const,
+        options: produtoresOptions,
+        disabled: !isAdmin,
       },
     ]
   }, [baseFilter, corretorasOptions, produtoresOptions, isAdmin])

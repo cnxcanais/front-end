@@ -8,6 +8,7 @@ export interface ContaContabil {
   corretora?: {
     id: string
     nomeFantasia: string
+    razaoSocial: string
   }
 }
 

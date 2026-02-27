@@ -8,9 +8,13 @@ import { editContaContabil } from "@/modules/contas-contabeis-components/edit-co
 import { zodResolver } from "@hookform/resolvers/zod"
 import { useQueryClient } from "@tanstack/react-query"
 import { useRouter } from "next/navigation"
+import { useEffect } from "react"
 import { useForm } from "react-hook-form"
 import { toast } from "sonner"
-import { EditContaContabilSchema, editContaContabilFormSchema } from "../validation/schema"
+import {
+  EditContaContabilSchema,
+  editContaContabilFormSchema,
+} from "../validation/schema"
 
 export function EditContaContabilForm({ id }: Readonly<{ id: string }>) {
   const { push } = useRouter()
@@ -20,15 +24,26 @@ export function EditContaContabilForm({ id }: Readonly<{ id: string }>) {
   const {
     register,
     handleSubmit,
+    reset,
     formState: { isSubmitting, errors },
   } = useForm<EditContaContabilSchema>({
     resolver: zodResolver(editContaContabilFormSchema),
-    values: {
+    defaultValues: {
       id: contaContabil?.id || "",
       codigo: contaContabil?.codigo || "",
       descricao: contaContabil?.descricao || "",
+      corretoraId: contaContabil?.corretora?.id,
     },
   })
+
+  useEffect(() => {
+    reset({
+      id: contaContabil?.id || "",
+      codigo: contaContabil?.codigo || "",
+      descricao: contaContabil?.descricao || "",
+      corretoraId: contaContabil?.corretora?.id,
+    })
+  }, [contaContabil, reset])
 
   async function onSubmit(data: EditContaContabilSchema) {
     try {
@@ -41,7 +56,9 @@ export function EditContaContabilForm({ id }: Readonly<{ id: string }>) {
       await queryClient.invalidateQueries({ queryKey: ["contas-contabeis"] })
       setTimeout(() => push("/contas-contabeis"), 2000)
     } catch (error) {
-      toast.error("Erro ao editar conta contábil: " + error?.response?.data?.message)
+      toast.error(
+        "Erro ao editar conta contábil: " + error?.response?.data?.message
+      )
     }
   }
 
@@ -57,7 +74,7 @@ export function EditContaContabilForm({ id }: Readonly<{ id: string }>) {
             <label htmlFor="corretoraId">Corretora</label>
             <Input.Root>
               <Input.Control
-                value={contaContabil?.corretora?.nomeFantasia || "-"}
+                value={contaContabil?.corretora?.razaoSocial || "-"}
                 type="text"
                 disabled
               />

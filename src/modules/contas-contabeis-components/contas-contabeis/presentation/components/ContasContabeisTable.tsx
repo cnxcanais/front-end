@@ -68,7 +68,7 @@ export function ContasContabeisTable() {
     {
       header: "Corretora",
       accessor: "corretora",
-      render: (value: { nomeFantasia: string }) => value?.nomeFantasia || "-",
+      render: (value: { razaoSocial: string }) => value?.razaoSocial || "-",
     },
     {
       header: "Ações",

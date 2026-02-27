@@ -129,6 +129,12 @@ export function UsuariosTable() {
         : "-",
     },
     {
+      header: "Produtor",
+      accessor: "produtorId",
+      render: (value: string) =>
+        value ? produtores?.data?.find((p) => p.id === value)?.nome || "" : "-",
+    },
+    {
       header: "Master",
       accessor: "isMaster",
       render: (value: boolean) => (value ? "Sim" : "Não"),
