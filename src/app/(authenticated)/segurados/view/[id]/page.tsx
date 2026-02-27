@@ -12,7 +12,7 @@ export default function EditSeguradoPage({
   const { id } = use(params)
   return (
     <>
-      <PageTitle content="Editar Segurado" />
+      <PageTitle content="Visualizar Segurado" />
       <EditSeguradoForm id={id} readOnly />
     </>
   )
