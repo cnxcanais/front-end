@@ -126,12 +126,13 @@ export function EditProdutorForm({ id }: { id: string }) {
     if (!contasContabeis) return []
 
     return contasContabeis.data
+      .filter((conta) => conta.corretoraId === corretoraId)
       .toSorted((a, b) => a.descricao.localeCompare(b.descricao))
       .map((conta) => ({
         text: `${conta.codigo} - ${conta.descricao}`,
         value: conta.id,
       }))
-  }, [contasContabeis])
+  }, [contasContabeis, corretoraId])
 
   const produtoresOptions = useMemo(() => {
     if (!produtores) return []
