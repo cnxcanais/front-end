@@ -7,19 +7,19 @@ import { calcularContaContabil } from "../../infra/remote"
 interface CalcularModalProps {
   open: boolean
   onClose: () => void
-  ano: number
-  mes: number
   onSuccess: () => void
 }
 
 export function CalcularModal({
   open,
   onClose,
-  ano,
-  mes,
   onSuccess,
 }: CalcularModalProps) {
+  const currentYear = new Date().getFullYear()
+  const currentMonth = new Date().getMonth() + 1
   const [loading, setLoading] = useState(false)
+  const [ano, setAno] = useState(currentYear)
+  const [mes, setMes] = useState(currentMonth)
 
   const handleCalcular = async () => {
     setLoading(true)
@@ -41,10 +41,30 @@ export function CalcularModal({
   return (
     <Modal title="Calcular Conta Contábil" open={open} onClose={onClose}>
       <div className="space-y-4">
-        <p>
-          Deseja calcular as contas contábeis para <strong>Mês {mes}</strong> de{" "}
-          <strong>{ano}</strong>?
-        </p>
+        <div className="grid grid-cols-2 gap-4">
+          <div>
+            <label className="mb-2 block text-sm font-medium">Ano *</label>
+            <input
+              type="number"
+              value={ano}
+              onChange={(e) => setAno(Number(e.target.value))}
+              className="w-full rounded border p-2"
+            />
+          </div>
+          <div>
+            <label className="mb-2 block text-sm font-medium">Mês *</label>
+            <select
+              value={mes}
+              onChange={(e) => setMes(Number(e.target.value))}
+              className="w-full rounded border p-2">
+              {Array.from({ length: 12 }, (_, i) => i + 1).map((m) => (
+                <option key={m} value={m}>
+                  {m}
+                </option>
+              ))}
+            </select>
+          </div>
+        </div>
         <div className="flex justify-end gap-2">
           <Button variant="tertiary" onClick={onClose} disabled={loading}>
             Cancelar
