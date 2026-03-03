@@ -14,7 +14,6 @@ import { useCalculosContaContabilQuery } from "../../infra/hooks/use-calculos-co
 import { CalcularModal } from "./CalcularModal"
 
 export function CalculosContaContabilTable() {
-  const corretoraId = getCookie("corretoraId")
   const currentYear = new Date().getFullYear()
   const currentMonth = new Date().getMonth() + 1
 
