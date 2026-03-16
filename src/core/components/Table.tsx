@@ -22,7 +22,7 @@ export function Table<T>({
   expandedRowIds,
   expandedRowContent,
   enableSorting = false,
-}: {
+}: Readonly<{
   id?: string
   columns: Column[]
   data: T[]
@@ -31,7 +31,7 @@ export function Table<T>({
   expandedRowIds?: string[]
   expandedRowContent?: (row: T) => ReactNode
   enableSorting?: boolean
-}) {
+}>) {
   const [sortConfig, setSortConfig] = useState<SortConfig>(null)
 
   const handleSort = (key: string) => {

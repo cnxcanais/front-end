@@ -552,17 +552,10 @@ export function PropostasTable() {
       render: (value: string, row: Proposta) => (
         <span
           onClick={() => {
-            console.log(
-              "Parcelas clicked",
-              value,
-              "current state:",
-              expandedParcelasIds
-            )
             const newState =
               expandedParcelasIds.includes(value) ?
                 expandedParcelasIds.filter((id) => id !== value)
               : [...expandedParcelasIds, value]
-            console.log("New state:", newState)
             setExpandedParcelasIds(newState)
           }}
           className="cursor-pointer font-semibold text-blue-600 hover:underline">
@@ -1344,7 +1337,8 @@ export function PropostasTable() {
                             (p: Parcela) =>
                               p.situacao === "Pendente" ||
                               p.situacao === "Em Atraso"
-                          ) && (
+                          ) &&
+                          isAdmin && (
                             <button
                               className="rounded bg-green-100 px-3 py-1 text-sm text-white shadow hover:bg-yellow-100"
                               onClick={async () => {
@@ -1427,8 +1421,9 @@ export function PropostasTable() {
                                     .join("/")}
                                 </td>
                                 <td className="flex items-center gap-4 py-2">
-                                  {(parcela.situacao === "Pendente" ||
-                                    parcela.situacao === "Em Atraso") &&
+                                  {isAdmin &&
+                                    (parcela.situacao === "Pendente" ||
+                                      parcela.situacao === "Em Atraso") &&
                                     row.tipoDocumento !== "Proposta" && (
                                       <div title="Quitar Parcela">
                                         <CurrencyCircleDollar
@@ -1443,7 +1438,7 @@ export function PropostasTable() {
                                       </div>
                                     )}
 
-                                  {parcela.situacao !== "Paga" && (
+                                  {isAdmin && parcela.situacao !== "Paga" && (
                                     <div title="Alterar Previsão de Pagamento">
                                       <Calendar
                                         className="cursor-pointer text-blue-600 hover:text-blue-700"
