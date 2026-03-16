@@ -747,26 +747,29 @@ export function PropostasTable() {
           {row.tipoDocumento === TipoDocumentoEnum.PROPOSTA &&
             row.situacao === SituacaoEnum.ATIVO &&
             isAdmin && (
-              <span title="Deletar">
-                <Trash
-                  className="cursor-pointer hover:text-red-500"
-                  size={24}
-                  onClick={() => {
-                    setId(value)
-                    setOpen(true)
-                  }}
-                  color="#00dfa7"
-                />
-              </span>
+              <>
+                <span title="Deletar">
+                  <Trash
+                    className="cursor-pointer hover:text-red-500"
+                    size={24}
+                    onClick={() => {
+                      setId(value)
+                      setOpen(true)
+                    }}
+                    color="#00dfa7"
+                  />
+                </span>
+
+                <span title="Clonar Proposta">
+                  <Copy
+                    className="cursor-pointer hover:text-green-500"
+                    size={24}
+                    onClick={() => handleDuplicate(value)}
+                    color="#00dfa7"
+                  />
+                </span>
+              </>
             )}
-          <span title="Clonar Proposta">
-            <Copy
-              className="cursor-pointer hover:text-green-500"
-              size={24}
-              onClick={() => handleDuplicate(value)}
-              color="#00dfa7"
-            />
-          </span>
         </div>
       ),
     },
