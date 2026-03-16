@@ -14,13 +14,41 @@ export type SidebarItemProps = {
 
 export function SidebarItem({ current, href, Icon, name }: SidebarItemProps) {
   const [clientHref, setClientHref] = useState(href)
+  const [mounted, setMounted] = useState(false)
 
   useEffect(() => {
+    setMounted(true)
     if (name === "Perfil") {
       const userId = getCookie("userId")
       setClientHref(`${href}/${userId}`)
     }
   }, [name, href])
+
+  if (!mounted) {
+    return (
+      <li key={name}>
+        <a
+          href={href}
+          className={classNames(
+            current ?
+              "bg-gray-50 text-green-100"
+            : "text-yellow-300 hover:bg-gray-50 hover:text-blue-400",
+            "group flex gap-x-3 text-nowrap rounded-md p-2 text-sm/6 font-semibold"
+          )}>
+          <Icon
+            aria-hidden="true"
+            className={classNames(
+              current ? "text-green-100" : (
+                "text-yellow-300 group-hover:text-blue-400"
+              ),
+              "size-6 shrink-0"
+            )}
+          />
+          {name}
+        </a>
+      </li>
+    )
+  }
 
   return (
     <li key={name}>

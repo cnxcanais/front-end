@@ -5,7 +5,7 @@ import { CaretDown, CaretRight, List, X } from "@phosphor-icons/react"
 import { SignOut } from "@phosphor-icons/react/dist/ssr"
 import Image from "next/image"
 import { usePathname, useRouter } from "next/navigation"
-import { Fragment, useMemo, useState } from "react"
+import { Fragment, useEffect, useMemo, useState } from "react"
 import { Button } from "../Button"
 import { getSidebarGroupedByGroups } from "./options"
 import { SidebarItem } from "./SidebarItem"
@@ -15,15 +15,21 @@ export function Sidebar() {
   const [collapsedGroups, setCollapsedGroups] = useState<
     Record<string, boolean>
   >({})
+  const [mounted, setMounted] = useState(false)
   const pathname = usePathname()
   const { push } = useRouter()
 
   const sidebarGroupedByGroups = useMemo(() => {
+    if (!mounted) return {}
     const isAdmin = getCookie("perfilId") === process.env.NEXT_PUBLIC_ADM_ID
     const isMaster = getCookie("isMaster") === "true"
     const produtorId = getCookie("produtorId")
     const isProdutor = !!produtorId
     return getSidebarGroupedByGroups(isAdmin, isMaster, isProdutor)
+  }, [mounted])
+
+  useEffect(() => {
+    setMounted(true)
   }, [])
 
   const toggleSidebar = () => {

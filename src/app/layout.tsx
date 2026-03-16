@@ -1,5 +1,4 @@
 import { ReactQueryProvider } from "@/core/providers"
-import { MSWProvider } from "@/core/providers/msw-provider"
 import type { Metadata } from "next"
 import { Inter } from "next/font/google"
 import { Toaster } from "sonner"
@@ -27,10 +26,8 @@ export default function RootLayout({
         />
       </head>
       <body className={`${inter.className} antialiased`}>
-        <MSWProvider>
-          <ReactQueryProvider>{children}</ReactQueryProvider>
-          <Toaster richColors position="top-right" />
-        </MSWProvider>
+        <ReactQueryProvider>{children}</ReactQueryProvider>
+        <Toaster richColors position="top-right" />
       </body>
     </html>
   )
