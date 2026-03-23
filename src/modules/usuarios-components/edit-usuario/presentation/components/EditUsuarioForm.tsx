@@ -52,7 +52,7 @@ export function EditUsuarioForm({ id }: { id: string }) {
       nome: "",
       perfilId: "",
       corretoraId: "",
-      produtorId: "",
+      produtorId: null,
     },
   })
 
@@ -72,7 +72,7 @@ export function EditUsuarioForm({ id }: { id: string }) {
         nome: usuario.nome || "",
         perfilId: usuario.perfilId || "",
         corretoraId: usuario.corretoraId || "",
-        produtorId: usuario.produtorId || "",
+        produtorId: usuario.produtorId || null,
       })
     }
   }, [usuario, corretoras, perfis, isLoadingProdutores, reset])

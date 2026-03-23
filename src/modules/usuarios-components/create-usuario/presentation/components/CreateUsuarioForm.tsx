@@ -46,6 +46,9 @@ export function CreateUsuarioForm() {
     formState: { isSubmitting, errors },
   } = useForm<CreateUsuarioSchema>({
     resolver: zodResolver(createUsuarioFormSchema),
+    defaultValues: {
+      produtorId: null,
+    },
   })
 
   const corretoraId = watch("corretoraId")

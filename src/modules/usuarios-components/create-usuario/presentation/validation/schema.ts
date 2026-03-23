@@ -4,8 +4,8 @@ export const createUsuarioFormSchema = z.object({
   nome: z.string().min(1, "Nome é obrigatório"),
   email: z.string().email("Email inválido"),
   perfilId: z.string().min(1, "Perfil é obrigatório"),
-  corretoraId: z.string().optional().nullable(),
-  produtorId: z.string().optional().nullable(),
+  corretoraId: z.string().optional().nullable().transform(val => val === "" ? null : val),
+  produtorId: z.string().optional().nullable().transform(val => val === "" ? null : val),
   isMaster: z.boolean(),
 })
 
