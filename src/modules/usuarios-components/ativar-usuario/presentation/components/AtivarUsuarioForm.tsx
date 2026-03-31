@@ -91,6 +91,7 @@ export function AtivarUsuarioForm() {
           <li>Mínimo de 8 caracteres</li>
           <li>Pelo menos uma letra maiúscula</li>
           <li>Pelo menos um caractere especial</li>
+          <li>Pelo menos um número</li>
         </ul>
       </div>
 
