@@ -36,7 +36,7 @@ export function AtivarUsuarioForm() {
       toast.success("Conta ativada com sucesso!")
       setTimeout(() => push("/"), 2000)
     } catch (error) {
-      toast.error("Erro ao ativar conta: " + error)
+      toast.error("Erro ao ativar conta: " + error?.response?.data?.message)
     }
   }
 
@@ -60,16 +60,14 @@ export function AtivarUsuarioForm() {
       <div className="flex justify-center">
         <h2 className="text-xl font-light">Ativar Conta</h2>
       </div>
-        
+
       <div className="flex flex-col gap-3">
         <label htmlFor="senha">Senha</label>
         <Input.Root variant={errors.senha ? "error" : "secondary"}>
           <Input.Control {...register("senha")} type="password" />
         </Input.Root>
         {errors.senha && (
-          <span className="text-xs text-red-500">
-            {errors.senha.message}
-          </span>
+          <span className="text-xs text-red-500">{errors.senha.message}</span>
         )}
       </div>
 
